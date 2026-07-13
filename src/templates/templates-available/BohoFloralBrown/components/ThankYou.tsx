@@ -7,7 +7,7 @@ export const ThankYou = ({ data, config }: { data?: any; config: ThemeTemplateCo
   return (
     <section className="py-2 mb-5 px-6 flex flex-col items-center text-center relative overflow-hidden w-full">
       <img
-        src={fixedFlower}
+        src={fixedFlower.src}
         alt="decor"
         className="absolute right-0 bottom-0 w-48 md:w-64 opacity-25 pointer-events-none translate-x-12 translate-y-8 select-none z-0 rotate-180"
       />

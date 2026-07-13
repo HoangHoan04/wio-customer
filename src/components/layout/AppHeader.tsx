@@ -1,6 +1,14 @@
 "use client";
 
 import LoginModal from "@/components/auth/LoginModal";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -113,9 +121,11 @@ export default function AppHeader({ isScrolled = false }: AppHeaderProps) {
               <div
                 className="flex items-center gap-2.5 cursor-pointer"
                 onClick={() => router.push("/")}
+                role="link"
+                aria-label="Trang chủ Tiệm cưới tân thời"
               >
                 <span className="text-[clamp(1.3rem,3vw,1.8rem)] font-bold text-[#f5c842] whitespace-nowrap logo-shimmer">
-                  Tiệm Cưới Tân Thời
+                  Tiệm cưới tân thời
                 </span>
               </div>
 
@@ -154,54 +164,70 @@ export default function AppHeader({ isScrolled = false }: AppHeaderProps) {
                   ref={userMenuRef}
                   className="relative flex items-center gap-2"
                 >
-                  <div
-                    className="flex items-center gap-2 cursor-pointer py-1 pr-2 pl-1 rounded-3xl border border-[#d4af37]/30 transition-all duration-200 bg-[#d4af37]/5 hover:border-[#d4af37]"
-                    onClick={handleUserClick}
-                  >
-                    <div className="w-7.5 h-7.5 rounded-full overflow-hidden bg-linear-to-br from-[#d4af37] to-[#f5c842] flex items-center justify-center shrink-0">
-                      <span className="text-[#1a0a0f] font-extrabold text-[13px]">
-                        {avatarLabel}
-                      </span>
-                    </div>
-                    <span className="hidden sm:block text-[13px] text-[#f5e6d3] max-w-22.5 overflow-hidden text-ellipsis whitespace-nowrap">
-                      {isAuthenticated ? displayName : "Đăng nhập"}
-                    </span>
-                  </div>
-
-                  {isAuthenticated && showUserMenu && (
-                    <div className="absolute right-0 top-[calc(100%+10px)] z-100 border border-[#d4af37]/30 rounded-[10px] min-w-52.5 overflow-hidden shadow-[0_12px_40px_#1a0a0f/60] bg-[#1a0a0f]">
-                      <div className="h-0.5 bg-linear-to-r from-[#d4af37] to-[#f5c842]" />
-                      <div className="py-1">
+                  {isAuthenticated ? (
+                    <DropdownMenu>
+                      <DropdownMenuTrigger
+                        render={
+                          <div
+                            className="flex items-center gap-2 cursor-pointer py-1 pr-2 pl-1 rounded-3xl border border-[#d4af37]/30 transition-all duration-200 bg-[#d4af37]/5 hover:border-[#d4af37]"
+                            role="button"
+                            aria-label="Menu người dùng"
+                          />
+                        }
+                      >
+                        <Avatar className="w-7.5 h-7.5 bg-linear-to-br from-[#d4af37] to-[#f5c842] flex items-center justify-center shrink-0">
+                          <AvatarFallback className="bg-transparent text-[#1a0a0f] font-extrabold text-[13px]">
+                            {avatarLabel}
+                          </AvatarFallback>
+                        </Avatar>
+                        <span className="hidden sm:block text-[13px] text-[#f5e6d3] max-w-22.5 overflow-hidden text-ellipsis whitespace-nowrap">
+                          {displayName}
+                        </span>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent
+                        align="end"
+                        className="border border-[#d4af37]/30 rounded-[10px] min-w-52.5 overflow-hidden shadow-[0_12px_40px_#1a0a0f/60] bg-[#1a0a0f] text-[#f5e6d3]"
+                      >
                         <div className="px-4 py-2 text-white font-bold text-sm">
                           {displayName}
                         </div>
-                        <div className="h-px bg-[#d4af37]/10 mx-3" />
-                        <button
-                          onClick={() => {
-                            router.push("/my-templates");
-                            setShowUserMenu(false);
-                          }}
-                          className="w-full text-left px-4 py-2 bg-transparent border-none text-[#f5e6d3] text-[13px] cursor-pointer hover:bg-[#d4af37]/8 hover:text-[#f5c842] transition-all"
+                        <DropdownMenuSeparator className="bg-[#d4af37]/10 mx-3" />
+                        <DropdownMenuItem
+                          onClick={() => router.push("/my-templates")}
+                          className="px-4 py-2 text-[#f5e6d3] text-[13px] cursor-pointer hover:bg-[#d4af37]/8 hover:text-[#f5c842] transition-all focus:bg-[#d4af37]/8 focus:text-[#f5c842]"
                         >
                           Thiệp của tôi
-                        </button>
-                        <button
-                          onClick={() => {
-                            router.push("/profile");
-                            setShowUserMenu(false);
-                          }}
-                          className="w-full text-left px-4 py-2 bg-transparent border-none text-[#f5e6d3] text-[13px] cursor-pointer hover:bg-[#d4af37]/8 hover:text-[#f5c842] transition-all"
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => router.push("/profile")}
+                          className="px-4 py-2 text-[#f5e6d3] text-[13px] cursor-pointer hover:bg-[#d4af37]/8 hover:text-[#f5c842] transition-all focus:bg-[#d4af37]/8 focus:text-[#f5c842]"
                         >
                           Thông tin tài khoản
-                        </button>
-                        <div className="h-px bg-[#d4af37]/10 mx-3" />
-                        <button
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator className="bg-[#d4af37]/10 mx-3" />
+                        <DropdownMenuItem
                           onClick={handleLogout}
-                          className="w-full text-left px-4 py-2 bg-transparent border-none text-[#f5e6d3] text-[13px] cursor-pointer hover:bg-red-500/10 hover:text-red-400 transition-all"
+                          className="px-4 py-2 text-[#f5e6d3] text-[13px] cursor-pointer hover:bg-red-500/10 hover:text-red-400 transition-all focus:bg-red-500/10 focus:text-red-400"
                         >
                           Đăng xuất
-                        </button>
-                      </div>
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  ) : (
+                    <div
+                      className="flex items-center gap-2 cursor-pointer py-1 pr-2 pl-1 rounded-3xl border border-[#d4af37]/30 transition-all duration-200 bg-[#d4af37]/5 hover:border-[#d4af37]"
+                      onClick={handleUserClick}
+                      role="button"
+                      aria-label="Đăng nhập"
+                    >
+                      <Avatar className="w-7.5 h-7.5 bg-linear-to-br from-[#d4af37] to-[#f5c842] flex items-center justify-center shrink-0">
+                        <AvatarFallback className="bg-transparent text-[#1a0a0f] font-extrabold text-[13px]">
+                          {avatarLabel}
+                        </AvatarFallback>
+                      </Avatar>
+                      <span className="hidden sm:block text-[13px] text-[#f5e6d3] max-w-22.5 overflow-hidden text-ellipsis whitespace-nowrap">
+                        {displayName}
+                      </span>
                     </div>
                   )}
                 </div>

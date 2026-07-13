@@ -57,14 +57,14 @@ export const FamilyInfo = ({ data, config }: { data?: any; config: ThemeTemplate
     <div className="py-2 px-4 flex flex-col items-center text-center relative overflow-hidden z-10 w-full">
       <div className="flex items-center justify-center gap-4 mb-6 mt-4 w-full select-none">
         <img
-          src={cloudBig}
+          src={cloudBig.src}
           alt=""
           aria-hidden="true"
           className="w-16 md:w-20 object-contain opacity-80 filter drop-shadow(0 1px 2px rgba(0,0,0,0.1))"
         />
 
         <img
-          src={chineseHappiness}
+          src={chineseHappiness.src}
           alt="Chữ Hỷ"
           className="w-12 h-12 md:w-14 md:h-14 object-contain filter drop-shadow(0 2px 4px rgba(0,0,0,0.15))"
           style={{
@@ -73,7 +73,7 @@ export const FamilyInfo = ({ data, config }: { data?: any; config: ThemeTemplate
         />
 
         <img
-          src={cloudBig}
+          src={cloudBig.src}
           alt=""
           aria-hidden="true"
           className="w-16 md:w-20 object-contain opacity-80 filter drop-shadow(0 1px 2px rgba(0,0,0,0.1)) -scale-x-100"

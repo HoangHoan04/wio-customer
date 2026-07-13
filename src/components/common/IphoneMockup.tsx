@@ -66,7 +66,6 @@ export default function IPhoneMockup({
         zIndex: size === "medium" ? 3 : 1,
         transformStyle: "preserve-3d",
         transition: "all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)",
-        opacity: 0,
         transform,
       }}
     >

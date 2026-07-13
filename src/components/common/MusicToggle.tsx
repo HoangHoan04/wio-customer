@@ -2,6 +2,7 @@
 
 import { Volume1, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { Slider } from "@/components/ui/slider";
 
 interface MusicToggleProps {
   audioSrc?: string;
@@ -103,14 +104,19 @@ const MusicToggle = ({
           className="absolute left-14 top-1/2 -translate-y-1/2 bg-linear-to-r from-[#d4af37] to-[#f5c842] px-4 py-3 rounded-3xl shadow-lg flex items-center min-w-40 gap-3"
           style={{ animation: "slideLeft 0.2s ease-out" }}
         >
-          <input
-            type="range"
+          <Slider
             min={0}
             max={1}
             step={0.05}
-            value={currentVolume}
-            onChange={handleVolumeChange}
-            className="w-full h-2 rounded-full appearance-none bg-[#1a0a0f]/30 cursor-pointer accent-[#1a0a0f]"
+            value={[currentVolume]}
+            onValueChange={(val) => {
+              if (Array.isArray(val)) {
+                setCurrentVolume(val[0]);
+              } else if (typeof val === "number") {
+                setCurrentVolume(val);
+              }
+            }}
+            className="w-full h-4 flex items-center cursor-pointer"
           />
           <span className="text-[#1a0a0f] text-xs font-bold whitespace-nowrap">
             {Math.round(currentVolume * 100)}%

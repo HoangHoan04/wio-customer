@@ -1,6 +1,6 @@
 "use client";
 
-import CreatorPage from "@/features/creator/CreatorPage";
+import CreatorPage from "../CreatorPage";
 
 export default function CreatePage() {
   return <CreatorPage />;

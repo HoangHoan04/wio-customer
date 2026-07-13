@@ -8,7 +8,7 @@ export const Ceremonies = ({ data, config }: { data?: any; config: ThemeTemplate
   return (
     <div className="relative py-2 px-4 flex flex-col items-center text-center overflow-hidden z-10 w-full">
       <img
-        src={fixedFlower2}
+        src={fixedFlower2.src}
         alt="decor"
         className="absolute left-0 top-1/2 -translate-y-1/2 w-40 md:w-56 opacity-20 pointer-events-none -translate-x-12 select-none z-0"
       />

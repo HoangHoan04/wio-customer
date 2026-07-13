@@ -146,7 +146,7 @@ export const RSVP = ({ data, config }: { data?: any; config: ThemeTemplateConfig
 
   return (
     <div className="relative flex flex-col items-center text-center w-full my-5 overflow-hidden">
-      <img src={cloudSmall} alt="" aria-hidden="true" className="absolute -top-8 -right-8 w-32 md:w-52 opacity-15 pointer-events-none select-none z-0" />
+      <img src={cloudSmall.src} alt="" aria-hidden="true" className="absolute -top-8 -right-8 w-32 md:w-52 opacity-15 pointer-events-none select-none z-0" />
       {isFormInline ? (
         <FormContent />
       ) : (

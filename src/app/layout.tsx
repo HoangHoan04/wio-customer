@@ -10,20 +10,30 @@ const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Dat Thiep Online - Thiep Cuoi Online | Tiem Cuoi Tan Thoi",
-  description: "Tao thiep cuoi online dep, chuyen nghiep. Dat thiep online voi nhieu mau thiep cuoi dep, thiep cuoi dep, thiep cuoi online.",
-  keywords: ["thiep cuoi", "thiep cuoi online", "dat thiep online", "thiep cuoi dep", "tiem cuoi tan thoi"],
+  title: "Đặt Thiệp Online - Thiệp Cưới Online | Tiệm cưới tân thời",
+  description: "Tạo thiệp cưới online đẹp, chuyên nghiệp. Đặt thiệp online với nhiều mẫu thiệp cưới đẹp, thiệp cưới online sang trọng, hiện đại.",
+  keywords: ["thiệp cưới", "thiệp cưới online", "đặt thiệp online", "thiệp cưới đẹp", "tiệm cưới tân thời"],
+  metadataBase: new URL("https://tiemcuoitanthoi.vn"),
+  alternates: {
+    canonical: "/",
+  },
   openGraph: {
-    title: "Dat Thiep Online - Thiep Cuoi Online | Tiem Cuoi Tan Thoi",
-    description: "Tao thiep cuoi online dep, chuyen nghiep voi nhieu mau ma dep.",
+    title: "Đặt Thiệp Online - Thiệp Cưới Online | Tiệm cưới tân thời",
+    description: "Tạo thiệp cưới online đẹp, chuyên nghiệp với nhiều mẫu mã đẹp.",
     type: "website",
     locale: "vi_VN",
+    url: "https://tiemcuoitanthoi.vn",
+    siteName: "Tiệm cưới tân thời",
+  },
+  robots: {
+    index: true,
+    follow: true,
   },
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="vi" className={cn("h-full", "antialiased", geistSans.variable, geistMono.variable, inter.variable, playfair.variable)}>
+    <html lang="vi" data-scroll-behavior="smooth" className={cn("h-full", "antialiased", geistSans.variable, geistMono.variable, inter.variable, playfair.variable)}>
       <body className="min-h-full flex flex-col font-sans">
         <AppProviders>
           {children}

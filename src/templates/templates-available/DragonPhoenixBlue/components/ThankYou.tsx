@@ -18,13 +18,13 @@ export const ThankYou = ({ data, config }: { data?: any; config: ThemeTemplateCo
         {data.thankYouText}
       </p>
       <img
-        src={dragonLeftImg}
+        src={dragonLeftImg.src}
         alt=""
         aria-hidden="true"
         className="absolute left-6 bottom-0 w-24 md:w-32 object-contain pointer-events-none z-10 opacity-30 filter drop-shadow(0 4px 8px rgba(0,0,0,0.3))"
       />
       <img
-        src={dragonRightImg}
+        src={dragonRightImg.src}
         alt=""
         aria-hidden="true"
         className="absolute right-6 bottom-0 w-24 md:w-32 object-contain pointer-events-none z-10 opacity-30 filter drop-shadow(0 4px 8px rgba(0,0,0,0.3))"

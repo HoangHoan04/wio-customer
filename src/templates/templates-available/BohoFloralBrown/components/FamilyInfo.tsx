@@ -55,7 +55,7 @@ export const FamilyInfo = ({ data, config }: { data?: any; config: ThemeTemplate
   return (
     <div className="py-2 px-4 flex flex-col items-center text-center relative overflow-hidden z-10 w-full">
       <img
-        src={fixedFlower}
+        src={fixedFlower.src}
         alt="decor"
         className="absolute right-0 top-1/2 -translate-y-1/2 w-40 md:w-56 opacity-20 pointer-events-none translate-x-12 select-none z-0"
       />

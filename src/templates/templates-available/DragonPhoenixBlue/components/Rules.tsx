@@ -8,8 +8,8 @@ export const Rules = ({ data, config }: { data?: any, config: ThemeTemplateConfi
 
   return (
     <section className="relative py-10 px-4 flex flex-col items-center overflow-hidden" style={{ backgroundColor: config.colors.background }}>
-      <img src={cloudSmall} alt="" aria-hidden="true" className="absolute top-0 right-0 w-28 md:w-48 opacity-15 pointer-events-none translate-x-8 -translate-y-4 select-none z-0" />
-      <img src={cloudSmall} alt="" aria-hidden="true" className="absolute bottom-0 left-0 w-24 md:w-40 opacity-15 pointer-events-none -translate-x-6 translate-y-4 select-none z-0" />
+      <img src={cloudSmall.src} alt="" aria-hidden="true" className="absolute top-0 right-0 w-28 md:w-48 opacity-15 pointer-events-none translate-x-8 -translate-y-4 select-none z-0" />
+      <img src={cloudSmall.src} alt="" aria-hidden="true" className="absolute bottom-0 left-0 w-24 md:w-40 opacity-15 pointer-events-none -translate-x-6 translate-y-4 select-none z-0" />
       <div className="text-center mb-12">
         <h2
           className="text-xl md:text-2xl uppercase font-black mb-5"

@@ -1,16 +1,14 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { GoogleOAuthProvider } from '@react-oauth/google';
-import QueryProvider from './QueryProvider';
-import ThemeProvider from './ThemeProvider';
-import { TooltipProvider } from '@/components/ui/tooltip';
-import { Toaster } from '@/components/ui/sonner';
-import { useAuthStore } from '@/stores/useAuthStore';
-import { useEffect } from 'react';
-import tokenCache from '@/utils/token-cache';
+import { Toaster } from "@/components/ui/sonner";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { useAuthStore } from "@/stores/useAuthStore";
+import { GoogleOAuthProvider } from "@react-oauth/google";
+import React, { useEffect } from "react";
+import QueryProvider from "./QueryProvider";
+import ThemeProvider from "./ThemeProvider";
 
-const googleClientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ?? '';
+const googleClientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ?? "";
 
 function AuthInitializer({ children }: { children: React.ReactNode }) {
   useEffect(() => {
@@ -20,20 +18,23 @@ function AuthInitializer({ children }: { children: React.ReactNode }) {
       useAuthStore.getState().clearAuth();
     };
     window.addEventListener("unauthorized-event", handleUnauthorized);
-    return () => window.removeEventListener("unauthorized-event", handleUnauthorized);
+    return () =>
+      window.removeEventListener("unauthorized-event", handleUnauthorized);
   }, []);
   return <>{children}</>;
 }
 
-export default function AppProviders({ children }: { children: React.ReactNode }) {
+export default function AppProviders({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <GoogleOAuthProvider clientId={googleClientId}>
       <ThemeProvider>
         <QueryProvider>
           <TooltipProvider>
-            <AuthInitializer>
-              {children}
-            </AuthInitializer>
+            <AuthInitializer>{children}</AuthInitializer>
             <Toaster />
           </TooltipProvider>
         </QueryProvider>

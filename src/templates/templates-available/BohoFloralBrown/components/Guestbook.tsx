@@ -59,8 +59,8 @@ export const Guestbook = ({ data, config }: { data?: any; config: ThemeTemplateC
 
   return (
     <section className="py-10 px-4 relative overflow-hidden" style={{ backgroundColor: config.colors.background }}>
-      <img src={decorFlower} alt="" aria-hidden="true" className="absolute right-0 top-1/2 -translate-y-1/2 w-24 md:w-44 opacity-10 pointer-events-none translate-x-8 select-none z-0" />
-      <img src={decorFlower} alt="" aria-hidden="true" className="absolute left-0 bottom-0 w-20 md:w-36 opacity-10 pointer-events-none -translate-x-6 translate-y-4 select-none z-0 scale-x-[-1]" />
+      <img src={decorFlower.src} alt="" aria-hidden="true" className="absolute right-0 top-1/2 -translate-y-1/2 w-24 md:w-44 opacity-10 pointer-events-none translate-x-8 select-none z-0" />
+      <img src={decorFlower.src} alt="" aria-hidden="true" className="absolute left-0 bottom-0 w-20 md:w-36 opacity-10 pointer-events-none -translate-x-6 translate-y-4 select-none z-0 scale-x-[-1]" />
       {data?.guestbookFloating && (
         <style>{`
           @keyframes floatUpCircle {

@@ -49,7 +49,7 @@ export default function TemplateDetailModal({
           } else {
             win.scrollBy(0, SCROLL_SPEED);
           }
-        } catch {}
+        } catch { }
       }, 25);
     } else {
       stopAutoScroll();
@@ -102,15 +102,13 @@ export default function TemplateDetailModal({
             <img
               src={template.thumbnailUrl}
               alt={template.name}
-              className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${
-                isHovered ? "opacity-0" : "opacity-100"
-              }`}
+              className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${isHovered ? "opacity-0" : "opacity-100"
+                }`}
             />
 
             <div
-              className={`absolute inset-0 transition-opacity duration-500 ${
-                isHovered ? "opacity-100" : "opacity-0"
-              }`}
+              className={`absolute inset-0 transition-opacity duration-500 ${isHovered ? "opacity-100" : "opacity-0"
+                }`}
             >
               <iframe
                 ref={iframeRef}
@@ -130,9 +128,8 @@ export default function TemplateDetailModal({
             </div>
 
             <div
-              className={`absolute bottom-0 left-0 right-0 h-14 bg-linear-to-t from-black/60 to-transparent flex items-end justify-center pb-2.5 transition-opacity duration-300 ${
-                isHovered ? "opacity-0" : "opacity-100"
-              }`}
+              className={`absolute bottom-0 left-0 right-0 h-14 bg-linear-to-t from-black/60 to-transparent flex items-end justify-center pb-2.5 transition-opacity duration-300 ${isHovered ? "opacity-0" : "opacity-100"
+                }`}
             >
               <span className="text-white/65 text-[10px] font-medium tracking-wider flex items-center gap-1.5">
                 <Eye size={11} />
@@ -141,9 +138,8 @@ export default function TemplateDetailModal({
             </div>
 
             <div
-              className={`absolute bottom-0 left-0 right-0 h-10 bg-linear-to-t from-black/40 to-transparent flex items-end justify-center pb-2 transition-opacity duration-300 ${
-                isHovered && iframeLoaded ? "opacity-100" : "opacity-0"
-              }`}
+              className={`absolute bottom-0 left-0 right-0 h-10 bg-linear-to-t from-black/40 to-transparent flex items-end justify-center pb-2 transition-opacity duration-300 ${isHovered && iframeLoaded ? "opacity-100" : "opacity-0"
+                }`}
             >
               <span className="text-white/50 text-[9px] font-medium tracking-widest flex items-center gap-1 animate-pulse">
                 ▼ ĐANG CUỘN

@@ -13,7 +13,7 @@ export const GiftBox = ({ data, config }: { data?: any; config: ThemeTemplateCon
       className="relative py-5 px-4 flex flex-col items-center text-center overflow-hidden justify-center"
       style={{ backgroundColor: config.colors.background }}
     >
-      <img src={decorFlower} alt="" aria-hidden="true" className="absolute -bottom-4 -left-4 w-28 md:w-48 opacity-10 pointer-events-none select-none z-0 rotate-45" />
+      <img src={decorFlower.src} alt="" aria-hidden="true" className="absolute -bottom-4 -left-4 w-28 md:w-48 opacity-10 pointer-events-none select-none z-0 rotate-45" />
       <div className="flex flex-col items-center z-20">
         <h2
           className="text-xl md:text-2xl uppercase font-black"

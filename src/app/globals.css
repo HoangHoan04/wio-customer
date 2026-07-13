@@ -123,9 +123,27 @@
   }
   body {
     @apply bg-background text-foreground;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(212, 175, 55, 0.35) transparent;
+  }
+  body::-webkit-scrollbar, html::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  body::-webkit-scrollbar-track, html::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  body::-webkit-scrollbar-thumb, html::-webkit-scrollbar-thumb {
+    background: rgba(212, 175, 55, 0.35);
+    border-radius: 9999px;
+  }
+  body::-webkit-scrollbar-thumb:hover, html::-webkit-scrollbar-thumb:hover {
+    background: rgba(212, 175, 55, 0.65);
   }
   html {
     @apply font-sans scroll-smooth;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(212, 175, 55, 0.35) transparent;
   }
 }
 
@@ -136,6 +154,24 @@
   }
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
+  }
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(212, 175, 55, 0.35);
+    border-radius: 9999px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(212, 175, 55, 0.65);
+  }
+  .custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(212, 175, 55, 0.35) transparent;
   }
 }
 

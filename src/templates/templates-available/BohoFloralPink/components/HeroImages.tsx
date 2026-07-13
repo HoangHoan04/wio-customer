@@ -78,7 +78,7 @@ export const HeroImages = ({ data, config }: { data?: any; config: ThemeTemplate
   return (
     <div className="relative pt-12 pb-16 flex flex-col items-center justify-center overflow-hidden px-4">
       <img
-        src={flowerCornerFloral}
+        src={flowerCornerFloral.src}
         alt="floral"
         className="absolute top-5 left-0 w-90 md:w-96 -translate-x-1/4 -translate-y-1/4 opacity-90 pointer-events-none"
       />
@@ -98,7 +98,7 @@ export const HeroImages = ({ data, config }: { data?: any; config: ThemeTemplate
       </div>
 
       <img
-        src={flowerCornerFloral}
+        src={flowerCornerFloral.src}
         alt="floral"
         className="absolute bottom-0 right-0 w-72 md:w-96 -translate-x-1/10 translate-y-1/4 opacity-90 pointer-events-none scale-y-[-1]"
       />

@@ -46,7 +46,7 @@ export const Countdown = ({ data, config }: { data?: any, config: ThemeTemplateC
 
   return (
     <div className="relative flex flex-col items-center justify-center text-center w-full overflow-hidden">
-      <img src={decorFlower} alt="" aria-hidden="true" className="absolute left-0 top-1/2 -translate-y-1/2 w-20 md:w-36 opacity-10 pointer-events-none -translate-x-6 select-none z-0" />
+      <img src={decorFlower.src} alt="" aria-hidden="true" className="absolute left-0 top-1/2 -translate-y-1/2 w-20 md:w-36 opacity-10 pointer-events-none -translate-x-6 select-none z-0" />
       <h3 className="text-lg tracking-widest mb-6" style={{ fontFamily: config.fonts.body, color: config.colors.textPrimary }}>
         Cùng đếm ngược
       </h3>

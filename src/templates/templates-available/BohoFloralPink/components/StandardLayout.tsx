@@ -25,61 +25,61 @@ export const StandardLayout = ({ data, config, isEnvelopeOpen, toggleAudio, isPl
   return (
     <div className={`transition-opacity duration-1000 ${isEnvelopeOpen ? "opacity-100" : "opacity-0 h-0 overflow-hidden"}`}>
       <img
-        src={decorFlower}
+        src={decorFlower.src}
         alt=""
         aria-hidden="true"
         className="fixed right-0 top-1/2 -translate-y-1/2 w-36 md:w-52 opacity-15 pointer-events-none select-none z-0"
       />
       <img
-        src={decorFlower2}
+        src={decorFlower2.src}
         alt=""
         aria-hidden="true"
         className="fixed left-0 top-1/2 -translate-y-1/2 w-36 md:w-52 opacity-15 pointer-events-none select-none z-0"
       />
       <img
-        src={flowerTop}
+        src={flowerTop.src}
         alt=""
         aria-hidden="true"
         className="fixed top-16 left-8 w-16 md:w-24 opacity-20 pointer-events-none select-none z-0 -rotate-12"
       />
       <img
-        src={flowerTop}
+        src={flowerTop.src}
         alt=""
         aria-hidden="true"
         className="fixed top-32 right-12 w-12 md:w-20 opacity-15 pointer-events-none select-none z-0 rotate-45"
       />
       <img
-        src={flowerMid}
+        src={flowerMid.src}
         alt=""
         aria-hidden="true"
         className="fixed top-1/4 left-4 w-14 md:w-20 opacity-15 pointer-events-none select-none z-0 rotate-30"
       />
       <img
-        src={flowerMid}
+        src={flowerMid.src}
         alt=""
         aria-hidden="true"
         className="fixed top-3/4 right-6 w-12 md:w-18 opacity-12 pointer-events-none select-none z-0 -rotate-20"
       />
       <img
-        src={flowerBottom}
+        src={flowerBottom.src}
         alt=""
         aria-hidden="true"
         className="fixed bottom-24 left-10 w-16 md:w-24 opacity-20 pointer-events-none select-none z-0 rotate-60"
       />
       <img
-        src={flowerBottom}
+        src={flowerBottom.src}
         alt=""
         aria-hidden="true"
         className="fixed bottom-40 right-8 w-12 md:w-20 opacity-15 pointer-events-none select-none z-0 -rotate-40"
       />
       <img
-        src={flowerMid}
+        src={flowerMid.src}
         alt=""
         aria-hidden="true"
         className="fixed top-[60%] left-1/4 w-10 md:w-16 opacity-10 pointer-events-none select-none z-0 rotate-15"
       />
       <img
-        src={flowerTop}
+        src={flowerTop.src}
         alt=""
         aria-hidden="true"
         className="fixed top-[15%] right-1/3 w-10 md:w-14 opacity-10 pointer-events-none select-none z-0 -rotate-25"

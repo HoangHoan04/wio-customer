@@ -3,6 +3,7 @@
 import { FacebookIcon, GoogleIcon } from "@/assets/icons";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/useAuth";
 import { useGoogleLogin } from "@react-oauth/google";
 import { ArrowLeft, Check, Mail } from "lucide-react";
@@ -28,7 +29,15 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
   const [resendLoading, setResendLoading] = useState(false);
   const [timer, setTimer] = useState(60);
 
-  const { loading, error, setError, sendOtp, verifyOtp, loginWithGoogle, loginWithFacebook } = useAuth();
+  const {
+    loading,
+    error,
+    setError,
+    sendOtp,
+    verifyOtp,
+    loginWithGoogle,
+    loginWithFacebook,
+  } = useAuth();
 
   useEffect(() => {
     if (window.FB) return;
@@ -44,7 +53,8 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
     };
 
     (function (d, s, id) {
-      var js, fjs = d.getElementsByTagName(s)[0];
+      var js,
+        fjs = d.getElementsByTagName(s)[0];
       if (d.getElementById(id)) return;
       js = d.createElement(s) as HTMLScriptElement;
       js.id = id;
@@ -96,7 +106,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
           toast.info("Đăng nhập bằng Facebook đã bị hủy");
         }
       },
-      { scope: "email,public_profile" }
+      { scope: "email,public_profile" },
     );
   };
 
@@ -184,7 +194,10 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
     }
   };
 
-  const handleOtpKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, index: number) => {
+  const handleOtpKeyDown = (
+    e: React.KeyboardEvent<HTMLInputElement>,
+    index: number,
+  ) => {
     if (e.key === "Backspace") {
       if (!otp[index] && index > 0) {
         const newOtp = [...otp];
@@ -244,7 +257,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
               </button>
             )}
             <h2 className="text-3xl font-bold text-transparent bg-clip-text bg-linear-to-r from-[#d4af37] to-[#f5c842]">
-              Tiệm Cưới Tân Thời
+              Tiệm cưới tân thời
             </h2>
             <p className="text-[#f5e6d3] text-[14px] opacity-80 font-medium">
               {step === "email"
@@ -260,11 +273,17 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
           )}
 
           {step === "email" ? (
-            <form onSubmit={handleSendOtp} className="w-full flex flex-col gap-6">
+            <form
+              onSubmit={handleSendOtp}
+              className="w-full flex flex-col gap-6"
+            >
               <div className="w-full flex flex-col gap-5">
                 <div className="relative">
-                  <Mail size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#d4af37]/60" />
-                  <input
+                  <Mail
+                    size={18}
+                    className="absolute left-3 top-1/2 -translate-y-1/2 text-[#d4af37]/60"
+                  />
+                  <Input
                     type="email"
                     placeholder="Nhập email để nhận mã OTP"
                     value={email}
@@ -285,21 +304,38 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
               </div>
               <div className="flex flex-col gap-3 pt-2 border-t border-white/5">
                 <div className="flex items-center gap-3 text-sm text-[#f5e6d3]/80">
-                  <Check size={18} className="text-emerald-500 shrink-0" strokeWidth={3} />
+                  <Check
+                    size={18}
+                    className="text-emerald-500 shrink-0"
+                    strokeWidth={3}
+                  />
                   <span className="font-light">Không cần mật khẩu</span>
                 </div>
                 <div className="flex items-center gap-3 text-sm text-[#f5e6d3]/80">
-                  <Check size={18} className="text-emerald-500 shrink-0" strokeWidth={3} />
-                  <span className="font-light">Đăng nhập an toàn với mã OTP</span>
+                  <Check
+                    size={18}
+                    className="text-emerald-500 shrink-0"
+                    strokeWidth={3}
+                  />
+                  <span className="font-light">
+                    Đăng nhập an toàn với mã OTP
+                  </span>
                 </div>
                 <div className="flex items-center gap-3 text-sm text-[#f5e6d3]/80">
-                  <Check size={18} className="text-emerald-500 shrink-0" strokeWidth={3} />
+                  <Check
+                    size={18}
+                    className="text-emerald-500 shrink-0"
+                    strokeWidth={3}
+                  />
                   <span className="font-light">Hoàn toàn miễn phí</span>
                 </div>
               </div>
             </form>
           ) : (
-            <form onSubmit={handleVerifyOtp} className="w-full flex flex-col gap-6">
+            <form
+              onSubmit={handleVerifyOtp}
+              className="w-full flex flex-col gap-6"
+            >
               <div className="w-full flex flex-col gap-5">
                 <p className="text-xs text-[#f5e6d3]/70 text-center leading-relaxed">
                   Mã xác thực đã được gửi đến email:
@@ -307,9 +343,12 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
                   <span className="font-semibold text-[#f5c842]">{email}</span>
                 </p>
 
-                <div className="flex gap-2 justify-center w-full my-2" onPaste={handleOtpPaste}>
+                <div
+                  className="flex gap-2 justify-center w-full my-2"
+                  onPaste={handleOtpPaste}
+                >
                   {otp.map((digit, idx) => (
-                    <input
+                    <Input
                       key={idx}
                       id={`otp-input-${idx}`}
                       type="text"
@@ -327,7 +366,10 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
                 <div className="text-center text-xs">
                   {timer > 0 ? (
                     <span className="text-[#f5e6d3]/50">
-                      Gửi lại mã sau <span className="text-[#f5c842] font-semibold">{timer}s</span>
+                      Gửi lại mã sau{" "}
+                      <span className="text-[#f5c842] font-semibold">
+                        {timer}s
+                      </span>
                     </span>
                   ) : (
                     <button
@@ -336,7 +378,9 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
                       disabled={resendLoading}
                       className="text-[#d4af37] hover:text-[#f5c842] underline cursor-pointer bg-transparent border-none font-medium hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                     >
-                      {resendLoading ? "Đang gửi lại..." : "Chưa nhận được mã? Gửi lại mã"}
+                      {resendLoading
+                        ? "Đang gửi lại..."
+                        : "Chưa nhận được mã? Gửi lại mã"}
                     </button>
                   )}
                 </div>

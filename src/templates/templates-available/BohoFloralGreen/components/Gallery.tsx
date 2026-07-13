@@ -31,9 +31,11 @@ const CarouselImage = ({ src, alt, onImageClick, ...props }: any) => {
 export const Gallery = ({ data, config }: { data?: any; config: ThemeTemplateConfig }) => {
   const [selectedIdx, setSelectedIdx] = useState<number | null>(null);
 
-  if (!data || !data.showGallery || !data.gallery || data.gallery.length === 0) return null;
+  if (!data || !data.showGallery || !data.gallery) return null;
 
-  const images = data.gallery;
+  const images = (data.gallery as string[]).filter(Boolean);
+  if (images.length === 0) return null;
+
   const layout = data.galleryLayout || "grid";
 
   const handleNext = (e: React.MouseEvent) => {
@@ -48,7 +50,7 @@ export const Gallery = ({ data, config }: { data?: any; config: ThemeTemplateCon
 
   return (
     <section className="relative py-1 overflow-hidden" style={{ backgroundColor: config.colors.background }}>
-      <img src={decorFlower} alt="" aria-hidden="true" className="absolute top-0 right-0 w-32 md:w-56 opacity-10 pointer-events-none translate-x-12 -translate-y-8 select-none z-0" />
+      <img src={decorFlower.src} alt="" aria-hidden="true" className="absolute top-0 right-0 w-32 md:w-56 opacity-10 pointer-events-none translate-x-12 -translate-y-8 select-none z-0" />
       <div className="max-w-4xl mx-auto px-4">
         <div className="text-center mb-6">
           <h2

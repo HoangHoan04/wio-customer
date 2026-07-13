@@ -30,7 +30,7 @@ export const PartyInfo = ({ data, config }: { data?: any; config: ThemeTemplateC
       style={{ backgroundColor: config.colors.background }}
     >
       <img
-        src={flowerMid}
+        src={flowerMid.src}
         alt="decor"
         className="absolute right-0 top-1/2 -translate-y-1/2 w-40 md:w-56 opacity-25 pointer-events-none translate-x-12 select-none z-0"
       />

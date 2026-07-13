@@ -23,7 +23,7 @@ export const CoupleNames = ({ data, config }: { data?: any; config: ThemeTemplat
   );
   return (
     <div className=" px-4 flex flex-col items-center text-center relative z-10 overflow-hidden">
-      <img src={decorFlower} alt="" aria-hidden="true" className="absolute right-0 top-1/2 -translate-y-1/2 w-24 md:w-48 opacity-10 pointer-events-none translate-x-8 select-none z-0" />
+      <img src={decorFlower.src} alt="" aria-hidden="true" className="absolute right-0 top-1/2 -translate-y-1/2 w-24 md:w-48 opacity-10 pointer-events-none translate-x-8 select-none z-0" />
       {data?.showIntro && (
         <p
           className="text-sm md:text-base uppercase font-bold py-5 whitespace-pre-line leading-relaxed min-h-6"

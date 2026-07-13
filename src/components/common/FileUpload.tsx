@@ -1,4 +1,5 @@
 import Modal from "@/components/ui/Modal";
+import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/useToast";
 import { uploadService } from "@/services/upload.service";
 import { Eye, Loader2, Plus, Trash } from "lucide-react";
@@ -61,7 +62,6 @@ export default function FileUpload({
         title: "Lỗi kích thước",
         message: `File ${invalidFiles.join(", ")} quá lớn. Kích thước tối đa là ${maxSize}MB.`,
         type: "error",
-        timeout: 3000,
       });
     }
 
@@ -77,7 +77,9 @@ export default function FileUpload({
         const res = await uploadService.uploadImage(file);
         responses.push(res);
       }
-      const uploadedUrls = responses.map((res: any) => res?.fileUrl).filter(Boolean);
+      const uploadedUrls = responses
+        .map((res: any) => res?.fileUrl)
+        .filter(Boolean);
 
       if (uploadedUrls.length > 0) {
         let nextValue: any;
@@ -95,7 +97,6 @@ export default function FileUpload({
           title: "Thành công",
           message: `Đã tải lên thành công ${uploadedUrls.length} ảnh`,
           type: "success",
-          timeout: 1500,
         });
       }
     } catch (err: any) {
@@ -104,7 +105,6 @@ export default function FileUpload({
         title: "Lỗi tải lên",
         message: err.message || "Không thể tải lên tệp tin.",
         type: "error",
-        timeout: 2000,
       });
     } finally {
       setLoading(false);
@@ -151,20 +151,20 @@ export default function FileUpload({
 
             {!disabled && (
               <div className="absolute inset-0 z-20 flex items-center justify-center gap-2.5 bg-black/60 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-                <button
+                <Button
                   type="button"
                   onClick={() => setPreviewUrl(fileUrl)}
                   className="bg-transparent border-none text-[#f5c842] hover:scale-110 transition-transform cursor-pointer p-1 rounded hover:bg-white/10"
                 >
                   <Eye size={18} />
-                </button>
-                <button
+                </Button>
+                <Button
                   type="button"
                   onClick={() => handleRemove(idx)}
                   className="bg-transparent border-none text-red-400 hover:scale-110 transition-transform cursor-pointer p-1 rounded hover:bg-white/10"
                 >
                   <Trash size={18} />
-                </button>
+                </Button>
               </div>
             )}
           </div>
@@ -185,7 +185,6 @@ export default function FileUpload({
                     title: "Yêu cầu đăng nhập",
                     message: "Bạn cần đăng nhập để tải ảnh lên.",
                     type: "info",
-                    timeout: 2500,
                   });
                   if (onAuthRequired) {
                     onAuthRequired();
@@ -202,7 +201,9 @@ export default function FileUpload({
               ) : (
                 <>
                   <Plus size={20} />
-                  <span className="text-[10px] font-bold uppercase tracking-wider">Tải ảnh</span>
+                  <span className="text-[10px] font-bold uppercase tracking-wider">
+                    Tải ảnh
+                  </span>
                 </>
               )}
             </div>

@@ -35,7 +35,7 @@ export const Guestbook = ({ data, config }: { data?: any; config: ThemeTemplateC
     }, 3500);
 
     return () => clearInterval(interval);
-  }, [data?.guestbookFloating, realMessages]);
+  }, [data?.guestbookFloating, data?.guestbook, data?.messages]);
 
   if (!data?.showGuestbook) return null;
 
@@ -45,27 +45,27 @@ export const Guestbook = ({ data, config }: { data?: any; config: ThemeTemplateC
       style={{ backgroundColor: config.colors.background }}
     >
       <img
-        src={phoenix}
+        src={phoenix.src}
         alt=""
         aria-hidden="true"
         className="absolute -left-12 lg:-left-6 xl:left-4 top-0 w-24 md:w-36 lg:w-44 opacity-10 lg:opacity-15 pointer-events-none z-0 filter drop-shadow(0 2px 4px rgba(0,0,0,0.2)) -scale-x-100 transition-all duration-300"
       />
 
       <img
-        src={dragon}
+        src={dragon.src}
         alt=""
         aria-hidden="true"
         className="absolute -right-14 lg:-right-4 xl:right-8 -bottom-14 lg:-bottom-6 w-28 md:w-40 lg:w-48 opacity-10 lg:opacity-20 pointer-events-none z-0 -scale-x-100 filter drop-shadow(0 2px 4px rgba(0,0,0,0.2)) transition-all duration-300"
       />
 
       <img
-        src={cloudSmall}
+        src={cloudSmall.src}
         alt=""
         aria-hidden="true"
         className="absolute right-12 top-1/3 w-20 md:w-32 opacity-5 lg:opacity-10 pointer-events-none select-none z-0 hidden md:block"
       />
       <img
-        src={cloudSmall}
+        src={cloudSmall.src}
         alt=""
         aria-hidden="true"
         className="absolute left-16 bottom-1/4 w-16 md:w-24 opacity-5 lg:opacity-10 pointer-events-none select-none z-0 hidden md:block"

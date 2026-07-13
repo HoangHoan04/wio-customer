@@ -12,32 +12,32 @@ export const HeroImages = ({ data, config }: { data?: any; config: ThemeTemplate
     <div className="relative pt-24 pb-5 flex flex-col items-center justify-center overflow-hidden px-6 select-none">
       <div className="relative z-10 w-full max-w-xs md:max-w-sm mx-auto mt-12 aspect-3/4">
         <img
-          src={dragon}
+          src={dragon.src}
           alt=""
           aria-hidden="true"
           className="absolute -left-5 -top-25 w-25 md:w-32 object-contain pointer-events-none z-30 opacity-75 filter drop-shadow(0 4px 12px rgba(0,0,0,0.5))"
         />
         <div className="absolute left-1/2 -top-23 -translate-x-1/2 z-40 select-none pointer-events-none">
           <img
-            src={chineseHappinessBig}
+            src={chineseHappinessBig.src}
             alt="Chữ Hỷ"
             className="w-14 h-14 md:w-16 md:h-16 object-contain filter drop-shadow(0 2px 6px rgba(0,0,0,0.3))"
           />
         </div>
         <img
-          src={phoenix}
+          src={phoenix.src}
           alt=""
           aria-hidden="true"
           className="absolute -right-5 -top-25 w-25 md:w-32 object-contain pointer-events-none z-30 opacity-70 filter drop-shadow(0 4px 12px rgba(0,0,0,0.4))"
         />
         <img
-          src={phoenix}
+          src={phoenix.src}
           alt=""
           aria-hidden="true"
           className="absolute -left-5 -bottom-25 w-25 md:w-32 object-contain pointer-events-none z-10 opacity-65 filter drop-shadow(0 4px 12px rgba(0,0,0,0.4)) -scale-x-100"
         />
         <img
-          src={dragon}
+          src={dragon.src}
           alt=""
           aria-hidden="true"
           className="absolute -right-5 -bottom-25 w-25 md:w-32 object-contain pointer-events-none z-10 opacity-70 filter drop-shadow(0 4px 12px rgba(0,0,0,0.5)) -scale-x-100"

@@ -9,6 +9,8 @@ import {
 import { Clock, Mail, MapPin, Phone } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 const SOCIAL_LINKS = [
   {
@@ -126,7 +128,7 @@ function NewsletterForm() {
       className="flex items-stretch min-w-105 max-w-130 flex-1 max-sm:min-w-0 max-sm:flex-col max-sm:gap-3"
     >
       <div className="relative flex-1 flex items-center">
-        <input
+        <Input
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
@@ -134,17 +136,18 @@ function NewsletterForm() {
           onBlur={() => setFocused(false)}
           placeholder="Nhập email của bạn..."
           required
+          aria-label="Nhập email đăng ký nhận bản tin"
           className={`w-full h-13 px-5 pr-35 text-sm text-[#e8d5c0] bg-[#1a0a0f]/60 border-[1.5px] border-[#d4af37]/25 border-r-0 rounded-xl outline-none font-inherit transition-all max-sm:pr-5 max-sm:border-r-[1.5px]
             ${focused ? "border-[#d4af37]/60 shadow-[0_0_0_3px_rgba(212,175,55,0.1),inset_0_0_20px_rgba(212,175,55,0.05)]" : ""}`}
         />
-        <button
+        <Button
           type="submit"
           onMouseEnter={() => setHovered(true)}
           onMouseLeave={() => setHovered(false)}
           className={`absolute right-1.25 top-1/2 -translate-y-1/2 h-11 px-6 bg-linear-to-r from-[#d4af37] via-[#f5c842] to-[#d4af37] bg-size-[200%] border-none rounded-md text-[#1a0a0f] text-xs font-bold tracking-wider uppercase cursor-pointer flex items-center gap-2 transition-all whitespace-nowrap shadow-lg max-sm:static max-sm:translate-y-0 max-sm:w-full max-sm:justify-center ${hovered ? "bg-right shadow-xl scale-[1.02]" : ""}`}
         >
           {submitted ? "Đã Gửi" : "Đăng Ký"}
-        </button>
+        </Button>
       </div>
     </form>
   );
@@ -208,7 +211,7 @@ export default function AppFooter() {
             className="text-[2rem] font-extrabold leading-tight text-[#f5c842] m-0 mb-4 tracking-wide"
             style={{ textShadow: "0 2px 24px rgba(212,175,55,0.45)" }}
           >
-            Tiệm Cưới Tân Thời
+            Tiệm cưới tân thời
           </h2>
           <p className="text-[13px] text-[#b89070] leading-relaxed m-0 mb-6 italic">
             Nơi mỗi khoảnh khắc trở thành kỷ niệm đẹp. Chúng tôi mang đến những
@@ -279,7 +282,7 @@ export default function AppFooter() {
       <div className="relative z-1 max-w-342.5 mx-auto w-full box-border px-12 py-5 flex flex-wrap items-center justify-between gap-3 max-sm:px-6 max-sm:flex-col max-sm:text-center">
         <p className="text-[12.5px] text-[#6b4f3a] m-0">
           Copyright © {currentYear}{" "}
-          <span className="text-[#d4af37] text-xs">Tiệm Cưới Tân Thời</span>.
+          <span className="text-[#d4af37] text-xs">Tiệm cưới tân thời</span>.
           Bảo lưu mọi quyền.
         </p>
         <div className="flex gap-7">

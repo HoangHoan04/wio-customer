@@ -38,11 +38,11 @@ export default function UserManualPage() {
           </div>
 
           <div className="lg:col-span-5 space-y-6">
-            <h2 className="text-2xl font-semibold" style={{ fontFamily: "'Cormorant Garamond', serif", color: "#e5c483" }}>Tiệm Cưới Tân Thời</h2>
+            <h2 className="text-2xl font-semibold" style={{ fontFamily: "'Cormorant Garamond', serif", color: "#e5c483" }}>Tiệm cưới tân thời</h2>
             <div className="text-base leading-relaxed font-light space-y-4" style={{ color: "#a38a75", fontFamily: "'Cormorant Garamond', serif" }}>
               <p>
                 Chào mừng bạn đến với không gian sáng tạo của
-                <span className="font-semibold text-[#f5c842]"> Tiệm Cưới Tân Thời</span>. Hệ thống khởi tạo thiệp cưới thông minh giúp bạn tự tay thiết kế những mẫu thiệp điện tử độc bản.
+                <span className="font-semibold text-[#f5c842]"> Tiệm cưới tân thời</span>. Hệ thống khởi tạo thiệp cưới thông minh giúp bạn tự tay thiết kế những mẫu thiệp điện tử độc bản.
               </p>
             </div>
 

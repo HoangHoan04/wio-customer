@@ -1,7 +1,5 @@
-import {
-  default as flowerBottom,
-  default as flowerTop,
-} from "@/assets/decorations/boho-floral-green/flower.webp";
+import flowerBottom from "@/assets/decorations/boho-floral-green/flower.webp";
+import flowerTop from "@/assets/decorations/boho-floral-green/flower.webp";
 import { WelcomeIcon } from "@/assets/icons";
 import type { ThemeTemplateConfig } from "@/dto/theme.dto";
 import { useState } from "react";
@@ -79,7 +77,7 @@ export const Welcome = ({
         }}
       >
         <img
-          src={flowerTop}
+          src={flowerTop.src}
           alt=""
           aria-hidden="true"
           style={{
@@ -95,7 +93,7 @@ export const Welcome = ({
         />
 
         <img
-          src={flowerBottom}
+          src={flowerBottom.src}
           alt=""
           aria-hidden="true"
           style={{

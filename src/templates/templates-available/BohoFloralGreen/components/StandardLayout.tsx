@@ -22,7 +22,7 @@ export const StandardLayout = ({ data, config, isEnvelopeOpen, toggleAudio, isPl
     <div className={`transition-opacity duration-1000 ${isEnvelopeOpen ? "opacity-100" : "opacity-0 h-0 overflow-hidden"}`}>
       <HeroImages data={data} config={config} />
       <div className="flex justify-center w-full my-8">
-        <img src={dividerImg} alt="divider" className="w-full max-w-md opacity-80" />
+        <img src={dividerImg.src} alt="divider" className="w-full max-w-md opacity-80" />
       </div>
 
       <FamilyInfo data={data} config={config} />

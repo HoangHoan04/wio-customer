@@ -10,7 +10,7 @@ export const Timeline = ({ data, config }: { data?: any; config: ThemeTemplateCo
       style={{ backgroundColor: config.colors.background }}
     >
       <img
-        src={bohoFloralBrown}
+        src={bohoFloralBrown.src}
         alt="decor"
         className="absolute left-0 top-1/2 -translate-y-1/2 w-48 md:w-64 opacity-20 pointer-events-none -translate-x-16 select-none z-0"
       />

@@ -255,7 +255,7 @@ export default function HomePage() {
                 className="tct-hero-text-2 text-[clamp(2.2rem,5vw,3.8rem)] font-bold leading-tight mb-4"
                 style={{ opacity: 0 }}
               >
-                <span className="tct-shimmer-text">Tiệm Cưới Tân Thời</span>
+                <span className="tct-shimmer-text">Tiệm cưới tân thời</span>
               </h1>
               <p
                 className="tct-hero-text-3 text-[clamp(1rem,1.5vw,1.25rem)] italic text-[#c9a98a] max-w-[600px]"
@@ -457,7 +457,7 @@ export default function HomePage() {
               ngày trọng đại ấy. ❞
             </p>
             <p className="text-xs tracking-[3px] text-[#d4af37] uppercase">
-              — Tiệm Cưới Tân Thời —
+              — Tiệm cưới tân thời —
             </p>
           </div>
         </ScrollReveal>

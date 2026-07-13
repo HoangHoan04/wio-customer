@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "concurrently \"next dev\" \"wait-on http://localhost:3000 && node scripts/open-browser.js\"",
+    "dev": "concurrently \"next dev -p 2504\" \"wait-on http://localhost:2504 && node scripts/open-browser.js http://localhost:2504\"",
     "build": "next build",
-    "start": "concurrently \"next start\" \"wait-on http://localhost:3000 && node scripts/open-browser.js\"",
+    "start": "concurrently \"next start -p 2504\" \"wait-on http://localhost:2504 && node scripts/open-browser.js http://localhost:2504\"",
     "lint": "next lint"
   },
   "dependencies": {

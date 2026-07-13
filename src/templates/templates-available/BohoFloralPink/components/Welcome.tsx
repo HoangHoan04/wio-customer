@@ -77,7 +77,7 @@ export const Welcome = ({
         }}
       >
         <img
-          src={flowerTop}
+          src={flowerTop.src}
           alt=""
           aria-hidden="true"
           style={{
@@ -93,7 +93,7 @@ export const Welcome = ({
         />
 
         <img
-          src={flowerBottom}
+          src={flowerBottom.src}
           alt=""
           aria-hidden="true"
           style={{

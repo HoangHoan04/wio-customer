@@ -33,7 +33,7 @@ const faqs = [
     a: "Vui lòng kiểm tra trong phần Cài đặt thiệp xem bạn đã thêm form xác nhận tham dự (RSVP) chưa. Nếu đã thêm mà vẫn gặp lỗi, hãy gửi đường link thiệp cho chúng tôi.",
   },
   {
-    q: "Tiệm Cưới Tân Thời có nhận thiết kế riêng theo yêu cầu không?",
+    q: "Tiệm cưới tân thời có nhận thiết kế riêng theo yêu cầu không?",
     a: "Hiện tại chúng tôi tập trung phát triển kho mẫu có sẵn đa dạng để người dùng tự do tùy chỉnh. Với các nhu cầu hợp tác, vui lòng liên hệ qua các kênh phía trên.",
   },
 ];
@@ -48,7 +48,7 @@ export default function ContactPage() {
           </span>
         </h1>
         <p className="text-base md:text-lg mb-16 opacity-90 text-[#c9a98a]">
-          Kết nối với <span className="text-[#f5c842]">Tiệm Cưới Tân Thời</span>{" "}
+          Kết nối với <span className="text-[#f5c842]">Tiệm cưới tân thời</span>{" "}
           qua các kênh mạng xã hội và email bên dưới.
         </p>
 
@@ -56,6 +56,9 @@ export default function ContactPage() {
           {socialChannels.map((ch, idx) => (
             <div
               key={idx}
+              role="button"
+              tabIndex={0}
+              aria-label={`Liên hệ qua ${ch.name}`}
               className="flex flex-col items-center justify-center rounded-2xl p-6 transition-all duration-300 cursor-pointer group bg-[#1a0a0f] border border-[#d4af37]/40 hover:border-[#d4af37] hover:translate-y-[-4px]"
             >
               <div className="w-10 h-10 rounded-full bg-[#d4af37]/10 flex items-center justify-center text-[#d4af37] text-lg mb-3 group-hover:bg-[#d4af37] group-hover:text-[#1a0a0f] transition-all">

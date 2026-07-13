@@ -82,7 +82,7 @@ export const Welcome = ({
         }}
       >
         <img
-          src={dragonStandingImg}
+          src={dragonStandingImg.src}
           alt=""
           aria-hidden="true"
           style={{
@@ -98,7 +98,7 @@ export const Welcome = ({
           }}
         />
         <img
-          src={phoenixImg}
+          src={phoenixImg.src}
           alt=""
           aria-hidden="true"
           style={{
@@ -114,7 +114,7 @@ export const Welcome = ({
           }}
         />
         <img
-          src={dragonLeftImg}
+          src={dragonLeftImg.src}
           alt=""
           aria-hidden="true"
           style={{
@@ -129,7 +129,7 @@ export const Welcome = ({
           }}
         />
         <img
-          src={dragonRightImg}
+          src={dragonRightImg.src}
           alt=""
           aria-hidden="true"
           style={{
@@ -144,7 +144,7 @@ export const Welcome = ({
           }}
         />
         <img
-          src={chineseHappiness}
+          src={chineseHappiness.src}
           alt=""
           aria-hidden="true"
           style={{
@@ -160,7 +160,7 @@ export const Welcome = ({
         />
 
         <img
-          src={cloudSmall}
+          src={cloudSmall.src}
           alt=""
           aria-hidden="true"
           style={{
