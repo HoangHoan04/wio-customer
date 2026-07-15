@@ -72,6 +72,15 @@ class TokenCache {
   isAuthenticated() {
     return !!this.cache.accessToken;
   }
+  updateAccessToken(accessToken: string): void {
+    this.cache.accessToken = accessToken;
+    sessionStorage.setItem(STORAGE_KEYS.ACCESS_TOKEN, accessToken);
+  }
+  updateTokens(accessToken: string, refreshToken: string): void {
+    this.updateAccessToken(accessToken);
+    this.cache.refreshToken = refreshToken;
+    sessionStorage.setItem(STORAGE_KEYS.REFRESH_TOKEN, refreshToken);
+  }
 }
 
 export const tokenCache = new TokenCache();

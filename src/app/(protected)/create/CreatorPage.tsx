@@ -4,14 +4,11 @@ import { YoutubeIcon } from "@/assets/icons";
 import { formatDate, formatTime } from "@/common/helpers";
 import { PUBLIC_ROUTES } from "@/common/routes";
 import { getTemplateSchema } from "@/common/templateSchema";
-import LoginModal from "@/components/auth/LoginModal";
-import FileUpload from "@/components/common/FileUpload";
+import AuthModal from "@/components/auth/AuthModal";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Modal from "@/components/ui/Modal";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
   Select,
   SelectContent,
@@ -20,8 +17,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Spinner } from "@/components/ui/spinner";
-import Switch from "@/components/ui/switch";
-import { Textarea } from "@/components/ui/textarea";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/useToast";
 import { musicBackgroundService } from "@/services/music-background.service";
 import { templateService } from "@/services/template.service";
@@ -32,35 +28,30 @@ import {
   Check,
   ExternalLink,
   Laptop,
-  Music,
   Pause,
   Play,
-  Plus,
   RefreshCw,
   Search,
   Share2,
   Smartphone,
   Tablet as TabletIcon,
-  Trash2,
 } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-
-// Section imports
-import { BasicInfoSection } from "./sections/BasicInfoSection";
-import { HeroImageSection } from "./sections/HeroImageSection";
-import { FamilyInfoSection } from "./sections/FamilyInfoSection";
-import { IntroSection } from "./sections/IntroSection";
-import { EventsSection } from "./sections/EventsSection";
-import { GallerySection } from "./sections/GallerySection";
-import { PartySection } from "./sections/PartySection";
-import { DressCodeSection } from "./sections/DressCodeSection";
-import { TimelineSection } from "./sections/TimelineSection";
-import { RsvpSection } from "./sections/RsvpSection";
-import { GuestbookSection } from "./sections/GuestbookSection";
 import { BankSection } from "./sections/BankSection";
-import { ThankYouSection } from "./sections/ThankYouSection";
+import { BasicInfoSection } from "./sections/BasicInfoSection";
+import { DressCodeSection } from "./sections/DressCodeSection";
+import { EventsSection } from "./sections/EventsSection";
+import { FamilyInfoSection } from "./sections/FamilyInfoSection";
+import { GallerySection } from "./sections/GallerySection";
+import { GuestbookSection } from "./sections/GuestbookSection";
+import { HeroImageSection } from "./sections/HeroImageSection";
+import { IntroSection } from "./sections/IntroSection";
 import { MusicSection } from "./sections/MusicSection";
+import { PartySection } from "./sections/PartySection";
+import { RsvpSection } from "./sections/RsvpSection";
+import { ThankYouSection } from "./sections/ThankYouSection";
+import { TimelineSection } from "./sections/TimelineSection";
 
 const DEVICES = [
   {
@@ -218,15 +209,15 @@ export default function CreatorPage() {
   const [loadedThemeCode, setLoadedThemeCode] = useState("");
   const activeThemeCode = themeCode || loadedThemeCode;
 
-
-
   const templateCode = resolveThemeKey(activeThemeCode || "");
   const templateSchema = getTemplateSchema(templateCode);
 
   const [showBankModal, setShowBankModal] = useState(false);
-  const [activeBankTab, setActiveBankTab] = useState<"groom" | "bride">("groom");
+  const [activeBankTab, setActiveBankTab] = useState<"groom" | "bride">(
+    "groom",
+  );
   const [templateId, setTemplateId] = useState<string>("");
-  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
   const [isPublishing, setIsPublishing] = useState(false);
   const [isLoadingData, setIsLoadingData] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
@@ -287,6 +278,7 @@ export default function CreatorPage() {
   const [tempMapUrl, setTempMapUrl] = useState("");
 
   const [selectedDeviceId, setSelectedDeviceId] = useState("iphone-14-pro");
+  const [deviceType, setDeviceType] = useState("mobile");
   const [containerSize, setContainerSize] = useState({
     width: 800,
     height: 600,
@@ -577,19 +569,13 @@ export default function CreatorPage() {
 
   const handleAudioPlay = () => {
     if (iframeRef.current?.contentWindow) {
-      iframeRef.current.contentWindow.postMessage(
-        { type: "PAUSE_MUSIC" },
-        "*",
-      );
+      iframeRef.current.contentWindow.postMessage({ type: "PAUSE_MUSIC" }, "*");
     }
   };
 
   const handleAudioPause = () => {
     if (iframeRef.current?.contentWindow) {
-      iframeRef.current.contentWindow.postMessage(
-        { type: "PLAY_MUSIC" },
-        "*",
-      );
+      iframeRef.current.contentWindow.postMessage({ type: "PLAY_MUSIC" }, "*");
     }
   };
 
@@ -813,7 +799,7 @@ export default function CreatorPage() {
         message: "Bạn cần đăng nhập để lưu thiệp cưới.",
         type: "info",
       });
-      setShowLoginModal(true);
+      setShowAuthModal(true);
       return;
     }
     setIsPublishing(true);
@@ -972,16 +958,13 @@ export default function CreatorPage() {
             handleChange={handleChange}
             handleNestedChange={handleNestedChange}
             templateSchema={templateSchema}
-            onAuthRequired={() => setShowLoginModal(true)}
+            onAuthRequired={() => setShowAuthModal(true)}
           />
           <FamilyInfoSection
             formData={formData}
             handleNestedChange={handleNestedChange}
           />
-          <IntroSection
-            formData={formData}
-            handleChange={handleChange}
-          />
+          <IntroSection formData={formData} handleChange={handleChange} />
           <EventsSection
             formData={formData}
             addEvent={addEvent}
@@ -991,7 +974,7 @@ export default function CreatorPage() {
           <GallerySection
             formData={formData}
             handleChange={handleChange}
-            onAuthRequired={() => setShowLoginModal(true)}
+            onAuthRequired={() => setShowAuthModal(true)}
           />
           <PartySection
             formData={formData}
@@ -1013,22 +996,13 @@ export default function CreatorPage() {
             removeTimeline={removeTimeline}
             updateTimeline={updateTimeline}
           />
-          <RsvpSection
-            formData={formData}
-            handleChange={handleChange}
-          />
-          <GuestbookSection
-            formData={formData}
-            handleChange={handleChange}
-          />
+          <RsvpSection formData={formData} handleChange={handleChange} />
+          <GuestbookSection formData={formData} handleChange={handleChange} />
           <BankSection
             formData={formData}
             onOpenBankModal={() => setShowBankModal(true)}
           />
-          <ThankYouSection
-            formData={formData}
-            handleChange={handleChange}
-          />
+          <ThankYouSection formData={formData} handleChange={handleChange} />
           <MusicSection
             formData={formData}
             handleChange={handleChange}
@@ -1059,39 +1033,48 @@ export default function CreatorPage() {
 
       <div className="w-full md:w-1/2 h-full flex flex-col bg-[#050304] overflow-hidden select-none relative">
         <div className="h-14 border-b border-[#d4af37]/20 bg-[#0f0608] px-6 flex items-center justify-between gap-4 z-10 shrink-0">
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setSelectedDeviceId("iphone-14-pro")}
-              className={`p-2 rounded-lg border transition-all flex items-center gap-1.5 text-xs font-medium ${selectedDevice.type === "mobile" ? "bg-[#d4af37]/10 border-[#d4af37] text-[#f5c842]" : "bg-white/3 border-transparent text-[#f5e6d3]/60"}`}
-            >
-              <Smartphone size={14} />
-              Mobile
-            </button>
-            <button
-              onClick={() => setSelectedDeviceId("ipad-mini")}
-              className={`p-2 rounded-lg border transition-all flex items-center gap-1.5 text-xs font-medium ${selectedDevice.type === "tablet" ? "bg-[#d4af37]/10 border-[#d4af37] text-[#f5c842]" : "bg-white/3 border-transparent text-[#f5e6d3]/60"}`}
-            >
-              <TabletIcon size={14} />
-              Tablet
-            </button>
-            <button
-              onClick={() => setSelectedDeviceId("laptop-14")}
-              className={`p-2 rounded-lg border transition-all flex items-center gap-1.5 text-xs font-medium ${selectedDevice.type === "desktop" ? "bg-[#d4af37]/10 border-[#d4af37] text-[#f5c842]" : "bg-white/3 border-transparent text-[#f5e6d3]/60"}`}
-            >
-              <Laptop size={14} />
-              Desktop
-            </button>
-          </div>
+          <Tabs
+            value={deviceType}
+            onValueChange={(val) => {
+              setDeviceType(val);
+              const firstDevice = DEVICES.find((d) => d.type === val);
+              if (firstDevice) setSelectedDeviceId(firstDevice.id);
+            }}
+          >
+            <TabsList className="bg-transparent gap-2">
+              <TabsTrigger
+                value="mobile"
+                className="flex-none p-2 rounded-lg border transition-all flex items-center gap-1.5 text-xs font-medium data-active:bg-[#d4af37]/10 data-active:border-[#d4af37] data-active:text-[#f5c842] bg-white/3 border-transparent text-[#f5e6d3]/60"
+              >
+                <Smartphone size={14} />
+                Mobile
+              </TabsTrigger>
+              <TabsTrigger
+                value="tablet"
+                className="flex-none p-2 rounded-lg border transition-all flex items-center gap-1.5 text-xs font-medium data-active:bg-[#d4af37]/10 data-active:border-[#d4af37] data-active:text-[#f5c842] bg-white/3 border-transparent text-[#f5e6d3]/60"
+              >
+                <TabletIcon size={14} />
+                Tablet
+              </TabsTrigger>
+              <TabsTrigger
+                value="desktop"
+                className="flex-none p-2 rounded-lg border transition-all flex items-center gap-1.5 text-xs font-medium data-active:bg-[#d4af37]/10 data-active:border-[#d4af37] data-active:text-[#f5c842] bg-white/3 border-transparent text-[#f5e6d3]/60"
+              >
+                <Laptop size={14} />
+                Desktop
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
           <div className="flex items-center gap-3">
             <Select
               value={selectedDeviceId}
               onValueChange={(val) => val && setSelectedDeviceId(val)}
             >
-              <SelectTrigger className="bg-[#1a1012] border-[#d4af37]/30 text-xs text-[#f5c842] px-2 py-1.5">
+              <SelectTrigger className="bg-[#1a1012] border-[#d4af37]/30 text-xs text-[#f5c842] px-2 py-1.5 min-w-64">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent className="bg-[#1a1012] border-[#d4af37]/30 text-[#f5c842]">
-                {DEVICES.map((d) => (
+                {DEVICES.filter((d) => d.type === deviceType).map((d) => (
                   <SelectItem key={d.id} value={d.id}>
                     {d.name} ({d.width}x{d.height})
                   </SelectItem>
@@ -1272,10 +1255,10 @@ export default function CreatorPage() {
         </div>
       </Modal>
 
-      <LoginModal
-        isOpen={showLoginModal}
+      <AuthModal
+        isOpen={showAuthModal}
         onClose={() => {
-          setShowLoginModal(false);
+          setShowAuthModal(false);
           if (!tokenCache.isAuthenticated()) router.push("/templates");
         }}
       />

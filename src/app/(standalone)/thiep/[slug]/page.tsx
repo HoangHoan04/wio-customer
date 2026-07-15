@@ -2,8 +2,8 @@
 
 import { weddingService } from "@/services/wedding.service";
 import { getThemeComponent } from "@/templates/templates-available";
-import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export default function WeddingPublicPage() {
   const params = useParams();
@@ -80,7 +80,9 @@ export default function WeddingPublicPage() {
             .map((p: any) => p.url),
           showParty: data.showParty ?? true,
           partyType: data.partyType || "wedding",
-          partyDate: data.ceremonyAt ? new Date(data.ceremonyAt).toISOString().split("T")[0] : "",
+          partyDate: data.ceremonyAt
+            ? new Date(data.ceremonyAt).toISOString().split("T")[0]
+            : "",
           partyWelcomeTime: data.receptionWelcomeTime || "17:30",
           partyStartTime: data.ceremonyAt
             ? new Date(data.ceremonyAt).toLocaleTimeString("vi-VN", {

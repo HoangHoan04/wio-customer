@@ -46,6 +46,8 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+  --font-cormorant: "Cormorant Garamond", serif;
+
 }
 
 :root {
@@ -126,18 +128,22 @@
     scrollbar-width: thin;
     scrollbar-color: rgba(212, 175, 55, 0.35) transparent;
   }
-  body::-webkit-scrollbar, html::-webkit-scrollbar {
+  body::-webkit-scrollbar,
+  html::-webkit-scrollbar {
     width: 6px;
     height: 6px;
   }
-  body::-webkit-scrollbar-track, html::-webkit-scrollbar-track {
+  body::-webkit-scrollbar-track,
+  html::-webkit-scrollbar-track {
     background: transparent;
   }
-  body::-webkit-scrollbar-thumb, html::-webkit-scrollbar-thumb {
+  body::-webkit-scrollbar-thumb,
+  html::-webkit-scrollbar-thumb {
     background: rgba(212, 175, 55, 0.35);
     border-radius: 9999px;
   }
-  body::-webkit-scrollbar-thumb:hover, html::-webkit-scrollbar-thumb:hover {
+  body::-webkit-scrollbar-thumb:hover,
+  html::-webkit-scrollbar-thumb:hover {
     background: rgba(212, 175, 55, 0.65);
   }
   html {

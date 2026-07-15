@@ -6,11 +6,11 @@ import {
   TiktokIcon,
   YoutubeIcon,
 } from "@/assets/icons";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Clock, Mail, MapPin, Phone } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 
 const SOCIAL_LINKS = [
   {

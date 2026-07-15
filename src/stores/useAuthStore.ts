@@ -20,6 +20,7 @@ interface AuthState {
   updateUser: (user: User) => void;
   clearAuth: () => void;
   setLoading: (isLoading: boolean) => void;
+  updateTokens: (accessToken: string, refreshToken: string) => void;
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
@@ -47,4 +48,8 @@ export const useAuthStore = create<AuthState>((set) => ({
     set({ user: null, isAuthenticated: false });
   },
   setLoading: (isLoading) => set({ isLoading }),
+  updateTokens: (accessToken, refreshToken) => {
+    tokenCache.updateTokens(accessToken, refreshToken);
+    document.cookie = `token=${accessToken}; path=/; max-age=86400; SameSite=Lax`;
+  },
 }));

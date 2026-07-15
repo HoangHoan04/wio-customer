@@ -1,7 +1,6 @@
 "use client";
 
-import LoginModal from "@/components/auth/LoginModal";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,24 +9,38 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useAuthStore } from "@/stores/useAuthStore";
-import { useRouter, useSearchParams } from "next/navigation";
+import { UserIcon } from "lucide-react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import AuthModal from "../auth/AuthModal";
 
 type AppHeaderProps = { isScrolled?: boolean };
 
 export default function AppHeader({ isScrolled = false }: AppHeaderProps) {
   const router = useRouter();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
   const { user, isAuthenticated, clearAuth } = useAuthStore();
   const [showUserMenu, setShowUserMenu] = useState(false);
-  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
   const [activeMenu, setActiveMenu] = useState("/");
   const [hoveredMenu, setHoveredMenu] = useState<string | null>(null);
   const userMenuRef = useRef<HTMLDivElement>(null);
   const hoverTimeoutRef = useRef<number | null>(null);
 
+  const userAvatarUrl = user?.customer?.avatar;
   const displayName = user?.customer?.fullName || user?.fullName;
-  const avatarLabel = (displayName?.[0] || "U").toUpperCase();
+  const avatarLabel = displayName?.[0] ? (
+    displayName[0].toUpperCase()
+  ) : (
+    <UserIcon className="w-3.5 h-3.5" />
+  );
+
+  useEffect(() => {
+    if (pathname) {
+      setActiveMenu(pathname);
+    }
+  }, [pathname]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -46,7 +59,7 @@ export default function AppHeader({ isScrolled = false }: AppHeaderProps) {
 
   useEffect(() => {
     if (searchParams.get("login") === "true") {
-      setShowLoginModal(true);
+      setShowAuthModal(true);
     }
   }, [searchParams]);
 
@@ -79,7 +92,7 @@ export default function AppHeader({ isScrolled = false }: AppHeaderProps) {
     if (isAuthenticated) {
       setShowUserMenu((v) => !v);
     } else {
-      setShowLoginModal(true);
+      setShowAuthModal(true);
     }
   };
 
@@ -92,47 +105,79 @@ export default function AppHeader({ isScrolled = false }: AppHeaderProps) {
   return (
     <>
       <style>{`
-        @keyframes logoShimmer {
-          0%   { text-shadow: 2px 4px 12px rgba(212,175,55,0.4); }
-          50%  { text-shadow: 2px 4px 24px rgba(245,200,66,0.7), 0 0 40px rgba(212,175,55,0.3); }
-          100% { text-shadow: 2px 4px 12px rgba(212,175,55,0.4); }
+        @keyframes luxuryShimmer {
+          0% { background-position: -200% center; }
+          100% { background-position: 200% center; }
+        }
+        .luxury-logo-shimmer {
+          background: linear-gradient(90deg, #d4af37 0%, #fff9e6 25%, #f5c842 50%, #fff9e6 75%, #d4af37 100%);
+          background-size: 200% auto;
+          color: transparent;
+          -webkit-background-clip: text;
+          background-clip: text;
+          animation: luxuryShimmer 6s linear infinite;
         }
       `}</style>
 
       <header
         className={`
-          fixed z-50 overflow-visible transition-all duration-350 ease-in-out
-          left-8 right-8 xl:left-30 xl:right-30
-          ${isScrolled ? "top-0 rounded-b-[14px] shadow-[0_8px_32px_#1a0a0f/50,0_2px_8px_#d4af37/15]" : "top-5 rounded-[14px] shadow-[0_4px_24px_#1a0a0f/35]"}
+          fixed z-50 overflow-visible transition-all duration-500 ease-in-out
+          left-6 right-6 xl:left-24 xl:right-24
+          ${isScrolled ? "top-0 rounded-b-2xl shadow-[0_15px_40px_rgba(15,6,8,0.7)]" : "top-6 rounded-2xl shadow-[0_8px_30px_rgba(0,0,0,0.4)]"}
         `}
       >
         <div
-          className={`w-full h-0.5 bg-[linear-gradient(90deg,transparent,#d4af37,#f5c842,#d4af37,transparent)] ${isScrolled ? "" : "rounded-t-[14px]"}`}
+          className={`w-full h-px bg-linear-to-r from-transparent via-[#d4af37]/60 to-transparent ${isScrolled ? "" : "rounded-t-2xl"}`}
         />
 
         <div
           className={`
-            border-l border-r border-b border-[#d4af37]/20
-            ${isScrolled ? "backdrop-blur-lg bg-[#1a0a0f]/96 rounded-b-[14px]" : "backdrop-blur-md bg-[#1a0a0f]/88 rounded-[14px]"}
+            border-l border-r border-b border-[#d4af37]/15 transition-all duration-500
+            ${isScrolled ? "backdrop-blur-xl bg-[#13070b]/92 rounded-b-2xl" : "backdrop-blur-lg bg-[#1a0a0f]/80 rounded-2xl"}
           `}
         >
-          <div className="max-w-7xl mx-auto px-6">
+          <div className="max-w-7xl mx-auto px-8">
             <div className="flex items-center justify-between h-20 gap-4">
               <div
-                className="flex items-center gap-2.5 cursor-pointer"
+                className="flex items-center gap-4 cursor-pointer group select-none"
                 onClick={() => router.push("/")}
                 role="link"
                 aria-label="Trang chủ Tiệm cưới tân thời"
               >
-                <span className="text-[clamp(1.3rem,3vw,1.8rem)] font-bold text-[#f5c842] whitespace-nowrap logo-shimmer">
-                  Tiệm cưới tân thời
-                </span>
+                <div className="relative w-11 h-11 shrink-0 flex items-center justify-center">
+                  <div className="absolute inset-0 rounded-full border border-[#d4af37]/30 transition-all duration-700 group-hover:scale-105 group-hover:border-[#d4af37]/60" />
+                  <div className="absolute inset-1 rounded-full border border-dashed border-[#d4af37]/20 transition-all duration-1000 group-hover:rotate-90 group-hover:border-[#d4af37]/40" />
+
+                  <span
+                    className="text-lg font-light text-[#f5c842] relative z-10 transition-transform duration-500 group-hover:scale-110"
+                    style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                  >
+                    T
+                  </span>
+                  <span
+                    className="text-[10px] font-light text-[#d4af37]/60 absolute z-10 translate-x-1.5 translate-y-1.5 transition-transform duration-500 group-hover:scale-110"
+                    style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                  >
+                    t
+                  </span>
+                </div>
+
+                <div className="flex flex-col justify-center text-left">
+                  <span
+                    className="text-3xl font-bold italic tracking-wide text-white leading-none luxury-logo-shimmer select-none"
+                    style={{
+                      fontFamily: "'Cormorant Garamond', serif",
+                      textShadow: "0 0 15px rgba(255, 255, 255, 0.1)",
+                    }}
+                  >
+                    Tiệm Cưới Tân Thời
+                  </span>
+                </div>
               </div>
 
-              <nav className="hidden lg:flex items-center gap-5">
+              <nav className="hidden lg:flex items-center gap-8">
                 {navItems.map((item) => {
                   const isActive = activeMenu === item.path;
-                  const isHovered = hoveredMenu === item.path;
                   return (
                     <div
                       key={item.path}
@@ -142,18 +187,24 @@ export default function AppHeader({ isScrolled = false }: AppHeaderProps) {
                     >
                       <button
                         onClick={() => handleNavClick(item.path)}
-                        className={`flex items-center gap-1 px-3 py-2 bg-transparent border-none cursor-pointer text-sm tracking-[0.5px] relative transition-colors duration-200 whitespace-nowrap
-                          ${isActive ? "font-bold text-[#f5c842]" : "font-medium text-[#f5e6d3] hover:text-[#f5c842]"}
+                        className={`flex items-center px-2 py-2 bg-transparent  border-none cursor-pointer text-sm tracking-[0.15em] uppercase transition-all duration-300 whitespace-nowrap
+                          ${isActive ? "font-semibold text-[#f5c842]" : "font-normal text-[#f5e6d3]/80 hover:text-[#f5c842]"}
                         `}
                         style={{
-                          position: "relative",
+                          fontFamily: "'Cormorant Garamond', serif",
+                          textShadow: "0 0 15px rgba(255, 255, 255, 0.1)",
                         }}
                       >
-                        <span>{item.label}</span>
-                        <span
-                          className={`absolute bottom-0 left-0 right-0 h-0.5 bg-linear-to-r from-[#d4af37] to-[#f5c842] rounded-sm transition-transform duration-300 origin-left ${isActive ? "scale-x-100" : "scale-x-0"}`}
-                        />
+                        {item.label}
                       </button>
+
+                      <span
+                        className={`absolute bottom-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-[#f5c842] to-transparent rounded-full transition-transform duration-500 origin-center ${
+                          isActive || hoveredMenu === item.path
+                            ? "scale-x-100"
+                            : "scale-x-0"
+                        }`}
+                      />
                     </div>
                   );
                 })}
@@ -167,68 +218,74 @@ export default function AppHeader({ isScrolled = false }: AppHeaderProps) {
                   {isAuthenticated ? (
                     <DropdownMenu>
                       <DropdownMenuTrigger
-                        render={
-                          <div
-                            className="flex items-center gap-2 cursor-pointer py-1 pr-2 pl-1 rounded-3xl border border-[#d4af37]/30 transition-all duration-200 bg-[#d4af37]/5 hover:border-[#d4af37]"
-                            role="button"
-                            aria-label="Menu người dùng"
-                          />
-                        }
+                        className="flex items-center gap-2.5 cursor-pointer py-1 px-3.5 rounded-full border border-[#d4af37]/25 transition-all duration-300 bg-[#d4af37]/5 hover:bg-[#d4af37]/10 hover:border-[#d4af37]/50"
+                        aria-label="Menu người dùng"
                       >
-                        <Avatar className="w-7.5 h-7.5 bg-linear-to-br from-[#d4af37] to-[#f5c842] flex items-center justify-center shrink-0">
-                          <AvatarFallback className="bg-transparent text-[#1a0a0f] font-extrabold text-[13px]">
-                            {avatarLabel}
-                          </AvatarFallback>
-                        </Avatar>
-                        <span className="hidden sm:block text-[13px] text-[#f5e6d3] max-w-22.5 overflow-hidden text-ellipsis whitespace-nowrap">
-                          {displayName}
+                        <span
+                          className="flex items-center gap-2.5"
+                          onClick={handleUserClick}
+                        >
+                          <Avatar className="w-7 h-7 border border-[#d4af37]/35 rounded-full flex items-center justify-center shrink-0 overflow-hidden">
+                            <AvatarImage
+                              src={userAvatarUrl}
+                              alt={displayName}
+                              className="object-cover w-full h-full"
+                            />
+                            <AvatarFallback className="bg-linear-to-br from-[#221019] to-[#0f0608] text-[#f5c842] font-semibold text-[11px] w-full h-full flex items-center justify-center">
+                              {avatarLabel}
+                            </AvatarFallback>
+                          </Avatar>
+                          <span className="hidden md:block text-[12px] tracking-wider text-[#f5e6d3]/90 max-w-25 overflow-hidden text-ellipsis whitespace-nowrap font-light">
+                            {displayName}
+                          </span>
                         </span>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent
                         align="end"
-                        className="border border-[#d4af37]/30 rounded-[10px] min-w-52.5 overflow-hidden shadow-[0_12px_40px_#1a0a0f/60] bg-[#1a0a0f] text-[#f5e6d3]"
+                        className="border border-[#d4af37]/20 rounded-xl min-w-56 overflow-hidden shadow-[0_15px_50px_rgba(15,6,8,0.9)] bg-[#13070b]/98 text-[#f5e6d3] backdrop-blur-xl mt-2 p-1.5"
                       >
-                        <div className="px-4 py-2 text-white font-bold text-sm">
-                          {displayName}
+                        <div className="px-4 py-3 text-white">
+                          <p className="font-medium text-xs text-[#c9a98a] tracking-widest uppercase mb-0.5">
+                            Tài khoản
+                          </p>
+                          <p className="font-semibold text-sm text-[#f5c842] truncate">
+                            {displayName}
+                          </p>
                         </div>
-                        <DropdownMenuSeparator className="bg-[#d4af37]/10 mx-3" />
+                        <DropdownMenuSeparator className="bg-[#d4af37]/10 mx-2" />
                         <DropdownMenuItem
                           onClick={() => router.push("/my-templates")}
-                          className="px-4 py-2 text-[#f5e6d3] text-[13px] cursor-pointer hover:bg-[#d4af37]/8 hover:text-[#f5c842] transition-all focus:bg-[#d4af37]/8 focus:text-[#f5c842]"
+                          className="px-4 py-2.5 text-[#f5e6d3]/90 text-[12px] tracking-wide rounded-lg cursor-pointer hover:bg-[#d4af37]/10 hover:text-[#f5c842] transition-all focus:bg-[#d4af37]/10 focus:text-[#f5c842]"
                         >
                           Thiệp của tôi
                         </DropdownMenuItem>
                         <DropdownMenuItem
                           onClick={() => router.push("/profile")}
-                          className="px-4 py-2 text-[#f5e6d3] text-[13px] cursor-pointer hover:bg-[#d4af37]/8 hover:text-[#f5c842] transition-all focus:bg-[#d4af37]/8 focus:text-[#f5c842]"
+                          className="px-4 py-2.5 text-[#f5e6d3]/90 text-[12px] tracking-wide rounded-lg cursor-pointer hover:bg-[#d4af37]/10 hover:text-[#f5c842] transition-all focus:bg-[#d4af37]/10 focus:text-[#f5c842]"
                         >
-                          Thông tin tài khoản
+                          Thông tin cá nhân
                         </DropdownMenuItem>
-                        <DropdownMenuSeparator className="bg-[#d4af37]/10 mx-3" />
+                        <DropdownMenuSeparator className="bg-[#d4af37]/10 mx-2" />
                         <DropdownMenuItem
                           onClick={handleLogout}
-                          className="px-4 py-2 text-[#f5e6d3] text-[13px] cursor-pointer hover:bg-red-500/10 hover:text-red-400 transition-all focus:bg-red-500/10 focus:text-red-400"
+                          className="px-4 py-2.5 text-red-400/90 text-[12px] tracking-wide rounded-lg cursor-pointer hover:bg-red-500/10 hover:text-red-400 transition-all focus:bg-red-500/10 focus:text-red-400"
                         >
-                          Đăng xuất
+                          Đăng xuất tài khoản
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
                   ) : (
-                    <div
-                      className="flex items-center gap-2 cursor-pointer py-1 pr-2 pl-1 rounded-3xl border border-[#d4af37]/30 transition-all duration-200 bg-[#d4af37]/5 hover:border-[#d4af37]"
+                    <button
+                      className="flex items-center gap-2 cursor-pointer py-1.5 px-4 rounded-full border border-[#d4af37]/35 transition-all duration-300 bg-linear-to-r from-[#d4af37]/10 to-transparent hover:from-[#d4af37]/20 hover:border-[#d4af37]/60"
                       onClick={handleUserClick}
                       role="button"
                       aria-label="Đăng nhập"
                     >
-                      <Avatar className="w-7.5 h-7.5 bg-linear-to-br from-[#d4af37] to-[#f5c842] flex items-center justify-center shrink-0">
-                        <AvatarFallback className="bg-transparent text-[#1a0a0f] font-extrabold text-[13px]">
-                          {avatarLabel}
-                        </AvatarFallback>
-                      </Avatar>
-                      <span className="hidden sm:block text-[13px] text-[#f5e6d3] max-w-22.5 overflow-hidden text-ellipsis whitespace-nowrap">
-                        {displayName}
+                      <UserIcon className="w-3.5 h-3.5 text-[#d4af37]" />
+                      <span className="text-[11px] tracking-widest uppercase font-semibold text-[#d4af37]">
+                        Đăng Nhập
                       </span>
-                    </div>
+                    </button>
                   )}
                 </div>
               </div>
@@ -236,12 +293,14 @@ export default function AppHeader({ isScrolled = false }: AppHeaderProps) {
           </div>
         </div>
 
-        <div className="w-full h-[1.5px] bg-[linear-gradient(90deg,transparent,#d4af37,#f5c842,#d4af37,transparent)] rounded-b-[14px]" />
+        <div className="w-full h-px bg-linear-to-r from-transparent via-[#d4af37]/40 to-transparent rounded-b-2xl" />
       </header>
 
-      <LoginModal
-        isOpen={showLoginModal}
-        onClose={() => setShowLoginModal(false)}
+      <AuthModal
+        isOpen={showAuthModal}
+        onClose={() => {
+          setShowAuthModal(false);
+        }}
       />
     </>
   );

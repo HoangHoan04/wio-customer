@@ -29,7 +29,7 @@ export default function IPhoneMockup({
   children,
   size = "medium",
 }: IPhoneMockupProps) {
-  const [currentTime, setCurrentTime] = useState<string>("11:19");
+  const [currentTime, setCurrentTime] = useState<string>("14:30");
 
   useEffect(() => {
     const updateTime = () => {
@@ -50,9 +50,9 @@ export default function IPhoneMockup({
   };
 
   const buttonSizes = {
-    small: { gap: "1.5", height: "26px", power: "42px" },
-    medium: { gap: "1.5", height: "30px", power: "50px" },
-    large: { gap: "2", height: "35px", power: "60px" },
+    small: { gap: 1.5, height: "26px", power: "42px" },
+    medium: { gap: 1.5, height: "30px", power: "50px" },
+    large: { gap: 2, height: "35px", power: "60px" },
   };
 
   const sizeConfig = dimensions[size];
@@ -121,11 +121,11 @@ export default function IPhoneMockup({
         />
 
         <div
-          className="absolute rounded-[30px] overflow-hidden"
+          className="absolute rounded-[30px] overflow-hidden bg-black"
           style={{ top: "5px", left: "5px", right: "5px", bottom: "5px" }}
         >
           <div
-            className="relative z-10 flex justify-between items-center font-semibold"
+            className="absolute top-0 left-0 right-0 z-30 flex justify-between items-center font-semibold pointer-events-none select-none"
             style={{
               padding: "12px 14px 7px",
               fontSize: "8px",
@@ -133,8 +133,8 @@ export default function IPhoneMockup({
               fontFamily: "sans-serif",
             }}
           >
-            <span>{currentTime} Viettel</span>
-            <div className="flex items-center gap-0.75">
+            <span>{currentTime}</span>
+            <div className="flex items-center gap-1">
               <div
                 className="flex items-end gap-px"
                 style={{ width: "10px", height: "7px" }}
@@ -144,7 +144,7 @@ export default function IPhoneMockup({
                     key={i}
                     className="rounded-[0.5px]"
                     style={{
-                      width: "2px",
+                      width: "1.8px",
                       height: `${h}px`,
                       background: "rgba(255,255,255,0.9)",
                       opacity: i === 3 ? 0.35 : 1,
@@ -152,15 +152,15 @@ export default function IPhoneMockup({
                   />
                 ))}
               </div>
-              <svg width="12" height="9" viewBox="0 0 16 12" fill="none">
+              <svg width="10" height="7" viewBox="0 0 16 12" fill="none">
                 <path
                   d="M1 4a10 10 0 0114 0M3.5 6.5a6.5 6.5 0 019 0M6 9a3 3 0 014 0"
                   stroke="rgba(255,255,255,0.9)"
-                  strokeWidth="1.2"
+                  strokeWidth="1.5"
                   strokeLinecap="round"
                 />
               </svg>
-              <svg width="18" height="9" viewBox="0 0 18 9" fill="none">
+              <svg width="14" height="7" viewBox="0 0 18 9" fill="none">
                 <rect
                   x="0.5"
                   y="0.5"
@@ -185,8 +185,9 @@ export default function IPhoneMockup({
               </svg>
             </div>
           </div>
+
           <div
-            className="absolute rounded-lg z-10"
+            className="absolute rounded-full z-40 pointer-events-none"
             style={{
               top: "9px",
               left: "50%",
@@ -200,9 +201,9 @@ export default function IPhoneMockup({
           />
 
           <div
-            className="tct-screen-in w-full h-full flex flex-col overflow-hidden"
+            className="tct-screen-in w-full h-full flex flex-col overflow-hidden relative z-20 pt-7"
             style={{
-              opacity: 0,
+              opacity: 1,
               background:
                 "linear-gradient(170deg, #1a0a0e 0%, #2d1018 40%, #1a0a0e 100%)",
             }}

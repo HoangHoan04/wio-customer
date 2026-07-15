@@ -1,152 +1,214 @@
 "use client";
 
-import { Award, Heart, Sparkles, Users } from "lucide-react";
+import ScrollReveal from "@/components/home/ScrollReveal";
+import { ArrowRight, Award, Heart, Sparkles, Users } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useRef } from "react";
 
-const features = [
+const FEATURES = [
   {
     icon: Heart,
-    title: "Thiết kế tinh tế",
-    desc: "Các mẫu thiệp cưới được thiết kế bởi đội ngũ chuyên nghiệp, kết hợp giữa phong cách hiện đại và truyền thống.",
+    title: "Tuyệt tác mỹ thuật",
+    subtitle: "AESTHETIC ESSENCE",
+    desc: "Mỗi mẫu thiết kế là kết quả của sự chắt lọc tinh tế từ xu hướng tối giản phương Tây hòa quyện cùng nét kiêu sa truyền thống Á Đông.",
   },
   {
     icon: Sparkles,
-    title: "Cá nhân hóa hoàn toàn",
-    desc: "Tùy chỉnh mọi chi tiết từ màu sắc, font chữ, hình ảnh đến nội dung để phù hợp với phong cách đám cưới của bạn.",
+    title: "Cá nhân hóa tối đa",
+    subtitle: "BESPOKE CONFIGURATION",
+    desc: "Thay đổi toàn bộ giao diện từ màu sắc chủ đạo, hệ thống font chữ, nhạc nền du dương đến hiệu ứng chuyển động bóc bao thư sống động.",
   },
   {
     icon: Users,
-    title: "Quản lý khách mời",
-    desc: "Theo dõi danh sách khách mời, xác nhận tham dự, và quản lý lời chúc một cách dễ dàng trên nền tảng.",
+    title: "Vận hành thông minh",
+    subtitle: "SMART DIGITAL MANAGEMENT",
+    desc: "Hệ thống tự động hóa phản hồi tham dự (RSVP), tích hợp mừng cưới tinh tế, giúp bạn thảnh thơi tận hưởng trọn vẹn ngày vui.",
   },
   {
     icon: Award,
-    title: "Uy tín & Chuyên nghiệp",
-    desc: "Đã phục vụ hơn 10,000 cặp đôi với tỷ lệ hài lòng 99%. Đội ngũ hỗ trợ 24/7 luôn sẵn sàng giúp đỡ.",
+    title: "Đồng hành tận tụy",
+    subtitle: "ROYAL PATRONAGE",
+    desc: "Hân hạnh đồng hành cùng hàng ngàn đôi uyên ương với sự chăm sóc chu đáo nhất từ đội ngũ hỗ trợ kỹ thuật số 24/7.",
   },
 ];
 
-const stats = [
-  { number: "10,000+", label: "Cặp đôi tin dùng" },
-  { number: "50+", label: "Mẫu thiệp đa dạng" },
-  { number: "99%", label: "Khách hàng hài lòng" },
-  { number: "24/7", label: "Hỗ trợ nhanh chóng" },
+const STATS = [
+  { number: "10k+", label: "Cặp đôi tin dùng", subtitle: "HAPPY COUPLES" },
+  {
+    number: "50+",
+    label: "Tuyệt tác thiệp cưới",
+    subtitle: "EXCLUSIVE TEMPLATES",
+  },
+  { number: "99%", label: "Tỷ lệ hài lòng", subtitle: "SATISFACTION RATE" },
+  { number: "24/7", label: "Hỗ trợ tận tâm", subtitle: "LIVE ASSISTANCE" },
 ];
 
 export default function AboutPage() {
-  const sectionRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting)
-            entry.target.classList.add("animate-fadeIn");
-        });
-      },
-      { threshold: 0.1 },
-    );
-    sectionRef.current
-      ?.querySelectorAll(".fade-item")
-      .forEach((el) => observer.observe(el));
-    return () => observer.disconnect();
-  }, []);
-
   return (
-    <div className="min-h-screen bg-[#1a0a0f] text-[#f5e6d3]">
-      <style>{`
-        @keyframes shimmer { 0% { background-position: 100% center; } 100% { background-position: -100% center; } }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        .animate-fadeIn { animation: fadeIn 0.6s ease-out forwards; }
-      `}</style>
+    <div className="min-h-screen pt-35 bg-[#0f0608] text-[#f5e6d3] overflow-x-hidden relative">
+      <div className="absolute top-[10%] left-1/4 w-150 h-150 bg-[radial-gradient(circle,rgba(212,175,55,0.03)_0%,transparent_70%)] pointer-events-none" />
+      <div className="absolute bottom-[30%] right-1/4 w-125 h-125 bg-[radial-gradient(circle,rgba(180,20,50,0.02)_0%,transparent_70%)] pointer-events-none" />
 
-      <section className="relative overflow-hidden pt-[140px] px-6">
-        <div className="relative max-w-4xl mx-auto text-center">
-          <h1
-            className="text-5xl md:text-6xl font-bold mb-6 bg-linear-to-r from-[#d4af37] via-[#f5c842] to-[#d4af37] bg-clip-text text-transparent"
-            style={{
-              backgroundSize: "200% auto",
-              animation: "shimmer 3s linear infinite",
-            }}
-          >
-            Về Chúng Tôi
-          </h1>
-          <p className="text-lg md:text-xl text-[#c9a98a] leading-relaxed">
-            Chúng tôi tạo ra những thiệp cưới trực tuyến độc đáo, giúp bạn chia
-            sẻ niềm hạnh phúc của mình với bạn bè và người thân một cách hiện
-            đại và tiện lợi nhất.
-          </p>
-        </div>
-      </section>
-
-      <section className="py-20 px-6">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-[#d4af37] mb-4">
-              Sứ Mệnh Của Chúng Tôi
-            </h2>
-            <p className="text-[#c9a98a] max-w-2xl mx-auto">
-              Mang đến trải nghiệm thiệp cưới trực tuyến tuyệt vời nhất, kết nối
-              yêu thương và hạnh phúc trong ngày trọng đại của bạn.
+      <section className="relative px-6 pb-16 text-center">
+        <div className="max-w-4xl mx-auto">
+          <ScrollReveal>
+            <p className="text-xs tracking-[6px] uppercase text-[#d4af37] mb-4 font-semibold font-cormorant">
+              Câu chuyện tân thời
             </p>
-          </div>
-          <div ref={sectionRef} className="grid md:grid-cols-2 gap-8">
-            {features.map((f, i) => (
-              <div
-                key={i}
-                className="fade-item opacity-0 group p-6 rounded-xl bg-[#221019] border border-[rgba(212,175,55,0.2)] hover:border-[#d4af37] transition-all duration-300 hover:scale-105"
-              >
-                <div className="flex items-start gap-4">
-                  <div className="p-3 rounded-lg bg-[rgba(212,175,55,0.15)] text-[#d4af37] group-hover:bg-[#d4af37] group-hover:text-[#1a0a0f] transition-all duration-300">
-                    <f.icon size={24} />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="text-xl font-semibold text-[#f5c842] mb-2">
-                      {f.title}
-                    </h3>
-                    <p className="text-[#c9a98a] leading-relaxed">{f.desc}</p>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
+            <h1 className="text-[clamp(2.2rem,5vw,3.8rem)] font-light font-cormorant mb-6 leading-tight text-[#d4af37]">
+              <span className="tct-shimmer-text italic block">
+                Nơi khởi đầu của hành trình vĩnh cửu
+              </span>
+            </h1>
+            <p
+              className="text-[clamp(1.1rem,1.8vw,1.35rem)] italic text-[#c9a98a] max-w-3xl mx-auto leading-relaxed mb-6"
+              style={{ fontFamily: "'Cormorant Garamond', serif" }}
+            >
+              &ldquo;Một cánh thư mời tinh tế không chỉ mang theo thông tin tiệc
+              cưới, mà còn là lời gửi gắm trân trọng đầu tiên của đôi uyên ương
+              đến những người thương mến.&rdquo;
+            </p>
+            <div className="w-12 h-px bg-[#d4af37]/40 mx-auto mt-8" />
+          </ScrollReveal>
         </div>
       </section>
 
-      <section className="py-20 px-6">
+      <section className="py-20 px-6 relative z-10 border-t border-[#d4af37]/10">
         <div className="max-w-6xl mx-auto">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {stats.map((s, i) => (
+          <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.4fr] gap-12 items-center">
+            <ScrollReveal>
               <div
-                key={i}
-                className="text-center p-6 rounded-xl bg-[rgba(212,175,55,0.05)] border border-[rgba(212,175,55,0.15)] hover:border-[#d4af37] transition-all duration-300"
+                className="p-10 rounded-2xl border text-left relative overflow-hidden"
+                style={{
+                  background:
+                    "linear-gradient(180deg, #1d0b12 0%, #0d0407 100%)",
+                  borderColor: "rgba(212, 175, 55, 0.15)",
+                }}
               >
-                <div className="text-4xl md:text-5xl font-bold text-[#d4af37] mb-2">
-                  {s.number}
-                </div>
-                <div className="text-sm text-[#c9a98a]">{s.label}</div>
+                <span
+                  className="text-[120px] font-serif font-extralight text-[#d4af37]/2 absolute -right-6 -top-12 select-none pointer-events-none"
+                  style={{ fontFamily: "'Playfair Display', serif" }}
+                >
+                  M
+                </span>
+                <p className="text-[10px] tracking-[4px] uppercase text-[#d4af37] font-semibold mb-3">
+                  Sứ mệnh của tiệm
+                </p>
+                <h2
+                  className="text-2xl font-light text-white mb-6"
+                  style={{ fontFamily: "'Playfair Display', serif" }}
+                >
+                  Kết nối yêu thương bằng công nghệ tinh xảo
+                </h2>
+                <p className="text-[13px] text-[#c9a98a]/80 leading-relaxed font-light">
+                  Chúng tôi sinh ra để định nghĩa lại khái niệm thiệp cưới trực
+                  tuyến. Không còn là những đường liên kết khô khan, mỗi tác
+                  phẩm tại Tiệm Cưới Tân Thời là một trải nghiệm chạm sâu sắc
+                  vào giác quan người nhận, giúp ngày vui của bạn lưu giữ dấu ấn
+                  hoàn mỹ nhất.
+                </p>
               </div>
+            </ScrollReveal>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              {FEATURES.map((f, i) => {
+                const IconComp = f.icon;
+                return (
+                  <ScrollReveal key={i}>
+                    <div
+                      className="group relative h-full flex flex-col p-6 rounded-2xl border transition-all duration-500 hover:-translate-y-1 overflow-hidden"
+                      style={{
+                        background:
+                          "linear-gradient(180deg, #160a0f 0%, #0d0407 100%)",
+                        borderColor: "rgba(212, 175, 55, 0.1)",
+                      }}
+                    >
+                      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(212,175,55,0.04)_0%,transparent_60%)] opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
+
+                      <div className="w-10 h-10 rounded-lg bg-[#221019] border border-[#d4af37]/25 flex items-center justify-center text-[#d4af37] mb-5 transition-all duration-500 group-hover:bg-[#d4af37] group-hover:text-black">
+                        <IconComp size={18} strokeWidth={1.5} />
+                      </div>
+
+                      <span className="text-[9px] tracking-[2px] text-[#c9a98a]/40 font-bold uppercase block mb-1">
+                        {f.subtitle}
+                      </span>
+                      <h3
+                        className="text-base font-medium text-white mb-2 group-hover:text-[#d4af37] transition-colors"
+                        style={{ fontFamily: "'Playfair Display', serif" }}
+                      >
+                        {f.title}
+                      </h3>
+                      <p className="text-[12px] text-[#c9a98a]/70 leading-relaxed font-light">
+                        {f.desc}
+                      </p>
+
+                      <div className="absolute inset-0 border border-[#d4af37]/0 rounded-2xl transition-all duration-500 group-hover:border-[#d4af37]/25 pointer-events-none" />
+                    </div>
+                  </ScrollReveal>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="py-24 px-6 border-t border-[#d4af37]/10 bg-[radial-gradient(circle_at_center,rgba(212,175,55,0.01)_0%,transparent_100%)]">
+        <div className="max-w-6xl mx-auto">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-4">
+            {STATS.map((s, i) => (
+              <ScrollReveal key={i}>
+                <div className="text-center group p-6 relative">
+                  <span
+                    className="text-4xl md:text-5xl font-light tracking-tight text-[#f5c842] block mb-2"
+                    style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                  >
+                    {s.number}
+                  </span>
+                  <span className="text-[9px] tracking-[2px] text-[#c9a98a]/45 font-bold uppercase block mb-1">
+                    {s.subtitle}
+                  </span>
+                  <div className="text-[12.5px] text-white/90 font-light tracking-wide transition-colors group-hover:text-[#d4af37]">
+                    {s.label}
+                  </div>
+                  {i < STATS.length - 1 && (
+                    <div className="absolute right-0 top-1/2 -translate-y-1/2 w-px h-10 bg-linear-to-b from-transparent via-[#d4af37]/15 to-transparent hidden md:block" />
+                  )}
+                </div>
+              </ScrollReveal>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="py-20 px-6 bg-[#1a0a0f]">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-3xl md:text-4xl font-bold text-[#d4af37] mb-6">
-            Sẵn sàng tạo thiệp cưới của bạn?
-          </h2>
-          <p className="text-[#c9a98a] mb-8 text-lg">
-            Hãy để chúng tôi giúp bạn tạo ra một thiệp cưới độc đáo và ý nghĩa
-            cho ngày trọng đại của bạn.
-          </p>
-          <Link
-            href="/templates"
-            className="inline-block px-8 py-4 bg-linear-to-r from-[#d4af37] to-[#f5c842] text-[#1a0a0f] font-bold rounded-lg hover:opacity-90 transition-all duration-300 shadow-lg shadow-[rgba(212,175,55,0.3)]"
-          >
-            Bắt Đầu Ngay
-          </Link>
+      <section className="py-28 px-6 border-t border-b border-[#d4af37]/10 bg-[#0c0406] relative">
+        <div className="absolute inset-x-0 bottom-0 h-40 bg-linear-to-t from-[#1b0a11]/20 to-transparent pointer-events-none" />
+        <div className="max-w-4xl mx-auto text-center relative z-10">
+          <ScrollReveal>
+            <h2 className="text-[clamp(1.8rem,4vw,2.6rem)] font-light font-serif mb-6">
+              <span className="tct-shimmer-text italic block">
+                Sẵn sàng kiến tạo tuyệt tác của riêng bạn?
+              </span>
+            </h2>
+            <p className="text-sm text-[#c9a98a] max-w-[600px] mx-auto leading-relaxed mb-10 font-light">
+              Hãy để Tiệm Cưới Tân Thời giúp bạn chuyển hóa câu chuyện tình yêu
+              ngọt ngào thành một tác phẩm nghệ thuật số đầy kiêu hãnh dành tặng
+              bạn bè và người thương.
+            </p>
+            <Link
+              href="/templates"
+              className="group/btn inline-flex items-center gap-3 px-12 py-4 bg-linear-to-r from-[#d4af37] to-[#f5c842] text-[#0f0608] text-xs font-bold tracking-[0.2em] uppercase rounded-lg shadow-[0_10px_30px_rgba(212,175,55,0.15)] hover:shadow-[0_15px_40px_rgba(212,175,55,0.35)] hover:scale-102 transition-all duration-300 relative overflow-hidden"
+            >
+              {/* Ánh kim mờ chạy lướt qua nút khi hover */}
+              <div className="absolute inset-0 w-1/2 h-full bg-white/20 transform -skew-x-12 -translate-x-full group-hover/btn:animate-[shimmer_1s_ease-in-out]" />
+
+              <span className="relative z-10 flex items-center gap-2">
+                Bắt đầu hành trình
+                <ArrowRight
+                  size={14}
+                  className="transition-transform duration-300 group-hover/btn:translate-x-1.5"
+                />
+              </span>
+            </Link>
+          </ScrollReveal>
         </div>
       </section>
     </div>

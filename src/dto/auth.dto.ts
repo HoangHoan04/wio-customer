@@ -85,3 +85,34 @@ export interface UserInfoResponseDto {
   data: UserSessionDto;
   message?: string;
 }
+
+export interface CheckPhoneEmailReq {
+  email?: string;
+  phone?: string;
+}
+
+export interface CheckPhoneEmailRes {
+  message: string;
+}
+
+export interface VerifyEmailReq {
+  email: string;
+  otpCode: string;
+}
+
+export interface ResendVerificationReq {
+  email: string;
+}
+
+export interface CleanTokensRes {
+  message: string;
+  deletedCount: number;
+}
+
+export interface AuthState {
+  user: UserSessionDto | null;
+  accessToken: string | null;
+  refreshToken: string | null;
+  isAuthenticated: boolean;
+  isLoading: boolean;
+}

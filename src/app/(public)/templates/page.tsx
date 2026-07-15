@@ -23,7 +23,9 @@ export default function TemplatesPage() {
   const [filterType, setFilterType] = useState<"all" | "free" | "premium">(
     "all",
   );
-  const [selectedTemplate, setSelectedTemplate] = useState<ITemplate | null>(null);
+  const [selectedTemplate, setSelectedTemplate] = useState<ITemplate | null>(
+    null,
+  );
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
 
   useEffect(() => {
@@ -49,7 +51,7 @@ export default function TemplatesPage() {
 
   return (
     <div
-      className="min-h-screen pt-[140px] px-6 pb-20"
+      className="min-h-screen pt-35 px-6 pb-20"
       style={{ background: C.bg, color: C.cream }}
     >
       <style>{`
@@ -60,7 +62,7 @@ export default function TemplatesPage() {
         .template-card:hover .info { background: rgba(11,5,7,0.98); border-top-color: rgba(197,160,89,0.2); }
       `}</style>
 
-      <div className="text-center max-w-[700px] mx-auto mb-16">
+      <div className="text-center max-w-175 mx-auto mb-16">
         <h1
           className="text-[2.8rem] font-bold mb-5 uppercase tracking-wider"
           style={{
@@ -114,7 +116,7 @@ export default function TemplatesPage() {
           <div className="w-12 h-12 border-4 border-[#d4af37]/20 border-t-[#d4af37] rounded-full animate-spin" />
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10 max-w-[1200px] mx-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10 max-w-300 mx-auto">
           {filtered.map((tpl) => (
             <button
               key={tpl.id}
@@ -195,22 +197,21 @@ export default function TemplatesPage() {
         </div>
       )}
 
-      {/* Custom Create Section */}
       <div
-        className="max-w-[1200px] mx-auto mt-20 p-12 sm:p-16 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-8 relative overflow-hidden"
+        className="max-w-300 mx-auto mt-20 p-12 sm:p-16 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-8 relative overflow-hidden"
         style={{
           background: `linear-gradient(135deg, rgba(197,160,89,0.07) 0%, rgba(20,10,13,0.85) 55%, rgba(11,5,7,0.9) 100%)`,
           border: "1px solid rgba(197,160,89,0.22)",
         }}
       >
         <div
-          className="absolute right-[-60px] top-1/2 -translate-y-1/2 w-[400px] h-[400px] rounded-full pointer-events-none"
+          className="absolute -right-15 top-1/2 -translate-y-1/2 w-100 h-100 rounded-full pointer-events-none"
           style={{
             background:
               "radial-gradient(circle, rgba(197,160,89,0.1) 0%, transparent 65%)",
           }}
         />
-        <div className="absolute left-0 top-0 bottom-0 w-[3px] bg-gradient-to-b from-transparent via-[#c5a059] via-[#e5c483] to-transparent max-sm:w-auto max-sm:h-[3px] max-sm:inset-x-0 max-sm:top-0 max-sm:bottom-auto" />
+        <div className="absolute left-0 top-0 bottom-0 w-0.75 bg-linear-to-b from-transparent via-[#e5c483] to-transparent max-sm:w-auto max-sm:h-0.75 max-sm:inset-x-0 max-sm:top-0 max-sm:bottom-auto" />
         <div className="relative z-1 flex-1">
           <div
             className="inline-flex items-center gap-2.5 text-xs font-bold tracking-widest uppercase mb-4"
@@ -237,7 +238,7 @@ export default function TemplatesPage() {
             </span>
           </h2>
           <p
-            className="text-sm leading-relaxed font-light max-w-[500px]"
+            className="text-sm leading-relaxed font-light max-w-125"
             style={{ color: C.muted }}
           >
             Đừng bó hẹp trong khuôn mẫu có sẵn. Hãy bắt đầu từ trang trắng và tự
@@ -247,7 +248,7 @@ export default function TemplatesPage() {
         <div className="relative z-1 shrink-0">
           <Link
             href="/design"
-            className="inline-flex items-center gap-3 px-10 py-4.5 rounded-md text-sm font-bold uppercase tracking-wider shadow-lg transition-all hover:translate-y-[-4px] hover:shadow-xl"
+            className="inline-flex items-center gap-3 px-10 py-4.5 rounded-md text-sm font-bold uppercase tracking-wider shadow-lg transition-all hover:-translate-y-1 hover:shadow-xl"
             style={{
               background: `linear-gradient(135deg, ${C.goldLight} 0%, ${C.gold} 100%)`,
               color: C.bg,

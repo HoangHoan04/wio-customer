@@ -2,7 +2,7 @@
 
 import { getThemeComponent } from "@/templates/templates-available";
 import { ArrowLeftIcon } from "lucide-react";
-import { useRouter, useParams, useSearchParams } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 
 const mockWeddingData = {
@@ -39,9 +39,16 @@ const mockWeddingData = {
   },
   showHeroImage: true,
   showIntro: true,
-  introText: "Một câu chuyện tình yêu đẹp bắt đầu từ những điều giản dị nhất...",
+  introText:
+    "Một câu chuyện tình yêu đẹp bắt đầu từ những điều giản dị nhất...",
   events: [
-    { id: 1, title: "Lễ Gia Tiên", date: "2026-05-24", time: "09:00", address: "Tư gia nhà trai" },
+    {
+      id: 1,
+      title: "Lễ Gia Tiên",
+      date: "2026-05-24",
+      time: "09:00",
+      address: "Tư gia nhà trai",
+    },
   ],
   showParty: true,
   partyType: "wedding",
@@ -60,8 +67,18 @@ const mockWeddingData = {
   showTimeline: true,
   timelineTitle: "Lịch trình ngày cưới",
   timeline: [
-    { id: 1, time: "17:30", title: "Đón khách", description: "Cùng chụp những bức hình kỷ niệm" },
-    { id: 2, time: "18:30", title: "Khai tiệc", description: "Nghi lễ thành hôn và bắt đầu khai tiệc" },
+    {
+      id: 1,
+      time: "17:30",
+      title: "Đón khách",
+      description: "Cùng chụp những bức hình kỷ niệm",
+    },
+    {
+      id: 2,
+      time: "18:30",
+      title: "Khai tiệc",
+      description: "Nghi lễ thành hôn và bắt đầu khai tiệc",
+    },
   ],
   showRsvp: true,
   rsvpType: "button",
@@ -94,7 +111,9 @@ export default function PreviewPage() {
 
           if (newData.musicUrl && prevData?.musicUrl !== newData.musicUrl) {
             setTimeout(() => {
-              const audio = document.getElementById("bg-music") as HTMLAudioElement;
+              const audio = document.getElementById(
+                "bg-music",
+              ) as HTMLAudioElement;
               if (audio) {
                 audio.play().catch(() => {});
               }
@@ -137,7 +156,10 @@ export default function PreviewPage() {
     return <div>Mã theme không hợp lệ!</div>;
   }
 
-  const ThemeComponent = useMemo(() => getThemeComponent(themeCode), [themeCode]);
+  const ThemeComponent = useMemo(
+    () => getThemeComponent(themeCode),
+    [themeCode],
+  );
   const viewMode = searchParams.get("viewMode");
   const isHoverPreview = searchParams.get("hover") === "true";
   const isSimulatedTouch = viewMode === "mobile" || viewMode === "tablet";
@@ -176,7 +198,11 @@ export default function PreviewPage() {
         </button>
       )}
 
-      <ThemeComponent data={weddingData} isPreview={true} isHoverPreview={isHoverPreview} />
+      <ThemeComponent
+        data={weddingData}
+        isPreview={true}
+        isHoverPreview={isHoverPreview}
+      />
     </div>
   );
 }

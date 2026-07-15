@@ -13,6 +13,10 @@ export const API_ENDPOINTS = {
     ME: "/api/user/auth/me",
     CHANGE_PASSWORD: "/api/user/auth/change-password",
     UPDATE_PASSWORD: "/api/user/auth/update-password",
+    CHECK_PHONE_EMAIL: "/api/user/auth/check-phone-email",
+    VERIFY_EMAIL: "/api/user/auth/verify-email",
+    RESEND_VERIFICATION: "/api/user/auth/resend-verification",
+    CLEAN_TOKENS: "/api/user/auth/clean-tokens",
   },
   TEMPLATE: {
     PAGINATION: "/api/user/template/pagination",
