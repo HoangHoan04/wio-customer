@@ -188,7 +188,7 @@ export default function AboutPage() {
                 Sẵn sàng kiến tạo tuyệt tác của riêng bạn?
               </span>
             </h2>
-            <p className="text-sm text-[#c9a98a] max-w-[600px] mx-auto leading-relaxed mb-10 font-light">
+            <p className="text-sm text-[#c9a98a] max-w-150 mx-auto leading-relaxed mb-10 font-light">
               Hãy để Tiệm Cưới Tân Thời giúp bạn chuyển hóa câu chuyện tình yêu
               ngọt ngào thành một tác phẩm nghệ thuật số đầy kiêu hãnh dành tặng
               bạn bè và người thương.
@@ -197,7 +197,6 @@ export default function AboutPage() {
               href="/templates"
               className="group/btn inline-flex items-center gap-3 px-12 py-4 bg-linear-to-r from-[#d4af37] to-[#f5c842] text-[#0f0608] text-xs font-bold tracking-[0.2em] uppercase rounded-lg shadow-[0_10px_30px_rgba(212,175,55,0.15)] hover:shadow-[0_15px_40px_rgba(212,175,55,0.35)] hover:scale-102 transition-all duration-300 relative overflow-hidden"
             >
-              {/* Ánh kim mờ chạy lướt qua nút khi hover */}
               <div className="absolute inset-0 w-1/2 h-full bg-white/20 transform -skew-x-12 -translate-x-full group-hover/btn:animate-[shimmer_1s_ease-in-out]" />
 
               <span className="relative z-10 flex items-center gap-2">
