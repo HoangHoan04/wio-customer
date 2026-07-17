@@ -1,7 +1,15 @@
 "use client";
 
 import { YoutubeIcon } from "@/assets/icons";
-import { formatDate, formatTime } from "@/common/helpers";
+import {
+  formatDate,
+  formatDateISO,
+  formatTime,
+  formatTime2Digit,
+  sortAndMapEvents,
+  sortAndMapTimeline,
+} from "@/common/helpers";
+import { WeddingStatus } from "@/common/enum";
 import { PUBLIC_ROUTES } from "@/common/routes";
 import { getTemplateSchema } from "@/common/templateSchema";
 import AuthModal from "@/components/auth/AuthModal";
@@ -36,7 +44,7 @@ import {
   Smartphone,
   Tablet as TabletIcon,
 } from "lucide-react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { BankSection } from "./sections/BankSection";
 import { BasicInfoSection } from "./sections/BasicInfoSection";
@@ -205,6 +213,8 @@ export default function CreatorPage() {
   const themeCode = params.themeCode as string | undefined;
   const id = params.id as string | undefined;
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const templateIdFromUrl = searchParams.get("templateId");
   const { showToast } = useToast();
   const [loadedThemeCode, setLoadedThemeCode] = useState("");
   const activeThemeCode = themeCode || loadedThemeCode;
@@ -216,7 +226,7 @@ export default function CreatorPage() {
   const [activeBankTab, setActiveBankTab] = useState<"groom" | "bride">(
     "groom",
   );
-  const [templateId, setTemplateId] = useState<string>("");
+  const [templateId, setTemplateId] = useState<string>(templateIdFromUrl || "");
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [isPublishing, setIsPublishing] = useState(false);
   const [isLoadingData, setIsLoadingData] = useState(false);
@@ -224,6 +234,7 @@ export default function CreatorPage() {
   const [publishedUrl, setPublishedUrl] = useState("");
   const [showMusicModal, setShowMusicModal] = useState(false);
   const [previewMusicId, setPreviewMusicId] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<"edit" | "preview">("edit");
 
   const [musics, setMusics] = useState<any[]>([]);
   const [isAddingYoutube, setIsAddingYoutube] = useState(false);
@@ -378,6 +389,16 @@ export default function CreatorPage() {
     musicName: "",
   });
 
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
   useEffect(() => {
     const handleResize = () => {
       if (workspaceRef.current) {
@@ -432,9 +453,10 @@ export default function CreatorPage() {
       setFormData((prev) => ({ ...prev, slug: slugName }));
     }
 
-    if (activeThemeCode && tokenCache.isAuthenticated()) {
+    if (activeThemeCode) {
+      const targetCode = resolveThemeKey(activeThemeCode);
       templateService
-        .getTemplates({ where: { themeCode: templateCode } })
+        .getTemplates({ where: { themeCode: targetCode } })
         .then((res) => {
           if (res.data && res.data.length > 0) {
             setTemplateId(res.data[0].id);
@@ -654,7 +676,7 @@ export default function CreatorPage() {
           if (res?.data) {
             const w = res.data;
 
-            if (w.status === "published") {
+            if (w.status === WeddingStatus.PUBLISHED) {
               showToast({
                 title: "Không thể chỉnh sửa",
                 message: "Thiệp đã xuất bản không thể chỉnh sửa",
@@ -679,17 +701,9 @@ export default function CreatorPage() {
                   .map((p: any) => p.url) || [],
               showParty: w.showParty ?? true,
               partyType: w.partyType || "wedding",
-              partyDate: w.ceremonyAt
-                ? new Date(w.ceremonyAt).toISOString().split("T")[0]
-                : "",
+              partyDate: formatDateISO(w.ceremonyAt),
               partyWelcomeTime: w.receptionWelcomeTime || "10:30",
-              partyStartTime: w.ceremonyAt
-                ? new Date(w.ceremonyAt).toLocaleTimeString("vi-VN", {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                    hour12: false,
-                  })
-                : "11:30",
+              partyStartTime: formatTime2Digit(w.ceremonyAt, "11:30"),
               partyAddress: w.ceremonyAddress || "",
               partyMapUrl: w.ceremonyMapsUrl || "",
               showCountdown: w.showCountdown ?? true,
@@ -698,14 +712,7 @@ export default function CreatorPage() {
               dressCodes: w.dressCodes || [],
               showTimeline: w.showTimeline ?? true,
               timelineTitle: w.timelineTitle || "Lịch trình ngày cưới",
-              timeline:
-                w.timelines
-                  ?.sort((a: any, b: any) => a.sortOrder - b.sortOrder)
-                  .map((t: any) => ({
-                    id: t.id || Date.now().toString(),
-                    time: t.time || "",
-                    title: t.title || "",
-                  })) || [],
+              timeline: sortAndMapTimeline(w.timelines),
               showRsvp: w.showRsvp ?? true,
               rsvpType: w.rsvpType || "form",
               showGuestbook: w.showGuestbook ?? true,
@@ -716,16 +723,7 @@ export default function CreatorPage() {
               showMusic: !!w.musicUrl || true,
               musicUrl: w.musicUrl || "",
               musicName: w.musicName || "",
-              events:
-                w.events
-                  ?.sort((a: any, b: any) => a.sortOrder - b.sortOrder)
-                  .map((e: any) => ({
-                    id: e.id || Date.now().toString(),
-                    date: e.date || "",
-                    time: e.time || "",
-                    title: e.title || "",
-                    address: e.address || "",
-                  })) || [],
+              events: sortAndMapEvents(w.events),
               groom: {
                 name: w.groomName || "",
                 shortName: w.groomShortName || "",
@@ -802,6 +800,40 @@ export default function CreatorPage() {
       setShowAuthModal(true);
       return;
     }
+
+    if (!formData.groom.name.trim()) {
+      showToast({
+        title: "Thiếu thông tin",
+        message: "Vui lòng nhập tên Chú rể.",
+        type: "warning",
+      });
+      return;
+    }
+    if (!formData.bride.name.trim()) {
+      showToast({
+        title: "Thiếu thông tin",
+        message: "Vui lòng nhập tên Cô dâu.",
+        type: "warning",
+      });
+      return;
+    }
+    if (!formData.partyDate) {
+      showToast({
+        title: "Thiếu thông tin",
+        message: "Vui lòng chọn ngày tổ chức lễ cưới.",
+        type: "warning",
+      });
+      return;
+    }
+    if (!formData.partyAddress.trim()) {
+      showToast({
+        title: "Thiếu thông tin",
+        message: "Vui lòng nhập địa chỉ tổ chức lễ cưới.",
+        type: "warning",
+      });
+      return;
+    }
+
     setIsPublishing(true);
     try {
       const user = tokenCache.getUser();
@@ -936,10 +968,36 @@ export default function CreatorPage() {
 
   return (
     <div
-      className="flex h-screen w-full bg-[#0a0508] overflow-hidden"
+      className="flex flex-col md:flex-row h-screen w-full bg-[#0a0508] overflow-hidden"
       style={{ fontFamily: "Inter, sans-serif" }}
     >
-      <div className="w-full md:w-1/2 shrink-0 border-r border-[#d4af37]/25 flex flex-col h-full bg-[#0f0608]">
+      {/* Mobile Tab Switcher */}
+      <div className="md:hidden flex bg-[#0f0608] border-b border-[#d4af37]/20 p-2 shrink-0 z-30">
+        <button
+          onClick={() => setActiveTab("edit")}
+          className={`flex-1 py-2.5 text-xs font-bold rounded-lg transition-all cursor-pointer ${
+            activeTab === "edit"
+              ? "bg-[#d4af37] text-black shadow-md"
+              : "text-[#f5e6d3]/60 hover:text-white"
+          }`}
+        >
+          Chỉnh sửa nội dung
+        </button>
+        <button
+          onClick={() => setActiveTab("preview")}
+          className={`flex-1 py-2.5 text-xs font-bold rounded-lg transition-all cursor-pointer ${
+            activeTab === "preview"
+              ? "bg-[#d4af37] text-black shadow-md"
+              : "text-[#f5e6d3]/60 hover:text-white"
+          }`}
+        >
+          Xem trước giao diện
+        </button>
+      </div>
+
+      <div
+        className={`w-full md:w-1/2 shrink-0 border-r border-[#d4af37]/25 flex-col h-full bg-[#0f0608] ${activeTab === "edit" ? "flex" : "hidden md:flex"}`}
+      >
         <div className="p-4 border-b border-[#d4af37]/15 bg-white/2 flex justify-between items-center shrink-0">
           <h2 className="text-lg font-bold text-[#d4af37]">
             Trình tạo thiệp cưới
@@ -1012,7 +1070,7 @@ export default function CreatorPage() {
           />
         </div>
 
-        <div className="p-4 border-t border-[#d4af37]/20 bg-[#0a0508] flex gap-3 z-10 shrink-0">
+        <div className="md:flex p-4 border-t border-[#d4af37]/20 bg-[#0a0508] flex gap-3 z-10 shrink-0">
           <Button
             variant="outline"
             onClick={() => router.push("/templates")}
@@ -1031,8 +1089,10 @@ export default function CreatorPage() {
         </div>
       </div>
 
-      <div className="w-full md:w-1/2 h-full flex flex-col bg-[#050304] overflow-hidden select-none relative">
-        <div className="h-14 border-b border-[#d4af37]/20 bg-[#0f0608] px-6 flex items-center justify-between gap-4 z-10 shrink-0">
+      <div
+        className={`w-full md:w-1/2 h-full flex-col bg-[#050304] overflow-hidden select-none relative ${activeTab === "preview" ? "flex" : "hidden md:flex"}`}
+      >
+        <div className="hidden md:flex h-14 border-b border-[#d4af37]/20 bg-[#0f0608] px-6 items-center justify-between gap-4 z-10 shrink-0">
           <Tabs
             value={deviceType}
             onValueChange={(val) => {
@@ -1092,19 +1152,37 @@ export default function CreatorPage() {
 
         <div
           ref={workspaceRef}
-          className="flex-1 w-full flex items-center justify-center p-6 relative overflow-hidden"
+          className="flex-1 w-full flex items-center justify-center p-0 md:p-6 relative overflow-hidden"
         >
           <div
-            style={{
-              width: `${selectedDevice.width}px`,
-              height: `${selectedDevice.height}px`,
-              transform: `scale(${optimalScale})`,
-              transformOrigin: "center center",
-              transition: "all 0.4s",
-            }}
-            className={`shrink-0 relative bg-[#fdfbf7] flex flex-col shadow-[0_25px_60px_rgba(0,0,0,0.8)] overflow-hidden transition-all duration-300 ${selectedDevice.type === "mobile" ? "rounded-[40px] border-12 border-[#18181b]" : selectedDevice.type === "tablet" ? "rounded-3xl border-16 border-[#18181b]" : "rounded-lg border-8 border-[#27272a]"}`}
+            style={
+              isMobile
+                ? {
+                    width: "100%",
+                    height: "100%",
+                    transform: "none",
+                  }
+                : {
+                    width: `${selectedDevice.width}px`,
+                    height: `${selectedDevice.height}px`,
+                    transform: `scale(${optimalScale})`,
+                    transformOrigin: "center center",
+                    transition: "all 0.4s",
+                  }
+            }
+            className={`shrink-0 relative bg-[#fdfbf7] flex flex-col overflow-hidden transition-all duration-300 ${
+              isMobile
+                ? "w-full h-full border-none rounded-none shadow-none"
+                : `shadow-[0_25px_60px_rgba(0,0,0,0.8)] ${
+                    selectedDevice.type === "mobile"
+                      ? "rounded-[40px] border-12 border-[#18181b]"
+                      : selectedDevice.type === "tablet"
+                        ? "rounded-3xl border-16 border-[#18181b]"
+                        : "rounded-lg border-8 border-[#27272a]"
+                  }`
+            }`}
           >
-            {selectedDevice.type === "mobile" && (
+            {!isMobile && selectedDevice.type === "mobile" && (
               <div className="absolute top-0 left-0 right-0 h-7 bg-black z-20 flex justify-between items-center px-6 text-[10px] text-white/90 font-medium">
                 <span>09:41</span>
                 <div className="w-25 h-4 bg-black rounded-b-lg absolute left-1/2 -translate-x-1/2 top-0" />
@@ -1124,7 +1202,8 @@ export default function CreatorPage() {
                 width: "100%",
                 height: "100%",
                 border: "none",
-                paddingTop: selectedDevice.type === "mobile" ? "28px" : "0",
+                paddingTop:
+                  !isMobile && selectedDevice.type === "mobile" ? "28px" : "0",
               }}
               onLoad={sendDataToIframe}
             />
@@ -1441,6 +1520,25 @@ export default function CreatorPage() {
           )}
         </div>
       </Modal>
+
+      {/* Mobile Global Bottom Button Bar */}
+      <div className="md:hidden p-4 border-t border-[#d4af37]/20 bg-[#0a0508] flex gap-3 z-30 shrink-0">
+        <Button
+          variant="outline"
+          onClick={() => router.push("/templates")}
+          className="flex-1 py-3 text-xs bg-white/2! border-[#d4af37]/15! hover:bg-white/5 rounded-xl cursor-pointer"
+        >
+          Quay Lại
+        </Button>
+        <Button
+          variant="default"
+          onClick={handlePublish}
+          disabled={isPublishing}
+          className="flex-1 py-3 text-xs bg-linear-to-r from-[#d4af37] to-[#f5c842] text-[#0a0508] font-bold rounded-xl flex items-center justify-center gap-1.5 transition-transform cursor-pointer"
+        >
+          {isPublishing ? <Spinner /> : <Share2 size={14} />} Lưu & Xuất Bản
+        </Button>
+      </div>
     </div>
   );
 }

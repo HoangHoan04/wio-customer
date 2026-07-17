@@ -1,3 +1,9 @@
+export enum WeddingStatus {
+  DRAFT = 'draft',
+  PUBLISHED = 'published',
+  ARCHIVED = 'archived',
+}
+
 export const enumData = {
   THEME_CODE: {
     BOHO_FLORAL_BROWN: { code: "BOHO_FLORAL_BROWN", name: "Hoa mộc Lan - Nâu", slug: "hoa-moc-lan-nau" },
@@ -12,3 +18,4 @@ export const enumData = {
     RED_DOUBLE_HAPPINESS: { code: "RED_DOUBLE_HAPPINESS", name: "Song hỷ - Đỏ", slug: "song-hy-do" },
   },
 };
+

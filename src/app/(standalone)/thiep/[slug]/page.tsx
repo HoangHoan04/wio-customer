@@ -1,5 +1,11 @@
 "use client";
 
+import {
+  formatDateISO,
+  formatTime2Digit,
+  sortAndMapEvents,
+  sortAndMapTimeline,
+} from "@/common/helpers";
 import { weddingService } from "@/services/wedding.service";
 import { getThemeComponent } from "@/templates/templates-available";
 import { useParams } from "next/navigation";
@@ -64,15 +70,7 @@ export default function WeddingPublicPage() {
           heroImageMain: data.heroImageMain || "",
           showIntro: data.showIntro ?? true,
           introText: data.invitationText || "",
-          events: (data.events || [])
-            .sort((a: any, b: any) => a.sortOrder - b.sortOrder)
-            .map((e: any) => ({
-              id: e.id,
-              title: e.title || "",
-              date: e.date || "",
-              time: e.time || "",
-              address: e.address || "",
-            })),
+          events: sortAndMapEvents(data.events),
           showGallery: data.showGallery ?? true,
           galleryLayout: data.galleryLayout || "grid",
           gallery: (data.photos || [])
@@ -80,17 +78,9 @@ export default function WeddingPublicPage() {
             .map((p: any) => p.url),
           showParty: data.showParty ?? true,
           partyType: data.partyType || "wedding",
-          partyDate: data.ceremonyAt
-            ? new Date(data.ceremonyAt).toISOString().split("T")[0]
-            : "",
+          partyDate: formatDateISO(data.ceremonyAt),
           partyWelcomeTime: data.receptionWelcomeTime || "17:30",
-          partyStartTime: data.ceremonyAt
-            ? new Date(data.ceremonyAt).toLocaleTimeString("vi-VN", {
-                hour: "2-digit",
-                minute: "2-digit",
-                hour12: false,
-              })
-            : "18:30",
+          partyStartTime: formatTime2Digit(data.ceremonyAt, "18:30"),
           partyAddress: data.ceremonyAddress || "",
           partyMapUrl: data.ceremonyMapsUrl || "",
           showCountdown: data.showCountdown ?? true,
@@ -99,13 +89,7 @@ export default function WeddingPublicPage() {
           dressCodes: data.dressCodes || [],
           showTimeline: data.showTimeline ?? true,
           timelineTitle: data.timelineTitle || "Lịch trình ngày cưới",
-          timeline: (data.timelines || [])
-            .sort((a: any, b: any) => a.sortOrder - b.sortOrder)
-            .map((t: any) => ({
-              id: t.id,
-              time: t.time || "",
-              title: t.title || "",
-            })),
+          timeline: sortAndMapTimeline(data.timelines),
           showRsvp: data.showRsvp ?? true,
           rsvpType: data.rsvpType || "form",
           showGuestbook: data.showGuestbook ?? true,

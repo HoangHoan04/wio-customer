@@ -20,7 +20,7 @@ export default function RequireAuthLayout({
   return (
     <div
       className="w-full min-h-screen relative"
-      style={{ margin: 0, padding: 0, overflow: "hidden" }}
+      style={{ margin: 0, padding: 0, overflowX: "hidden" }}
     >
       {!hideHeaderFooter && <AppHeader />}
       <main

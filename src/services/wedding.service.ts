@@ -6,6 +6,10 @@ export const weddingService = {
     const response = await apiService.post(API_ENDPOINTS.WEDDING.CREATE, data);
     return response.data;
   },
+  getWeddings: async (params: any = {}): Promise<any> => {
+    const response = await apiService.post(API_ENDPOINTS.WEDDING.PAGINATION, params);
+    return response.data;
+  },
   updateWedding: async (id: string, data: any): Promise<any> => {
     const response = await apiService.post(API_ENDPOINTS.WEDDING.UPDATE, { id, ...data });
     return response.data;

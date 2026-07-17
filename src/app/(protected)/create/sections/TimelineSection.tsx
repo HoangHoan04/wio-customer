@@ -52,7 +52,7 @@ export const TimelineSection = ({
                 key={item.id}
                 className="flex items-center gap-3 bg-white/5 p-2 border border-white/10 rounded-lg"
               >
-                <div className="w-40 shrink-0">
+                <div className="w-28 sm:w-40 shrink-0">
                   <TimePicker
                     value={item.time}
                     onChange={(val) => updateTimeline(item.id, "time", val)}

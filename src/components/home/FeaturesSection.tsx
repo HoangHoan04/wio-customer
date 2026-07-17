@@ -159,8 +159,14 @@ export default function FeaturesSection() {
         </ScrollReveal>
 
         <div className="flex flex-col lg:flex-row items-stretch gap-12 lg:gap-20">
-          <div className="w-full lg:w-[42%] flex items-center justify-center lg:sticky lg:top-24 h-120 lg:h-145 self-start z-20">
-            <div className="relative w-65 h-130 transformStyle-3d transform rotateY(-6deg) rotateX(4deg) transition-transform duration-500">
+          <div className="hidden lg:flex lg:w-[42%] items-center justify-center lg:sticky lg:top-24 h-145 self-start z-20">
+            <div
+              className="relative w-65 h-130 transition-transform duration-500"
+              style={{
+                transformStyle: "preserve-3d",
+                transform: "rotateY(-6deg) rotateX(4deg)",
+              }}
+            >
               <div
                 className="absolute inset-0 rounded-[40px] p-1.5 shadow-[15px_25px_60px_rgba(0,0,0,0.8)]"
                 style={{
@@ -240,13 +246,20 @@ export default function FeaturesSection() {
                       <div
                         className={`transition-all duration-500 overflow-hidden ${
                           isActive
-                            ? "max-h-40 opacity-100 mt-3"
+                            ? "max-h-150 opacity-100 mt-3"
                             : "max-h-0 opacity-0"
                         }`}
                       >
-                        <p className="text-xs text-[#c9a98a] leading-relaxed">
+                        <p className="text-xs text-[#c9a98a] leading-relaxed mb-4">
                           {step.desc}
                         </p>
+                        <div className="lg:hidden w-full flex justify-center py-4">
+                          <div className="relative w-57.5 h-115 rounded-[30px] p-1 bg-black border-2 border-[#d4af37]/30 shadow-2xl overflow-hidden">
+                            <div className="w-full h-full rounded-[26px] overflow-hidden pt-4 bg-[#0d0407]">
+                              {step.mockupView}
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     </div>
 

@@ -130,3 +130,53 @@ export const capitalizeFirstLetter = (val: string): string => {
   if (!val) return "";
   return val.charAt(0).toUpperCase() + val.slice(1);
 };
+
+export const sortAndMapTimeline = (items: any[]): any[] => {
+  if (!items) return [];
+  return [...items]
+    .sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0))
+    .map((t) => ({
+      id: t.id || Date.now().toString(),
+      time: t.time || "",
+      title: t.title || "",
+    }));
+};
+
+export const sortAndMapEvents = (items: any[]): any[] => {
+  if (!items) return [];
+  return [...items]
+    .sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0))
+    .map((e) => ({
+      id: e.id || Date.now().toString(),
+      date: e.date || "",
+      time: e.time || "",
+      title: e.title || "",
+      address: e.address || "",
+    }));
+};
+
+export const formatTime2Digit = (dateStr?: string | Date, fallback: string = "11:30"): string => {
+  if (!dateStr) return fallback;
+  try {
+    const date = typeof dateStr === "string" ? new Date(dateStr) : dateStr;
+    if (isNaN(date.getTime())) return fallback;
+    return date.toLocaleTimeString("vi-VN", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    });
+  } catch {
+    return fallback;
+  }
+};
+
+export const formatDateISO = (dateStr?: string | Date): string => {
+  if (!dateStr) return "";
+  try {
+    const date = typeof dateStr === "string" ? new Date(dateStr) : dateStr;
+    if (isNaN(date.getTime())) return "";
+    return date.toISOString().split("T")[0];
+  } catch {
+    return "";
+  }
+};

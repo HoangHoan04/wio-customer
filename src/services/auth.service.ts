@@ -114,6 +114,13 @@ export const authService = {
     );
     return response.data;
   },
+  updateProfile: async (data: any): Promise<any> => {
+    const response = await apiService.post<any>(
+      API_ENDPOINTS.AUTH.UPDATE_PROFILE,
+      data,
+    );
+    return response.data;
+  },
 
   logout: async (refreshToken?: string): Promise<{ message: string }> => {
     const response = await apiService.post<{ message: string }>(

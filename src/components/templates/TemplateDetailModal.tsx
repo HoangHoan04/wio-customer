@@ -69,7 +69,7 @@ export default function TemplateDetailModal({
 
   const handleCreate = () => {
     onClose();
-    router.push(`/create/${template.slug}`);
+    router.push(`/create/${template.slug}?templateId=${template.id}`);
   };
 
   const handlePreview = () => {

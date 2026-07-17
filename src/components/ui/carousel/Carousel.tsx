@@ -134,7 +134,7 @@ export default function Carousel({
             key={side}
             onClick={side === "prev" ? handlePrev : handleNext}
             aria-label={side === "prev" ? "Previous" : "Next"}
-            className={`absolute ${side === "prev" ? "left-5" : "right-5"} top-1/2 z-200 flex h-14 w-14 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border-2 backdrop-blur-[10px] transition-all duration-300 hover:scale-110`}
+            className={`absolute ${side === "prev" ? "left-2 sm:left-5" : "right-2 sm:right-5"} top-1/2 z-200 flex h-10 w-10 sm:h-14 sm:w-14 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border-2 backdrop-blur-[10px] transition-all duration-300 hover:scale-110`}
             style={{
               borderColor: accent,
               background: hoveredBtn === side ? buttonHoverBg : buttonBg,

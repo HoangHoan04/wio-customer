@@ -50,9 +50,9 @@ themeList.forEach(({ component, code, slug }) => {
 ThemeRegistry.default = DefaultComponent;
 
 export function resolveThemeKey(key: string): string {
-  if (ThemeRegistry[key]) return key;
   const found = themeList.find((t) => t.slug === key || t.code === key);
-  return found ? found.code : key;
+  if (found) return found.code;
+  return key;
 }
 
 const ThemeFallback = () => (

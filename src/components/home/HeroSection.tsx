@@ -50,27 +50,35 @@ export default function HeroSection() {
         <Award size={60} color="#d4af37" />
       </div>
 
-      <div className="relative z-10 w-full px-4 sm:px-8 lg:px-16 py-12">
+      <div className="relative z-10 w-full px-4 sm:px-8 lg:px-16 pt-32 pb-12 lg:py-12">
         <div className="flex flex-col lg:flex-row items-center justify-between gap-12 max-w-7xl mx-auto">
           <div className="w-full lg:w-1/2 flex flex-col items-center text-center lg:text-left lg:items-start">
             <div
-              className="tct-hero-text inline-flex items-center gap-3 mb-7 text-[11px] tracking-[5px] uppercase text-[#d4af37]"
+              className="tct-hero-text inline-flex items-center gap-1.5 sm:gap-3 mb-6 sm:mb-7 text-[9px] sm:text-[11px] tracking-[2px] sm:tracking-[5px] uppercase text-[#d4af37] text-center"
               style={{ opacity: 1 }}
             >
-              <Heart size={16} className="text-[#d4af37]" fill="#d4af37" />
+              <Heart
+                size={12}
+                className="text-[#d4af37] shrink-0"
+                fill="#d4af37"
+              />
               <span>Nền tảng thiệp cưới thế hệ mới</span>
-              <Heart size={16} className="text-[#d4af37]" fill="#d4af37" />
+              <Heart
+                size={12}
+                className="text-[#d4af37] shrink-0"
+                fill="#d4af37"
+              />
             </div>
 
             <h1
-              className="tct-hero-text-2 text-[clamp(2.2rem,5vw,3.5rem)] font-bold leading-tight mb-4  "
+              className="tct-hero-text-2 text-[clamp(2rem,6vw,3.5rem)] font-bold leading-tight mb-4 text-center lg:text-left"
               style={{ opacity: 1 }}
             >
               <span className="tct-shimmer-text block">Tiệm Cưới Tân Thời</span>
             </h1>
 
             <p
-              className="tct-hero-text-3 text-[clamp(1rem,1.5vw,1.25rem)] italic text-[#c9a98a] max-w-150 mb-2"
+              className="tct-hero-text-3 text-[clamp(0.95rem,1.5vw,1.25rem)] italic text-[#c9a98a] max-w-150 mx-auto lg:mx-0 mb-3 text-center lg:text-left"
               style={{ opacity: 1 }}
             >
               Gửi trao lời mời tinh tế, tự động hóa danh sách khách mời (RSVP),
@@ -78,7 +86,7 @@ export default function HeroSection() {
             </p>
 
             <p
-              className="tct-hero-text-3 text-[clamp(0.9rem,1.2vw,1.1rem)] text-[#c9a98a]/70 max-w-150 mb-8"
+              className="tct-hero-text-3 text-[clamp(0.85rem,1.2vw,1.1rem)] text-[#c9a98a]/70 max-w-150 mx-auto lg:mx-0 mb-8 text-center lg:text-left"
               style={{ opacity: 1 }}
             >
               Tạo thiệp cưới online độc bản chỉ trong 5 phút với kho giao diện
@@ -86,27 +94,27 @@ export default function HeroSection() {
             </p>
 
             <div
-              className="tct-hero-text-3 flex gap-4 justify-center lg:justify-start flex-wrap"
+              className="tct-hero-text-3 flex flex-col sm:flex-row gap-4 justify-center lg:justify-start w-full sm:w-auto"
               style={{ opacity: 1 }}
             >
               <Link
                 href="/templates"
-                className="px-9 py-4 bg-linear-to-r from-[#d4af37] to-[#f5c842] text-[#0f0608] text-sm font-bold tracking-widest uppercase rounded-md shadow-lg hover:shadow-xl hover:scale-105 transition-all"
+                className="w-full sm:w-auto text-center px-9 py-4 bg-linear-to-r from-[#d4af37] to-[#f5c842] text-[#0f0608] text-sm font-bold tracking-widest uppercase rounded-md shadow-lg hover:shadow-xl hover:scale-105 transition-all"
               >
                 Thiết Kế Ngay
               </Link>
               <Link
                 href="/user-manual"
-                className="px-9 py-4 bg-transparent border-[1.5px] border-[#d4af37] text-[#d4af37] text-sm font-semibold tracking-widest uppercase rounded-md hover:bg-[rgba(212,175,55,0.1)] transition-all"
+                className="w-full sm:w-auto text-center px-9 py-4 bg-transparent border-[1.5px] border-[#d4af37] text-[#d4af37] text-sm font-semibold tracking-widest uppercase rounded-md hover:bg-[rgba(212,175,55,0.1)] transition-all"
               >
                 Xem Hướng Dẫn
               </Link>
             </div>
           </div>
 
-          <div className="w-full lg:w-1/2 flex items-center justify-center min-h-150">
+          <div className="w-full lg:w-1/2 flex items-center justify-center h-75 min-[375px]:h-95 min-[480px]:h-110 sm:h-120 lg:h-135 overflow-visible relative mt-8 lg:mt-0 z-20">
             <div
-              className="relative"
+              className="relative shrink-0 origin-center scale-[0.52] min-[375px]:scale-[0.68] min-[480px]:scale-[0.78] sm:scale-[0.88] lg:scale-100 transition-transform duration-300"
               style={{
                 width: "580px",
                 height: "540px",
@@ -116,7 +124,7 @@ export default function HeroSection() {
               <IPhoneMockup
                 className="tct-phone-left"
                 size="small"
-                position={{ left: "60px", top: "100px" }}
+                position={{ left: "40px", top: "100px" }}
                 transform="rotateY(25deg) rotateX(5deg) rotateZ(-8deg) translateZ(-60px)"
               >
                 <div
@@ -182,7 +190,7 @@ export default function HeroSection() {
               <IPhoneMockup
                 className="tct-phone-right"
                 size="small"
-                position={{ right: "10px", top: "100px" }}
+                position={{ right: "40px", top: "100px" }}
                 transform="rotateY(-25deg) rotateX(5deg) rotateZ(8deg) translateZ(-60px)"
               >
                 <div
@@ -241,7 +249,7 @@ export default function HeroSection() {
               <IPhoneMockup
                 className="tct-phone-center"
                 size="medium"
-                position={{ left: "50%", top: "50px", marginLeft: "-80px" }}
+                position={{ left: "50%", top: "50px", marginLeft: "-125px" }}
                 transform="rotateY(-5deg) rotateX(3deg) translateZ(40px)"
               >
                 <div

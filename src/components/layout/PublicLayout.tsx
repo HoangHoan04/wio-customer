@@ -24,7 +24,7 @@ export default function PublicLayout({
   return (
     <div
       className="w-full min-h-screen relative"
-      style={{ margin: 0, padding: 0, overflow: "hidden" }}
+      style={{ margin: 0, padding: 0, overflowX: "hidden" }}
     >
       <AppHeader isScrolled={isScrolled} />
       <main style={{ margin: 0, padding: 0 }}>{children}</main>

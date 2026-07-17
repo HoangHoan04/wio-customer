@@ -17,6 +17,7 @@ export const API_ENDPOINTS = {
     VERIFY_EMAIL: "/api/user/auth/verify-email",
     RESEND_VERIFICATION: "/api/user/auth/resend-verification",
     CLEAN_TOKENS: "/api/user/auth/clean-tokens",
+    UPDATE_PROFILE: "/api/user/auth/update-profile",
   },
   TEMPLATE: {
     PAGINATION: "/api/user/template/pagination",
@@ -27,6 +28,7 @@ export const API_ENDPOINTS = {
     PUBLISH: "/api/user/wedding/publish",
     FIND_BY_ID: "/api/user/wedding/find-by-id",
     FIND_BY_SLUG: "/api/user/wedding/public/find-by-slug",
+    PAGINATION: "/api/user/wedding/pagination",
   },
   UPLOAD_FILE: {
     IMAGE: "/api/upload/upload-file/upload-image",
