@@ -1,13 +1,22 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { weddingService } from "@/services/wedding.service";
+import { formatDateTime, WeddingStatus } from "@/common";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/useToast";
-import { Edit2, Eye, Copy, Plus, Heart, Calendar, MapPin, Sparkles } from "lucide-react";
+import { weddingService } from "@/services/wedding.service";
+import {
+  Calendar,
+  Copy,
+  Edit2,
+  Eye,
+  Heart,
+  MapPin,
+  Plus,
+  Sparkles,
+} from "lucide-react";
 import Link from "next/link";
-import { formatDateTime, WeddingStatus } from "@/common";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 const C = {
   bg: "#0b0507",
@@ -53,7 +62,10 @@ export default function MyTemplatesPage() {
       })
       .catch((err) => {
         console.error(err);
-        showToast({ message: "Không thể tải danh sách thiệp cưới", type: "error" });
+        showToast({
+          message: "Không thể tải danh sách thiệp cưới",
+          type: "error",
+        });
       })
       .finally(() => setLoading(false));
   }, []);
@@ -91,7 +103,7 @@ export default function MyTemplatesPage() {
         }
       `}</style>
 
-      <div className="max-w-[1200px] mx-auto w-full">
+      <div className="max-w-300 mx-auto w-full">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
           <div>
             <h1
@@ -106,7 +118,8 @@ export default function MyTemplatesPage() {
               Thiệp cưới của tôi
             </h1>
             <p className="text-sm font-light" style={{ color: C.muted }}>
-              Quản lý và chỉnh sửa danh sách thiệp cưới sang trọng của riêng bạn.
+              Quản lý và chỉnh sửa danh sách thiệp cưới sang trọng của riêng
+              bạn.
             </p>
           </div>
           <Link href="/templates">
@@ -126,24 +139,27 @@ export default function MyTemplatesPage() {
 
         {/* Dynamic Tabs */}
         <div className="flex justify-center gap-3 mb-10 border-b border-[#d4af37]/10 pb-6">
-          {([
-            { id: "all", label: "Tất cả" },
-            { id: "draft", label: "Bản nháp" },
-            { id: "published", label: "Đã xuất bản" },
-          ] as const).map((tab) => (
+          {(
+            [
+              { id: "all", label: "Tất cả" },
+              { id: "draft", label: "Bản nháp" },
+              { id: "published", label: "Đã xuất bản" },
+            ] as const
+          ).map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`px-6 py-2.5 text-xs font-semibold uppercase tracking-wider rounded-lg transition-all duration-300 cursor-pointer ${activeTab === tab.id
-                ? "text-[#0b0507]"
-                : "text-[#a38a75] border border-[rgba(197,160,89,0.15)] hover:border-[#c5a059] bg-transparent"
-                }`}
+              className={`px-6 py-2.5 text-xs font-semibold uppercase tracking-wider rounded-lg transition-all duration-300 cursor-pointer ${
+                activeTab === tab.id
+                  ? "text-[#0b0507]"
+                  : "text-[#a38a75] border border-[rgba(197,160,89,0.15)] hover:border-[#c5a059] bg-transparent"
+              }`}
               style={
                 activeTab === tab.id
                   ? {
-                    background: `linear-gradient(135deg, ${C.goldLight}, ${C.gold})`,
-                    boxShadow: "0 4px 12px rgba(197,160,89,0.25)",
-                  }
+                      background: `linear-gradient(135deg, ${C.goldLight}, ${C.gold})`,
+                      boxShadow: "0 4px 12px rgba(197,160,89,0.25)",
+                    }
                   : {}
               }
             >
@@ -165,16 +181,21 @@ export default function MyTemplatesPage() {
               <Heart size={40} strokeWidth={1.5} />
             </div>
             <div className="max-w-md">
-              <h3 className="text-lg font-semibold mb-2" style={{ fontFamily: "'Cinzel', serif" }}>
+              <h3
+                className="text-lg font-semibold mb-2"
+                style={{ fontFamily: "'Cinzel', serif" }}
+              >
                 Chưa có thiệp cưới nào
               </h3>
-              <p className="text-xs font-light leading-relaxed mb-6" style={{ color: C.muted }}>
-                Không tìm thấy thiệp cưới nào trong danh mục này. Hãy bắt đầu chọn mẫu và thiết kế thiệp của bạn.
+              <p
+                className="text-xs font-light leading-relaxed mb-6"
+                style={{ color: C.muted }}
+              >
+                Không tìm thấy thiệp cưới nào trong danh mục này. Hãy bắt đầu
+                chọn mẫu và thiết kế thiệp của bạn.
               </p>
               <Link href="/templates">
-                <Button
-                  className="px-6 py-5 bg-transparent border text-[#e5c483] border-[#c5a059] hover:bg-[#d4af37]/10"
-                >
+                <Button className="px-6 py-5 bg-transparent border text-[#e5c483] border-[#c5a059] hover:bg-[#d4af37]/10">
                   Khám phá mẫu thiệp
                 </Button>
               </Link>
@@ -183,19 +204,26 @@ export default function MyTemplatesPage() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 animate-fadeIn">
             {filteredWeddings.map((w) => {
-              const formattedDate = formatDateTime(w.ceremonyAt) || "Chưa thiết lập";
+              const formattedDate =
+                formatDateTime(w.ceremonyAt) || "Chưa thiết lập";
 
               return (
-                <div key={w.id} className="wedding-card p-6 flex flex-col justify-between">
+                <div
+                  key={w.id}
+                  className="wedding-card p-6 flex flex-col justify-between"
+                >
                   <div>
                     <div className="flex justify-between items-start gap-4 mb-4">
                       <span
-                        className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${w.status === WeddingStatus.PUBLISHED
-                          ? "bg-green-500/10 text-green-400 border border-green-500/25"
-                          : "bg-[#d4af37]/10 text-[#f5c842] border border-[#d4af37]/25"
-                          }`}
+                        className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                          w.status === WeddingStatus.PUBLISHED
+                            ? "bg-green-500/10 text-green-400 border border-green-500/25"
+                            : "bg-[#d4af37]/10 text-[#f5c842] border border-[#d4af37]/25"
+                        }`}
                       >
-                        {w.status === WeddingStatus.PUBLISHED ? "Đã xuất bản" : "Bản nháp"}
+                        {w.status === WeddingStatus.PUBLISHED
+                          ? "Đã xuất bản"
+                          : "Bản nháp"}
                       </span>
                       {w.template && (
                         <span className="text-[10px] flex items-center gap-1 text-[#f5e6d3]/60">
@@ -209,7 +237,8 @@ export default function MyTemplatesPage() {
                       className="text-xl font-bold mb-3 tracking-wide truncate"
                       style={{ fontFamily: "'Cinzel', serif", color: C.cream }}
                     >
-                      {w.groomShortName || "Chú rể"} & {w.brideShortName || "Cô dâu"}
+                      {w.groomShortName || "Chú rể"} &{" "}
+                      {w.brideShortName || "Cô dâu"}
                     </h3>
 
                     <div className="space-y-2 mb-6 text-xs text-[#f5e6d3]/70 font-light">
@@ -219,7 +248,9 @@ export default function MyTemplatesPage() {
                       </div>
                       <div className="flex items-center gap-2">
                         <MapPin size={13} className="text-[#c5a059]" />
-                        <span className="truncate">Nơi diễn ra: {w.ceremonyVenue || "Chưa thiết lập"}</span>
+                        <span className="truncate">
+                          Nơi diễn ra: {w.ceremonyVenue || "Chưa thiết lập"}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -235,7 +266,11 @@ export default function MyTemplatesPage() {
                     </Button>
                     {w.slug && (
                       <>
-                        <Link href={`/thiep/${w.slug}`} target="_blank" className="flex-1">
+                        <Link
+                          href={`/thiep/${w.slug}`}
+                          target="_blank"
+                          className="flex-1"
+                        >
                           <Button
                             variant="outline"
                             className="w-full py-4 bg-white/3! border-[#d4af37]/20! hover:border-[#d4af37]/40! text-[#f5e6d3]! flex items-center justify-center gap-1.5 rounded-lg text-xs font-semibold"

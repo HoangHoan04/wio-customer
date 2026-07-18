@@ -35,7 +35,8 @@ export const Welcome = ({
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        background: "radial-gradient(ellipse at center, #162542 0%, #470a0d 60%, #060b14 100%)",
+        background:
+          "radial-gradient(ellipse at center, #162542 0%, #470a0d 60%, #060b14 100%)",
         transition: "opacity 0.6s ease",
         opacity: isOpening ? 0 : 1,
         pointerEvents: isOpening ? "none" : undefined,
@@ -43,7 +44,14 @@ export const Welcome = ({
         overflow: "hidden",
       }}
     >
-      <div style={{ position: "absolute", inset: 0, overflow: "hidden", pointerEvents: "none" }}>
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          overflow: "hidden",
+          pointerEvents: "none",
+        }}
+      >
         {CLOUDS.map((cloud, i) => (
           <div
             key={i}
@@ -70,7 +78,8 @@ export const Welcome = ({
           maxWidth: 450,
           minHeight: 480,
           borderRadius: 20,
-          boxShadow: "0 30px 100px rgba(0,0,0,0.7), inset 0 0 20px rgba(139,94,22,0.2)",
+          boxShadow:
+            "0 30px 100px rgba(0,0,0,0.7), inset 0 0 20px rgba(139,94,22,0.2)",
           border: "3px solid #d4af37",
           textAlign: "center",
           padding: "40px 24px",
@@ -175,9 +184,19 @@ export const Welcome = ({
           }}
         />
         <div style={{ position: "relative", zIndex: 3, width: "100%" }}>
-          <div style={{ marginBottom: 20, display: "flex", justifyContent: "center" }}>
+          <div
+            style={{
+              marginBottom: 20,
+              display: "flex",
+              justifyContent: "center",
+            }}
+          >
             <WelcomeIcon
-              style={{ width: 85, height: 85, filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.1))" }}
+              style={{
+                width: 85,
+                height: 85,
+                filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.1))",
+              }}
             />
           </div>
           <div className="flex flex-col items-center justify-center mb-5">
@@ -242,7 +261,10 @@ export const Welcome = ({
                 background: "linear-gradient(to left, #b08b33, transparent)",
               }}
             />
-            <i className="pi pi-star-fill" style={{ color: "#b08b33", fontSize: 10 }}></i>
+            <i
+              className="pi pi-star-fill"
+              style={{ color: "#b08b33", fontSize: 10 }}
+            ></i>
             <div
               style={{
                 width: 50,

@@ -1,6 +1,12 @@
 import type { ThemeTemplateConfig } from "@/dto/theme.dto";
 
-export const MapDetails = ({ data, config }: { data?: any; config: ThemeTemplateConfig }) => {
+export const MapDetails = ({
+  data,
+  config,
+}: {
+  data?: any;
+  config: ThemeTemplateConfig;
+}) => {
   if (!data || (!data.showMap && !data.partyAddress)) return null;
 
   return (
@@ -16,11 +22,15 @@ export const MapDetails = ({ data, config }: { data?: any; config: ThemeTemplate
           textShadow: `0.5px 0 0 ${config.colors.textPrimary}, -0.5px 0 0 ${config.colors.textPrimary}`,
         }}
       >
-        {data?.partyType === "engagement" ? "TIỆC BÁO HỶ" : "TIỆC CƯỚI"} SẼ TỔ CHỨC TẠI
+        {data?.partyType === "engagement" ? "TIỆC BÁO HỶ" : "TIỆC CƯỚI"} SẼ TỔ
+        CHỨC TẠI
       </h2>
       <p
         className="text-sm md:text-base leading-relaxed max-w-md mb-8 font-bold"
-        style={{ fontFamily: config.fonts.body, color: config.colors.textSecondary }}
+        style={{
+          fontFamily: config.fonts.body,
+          color: config.colors.textSecondary,
+        }}
       >
         {data?.partyAddress}
       </p>

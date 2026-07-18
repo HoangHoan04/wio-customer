@@ -17,7 +17,9 @@ export function useAuth() {
       setAuth(res.user, res.accessToken, res.refreshToken);
       return res;
     } catch (err: any) {
-      setError(err.response?.data?.message || err.message || "Đăng nhập thất bại");
+      setError(
+        err.response?.data?.message || err.message || "Đăng nhập thất bại",
+      );
       throw err;
     } finally {
       setLoading(false);
@@ -34,14 +36,19 @@ export function useAuth() {
       });
       return res;
     } catch (err: any) {
-      setError(err.response?.data?.message || err.message || "Gửi OTP thất bại");
+      setError(
+        err.response?.data?.message || err.message || "Gửi OTP thất bại",
+      );
       throw err;
     } finally {
       setLoading(false);
     }
   };
 
-  const sendOtp = async (identifier: string, method: "EMAIL" | "PHONE" = "EMAIL") => {
+  const sendOtp = async (
+    identifier: string,
+    method: "EMAIL" | "PHONE" = "EMAIL",
+  ) => {
     setLoading(true);
     setError("");
     try {
@@ -51,14 +58,20 @@ export function useAuth() {
       });
       return res;
     } catch (err: any) {
-      setError(err.response?.data?.message || err.message || "Gửi OTP thất bại");
+      setError(
+        err.response?.data?.message || err.message || "Gửi OTP thất bại",
+      );
       throw err;
     } finally {
       setLoading(false);
     }
   };
 
-  const verifyOtp = async (identifier: string, otpCode: string, method: "EMAIL" | "PHONE" = "EMAIL") => {
+  const verifyOtp = async (
+    identifier: string,
+    otpCode: string,
+    method: "EMAIL" | "PHONE" = "EMAIL",
+  ) => {
     setLoading(true);
     setError("");
     try {
@@ -70,7 +83,9 @@ export function useAuth() {
       setAuth(res.user, res.accessToken, res.refreshToken);
       return res;
     } catch (err: any) {
-      setError(err.response?.data?.message || err.message || "Xác thực OTP thất bại");
+      setError(
+        err.response?.data?.message || err.message || "Xác thực OTP thất bại",
+      );
       throw err;
     } finally {
       setLoading(false);
@@ -92,7 +107,9 @@ export function useAuth() {
       const res = await authService.register(data);
       return res;
     } catch (err: any) {
-      setError(err.response?.data?.message || err.message || "Đăng ký thất bại");
+      setError(
+        err.response?.data?.message || err.message || "Đăng ký thất bại",
+      );
       throw err;
     } finally {
       setLoading(false);
@@ -111,7 +128,11 @@ export function useAuth() {
       const res = await authService.forgotPassword(data);
       return res;
     } catch (err: any) {
-      setError(err.response?.data?.message || err.message || "Khôi phục mật khẩu thất bại");
+      setError(
+        err.response?.data?.message ||
+          err.message ||
+          "Khôi phục mật khẩu thất bại",
+      );
       throw err;
     } finally {
       setLoading(false);
@@ -129,7 +150,9 @@ export function useAuth() {
       const res = await authService.changePassword(data);
       return res;
     } catch (err: any) {
-      setError(err.response?.data?.message || err.message || "Đổi mật khẩu thất bại");
+      setError(
+        err.response?.data?.message || err.message || "Đổi mật khẩu thất bại",
+      );
       throw err;
     } finally {
       setLoading(false);
@@ -139,11 +162,6 @@ export function useAuth() {
   const logout = async () => {
     setLoading(true);
     try {
-      const refreshToken = useAuthStore.getState().user
-        ? useAuthStore.getState().user?.id
-          ? useAuthStore.getState().user
-          : null
-        : null;
       await authService.logout();
     } catch {
       console.error("Logout failed");
@@ -162,7 +180,11 @@ export function useAuth() {
       setAuth(res.user, res.accessToken, res.refreshToken);
       return res;
     } catch (err: any) {
-      setError(err.response?.data?.message || err.message || "Đăng nhập Google thất bại");
+      setError(
+        err.response?.data?.message ||
+          err.message ||
+          "Đăng nhập Google thất bại",
+      );
       throw err;
     } finally {
       setLoading(false);
@@ -177,7 +199,11 @@ export function useAuth() {
       setAuth(res.user, res.accessToken, res.refreshToken);
       return res;
     } catch (err: any) {
-      setError(err.response?.data?.message || err.message || "Đăng nhập Facebook thất bại");
+      setError(
+        err.response?.data?.message ||
+          err.message ||
+          "Đăng nhập Facebook thất bại",
+      );
       throw err;
     } finally {
       setLoading(false);
@@ -191,7 +217,9 @@ export function useAuth() {
       const res = await authService.checkPhoneEmail(data);
       return res;
     } catch (err: any) {
-      setError(err.response?.data?.message || err.message || "Kiểm tra thất bại");
+      setError(
+        err.response?.data?.message || err.message || "Kiểm tra thất bại",
+      );
       throw err;
     } finally {
       setLoading(false);
@@ -205,7 +233,9 @@ export function useAuth() {
       const res = await authService.verifyEmail({ email, otpCode });
       return res;
     } catch (err: any) {
-      setError(err.response?.data?.message || err.message || "Xác thực email thất bại");
+      setError(
+        err.response?.data?.message || err.message || "Xác thực email thất bại",
+      );
       throw err;
     } finally {
       setLoading(false);
@@ -219,7 +249,9 @@ export function useAuth() {
       const res = await authService.resendVerification({ email });
       return res;
     } catch (err: any) {
-      setError(err.response?.data?.message || err.message || "Gửi lại mã thất bại");
+      setError(
+        err.response?.data?.message || err.message || "Gửi lại mã thất bại",
+      );
       throw err;
     } finally {
       setLoading(false);

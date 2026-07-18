@@ -36,14 +36,22 @@ export const Welcome = ({
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        background: "radial-gradient(ellipse at center, #6b1d35 0%, #3d0f1e 60%, #240811 100%)",
+        background:
+          "radial-gradient(ellipse at center, #6b1d35 0%, #3d0f1e 60%, #240811 100%)",
         transition: "opacity 0.6s ease",
         opacity: isOpening ? 0 : 1,
         pointerEvents: isOpening ? "none" : undefined,
         fontFamily: config.fonts.heading,
       }}
     >
-      <div style={{ position: "absolute", inset: 0, overflow: "hidden", pointerEvents: "none" }}>
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          overflow: "hidden",
+          pointerEvents: "none",
+        }}
+      >
         {LEAVES.map((leaf, i) => (
           <div
             key={i}
@@ -109,7 +117,14 @@ export const Welcome = ({
           }}
         />
 
-        <div style={{ position: "relative", zIndex: 3, marginTop: 40, marginBottom: 16 }}>
+        <div
+          style={{
+            position: "relative",
+            zIndex: 3,
+            marginTop: 40,
+            marginBottom: 16,
+          }}
+        >
           <div
             style={{
               display: "inline-flex",
@@ -193,9 +208,23 @@ export const Welcome = ({
               margin: "0 0 14px",
             }}
           >
-            <div style={{ width: 40, height: 0.5, background: "#a04868", opacity: 0.5 }} />
+            <div
+              style={{
+                width: 40,
+                height: 0.5,
+                background: "#a04868",
+                opacity: 0.5,
+              }}
+            />
             <i className="pi pi-star-fill" style={{ color: "#a04868" }}></i>
-            <div style={{ width: 40, height: 0.5, background: "#a04868", opacity: 0.5 }} />
+            <div
+              style={{
+                width: 40,
+                height: 0.5,
+                background: "#a04868",
+                opacity: 0.5,
+              }}
+            />
           </div>
 
           <p
@@ -272,11 +301,13 @@ export const Welcome = ({
             }}
             onMouseEnter={(e) => {
               (e.target as HTMLButtonElement).style.transform = "scale(1.04)";
-              (e.target as HTMLButtonElement).style.boxShadow = "0 6px 28px rgba(107,29,53,0.55)";
+              (e.target as HTMLButtonElement).style.boxShadow =
+                "0 6px 28px rgba(107,29,53,0.55)";
             }}
             onMouseLeave={(e) => {
               (e.target as HTMLButtonElement).style.transform = "scale(1)";
-              (e.target as HTMLButtonElement).style.boxShadow = "0 4px 20px rgba(107,29,53,0.4)";
+              (e.target as HTMLButtonElement).style.boxShadow =
+                "0 4px 20px rgba(107,29,53,0.4)";
             }}
           >
             Mở thiệp

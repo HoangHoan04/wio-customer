@@ -72,11 +72,16 @@ export default function RoyalRedTemplate({
   return (
     <div
       className="relative min-h-screen font-body overflow-x-hidden"
-      style={{ backgroundColor: config.colors.background, color: config.colors.textPrimary }}
+      style={{
+        backgroundColor: config.colors.background,
+        color: config.colors.textPrimary,
+      }}
     >
       <audio id="bg-music" loop src={data?.musicUrl || undefined} />
 
-      {!isEnvelopeOpen && <Welcome data={data} config={config} onOpen={handleOpen} />}
+      {!isEnvelopeOpen && (
+        <Welcome data={data} config={config} onOpen={handleOpen} />
+      )}
 
       <StandardLayout
         data={data}

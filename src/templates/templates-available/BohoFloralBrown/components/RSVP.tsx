@@ -2,7 +2,13 @@ import decorFlower from "@/assets/decorations/boho-floral-brown/flower_top.webp"
 import type { ThemeTemplateConfig } from "@/dto/theme.dto";
 import { useState } from "react";
 
-export const RSVP = ({ data, config }: { data?: any; config: ThemeTemplateConfig }) => {
+export const RSVP = ({
+  data,
+  config,
+}: {
+  data?: any;
+  config: ThemeTemplateConfig;
+}) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -25,9 +31,12 @@ export const RSVP = ({ data, config }: { data?: any; config: ThemeTemplateConfig
     return (
       <div className="w-full bg-white/95 p-5 sm:p-7 my-10 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.08)] text-left max-w-75 mx-auto border border-white/40 backdrop-blur-md">
         <div className="text-center mb-5">
-          <h2 className="text-xl font-bold text-[#1a1a1a] mb-1.5">Xác nhận tham dự</h2>
+          <h2 className="text-xl font-bold text-[#1a1a1a] mb-1.5">
+            Xác nhận tham dự
+          </h2>
           <p className="text-gray-400 text-xs leading-relaxed px-2">
-            Sự hiện diện của bạn là niềm vinh hạnh cho gia đình chúng tôi. <br />
+            Sự hiện diện của bạn là niềm vinh hạnh cho gia đình chúng tôi.{" "}
+            <br />
             Xin xác nhận để chúng tôi chuẩn bị chu đáo nhất cho bạn.
           </p>
         </div>
@@ -49,7 +58,9 @@ export const RSVP = ({ data, config }: { data?: any; config: ThemeTemplateConfig
           }}
         >
           <div>
-            <label className="text-xs font-bold text-[#2d3748] block mb-1.5">Tên của bạn</label>
+            <label className="text-xs font-bold text-[#2d3748] block mb-1.5">
+              Tên của bạn
+            </label>
             <input
               required
               type="text"
@@ -59,7 +70,9 @@ export const RSVP = ({ data, config }: { data?: any; config: ThemeTemplateConfig
           </div>
 
           <div>
-            <label className="text-xs font-bold text-[#2d3748] block mb-1.5">Bạn sẽ đến chứ?</label>
+            <label className="text-xs font-bold text-[#2d3748] block mb-1.5">
+              Bạn sẽ đến chứ?
+            </label>
             <div className="flex flex-col gap-2.5">
               <button
                 type="button"
@@ -72,7 +85,9 @@ export const RSVP = ({ data, config }: { data?: any; config: ThemeTemplateConfig
               >
                 <div
                   className={`w-5 h-5 rounded-full flex items-center justify-center transition-colors ${
-                    attending === "yes" ? "bg-[#10b981] text-white" : "bg-gray-200 text-transparent"
+                    attending === "yes"
+                      ? "bg-[#10b981] text-white"
+                      : "bg-gray-200 text-transparent"
                   }`}
                 >
                   <i className="pi pi-check" style={{ fontSize: "0.6rem" }}></i>
@@ -91,10 +106,15 @@ export const RSVP = ({ data, config }: { data?: any; config: ThemeTemplateConfig
               >
                 <div
                   className={`w-5 h-5 rounded-full flex items-center justify-center transition-colors ${
-                    attending === "no" ? "bg-gray-400 text-white" : "bg-gray-200 text-transparent"
+                    attending === "no"
+                      ? "bg-gray-400 text-white"
+                      : "bg-gray-200 text-transparent"
                   }`}
                 >
-                  <i className="pi pi-times-circle" style={{ fontSize: "0.6rem" }}></i>
+                  <i
+                    className="pi pi-times-circle"
+                    style={{ fontSize: "0.6rem" }}
+                  ></i>
                 </div>
                 <span className="text-xs">Rất tiếc, tôi không thể đến</span>
               </button>
@@ -146,14 +166,22 @@ export const RSVP = ({ data, config }: { data?: any; config: ThemeTemplateConfig
 
   return (
     <div className="relative flex flex-col items-center text-center w-full my-5 overflow-hidden">
-      <img src={decorFlower.src} alt="" aria-hidden="true" className="absolute -top-8 -right-8 w-32 md:w-52 opacity-10 pointer-events-none select-none z-0" />
+      <img
+        src={decorFlower.src}
+        alt=""
+        aria-hidden="true"
+        className="absolute -top-8 -right-8 w-32 md:w-52 opacity-10 pointer-events-none select-none z-0"
+      />
       {isFormInline ? (
         <FormContent />
       ) : (
         <button
           onClick={() => setIsOpen(true)}
           className="px-10 py-4 rounded-full text-sm font-bold tracking-widest uppercase shadow-xl hover:scale-105 transition-transform"
-          style={{ backgroundColor: config.colors.buttonBg, color: config.colors.buttonText }}
+          style={{
+            backgroundColor: config.colors.buttonBg,
+            color: config.colors.buttonText,
+          }}
         >
           Xác Nhận Tham Dự
         </button>
@@ -164,7 +192,10 @@ export const RSVP = ({ data, config }: { data?: any; config: ThemeTemplateConfig
           className="fixed inset-0 z-9999 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
           onClick={() => setIsOpen(false)}
         >
-          <div className="relative w-full max-w-97.5" onClick={(e) => e.stopPropagation()}>
+          <div
+            className="relative w-full max-w-97.5"
+            onClick={(e) => e.stopPropagation()}
+          >
             <button
               className="absolute top-12 right-9 text-red-400 hover:text-black text-lg z-10000"
               onClick={() => setIsOpen(false)}

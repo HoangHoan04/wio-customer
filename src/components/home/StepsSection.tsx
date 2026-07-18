@@ -66,7 +66,7 @@ export default function StepsSection() {
           <div className="absolute top-12 left-12 right-12 h-px border-t border-dashed border-[#d4af37]/20 hidden lg:block z-0 pointer-events-none" />
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8 relative z-10">
-            {STEPS.map((item, idx) => (
+            {STEPS.map((item) => (
               <ScrollReveal key={item.step}>
                 <div className="group flex flex-col items-center text-center px-4 relative">
                   <div className="relative w-24 h-24 mb-8 flex items-center justify-center">

@@ -1,6 +1,12 @@
 import flowerCornerFloral from "@/assets/decorations/royal-green/flower.webp";
 import type { ThemeTemplateConfig } from "@/dto/theme.dto";
-export const HeroImages = ({ data, config }: { data?: any; config: ThemeTemplateConfig }) => {
+export const HeroImages = ({
+  data,
+  config,
+}: {
+  data?: any;
+  config: ThemeTemplateConfig;
+}) => {
   if (!data?.showHeroImage) return null;
   const isGroomFirst = data?.displayOrder !== "bride_first";
 
@@ -22,13 +28,19 @@ export const HeroImages = ({ data, config }: { data?: any; config: ThemeTemplate
         >
           <span
             className="text-[9px] tracking-[0.2em] uppercase"
-            style={{ fontFamily: config.fonts.body, color: config.colors.textSecondary }}
+            style={{
+              fontFamily: config.fonts.body,
+              color: config.colors.textSecondary,
+            }}
           >
             {person?.title}
           </span>
           <h2
             className="text-lg md:text-xl font-normal uppercase tracking-widest"
-            style={{ fontFamily: config.fonts.heading, color: config.colors.textPrimary }}
+            style={{
+              fontFamily: config.fonts.heading,
+              color: config.colors.textPrimary,
+            }}
           >
             {person?.shortName || person?.name}
           </h2>
@@ -59,13 +71,19 @@ export const HeroImages = ({ data, config }: { data?: any; config: ThemeTemplate
         >
           <span
             className="text-[9px] tracking-[0.2em] uppercase"
-            style={{ fontFamily: config.fonts.body, color: config.colors.textSecondary }}
+            style={{
+              fontFamily: config.fonts.body,
+              color: config.colors.textSecondary,
+            }}
           >
             {person?.title}
           </span>
           <h2
             className="text-lg md:text-xl font-normal uppercase tracking-widest"
-            style={{ fontFamily: config.fonts.heading, color: config.colors.textPrimary }}
+            style={{
+              fontFamily: config.fonts.heading,
+              color: config.colors.textPrimary,
+            }}
           >
             {person?.shortName || person?.name}
           </h2>

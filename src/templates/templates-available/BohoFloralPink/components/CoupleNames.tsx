@@ -1,6 +1,12 @@
 import type { ThemeTemplateConfig } from "@/dto/theme.dto";
 
-export const CoupleNames = ({ data, config }: { data?: any; config: ThemeTemplateConfig }) => {
+export const CoupleNames = ({
+  data,
+  config,
+}: {
+  data?: any;
+  config: ThemeTemplateConfig;
+}) => {
   if (!data) return null;
   const isGroomFirst = data?.displayOrder !== "bride_first";
 
@@ -8,13 +14,19 @@ export const CoupleNames = ({ data, config }: { data?: any; config: ThemeTemplat
     <>
       <h1
         className="text-4xl md:text-5xl font-light"
-        style={{ fontFamily: config.fonts.script, color: config.colors.textPrimary }}
+        style={{
+          fontFamily: config.fonts.script,
+          color: config.colors.textPrimary,
+        }}
       >
         {person?.fullName || person?.name}
       </h1>
       <p
         className="text-xs uppercase tracking-[0.2em] mt-3"
-        style={{ fontFamily: config.fonts.body, color: config.colors.textSecondary }}
+        style={{
+          fontFamily: config.fonts.body,
+          color: config.colors.textSecondary,
+        }}
       >
         {person?.title}
       </p>
@@ -25,7 +37,10 @@ export const CoupleNames = ({ data, config }: { data?: any; config: ThemeTemplat
       {data?.showIntro && (
         <p
           className="text-sm md:text-base uppercase font-bold py-5 whitespace-pre-line leading-relaxed min-h-6"
-          style={{ fontFamily: config.fonts.body, color: config.colors.textSecondary }}
+          style={{
+            fontFamily: config.fonts.body,
+            color: config.colors.textSecondary,
+          }}
         >
           {data?.introText}
         </p>
@@ -38,7 +53,10 @@ export const CoupleNames = ({ data, config }: { data?: any; config: ThemeTemplat
             <div className="my-6">
               <span
                 className="text-4xl"
-                style={{ fontFamily: config.fonts.script, color: config.colors.textPrimary }}
+                style={{
+                  fontFamily: config.fonts.script,
+                  color: config.colors.textPrimary,
+                }}
               >
                 &
               </span>
@@ -51,7 +69,10 @@ export const CoupleNames = ({ data, config }: { data?: any; config: ThemeTemplat
             <div className="my-6">
               <span
                 className="text-4xl"
-                style={{ fontFamily: config.fonts.script, color: config.colors.textPrimary }}
+                style={{
+                  fontFamily: config.fonts.script,
+                  color: config.colors.textPrimary,
+                }}
               >
                 &
               </span>

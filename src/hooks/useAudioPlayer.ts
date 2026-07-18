@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useCallback, useEffect, useRef, useState } from "react";
 
 export const useAudioPlayer = (src: string) => {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -18,11 +18,14 @@ export const useAudioPlayer = (src: string) => {
 
   const playMusic = useCallback(() => {
     if (audioRef.current) {
-      audioRef.current.play().then(() => {
-        setIsPlaying(true);
-      }).catch(e => {
-        console.log('Audio autoplay blocked or error', e);
-      });
+      audioRef.current
+        .play()
+        .then(() => {
+          setIsPlaying(true);
+        })
+        .catch((e) => {
+          console.log("Audio autoplay blocked or error", e);
+        });
     }
   }, []);
 
@@ -31,7 +34,7 @@ export const useAudioPlayer = (src: string) => {
     if (isPlaying) {
       audioRef.current.pause();
     } else {
-      audioRef.current.play().catch(e => console.log('Audio play error', e));
+      audioRef.current.play().catch((e) => console.log("Audio play error", e));
     }
     setIsPlaying(!isPlaying);
   }, [isPlaying]);

@@ -1,10 +1,10 @@
-import { formatDateTime } from "@/common/helpers";
 import decorFlower from "@/assets/decorations/boho-floral-brown/flower_mid.webp";
+import { formatDateTime } from "@/common/helpers";
 import type { ThemeTemplateConfig } from "@/dto/theme.dto";
 import { useEffect, useState } from "react";
 
 export const Guestbook = ({ data, config }: { data?: any; config: ThemeTemplateConfig }) => {
-  const [messages, setMessages] = useState([
+  const [messages] = useState([
     {
       id: 1,
       name: "Minh Tuấn",

@@ -15,19 +15,27 @@ export const uploadService = {
   uploadImage: async (file: File): Promise<UploadResponse> => {
     const formData = new FormData();
     formData.append("file", file);
-    const response = await apiService.post<UploadResponse>(API_ENDPOINTS.UPLOAD_FILE.IMAGE, formData, {
-      headers: { "Content-Type": "multipart/form-data" },
-    });
+    const response = await apiService.post<UploadResponse>(
+      API_ENDPOINTS.UPLOAD_FILE.IMAGE,
+      formData,
+      {
+        headers: { "Content-Type": "multipart/form-data" },
+      },
+    );
     return response.data;
   },
 
   uploadAudio: async (file: File): Promise<UploadResponse> => {
     const formData = new FormData();
     formData.append("file", file);
-    const response = await apiService.post<UploadResponse>(API_ENDPOINTS.UPLOAD_FILE.AUDIO, formData, {
-      headers: { "Content-Type": "multipart/form-data" },
-      timeout: 120000,
-    });
+    const response = await apiService.post<UploadResponse>(
+      API_ENDPOINTS.UPLOAD_FILE.AUDIO,
+      formData,
+      {
+        headers: { "Content-Type": "multipart/form-data" },
+        timeout: 120000,
+      },
+    );
     return response.data;
   },
 };

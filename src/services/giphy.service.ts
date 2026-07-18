@@ -38,7 +38,11 @@ export interface PexelsSearchResult {
 }
 
 const giphyService = {
-  search: async (q?: string, limit = 25, offset = 0): Promise<GiphySearchResult> => {
+  search: async (
+    q?: string,
+    limit = 25,
+    offset = 0,
+  ): Promise<GiphySearchResult> => {
     const params = new URLSearchParams();
     if (q) params.set("q", q);
     params.set("limit", String(limit));
@@ -47,7 +51,11 @@ const giphyService = {
     const response = await apiService.get<GiphySearchResult>(url);
     return response.data;
   },
-  pexelsSearch: async (q?: string, perPage = 20, page = 1): Promise<PexelsSearchResult> => {
+  pexelsSearch: async (
+    q?: string,
+    perPage = 20,
+    page = 1,
+  ): Promise<PexelsSearchResult> => {
     const params = new URLSearchParams();
     if (q) params.set("q", q);
     params.set("perPage", String(perPage));

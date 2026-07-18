@@ -2,7 +2,13 @@ import type { ThemeTemplateConfig } from "@/dto/theme.dto";
 import { Gift, X } from "lucide-react";
 import { useState } from "react";
 
-export const GiftBox = ({ data, config }: { data?: any; config: ThemeTemplateConfig }) => {
+export const GiftBox = ({
+  data,
+  config,
+}: {
+  data?: any;
+  config: ThemeTemplateConfig;
+}) => {
   const [isOpen, setIsOpen] = useState(false);
 
   if (!data) return null;
@@ -32,12 +38,18 @@ export const GiftBox = ({ data, config }: { data?: any; config: ThemeTemplateCon
           </svg>
         </div>
         <div className="absolute bottom-16 left-20 animate-pulse duration-3000 opacity-60 pointer-events-none text-amber-500/80">
-          <svg className="w-4 h-4 fill-current transform rotate-12" viewBox="0 0 24 24">
+          <svg
+            className="w-4 h-4 fill-current transform rotate-12"
+            viewBox="0 0 24 24"
+          >
             <path d="M12 2l2.4 7.2h7.6l-6 4.8 2.4 7.2-6-4.8-6 4.8 2.4-7.2-6-4.8h7.6z" />
           </svg>
         </div>
         <div className="absolute top-16 right-16 animate-bounce duration-5000 opacity-80 pointer-events-none text-amber-300">
-          <svg className="w-5 h-5 fill-current transform -rotate-12" viewBox="0 0 24 24">
+          <svg
+            className="w-5 h-5 fill-current transform -rotate-12"
+            viewBox="0 0 24 24"
+          >
             <path d="M12 2l2.4 7.2h7.6l-6 4.8 2.4 7.2-6-4.8-6 4.8 2.4-7.2-6-4.8h7.6z" />
           </svg>
         </div>
@@ -51,13 +63,26 @@ export const GiftBox = ({ data, config }: { data?: any; config: ThemeTemplateCon
             <div className="absolute inset-0 filter drop-shadow-[0_15px_30px_rgba(0,0,0,0.45)]">
               <svg viewBox="0 0 320 280" className="w-full h-full">
                 <defs>
-                  <radialGradient id="velvetGrad" cx="50%" cy="40%" r="60%" fx="30%" fy="30%">
+                  <radialGradient
+                    id="velvetGrad"
+                    cx="50%"
+                    cy="40%"
+                    r="60%"
+                    fx="30%"
+                    fy="30%"
+                  >
                     <stop offset="0%" stopColor="#e61e3b" />
                     <stop offset="40%" stopColor="#b30c26" />
                     <stop offset="85%" stopColor="#7a0316" />
                     <stop offset="100%" stopColor="#47000b" />
                   </radialGradient>
-                  <linearGradient id="goldMetallic" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <linearGradient
+                    id="goldMetallic"
+                    x1="0%"
+                    y1="0%"
+                    x2="100%"
+                    y2="100%"
+                  >
                     <stop offset="0%" stopColor="#ffe699" />
                     <stop offset="30%" stopColor="#d4af37" />
                     <stop offset="55%" stopColor="#aa7c11" />
@@ -121,7 +146,10 @@ export const GiftBox = ({ data, config }: { data?: any; config: ThemeTemplateCon
 
             <h3
               className="text-2xl mb-6 font-semibold"
-              style={{ fontFamily: config.fonts.heading, color: config.colors.textPrimary }}
+              style={{
+                fontFamily: config.fonts.heading,
+                color: config.colors.textPrimary,
+              }}
             >
               Thông tin mừng cưới
             </h3>
@@ -137,7 +165,10 @@ export const GiftBox = ({ data, config }: { data?: any; config: ThemeTemplateCon
                 >
                   <p
                     className="text-sm uppercase tracking-widest mb-2 opacity-80"
-                    style={{ fontFamily: config.fonts.body, color: config.colors.textSecondary }}
+                    style={{
+                      fontFamily: config.fonts.body,
+                      color: config.colors.textSecondary,
+                    }}
                   >
                     Chú rể
                   </p>
@@ -178,7 +209,10 @@ export const GiftBox = ({ data, config }: { data?: any; config: ThemeTemplateCon
                 >
                   <p
                     className="text-sm uppercase tracking-widest mb-2 opacity-80"
-                    style={{ fontFamily: config.fonts.body, color: config.colors.textSecondary }}
+                    style={{
+                      fontFamily: config.fonts.body,
+                      color: config.colors.textSecondary,
+                    }}
                   >
                     Cô dâu
                   </p>

@@ -1,6 +1,6 @@
 import decorFlower from "@/assets/decorations/boho-floral-green/flower_mid.webp";
 import type { ThemeTemplateConfig } from '@/dto/theme.dto';
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 export const Countdown = ({ data, config }: { data?: any, config: ThemeTemplateConfig }) => {
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });

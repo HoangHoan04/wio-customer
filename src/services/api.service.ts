@@ -1,5 +1,5 @@
-import axios from "axios";
 import tokenCache from "@/utils/token-cache";
+import axios from "axios";
 
 const apiService = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:4300",
@@ -44,7 +44,9 @@ apiService.interceptors.response.use(
       !originalRequest._retry &&
       typeof window !== "undefined"
     ) {
-      const isAuthEndpoint = originalRequest.url?.includes("/auth/refresh-token");
+      const isAuthEndpoint = originalRequest.url?.includes(
+        "/auth/refresh-token",
+      );
 
       if (isAuthEndpoint) {
         tokenCache.clear();

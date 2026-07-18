@@ -2,7 +2,13 @@ import dragonLeftImg from "@/assets/decorations/dragon_phoenix_blue/dragon_left.
 import dragonRightImg from "@/assets/decorations/dragon_phoenix_blue/dragon_right.webp";
 import type { ThemeTemplateConfig } from "@/dto/theme.dto";
 
-export const ThankYou = ({ data, config }: { data?: any; config: ThemeTemplateConfig }) => {
+export const ThankYou = ({
+  data,
+  config,
+}: {
+  data?: any;
+  config: ThemeTemplateConfig;
+}) => {
   if (!data?.showThankYou || !data?.thankYouText) return null;
 
   return (

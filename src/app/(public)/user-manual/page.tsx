@@ -12,12 +12,12 @@ export default function UserManualPage() {
   ];
 
   return (
-    <div className="min-h-screen pt-[140px] px-6 pb-20 bg-[#0b0507] text-[#f9f6f0]">
+    <div className="min-h-screen pt-35 px-6 pb-20 bg-[#0b0507] text-[#f9f6f0]">
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;700&family=Montserrat:wght@300;400;600&display=swap');
       `}</style>
 
-      <div className="text-center max-w-[800px] mx-auto mb-12">
+      <div className="text-center max-w-200 mx-auto mb-12">
         <h1
           className="text-3xl font-bold mb-5 uppercase tracking-wider leading-relaxed"
           style={{
@@ -86,7 +86,7 @@ export default function UserManualPage() {
                     color: "#f9f6f0",
                   }}
                 >
-                  <span className="flex items-center justify-center w-[18px] h-[18px] bg-white rounded-full">
+                  <span className="flex items-center justify-center w-4.5 h-4.5 bg-white rounded-full">
                     <span
                       className="text-[10px]"
                       style={{ color: "rgba(40,10,20,0.9)" }}

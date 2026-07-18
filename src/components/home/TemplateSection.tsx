@@ -53,7 +53,9 @@ function TemplateCard({ template }: { template: ITemplate }) {
           } else {
             win.scrollBy(0, SCROLL_SPEED);
           }
-        } catch {}
+        } catch {
+          /* cross-origin iframe access blocked */
+        }
       }, 16);
     } else {
       stopAutoScroll();
@@ -62,7 +64,9 @@ function TemplateCard({ template }: { template: ITemplate }) {
         if (win) {
           win.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
         }
-      } catch {}
+      } catch {
+        /* cross-origin iframe access blocked */
+      }
     }
     return stopAutoScroll;
   }, [isHovered, iframeLoaded]);

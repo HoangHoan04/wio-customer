@@ -1,7 +1,13 @@
 import fixedFlower from "@/assets/decorations/boho-floral-brown/fixed_flower.webp";
 import type { ThemeTemplateConfig } from "@/dto/theme.dto";
 
-export const ThankYou = ({ data, config }: { data?: any; config: ThemeTemplateConfig }) => {
+export const ThankYou = ({
+  data,
+  config,
+}: {
+  data?: any;
+  config: ThemeTemplateConfig;
+}) => {
   if (!data?.showThankYou || !data?.thankYouText) return null;
 
   return (

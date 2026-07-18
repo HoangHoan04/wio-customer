@@ -24,8 +24,12 @@ class TokenCache {
   private loadFromStorage(): void {
     if (typeof window === "undefined") return;
     try {
-      this.cache.accessToken = sessionStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN);
-      this.cache.refreshToken = sessionStorage.getItem(STORAGE_KEYS.REFRESH_TOKEN);
+      this.cache.accessToken = sessionStorage.getItem(
+        STORAGE_KEYS.ACCESS_TOKEN,
+      );
+      this.cache.refreshToken = sessionStorage.getItem(
+        STORAGE_KEYS.REFRESH_TOKEN,
+      );
       const userStr = sessionStorage.getItem(STORAGE_KEYS.USER);
       this.cache.user = userStr ? JSON.parse(userStr) : null;
     } catch {

@@ -125,7 +125,7 @@ function NewsletterForm() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="flex flex-col sm:flex-row items-stretch w-full max-w-[520px] gap-3 sm:gap-0"
+      className="flex flex-col sm:flex-row items-stretch w-full max-w-130 gap-3 sm:gap-0"
     >
       <Input
         type="email"
@@ -203,7 +203,7 @@ export default function AppFooter() {
         <span className="flex-1 h-px bg-[linear-gradient(90deg,transparent,rgba(212,175,55,0.35),transparent)]" />
       </div>
 
-      <div className="relative z-1 grid grid-cols-[3fr_2fr_2fr] gap-12 max-w-[1370px] mx-auto px-12 pb-12 w-full box-border max-lg:grid-cols-[1fr] max-lg:gap-8">
+      <div className="relative z-1 grid grid-cols-[3fr_2fr_2fr] gap-12 max-w-342.5 mx-auto px-12 pb-12 w-full box-border max-lg:grid-cols-[1fr] max-lg:gap-8">
         <div>
           <h2
             className="text-[2rem] font-extrabold leading-tight text-[#f5c842] m-0 mb-4 tracking-wide"
@@ -277,7 +277,7 @@ export default function AppFooter() {
 
       <NewsletterSection />
 
-      <div className="relative z-1 max-w-[1370px] mx-auto w-full box-border px-12 py-5 flex flex-wrap items-center justify-between gap-3 max-sm:px-6 max-sm:flex-col max-sm:text-center">
+      <div className="relative z-1 max-w-342.5 mx-auto w-full box-border px-12 py-5 flex flex-wrap items-center justify-between gap-3 max-sm:px-6 max-sm:flex-col max-sm:text-center">
         <p className="text-[12.5px] text-[#6b4f3a] m-0">
           Copyright © {currentYear}{" "}
           <span className="text-[#d4af37] text-xs">Tiệm cưới tân thời</span>.

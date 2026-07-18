@@ -1,8 +1,15 @@
 import bohoFloralGreen from "@/assets/decorations/royal-blue/flower.webp";
 import type { ThemeTemplateConfig } from "@/dto/theme.dto";
 
-export const Timeline = ({ data, config }: { data?: any; config: ThemeTemplateConfig }) => {
-  if (!data?.showTimeline || !data?.timeline || data.timeline.length === 0) return null;
+export const Timeline = ({
+  data,
+  config,
+}: {
+  data?: any;
+  config: ThemeTemplateConfig;
+}) => {
+  if (!data?.showTimeline || !data?.timeline || data.timeline.length === 0)
+    return null;
 
   return (
     <section
@@ -38,7 +45,10 @@ export const Timeline = ({ data, config }: { data?: any; config: ThemeTemplateCo
         />
         <div className="space-y-8 md:space-y-10 relative">
           {data.timeline.map((item: any, index: number) => (
-            <div key={item.id || index} className="flex flex-row items-center w-full relative">
+            <div
+              key={item.id || index}
+              className="flex flex-row items-center w-full relative"
+            >
               <div className="hidden md:block md:w-1/2 md:pr-12" />
               <div className="absolute left-0 md:left-1/2 transform md:-translate-x-1/2 z-20 w-18 flex flex-col items-center justify-center">
                 <div
@@ -61,7 +71,10 @@ export const Timeline = ({ data, config }: { data?: any; config: ThemeTemplateCo
 
                     <span
                       className="text-xs md:text-sm font-bold tracking-tight text-center leading-tight"
-                      style={{ fontFamily: config.fonts.body, color: config.colors.textPrimary }}
+                      style={{
+                        fontFamily: config.fonts.body,
+                        color: config.colors.textPrimary,
+                      }}
                     >
                       {item.time}
                     </span>
@@ -72,14 +85,20 @@ export const Timeline = ({ data, config }: { data?: any; config: ThemeTemplateCo
               <div className="w-full md:w-1/2 pl-24 md:pl-12 pr-4 text-left flex flex-col justify-center min-h-18">
                 <h3
                   className="text-base md:text-lg tracking-wide font-bold"
-                  style={{ fontFamily: config.fonts.body, color: config.colors.textPrimary }}
+                  style={{
+                    fontFamily: config.fonts.body,
+                    color: config.colors.textPrimary,
+                  }}
                 >
                   {item.title}
                 </h3>
                 {item.description && (
                   <p
                     className="text-xs md:text-sm opacity-70 mt-0.5 max-w-xs md:max-w-sm leading-relaxed"
-                    style={{ fontFamily: config.fonts.body, color: config.colors.textSecondary }}
+                    style={{
+                      fontFamily: config.fonts.body,
+                      color: config.colors.textSecondary,
+                    }}
                   >
                     {item.description}
                   </p>

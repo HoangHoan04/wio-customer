@@ -1,7 +1,13 @@
 import decorFlower from "@/assets/decorations/royal-blue/flower.webp";
 import type { ThemeTemplateConfig } from "@/dto/theme.dto";
 
-export const MapDetails = ({ data, config }: { data?: any; config: ThemeTemplateConfig }) => {
+export const MapDetails = ({
+  data,
+  config,
+}: {
+  data?: any;
+  config: ThemeTemplateConfig;
+}) => {
   if (!data || (!data.showMap && !data.partyAddress)) return null;
 
   return (
@@ -9,7 +15,12 @@ export const MapDetails = ({ data, config }: { data?: any; config: ThemeTemplate
       className="relative py-5 px-4 flex flex-col items-center text-center overflow-hidden"
       style={{ backgroundColor: config.colors.background }}
     >
-      <img src={decorFlower.src} alt="" aria-hidden="true" className="absolute left-0 top-1/2 -translate-y-1/2 w-24 md:w-44 opacity-10 pointer-events-none -translate-x-8 select-none z-0" />
+      <img
+        src={decorFlower.src}
+        alt=""
+        aria-hidden="true"
+        className="absolute left-0 top-1/2 -translate-y-1/2 w-24 md:w-44 opacity-10 pointer-events-none -translate-x-8 select-none z-0"
+      />
       <h2
         className="text-xl md:text-2xl uppercase font-black mb-5"
         style={{
@@ -18,11 +29,15 @@ export const MapDetails = ({ data, config }: { data?: any; config: ThemeTemplate
           textShadow: `0.5px 0 0 ${config.colors.textPrimary}, -0.5px 0 0 ${config.colors.textPrimary}`,
         }}
       >
-        {data?.partyType === "engagement" ? "TIỆC BÁO HỶ" : "TIỆC CƯỚI"} SẼ TỔ CHỨC TẠI
+        {data?.partyType === "engagement" ? "TIỆC BÁO HỶ" : "TIỆC CƯỚI"} SẼ TỔ
+        CHỨC TẠI
       </h2>
       <p
         className="text-sm md:text-base leading-relaxed max-w-md mb-8 font-bold"
-        style={{ fontFamily: config.fonts.body, color: config.colors.textSecondary }}
+        style={{
+          fontFamily: config.fonts.body,
+          color: config.colors.textSecondary,
+        }}
       >
         {data?.partyAddress}
       </p>

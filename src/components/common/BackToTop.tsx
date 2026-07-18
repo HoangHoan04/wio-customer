@@ -55,10 +55,11 @@ export default function BackToTop({ threshold = 200 }: { threshold?: number }) {
 
   return (
     <div
-      className={`fixed bottom-8 right-8 z-40 transition-all duration-300 ${isVisible
+      className={`fixed bottom-8 right-8 z-40 transition-all duration-300 ${
+        isVisible
           ? "opacity-100 translate-y-0 scale-100"
           : "opacity-0 translate-y-4 scale-90 pointer-events-none"
-        }`}
+      }`}
     >
       <Tooltip>
         <TooltipTrigger

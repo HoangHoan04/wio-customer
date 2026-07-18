@@ -1,6 +1,7 @@
 "use client";
 
 import { YoutubeIcon } from "@/assets/icons";
+import { WeddingStatus } from "@/common/enum";
 import {
   formatDate,
   formatDateISO,
@@ -9,7 +10,6 @@ import {
   sortAndMapEvents,
   sortAndMapTimeline,
 } from "@/common/helpers";
-import { WeddingStatus } from "@/common/enum";
 import { PUBLIC_ROUTES } from "@/common/routes";
 import { getTemplateSchema } from "@/common/templateSchema";
 import AuthModal from "@/components/auth/AuthModal";
@@ -167,7 +167,9 @@ const extractAddressFromMapUrl = (url: string): string => {
     if (placeMatch) {
       return decodeURIComponent(placeMatch[1]).replace(/\+/g, " ");
     }
-  } catch (e) {}
+  } catch {
+    return "";
+  }
   return "";
 };
 
@@ -273,7 +275,7 @@ export default function CreatorPage() {
       const res = (await musicBackgroundService.getMusics()) as any;
       const list = res.data?.data || res.data || [];
       setMusics(list);
-    } catch (err) {
+    } catch {
       showToast({
         title: "Lỗi",
         message: "Không thể tải nhạc từ YouTube",

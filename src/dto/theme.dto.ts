@@ -17,7 +17,12 @@ export interface ThemeTemplateConfig {
     script?: string;
   };
   styles?: {
-    heroBackgroundBlendMode?: "multiply" | "overlay" | "normal" | "luminosity" | "color-burn";
+    heroBackgroundBlendMode?:
+      | "multiply"
+      | "overlay"
+      | "normal"
+      | "luminosity"
+      | "color-burn";
     heroBackgroundOpacity?: string;
   };
 }

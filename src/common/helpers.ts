@@ -155,7 +155,10 @@ export const sortAndMapEvents = (items: any[]): any[] => {
     }));
 };
 
-export const formatTime2Digit = (dateStr?: string | Date, fallback: string = "11:30"): string => {
+export const formatTime2Digit = (
+  dateStr?: string | Date,
+  fallback: string = "11:30",
+): string => {
   if (!dateStr) return fallback;
   try {
     const date = typeof dateStr === "string" ? new Date(dateStr) : dateStr;

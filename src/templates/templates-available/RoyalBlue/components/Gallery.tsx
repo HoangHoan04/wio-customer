@@ -1,5 +1,5 @@
-import Carousel3D from "@/components/ui/Carousel3D";
 import decorFlower from "@/assets/decorations/royal-blue/flower.webp";
+import Carousel3D from "@/components/ui/Carousel3D";
 import type { ThemeTemplateConfig } from "@/dto/theme.dto";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import { useState } from "react";
@@ -16,7 +16,12 @@ const CarouselImage = ({ src, alt, onImageClick, ...props }: any) => {
       }}
       {...domProps}
     >
-      <img src={src} alt={alt} className="w-full h-full object-cover" loading="lazy" />
+      <img
+        src={src}
+        alt={alt}
+        className="w-full h-full object-cover"
+        loading="lazy"
+      />
       {isActive && (
         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center cursor-zoom-in">
           <div className="bg-white/20 p-2 rounded-full opacity-0 group-hover:opacity-100 backdrop-blur-sm transition-opacity">
@@ -28,7 +33,13 @@ const CarouselImage = ({ src, alt, onImageClick, ...props }: any) => {
   );
 };
 
-export const Gallery = ({ data, config }: { data?: any; config: ThemeTemplateConfig }) => {
+export const Gallery = ({
+  data,
+  config,
+}: {
+  data?: any;
+  config: ThemeTemplateConfig;
+}) => {
   const [selectedIdx, setSelectedIdx] = useState<number | null>(null);
 
   if (!data || !data.showGallery || !data.gallery) return null;
@@ -45,12 +56,21 @@ export const Gallery = ({ data, config }: { data?: any; config: ThemeTemplateCon
 
   const handlePrev = (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (selectedIdx !== null) setSelectedIdx((selectedIdx - 1 + images.length) % images.length);
+    if (selectedIdx !== null)
+      setSelectedIdx((selectedIdx - 1 + images.length) % images.length);
   };
 
   return (
-    <section className="relative py-1 overflow-hidden" style={{ backgroundColor: config.colors.background }}>
-      <img src={decorFlower.src} alt="" aria-hidden="true" className="absolute top-0 right-0 w-32 md:w-56 opacity-10 pointer-events-none translate-x-12 -translate-y-8 select-none z-0" />
+    <section
+      className="relative py-1 overflow-hidden"
+      style={{ backgroundColor: config.colors.background }}
+    >
+      <img
+        src={decorFlower.src}
+        alt=""
+        aria-hidden="true"
+        className="absolute top-0 right-0 w-32 md:w-56 opacity-10 pointer-events-none translate-x-12 -translate-y-8 select-none z-0"
+      />
       <div className="max-w-4xl mx-auto px-4">
         <div className="text-center mb-6">
           <h2
@@ -105,16 +125,19 @@ export const Gallery = ({ data, config }: { data?: any; config: ThemeTemplateCon
                   if (idx === 0) spanClass = "col-span-2 aspect-[4/3]";
                   else spanClass = "col-span-1 aspect-square";
                 } else if (total === 3) {
-                  if (idx === 0) spanClass = "col-span-2 row-span-2 aspect-square";
+                  if (idx === 0)
+                    spanClass = "col-span-2 row-span-2 aspect-square";
                   else spanClass = "col-span-1 aspect-square";
                 } else if (total === 4) {
-                  if (idx === 0 || idx === 2) spanClass = "col-span-2 aspect-[16/10]";
+                  if (idx === 0 || idx === 2)
+                    spanClass = "col-span-2 aspect-[16/10]";
                   else spanClass = "col-span-1 aspect-square";
                 } else if (total === 5) {
                   if (idx === 0) spanClass = "col-span-2 aspect-square";
                   else spanClass = "col-span-1 aspect-square";
                 } else {
-                  if (idx === 0) spanClass = "col-span-2 row-span-2 aspect-square";
+                  if (idx === 0)
+                    spanClass = "col-span-2 row-span-2 aspect-square";
                   else spanClass = "col-span-1 aspect-square";
                 }
 

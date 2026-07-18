@@ -3,7 +3,13 @@ import dragon from "@/assets/decorations/dragon_phoenix_red/dragon.webp";
 import phoenix from "@/assets/decorations/dragon_phoenix_red/phoenix.webp";
 import type { ThemeTemplateConfig } from "@/dto/theme.dto";
 
-export const HeroImages = ({ data, config }: { data?: any; config: ThemeTemplateConfig }) => {
+export const HeroImages = ({
+  data,
+  config,
+}: {
+  data?: any;
+  config: ThemeTemplateConfig;
+}) => {
   if (!data?.showHeroImage) return null;
 
   const mainImageSrc = data?.heroImageMain || "https://placehold.co/400x533";

@@ -49,7 +49,9 @@ export default function TemplateDetailModal({
           } else {
             win.scrollBy(0, SCROLL_SPEED);
           }
-        } catch {}
+        } catch {
+          /* cross-origin iframe access blocked */
+        }
       }, 25);
     } else {
       stopAutoScroll();

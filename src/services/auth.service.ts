@@ -21,7 +21,6 @@ import type {
 } from "@/dto";
 import apiService from "./api.service";
 import { API_ENDPOINTS } from "./endpoint";
-import tokenCache from "@/utils/token-cache";
 
 export const authService = {
   login: async (data: UserLoginReq): Promise<UserLogInResponseDto> => {
@@ -160,9 +159,7 @@ export const authService = {
     return response.data;
   },
 
-  verifyEmail: async (
-    data: VerifyEmailReq,
-  ): Promise<{ message: string }> => {
+  verifyEmail: async (data: VerifyEmailReq): Promise<{ message: string }> => {
     const response = await apiService.post<{ message: string }>(
       API_ENDPOINTS.AUTH.VERIFY_EMAIL,
       data,

@@ -9,13 +9,6 @@ import { ArrowLeft, Eye, EyeOff, Lock, Mail, Phone, User } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
-declare global {
-  interface Window {
-    FB: any;
-    fbAsyncInit: any;
-  }
-}
-
 interface AuthModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -50,7 +43,6 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
     loading,
     error,
     setError,
-    loginWithFacebook,
     login,
     register,
     sendOtpRegistration,
@@ -71,10 +63,9 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
     };
 
     (function (d, s, id) {
-      let js,
-        fjs = d.getElementsByTagName(s)[0];
+      const fjs = d.getElementsByTagName(s)[0];
       if (d.getElementById(id)) return;
-      js = d.createElement(s) as HTMLScriptElement;
+      const js = d.createElement(s) as HTMLScriptElement;
       js.id = id;
       js.src = "https://connect.facebook.net/en_US/sdk.js";
       fjs.parentNode?.insertBefore(js, fjs);

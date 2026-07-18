@@ -1,6 +1,6 @@
-import { create } from 'zustand';
+import { create } from "zustand";
 
-type ModalType = 'login' | 'register' | 'forgotPassword' | null;
+type ModalType = "login" | "register" | "forgotPassword" | null;
 
 interface ModalState {
   activeModal: ModalType;

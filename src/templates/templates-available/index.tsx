@@ -34,12 +34,18 @@ const themeList = [
   { component: BohoFloralGreen, ...enumData.THEME_CODE.BOHO_FLORAL_GREEN },
   { component: BohoFloralPink, ...enumData.THEME_CODE.BOHO_FLORAL_PINK },
   { component: DragonPhoenixBlue, ...enumData.THEME_CODE.DRAGON_PHOENIX_BLUE },
-  { component: DragonPhoenixGreen, ...enumData.THEME_CODE.DRAGON_PHOENIX_GREEN },
+  {
+    component: DragonPhoenixGreen,
+    ...enumData.THEME_CODE.DRAGON_PHOENIX_GREEN,
+  },
   { component: DragonPhoenixRed, ...enumData.THEME_CODE.DRAGON_PHOENIX_RED },
   { component: RoyalBlue, ...enumData.THEME_CODE.ROYAL_BLUE },
   { component: RoyalGreen, ...enumData.THEME_CODE.ROYAL_GREEN },
   { component: RoyalRed, ...enumData.THEME_CODE.ROYAL_RED },
-  { component: RedDoubleHappiness, ...enumData.THEME_CODE.RED_DOUBLE_HAPPINESS },
+  {
+    component: RedDoubleHappiness,
+    ...enumData.THEME_CODE.RED_DOUBLE_HAPPINESS,
+  },
 ];
 
 export const ThemeRegistry: Record<string, React.ComponentType<any>> = {};

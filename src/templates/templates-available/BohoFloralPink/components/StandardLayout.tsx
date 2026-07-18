@@ -1,23 +1,23 @@
 import decorFlower from "@/assets/decorations/boho-floral-pink/fixed_flower.webp";
 import decorFlower2 from "@/assets/decorations/boho-floral-pink/fixed_flower_2.webp";
-import flowerTop from "@/assets/decorations/boho-floral-pink/flower_top.webp";
-import flowerMid from "@/assets/decorations/boho-floral-pink/flower_mid.webp";
 import flowerBottom from "@/assets/decorations/boho-floral-pink/flower_bottom.webp";
-import { CoupleNames } from "./CoupleNames";
+import flowerMid from "@/assets/decorations/boho-floral-pink/flower_mid.webp";
+import flowerTop from "@/assets/decorations/boho-floral-pink/flower_top.webp";
+import type { ThemeTemplateConfig } from "@/dto/theme.dto";
+import { Music } from "lucide-react";
 import { Ceremonies } from "./Ceremonies";
-import { PartyInfo } from "./PartyInfo";
-import { MapDetails } from "./MapDetails";
+import { CoupleNames } from "./CoupleNames";
+import { FamilyInfo } from "./FamilyInfo";
 import { Gallery } from "./Gallery";
-import { RSVP } from "./RSVP";
-import { Timeline } from "./Timeline";
-import { Guestbook } from "./Guestbook";
 import { GiftBox } from "./GiftBox";
+import { Guestbook } from "./Guestbook";
+import { HeroImages } from "./HeroImages";
+import { MapDetails } from "./MapDetails";
+import { PartyInfo } from "./PartyInfo";
+import { RSVP } from "./RSVP";
 import { Rules } from "./Rules";
 import { ThankYou } from "./ThankYou";
-import { Music } from "lucide-react";
-import { HeroImages } from "./HeroImages";
-import { FamilyInfo } from "./FamilyInfo";
-import type { ThemeTemplateConfig } from "@/dto/theme.dto";
+import { Timeline } from "./Timeline";
 
 export const StandardLayout = ({ data, config, isEnvelopeOpen, toggleAudio, isPlaying }: { data: any, config: ThemeTemplateConfig, isEnvelopeOpen: boolean, toggleAudio: () => void, isPlaying: boolean }) => {
   if (!data) return null;

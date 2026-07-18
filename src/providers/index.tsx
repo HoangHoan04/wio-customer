@@ -23,11 +23,16 @@ function AuthInitializer({ children }: { children: React.ReactNode }) {
       useAuthStore.getState().updateTokens(accessToken, refreshToken);
       window.history.replaceState({}, "", window.location.pathname);
       import("@/services/auth.service").then(({ authService }) => {
-        authService.getUserInfo().then((res) => {
-          useAuthStore.getState().setAuth(res.data, accessToken, refreshToken);
-        }).catch(() => {
-          window.location.reload();
-        });
+        authService
+          .getUserInfo()
+          .then((res) => {
+            useAuthStore
+              .getState()
+              .setAuth(res.data, accessToken, refreshToken);
+          })
+          .catch(() => {
+            window.location.reload();
+          });
       });
     }
 

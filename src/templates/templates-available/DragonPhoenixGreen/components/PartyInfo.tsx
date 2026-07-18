@@ -11,16 +11,23 @@ import {
 } from "@/common/helpers";
 import type { ThemeTemplateConfig } from "@/dto/theme.dto";
 
-export const PartyInfo = ({ data, config }: { data?: any; config: ThemeTemplateConfig }) => {
+export const PartyInfo = ({
+  data,
+  config,
+}: {
+  data?: any;
+  config: ThemeTemplateConfig;
+}) => {
   if (!data) return null;
 
-  const partyLunarDateStr = data?.partyLunarDate || getLunarDateStr(data?.partyDate);
+  const partyLunarDateStr =
+    data?.partyLunarDate || getLunarDateStr(data?.partyDate);
   const startEmptyDays = getStartEmptyDays();
   const totalDaysInMonth = data?.partyDate
     ? new Date(
         new Date(data.partyDate).getFullYear(),
         new Date(data.partyDate).getMonth() + 1,
-        0
+        0,
       ).getDate()
     : 0;
 
@@ -44,44 +51,65 @@ export const PartyInfo = ({ data, config }: { data?: any; config: ThemeTemplateC
           textShadow: `0.5px 0 0 ${config.colors.textPrimary}, -0.5px 0 0 ${config.colors.textPrimary}`,
         }}
       >
-        THÔNG TIN {data?.partyType === "engagement" ? "TIỆC BÁO HỶ" : "TIỆC CƯỚI"}
+        THÔNG TIN{" "}
+        {data?.partyType === "engagement" ? "TIỆC BÁO HỶ" : "TIỆC CƯỚI"}
       </h2>
 
       <p
         className="text-md md:text-md uppercase tracking-widest font-bold mb-5"
-        style={{ fontFamily: config.fonts.body, color: config.colors.textSecondary }}
+        style={{
+          fontFamily: config.fonts.body,
+          color: config.colors.textSecondary,
+        }}
       >
-        {data?.partyType === "engagement" ? "TIỆC BÁO HỶ" : "TIỆC CƯỚI"} sẽ diễn ra vào lúc:
+        {data?.partyType === "engagement" ? "TIỆC BÁO HỶ" : "TIỆC CƯỚI"} sẽ diễn
+        ra vào lúc:
       </p>
 
       <div className="flex flex-col items-center mb-5 w-full max-w-md mx-auto">
         <p
           className="text-3xl md:text-4xl tracking-wide font-light mb-4"
-          style={{ fontFamily: config.fonts.heading, color: config.colors.textPrimary }}
+          style={{
+            fontFamily: config.fonts.heading,
+            color: config.colors.textPrimary,
+          }}
         >
           {data?.partyStartTime || "11:30 AM"}
         </p>
 
         <div
           className="flex flex-row items-center justify-center gap-4 w-full text-xs md:text-sm uppercase tracking-[0.15em] font-medium py-3 border-y border-gray-200/40"
-          style={{ fontFamily: config.fonts.body, color: config.colors.textSecondary }}
+          style={{
+            fontFamily: config.fonts.body,
+            color: config.colors.textSecondary,
+          }}
         >
-          <div className="flex-1 text-right pr-2">{getWeekday(data?.partyDate)}</div>
+          <div className="flex-1 text-right pr-2">
+            {getWeekday(data?.partyDate)}
+          </div>
           <span className="h-5 w-px bg-gray-300"></span>
           <div
             className="text-4xl md:text-5xl font-light mx-2 px-1 min-w-15"
-            style={{ fontFamily: config.fonts.heading, color: config.colors.textPrimary }}
+            style={{
+              fontFamily: config.fonts.heading,
+              color: config.colors.textPrimary,
+            }}
           >
             {getDayStr(data?.partyDate)}
           </div>
 
           <span className="h-5 w-px bg-gray-300"></span>
 
-          <div className="flex-1 text-left pl-2">Tháng {getMonthStr(data?.partyDate)}</div>
+          <div className="flex-1 text-left pl-2">
+            Tháng {getMonthStr(data?.partyDate)}
+          </div>
         </div>
         <p
           className="text-sm tracking-[0.2em] font-medium mt-4 mb-2 opacity-80"
-          style={{ fontFamily: config.fonts.body, color: config.colors.textSecondary }}
+          style={{
+            fontFamily: config.fonts.body,
+            color: config.colors.textSecondary,
+          }}
         >
           NĂM {getYearStr(data?.partyDate)}
         </p>
@@ -89,7 +117,10 @@ export const PartyInfo = ({ data, config }: { data?: any; config: ThemeTemplateC
         {partyLunarDateStr && (
           <p
             className="text-xs italic tracking-wide"
-            style={{ fontFamily: config.fonts.body, color: config.colors.textSecondary }}
+            style={{
+              fontFamily: config.fonts.body,
+              color: config.colors.textSecondary,
+            }}
           >
             ({partyLunarDateStr})
           </p>
@@ -106,7 +137,10 @@ export const PartyInfo = ({ data, config }: { data?: any; config: ThemeTemplateC
       >
         <p
           className="text-sm font-bold tracking-widest uppercase mb-4"
-          style={{ fontFamily: config.fonts.heading, color: config.colors.textPrimary }}
+          style={{
+            fontFamily: config.fonts.heading,
+            color: config.colors.textPrimary,
+          }}
         >
           Tháng {getMonthStr(data?.partyDate)} / {getYearStr(data?.partyDate)}
         </p>
@@ -132,14 +166,18 @@ export const PartyInfo = ({ data, config }: { data?: any; config: ThemeTemplateC
 
           {Array.from({ length: totalDaysInMonth }).map((_, i) => {
             const day = i + 1;
-            const isEventDay = day === (data?.partyDate ? Number(getDayStr(data.partyDate)) : null);
+            const isEventDay =
+              day ===
+              (data?.partyDate ? Number(getDayStr(data.partyDate)) : null);
 
             return (
               <div
                 key={day}
                 className="relative flex items-center justify-center w-7 h-7 text-center rounded-full text-xs font-medium"
                 style={{
-                  backgroundColor: isEventDay ? config.colors.textPrimary : "transparent",
+                  backgroundColor: isEventDay
+                    ? config.colors.textPrimary
+                    : "transparent",
                   color: isEventDay ? "#ffffff" : "inherit",
                 }}
               >

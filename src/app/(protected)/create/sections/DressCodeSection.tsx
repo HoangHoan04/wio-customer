@@ -71,7 +71,7 @@ export const DressCodeSection = ({
     }
 
     if (/^#[0-9A-F]{6}$/i.test(cleanVal)) {
-      const { h, s, l } = hexToHsl(cleanVal);
+      const { h, l } = hexToHsl(cleanVal);
 
       if (canvasRef.current) {
         const rect = canvasRef.current.getBoundingClientRect();

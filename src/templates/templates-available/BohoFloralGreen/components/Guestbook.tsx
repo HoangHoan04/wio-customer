@@ -1,9 +1,15 @@
-import { formatDateTime } from "@/common/helpers";
 import decorFlower from "@/assets/decorations/boho-floral-green/flower_mid.webp";
+import { formatDateTime } from "@/common/helpers";
 import type { ThemeTemplateConfig } from "@/dto/theme.dto";
 import { useEffect, useState } from "react";
-export const Guestbook = ({ data, config }: { data?: any; config: ThemeTemplateConfig }) => {
-  const [messages, setMessages] = useState([
+export const Guestbook = ({
+  data,
+  config,
+}: {
+  data?: any;
+  config: ThemeTemplateConfig;
+}) => {
+  const [messages] = useState([
     {
       id: 1,
       name: "Minh Tuấn",
@@ -57,9 +63,22 @@ export const Guestbook = ({ data, config }: { data?: any; config: ThemeTemplateC
   if (!data?.showGuestbook) return null;
 
   return (
-    <section className="py-10 px-4 relative overflow-hidden" style={{ backgroundColor: config.colors.background }}>
-      <img src={decorFlower.src} alt="" aria-hidden="true" className="absolute right-0 top-1/2 -translate-y-1/2 w-24 md:w-44 opacity-10 pointer-events-none translate-x-8 select-none z-0" />
-      <img src={decorFlower.src} alt="" aria-hidden="true" className="absolute left-0 bottom-0 w-20 md:w-36 opacity-10 pointer-events-none -translate-x-6 translate-y-4 select-none z-0 scale-x-[-1]" />
+    <section
+      className="py-10 px-4 relative overflow-hidden"
+      style={{ backgroundColor: config.colors.background }}
+    >
+      <img
+        src={decorFlower.src}
+        alt=""
+        aria-hidden="true"
+        className="absolute right-0 top-1/2 -translate-y-1/2 w-24 md:w-44 opacity-10 pointer-events-none translate-x-8 select-none z-0"
+      />
+      <img
+        src={decorFlower.src}
+        alt=""
+        aria-hidden="true"
+        className="absolute left-0 bottom-0 w-20 md:w-36 opacity-10 pointer-events-none -translate-x-6 translate-y-4 select-none z-0 scale-x-[-1]"
+      />
       {data?.guestbookFloating && (
         <style>{`
           @keyframes floatUpCircle {
@@ -147,7 +166,10 @@ export const Guestbook = ({ data, config }: { data?: any; config: ThemeTemplateC
             ></textarea>
             <button
               className="w-full py-3 rounded-lg font-bold tracking-widest uppercase shadow-lg hover:-translate-y-1 transition-transform"
-              style={{ backgroundColor: config.colors.buttonBg, color: config.colors.buttonText }}
+              style={{
+                backgroundColor: config.colors.buttonBg,
+                color: config.colors.buttonText,
+              }}
             >
               Gửi Lời Chúc
             </button>
@@ -164,20 +186,29 @@ export const Guestbook = ({ data, config }: { data?: any; config: ThemeTemplateC
                   <div className="flex justify-between items-center mb-2">
                     <h4
                       className="font-bold"
-                      style={{ fontFamily: config.fonts.heading, color: config.colors.accent }}
+                      style={{
+                        fontFamily: config.fonts.heading,
+                        color: config.colors.accent,
+                      }}
                     >
                       {msg.name}
                     </h4>
                     <span
                       className="text-[10px] opacity-40 font-medium"
-                      style={{ fontFamily: config.fonts.body, color: config.colors.textPrimary }}
+                      style={{
+                        fontFamily: config.fonts.body,
+                        color: config.colors.textPrimary,
+                      }}
                     >
                       {formatDateTime(msg.createdAt)}
                     </span>
                   </div>
                   <p
                     className="text-sm opacity-90 text-left"
-                    style={{ fontFamily: config.fonts.body, color: config.colors.textPrimary }}
+                    style={{
+                      fontFamily: config.fonts.body,
+                      color: config.colors.textPrimary,
+                    }}
                   >
                     {msg.content}
                   </p>

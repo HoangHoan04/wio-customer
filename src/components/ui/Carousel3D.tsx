@@ -1,5 +1,11 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { Children, cloneElement, isValidElement, type ReactElement, useState } from "react";
+import {
+  Children,
+  cloneElement,
+  isValidElement,
+  type ReactElement,
+  useState,
+} from "react";
 
 interface Carousel3DProps {
   children: ReactElement | ReactElement[];
@@ -156,7 +162,9 @@ export default function Carousel3D({
               e.currentTarget.style.background = "rgba(26, 10, 15, 0.9)";
             }}
           >
-            <ChevronLeft style={{ color: accentColor, width: "28px", height: "28px" }} />
+            <ChevronLeft
+              style={{ color: accentColor, width: "28px", height: "28px" }}
+            />
           </button>
 
           <button
@@ -189,7 +197,9 @@ export default function Carousel3D({
               e.currentTarget.style.background = "rgba(26, 10, 15, 0.9)";
             }}
           >
-            <ChevronRight style={{ color: accentColor, width: "28px", height: "28px" }} />
+            <ChevronRight
+              style={{ color: accentColor, width: "28px", height: "28px" }}
+            />
           </button>
         </>
       )}
@@ -215,7 +225,8 @@ export default function Carousel3D({
               height: "10px",
               borderRadius: "5px",
               border: "none",
-              background: currentIndex === index ? accentColor : `${accentColor}40`,
+              background:
+                currentIndex === index ? accentColor : `${accentColor}40`,
               cursor: "pointer",
               transition: "all 0.3s ease",
             }}

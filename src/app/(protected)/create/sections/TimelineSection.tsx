@@ -47,7 +47,7 @@ export const TimelineSection = ({
             />
           </div>
           <div className="flex flex-col gap-3">
-            {formData.timeline.map((item: any, idx: number) => (
+            {formData.timeline.map((item: any) => (
               <div
                 key={item.id}
                 className="flex items-center gap-3 bg-white/5 p-2 border border-white/10 rounded-lg"

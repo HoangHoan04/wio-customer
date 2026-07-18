@@ -5,7 +5,13 @@ import { formatDateTime } from "@/common/helpers";
 import type { ThemeTemplateConfig } from "@/dto/theme.dto";
 import { useEffect, useState } from "react";
 
-export const Guestbook = ({ data, config }: { data?: any; config: ThemeTemplateConfig }) => {
+export const Guestbook = ({
+  data,
+  config,
+}: {
+  data?: any;
+  config: ThemeTemplateConfig;
+}) => {
   const realMessages = data?.guestbook || data?.messages || [];
   const [activeFloaters, setActiveFloaters] = useState<any[]>([]);
 
@@ -16,14 +22,18 @@ export const Guestbook = ({ data, config }: { data?: any; config: ThemeTemplateC
     }
 
     const interval = setInterval(() => {
-      const randomMsg = realMessages[Math.floor(Math.random() * realMessages.length)];
+      const randomMsg =
+        realMessages[Math.floor(Math.random() * realMessages.length)];
       if (!randomMsg) return;
 
       const newFloater = {
         id: Math.random().toString(),
         name: randomMsg.name || randomMsg.guestName,
         content: randomMsg.content || randomMsg.message,
-        left: Math.random() > 0.5 ? Math.random() * 20 + 5 : Math.random() * 20 + 75,
+        left:
+          Math.random() > 0.5
+            ? Math.random() * 20 + 5
+            : Math.random() * 20 + 75,
         duration: Math.random() * 5 + 10,
       };
 
@@ -149,7 +159,10 @@ export const Guestbook = ({ data, config }: { data?: any; config: ThemeTemplateC
             ></textarea>
             <button
               className="w-full py-3 rounded-lg font-bold tracking-widest uppercase shadow-lg hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200"
-              style={{ backgroundColor: config.colors.buttonBg, color: config.colors.buttonText }}
+              style={{
+                backgroundColor: config.colors.buttonBg,
+                color: config.colors.buttonText,
+              }}
             >
               Gửi Lời Chúc
             </button>
@@ -167,7 +180,10 @@ export const Guestbook = ({ data, config }: { data?: any; config: ThemeTemplateC
                     <div className="flex justify-between items-center mb-2">
                       <h4
                         className="font-bold text-sm md:text-base"
-                        style={{ fontFamily: config.fonts.heading, color: config.colors.accent }}
+                        style={{
+                          fontFamily: config.fonts.heading,
+                          color: config.colors.accent,
+                        }}
                       >
                         {msg.name || msg.guestName}
                       </h4>
@@ -185,7 +201,10 @@ export const Guestbook = ({ data, config }: { data?: any; config: ThemeTemplateC
                     </div>
                     <p
                       className="text-sm opacity-90 text-left leading-relaxed"
-                      style={{ fontFamily: config.fonts.body, color: config.colors.textPrimary }}
+                      style={{
+                        fontFamily: config.fonts.body,
+                        color: config.colors.textPrimary,
+                      }}
                     >
                       {msg.content || msg.message}
                     </p>
@@ -194,7 +213,10 @@ export const Guestbook = ({ data, config }: { data?: any; config: ThemeTemplateC
               ) : (
                 <div
                   className="h-full flex items-center justify-center text-sm opacity-50 italic"
-                  style={{ fontFamily: config.fonts.body, color: config.colors.textPrimary }}
+                  style={{
+                    fontFamily: config.fonts.body,
+                    color: config.colors.textPrimary,
+                  }}
                 >
                   Hãy là người đầu tiên gửi lời chúc hạnh phúc...
                 </div>

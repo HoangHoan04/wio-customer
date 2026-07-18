@@ -159,7 +159,7 @@ export default function ProfilePage() {
         }
       `}</style>
 
-      <div className="max-w-[800px] mx-auto w-full">
+      <div className="max-w-200 mx-auto w-full">
         <h1
           className="text-3xl md:text-4xl font-bold uppercase tracking-wider text-center mb-12"
           style={{

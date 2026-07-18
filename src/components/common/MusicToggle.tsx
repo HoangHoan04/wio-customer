@@ -1,8 +1,8 @@
 "use client";
 
+import { Slider } from "@/components/ui/slider";
 import { Volume1, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { Slider } from "@/components/ui/slider";
 
 interface MusicToggleProps {
   audioSrc?: string;
@@ -37,7 +37,9 @@ const MusicToggle = ({
     const attemptAutoplay = async () => {
       try {
         await audio.play();
-      } catch {}
+      } catch {
+        /* autoplay blocked until user gesture */
+      }
     };
     attemptAutoplay();
 
@@ -68,10 +70,6 @@ const MusicToggle = ({
     } catch (error) {
       console.error("Error toggling music:", error);
     }
-  };
-
-  const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCurrentVolume(Number(e.target.value));
   };
 
   const handleMouseEnter = () => {

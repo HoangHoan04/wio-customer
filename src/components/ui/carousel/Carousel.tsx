@@ -1,5 +1,6 @@
 "use client";
 
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import {
   Children,
   cloneElement,
@@ -9,7 +10,6 @@ import {
   type ReactElement,
   type ReactNode,
 } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 
 export interface CarouselColors {
   accent?: string;
@@ -143,8 +143,12 @@ export default function Carousel({
             onMouseLeave={() => setHoveredBtn(null)}
           >
             {side === "prev"
-              ? (prevIcon ?? <ChevronLeft size={20} style={{ color: accent }} />)
-              : (nextIcon ?? <ChevronRight size={20} style={{ color: accent }} />)}
+              ? (prevIcon ?? (
+                  <ChevronLeft size={20} style={{ color: accent }} />
+                ))
+              : (nextIcon ?? (
+                  <ChevronRight size={20} style={{ color: accent }} />
+                ))}
           </button>
         ))}
 
