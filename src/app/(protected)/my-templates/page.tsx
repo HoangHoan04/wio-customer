@@ -1,6 +1,6 @@
 "use client";
 
-import { formatDateTime, WeddingStatus } from "@/common";
+import { enumData, formatDateTime } from "@/common";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/useToast";
 import { weddingService } from "@/services/wedding.service";
@@ -10,6 +10,7 @@ import {
   Edit2,
   Eye,
   Heart,
+  Lock,
   MapPin,
   Plus,
   Sparkles,
@@ -35,7 +36,7 @@ interface IWedding {
   groomShortName: string;
   brideName: string;
   brideShortName: string;
-  status: WeddingStatus;
+  status: string;
   ceremonyAt?: string;
   ceremonyVenue?: string;
   template?: {
@@ -76,10 +77,36 @@ export default function MyTemplatesPage() {
     showToast({ message: "Đã sao chép liên kết thiệp cưới!", type: "success" });
   };
 
+  const handleUnpublish = async (id: string) => {
+    try {
+      await weddingService.unpublishWedding(id);
+      showToast({
+        message: "Đã mở khóa chỉnh sửa thiệp cưới!",
+        type: "success",
+      });
+      const res = await weddingService.getWeddings({
+        skip: 0,
+        take: 50,
+        where: {},
+      });
+      setWeddings(res.data ?? []);
+    } catch (err: any) {
+      console.error(err);
+      showToast({
+        message:
+          err.response?.data?.message ||
+          "Không thể mở khóa chỉnh sửa thiệp cưới",
+        type: "error",
+      });
+    }
+  };
+
   const filteredWeddings = weddings.filter((w) => {
     if (activeTab === "all") return true;
-    if (activeTab === "draft") return w.status !== WeddingStatus.PUBLISHED;
-    if (activeTab === "published") return w.status === WeddingStatus.PUBLISHED;
+    if (activeTab === "draft")
+      return w.status !== enumData.WEDDING_STATUS.PUBLISHED.code;
+    if (activeTab === "published")
+      return w.status === enumData.WEDDING_STATUS.PUBLISHED.code;
     return true;
   });
 
@@ -137,7 +164,6 @@ export default function MyTemplatesPage() {
           </Link>
         </div>
 
-        {/* Dynamic Tabs */}
         <div className="flex justify-center gap-3 mb-10 border-b border-[#d4af37]/10 pb-6">
           {(
             [
@@ -216,12 +242,12 @@ export default function MyTemplatesPage() {
                     <div className="flex justify-between items-start gap-4 mb-4">
                       <span
                         className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
-                          w.status === WeddingStatus.PUBLISHED
+                          w.status === enumData.WEDDING_STATUS.PUBLISHED.code
                             ? "bg-green-500/10 text-green-400 border border-green-500/25"
                             : "bg-[#d4af37]/10 text-[#f5c842] border border-[#d4af37]/25"
                         }`}
                       >
-                        {w.status === WeddingStatus.PUBLISHED
+                        {w.status === enumData.WEDDING_STATUS.PUBLISHED.code
                           ? "Đã xuất bản"
                           : "Bản nháp"}
                       </span>
@@ -256,14 +282,25 @@ export default function MyTemplatesPage() {
                   </div>
 
                   <div className="flex gap-2 pt-4 border-t border-white/5">
-                    <Button
-                      variant="outline"
-                      onClick={() => router.push(`/edit/${w.id}`)}
-                      className="flex-1 py-4 bg-white/3! border-[#d4af37]/20! hover:border-[#d4af37]/40! text-[#f5e6d3]! flex items-center justify-center gap-1.5 rounded-lg text-xs font-semibold"
-                    >
-                      <Edit2 size={13} />
-                      Chỉnh sửa
-                    </Button>
+                    {w.status !== enumData.WEDDING_STATUS.PUBLISHED.code ? (
+                      <Button
+                        variant="outline"
+                        onClick={() => router.push(`/edit/${w.id}`)}
+                        className="flex-1 py-4 bg-white/3! border-[#d4af37]/20! hover:border-[#d4af37]/40! text-[#f5e6d3]! flex items-center justify-center gap-1.5 rounded-lg text-xs font-semibold"
+                      >
+                        <Edit2 size={13} />
+                        Chỉnh sửa
+                      </Button>
+                    ) : (
+                      <Button
+                        variant="outline"
+                        onClick={() => handleUnpublish(w.id)}
+                        className="flex-1 py-4 bg-red-500/10! border-red-500/20! hover:border-red-500/40! text-red-400! flex items-center justify-center gap-1.5 rounded-lg text-xs font-semibold"
+                      >
+                        <Lock size={13} />
+                        Mở khóa chỉnh sửa
+                      </Button>
+                    )}
                     {w.slug && (
                       <>
                         <Link

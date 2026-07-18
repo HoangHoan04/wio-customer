@@ -26,6 +26,7 @@ export const API_ENDPOINTS = {
     CREATE: "/api/user/wedding/create",
     UPDATE: "/api/user/wedding/update",
     PUBLISH: "/api/user/wedding/publish",
+    UNPUBLISH: "/api/user/wedding/unpublish",
     FIND_BY_ID: "/api/user/wedding/find-by-id",
     FIND_BY_SLUG: "/api/user/wedding/public/find-by-slug",
     PAGINATION: "/api/user/wedding/pagination",
@@ -43,6 +44,29 @@ export const API_ENDPOINTS = {
   GIPHY: {
     SEARCH: "/api/user/giphy/search",
     PEXELS_SEARCH: "/api/user/giphy/pexels-search",
+  },
+  GUEST: {
+    PAGINATION: "/api/user/guest/pagination",
+    FIND_BY_ID: "/api/user/guest/find-by-id",
+    CREATE: "/api/user/guest/create",
+    CREATE_MANY: "/api/user/guest/create-many",
+    UPDATE: "/api/user/guest/update",
+    DELETE: "/api/user/guest/delete",
+    GENERATE_QR: "/api/user/guest/generate-qr",
+    IMPORT_EXCEL: "/api/user/guest/import-excel",
+    DOWNLOAD_SAMPLE_EXCEL: "/api/user/guest/download-sample-excel",
+    PUBLIC_IDENTIFY: "/api/user/guest/public/identify",
+    PUBLIC_RSVP: "/api/user/guest/public/rsvp",
+  },
+
+  TABLE: {
+    PAGINATION: "/api/user/table/pagination",
+    FIND_BY_ID: "/api/user/table/find-by-id",
+    CREATE: "/api/user/table/create",
+    UPDATE: "/api/user/table/update",
+    DELETE: "/api/user/table/delete",
+    ASSIGN_GUEST: "/api/user/table/assign-guest",
+    UNASSIGN_GUEST: "/api/user/table/unassign-guest",
   },
   MAP: {
     RESOLVE_URL: "/api/resolve-map-url",

@@ -296,7 +296,7 @@ export const Welcome = ({
               fontWeight: 600,
             }}
           >
-            Trân Trọng Kính Mời
+            {data?.salutation || "Trân Trọng Kính Mời"}
           </p>
           {data?.guestName && (
             <div

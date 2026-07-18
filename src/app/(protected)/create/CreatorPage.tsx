@@ -1,7 +1,7 @@
 "use client";
 
 import { YoutubeIcon } from "@/assets/icons";
-import { WeddingStatus } from "@/common/enum";
+import { enumData } from "@/common/enum";
 import {
   formatDate,
   formatDateISO,
@@ -678,7 +678,7 @@ export default function CreatorPage() {
           if (res?.data) {
             const w = res.data;
 
-            if (w.status === WeddingStatus.PUBLISHED) {
+            if (w.status === enumData.WEDDING_STATUS.PUBLISHED) {
               showToast({
                 title: "Không thể chỉnh sửa",
                 message: "Thiệp đã xuất bản không thể chỉnh sửa",
@@ -922,9 +922,13 @@ export default function CreatorPage() {
 
       if (id) {
         await weddingService.updateWedding(id, payload);
+        await weddingService.publishWedding(id);
+        const slugToUse = formData.slug || payload.slug;
+        setPublishedUrl(`${window.location.origin}/thiep/${slugToUse}`);
+        setShowSuccessModal(true);
         showToast({
-          title: "Cập nhật thành công",
-          message: "Thiệp cưới của bạn đã được cập nhật!",
+          title: "Lưu & Xuất bản thành công",
+          message: "Thiệp cưới của bạn đã được lưu và xuất bản!",
           type: "success",
         });
       } else {
@@ -973,7 +977,6 @@ export default function CreatorPage() {
       className="flex flex-col md:flex-row h-screen w-full bg-[#0a0508] overflow-hidden"
       style={{ fontFamily: "Inter, sans-serif" }}
     >
-      {/* Mobile Tab Switcher */}
       <div className="md:hidden flex bg-[#0f0608] border-b border-[#d4af37]/20 p-2 shrink-0 z-30">
         <button
           onClick={() => setActiveTab("edit")}
@@ -1275,7 +1278,7 @@ export default function CreatorPage() {
                   handleBankChange(activeBankTab, "bankName", val)
                 }
               >
-                <SelectTrigger className="w-full bg-[#1a1012] border-[#d4af37]/20 text-[#f5e6d3]">
+                <SelectTrigger className="bg-[#1a1012] border-[#d4af37]/20 text-[#f5e6d3]">
                   <SelectValue placeholder="-- Chọn ngân hàng --" />
                 </SelectTrigger>
                 <SelectContent className="bg-[#1a1012] border-[#d4af37]/20 text-[#f5e6d3]">
@@ -1523,7 +1526,6 @@ export default function CreatorPage() {
         </div>
       </Modal>
 
-      {/* Mobile Global Bottom Button Bar */}
       <div className="md:hidden p-4 border-t border-[#d4af37]/20 bg-[#0a0508] flex gap-3 z-30 shrink-0">
         <Button
           variant="outline"

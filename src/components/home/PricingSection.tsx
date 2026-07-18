@@ -166,7 +166,6 @@ export default function PricingSection() {
           </div>
         </ScrollReveal>
 
-        {/* Desktop grid layout */}
         <div className="hidden lg:grid grid-cols-3 gap-8 items-stretch max-w-275 mx-auto">
           {PLANS.map((plan, i) => (
             <ScrollReveal key={i}>
@@ -175,7 +174,6 @@ export default function PricingSection() {
           ))}
         </div>
 
-        {/* Mobile carousel layout */}
         <div className="lg:hidden w-full">
           <Carousel
             colors={{

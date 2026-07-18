@@ -173,7 +173,6 @@ export default function ProfilePage() {
         </h1>
 
         <div className="grid grid-cols-1 gap-8">
-          {/* Personal Info Section */}
           <div className="profile-container p-8 shadow-xl">
             <h2
               className="text-lg font-semibold mb-6 flex items-center gap-2"
@@ -298,7 +297,6 @@ export default function ProfilePage() {
             </form>
           </div>
 
-          {/* Change Password Section */}
           <div className="profile-container p-8 shadow-xl">
             <h2
               className="text-lg font-semibold mb-6 flex items-center gap-2"

@@ -1,35 +1,50 @@
 import { create } from "zustand";
 
-export type ToastType = "success" | "error" | "info" | "warning";
+export type ToastType = "success" | "info" | "warning" | "error";
 
-export interface Toast {
+export interface ToastItem {
   id: string;
-  message: string;
   type: ToastType;
-  duration?: number;
+  title?: string;
+  message: string;
+  timeout: number;
+}
+
+export interface ToastPayload {
+  type: ToastType;
+  title?: string;
+  message: string;
+  timeout?: number;
 }
 
 interface ToastState {
-  toasts: Toast[];
-  addToast: (message: string, type: ToastType, duration?: number) => void;
-  removeToast: (id: string) => void;
+  toasts: ToastItem[];
+  showToast: (payload: ToastPayload) => void;
+  dismissToast: (id: string) => void;
 }
 
 export const useToastStore = create<ToastState>((set) => ({
   toasts: [],
-  addToast: (message, type, duration = 3000) => {
-    const id = Math.random().toString(36).substring(2, 9);
-    set((state) => ({
-      toasts: [...state.toasts, { id, message, type, duration }],
-    }));
-    setTimeout(() => {
-      set((state) => ({
-        toasts: state.toasts.filter((t) => t.id !== id),
-      }));
-    }, duration);
+
+  showToast: (payload) => {
+    const id = `toast-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+    const item: ToastItem = {
+      id,
+      type: payload.type,
+      title: payload.title,
+      message: payload.message,
+      timeout: payload.timeout ?? 4000,
+    };
+    set((state) => ({ toasts: [...state.toasts, item] }));
   },
-  removeToast: (id) =>
-    set((state) => ({
-      toasts: state.toasts.filter((t) => t.id !== id),
-    })),
+
+  dismissToast: (id) =>
+    set((state) => ({ toasts: state.toasts.filter((t) => t.id !== id) })),
 }));
+
+export const useToast = () => {
+  const showToast = useToastStore((s) => s.showToast);
+  return { showToast };
+};
+
+export default useToastStore;

@@ -1,6 +1,6 @@
 "use client";
 
-import { Toaster } from "@/components/ui/sonner";
+import ToastContainer from "@/components/common/ToastContainer";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useAuthStore } from "@/stores/useAuthStore";
 import React, { useEffect } from "react";
@@ -53,7 +53,7 @@ export default function AppProviders({
       <QueryProvider>
         <TooltipProvider>
           <AuthInitializer>{children}</AuthInitializer>
-          <Toaster />
+          <ToastContainer />
         </TooltipProvider>
       </QueryProvider>
     </ThemeProvider>

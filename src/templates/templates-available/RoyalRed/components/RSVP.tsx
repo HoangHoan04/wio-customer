@@ -1,6 +1,7 @@
 import decorFlower from "@/assets/decorations/royal-red/flower.webp";
 import type { ThemeTemplateConfig } from "@/dto/theme.dto";
 import { useState } from "react";
+import { submitRsvpAction } from "@/services/rsvp-helper";
 
 export const RSVP = ({
   data,
@@ -50,11 +51,18 @@ export const RSVP = ({
               return;
             }
             setIsSubmitting(true);
-            setTimeout(() => {
-              setIsSubmitting(false);
-              setIsOpen(false);
-              alert("Cảm ơn bạn đã phản hồi!");
-            }, 1000);
+            submitRsvpAction(attending, guestCount)
+              .then(() => {
+                alert("Cảm ơn bạn đã phản hồi!");
+                setIsOpen(false);
+              })
+              .catch((err) => {
+                console.error(err);
+                alert("Gửi phản hồi thất bại, vui lòng thử lại sau.");
+              })
+              .finally(() => {
+                setIsSubmitting(false);
+              });
           }}
         >
           <div>
@@ -64,8 +72,10 @@ export const RSVP = ({
             <input
               required
               type="text"
+              defaultValue={data?.guestName || ""}
+              disabled={!!data?.guestName}
               placeholder="Nhập tên của bạn"
-              className="w-full px-3.5 py-2.5 bg-white border border-[#e5e7eb] rounded-xl outline-none placeholder-gray-400 text-sm focus:border-[#4a3728] focus:ring-1 focus:ring-[#4a3728] transition-all text-[#1a1a1a]"
+              className="w-full px-3.5 py-2.5 bg-white border border-[#e5e7eb] rounded-xl outline-none placeholder-gray-400 text-sm focus:border-[#4a3728] focus:ring-1 focus:ring-[#4a3728] transition-all text-[#1a1a1a] disabled:bg-gray-100 disabled:text-gray-500"
             />
           </div>
 

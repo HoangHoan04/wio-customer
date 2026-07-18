@@ -3,6 +3,8 @@ export const REQUIRE_AUTH_ROUTES = {
   EDIT: "/edit/:id",
   DESIGN_EDITOR: "/design",
   MY_TEMPLATES: "/my-templates",
+  MY_GUESTS: "/my-guests",
+  MY_TABLES: "/my-tables",
   PROFILE: "/profile",
 };
 

@@ -26,6 +26,12 @@ export const weddingService = {
     });
     return response.data;
   },
+  unpublishWedding: async (id: string): Promise<any> => {
+    const response = await apiService.post(API_ENDPOINTS.WEDDING.UNPUBLISH, {
+      id,
+    });
+    return response.data;
+  },
   getWeddingById: async (id: string): Promise<any> => {
     const response = await apiService.post(API_ENDPOINTS.WEDDING.FIND_BY_ID, {
       id,

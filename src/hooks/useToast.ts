@@ -1,6 +1,4 @@
-import { toast } from "sonner";
-
-type ToastType = "success" | "error" | "info" | "warning";
+import { useToastStore, type ToastType } from "@/stores/useToastStore";
 
 interface ToastOptions {
   title?: string;
@@ -9,21 +7,16 @@ interface ToastOptions {
 }
 
 export function useToast() {
+  const showToastStore = useToastStore((s) => s.showToast);
+
   const showToast = ({ title, message, type = "info" }: ToastOptions) => {
-    const content = [title, message].filter(Boolean).join(" — ");
-    switch (type) {
-      case "success":
-        toast.success(content || title || message);
-        break;
-      case "error":
-        toast.error(content || title || message);
-        break;
-      case "warning":
-        toast.warning(content || title || message);
-        break;
-      default:
-        toast.info(content || title || message);
-    }
+    const msg = message || title || "";
+    const ttl = message ? title : undefined;
+    showToastStore({
+      type,
+      title: ttl,
+      message: msg,
+    });
   };
 
   return { showToast };

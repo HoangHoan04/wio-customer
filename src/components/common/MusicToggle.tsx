@@ -37,9 +37,7 @@ const MusicToggle = ({
     const attemptAutoplay = async () => {
       try {
         await audio.play();
-      } catch {
-        /* autoplay blocked until user gesture */
-      }
+      } catch { /* autoplay rejected by browser policy */ }
     };
     attemptAutoplay();
 

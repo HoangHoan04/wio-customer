@@ -268,6 +268,18 @@ export default function AppHeader({ isScrolled = false }: AppHeaderProps) {
                           Thiệp của tôi
                         </DropdownMenuItem>
                         <DropdownMenuItem
+                          onClick={() => router.push("/my-guests")}
+                          className="px-4 py-2.5 text-[#f5e6d3]/90 text-[12px] tracking-wide rounded-lg cursor-pointer hover:bg-[#d4af37]/10 hover:text-[#f5c842] transition-all focus:bg-[#d4af37]/10 focus:text-[#f5c842]"
+                        >
+                          Quản lý khách mời
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => router.push("/my-tables")}
+                          className="px-4 py-2.5 text-[#f5e6d3]/90 text-[12px] tracking-wide rounded-lg cursor-pointer hover:bg-[#d4af37]/10 hover:text-[#f5c842] transition-all focus:bg-[#d4af37]/10 focus:text-[#f5c842]"
+                        >
+                          Sơ đồ bàn tiệc
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
                           onClick={() => router.push("/profile")}
                           className="px-4 py-2.5 text-[#f5e6d3]/90 text-[12px] tracking-wide rounded-lg cursor-pointer hover:bg-[#d4af37]/10 hover:text-[#f5c842] transition-all focus:bg-[#d4af37]/10 focus:text-[#f5c842]"
                         >
@@ -308,7 +320,6 @@ export default function AppHeader({ isScrolled = false }: AppHeaderProps) {
             </div>
           </div>
 
-          {/* Mobile Navigation Drawer */}
           <div
             className={`
               lg:hidden overflow-hidden transition-all duration-500 ease-in-out border-t border-[#d4af37]/10 bg-[#13070b]/98 backdrop-blur-xl rounded-b-2xl

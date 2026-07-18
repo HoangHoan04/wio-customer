@@ -233,7 +233,7 @@ export const Welcome = ({
               letterSpacing: "0.05em",
             }}
           >
-            Kính Mời
+            {data?.salutation || "Kính mời"}
           </p>
 
           {data?.guestName && (

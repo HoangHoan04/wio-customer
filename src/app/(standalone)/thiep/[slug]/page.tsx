@@ -7,13 +7,16 @@ import {
   sortAndMapTimeline,
 } from "@/common/helpers";
 import { weddingService } from "@/services/wedding.service";
+import { guestService } from "@/services/guest.service";
 import { getThemeComponent } from "@/templates/templates-available";
-import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useParams, useSearchParams } from "next/navigation";
+import { useEffect, useState, Suspense } from "react";
 
-export default function WeddingPublicPage() {
+function WeddingPublicContent() {
   const params = useParams();
+  const searchParams = useSearchParams();
   const slug = params.slug as string;
+  const code = searchParams.get("code");
   const [weddingData, setWeddingData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -22,89 +25,115 @@ export default function WeddingPublicPage() {
     if (!slug) return;
     setLoading(true);
     setError("");
-    weddingService
-      .getWeddingBySlug(slug)
-      .then((res: any) => {
-        const data = res?.data || res;
-        if (!data) {
+
+    const loadData = async () => {
+      try {
+        let wedding: any = null;
+        let guest: any = null;
+
+        if (code) {
+          try {
+            const res = await guestService.identify(code);
+            guest = res?.data?.guest;
+            wedding = res?.data?.wedding;
+          } catch (err) {
+            console.error("Failed to identify guest:", err);
+          }
+        }
+
+        if (!wedding) {
+          const res = await weddingService.getWeddingBySlug(slug);
+          wedding = res?.data || res;
+        }
+
+        if (!wedding) {
           setError("Không tìm thấy thiệp cưới");
           return;
         }
+
         setWeddingData({
-          themeCode: data.template?.themeCode || "",
-          slug: data.slug,
-          displayOrder: data.displayOrder || "groom_first",
+          themeCode: wedding.template?.themeCode || "",
+          slug: wedding.slug,
+          displayOrder: wedding.displayOrder || "groom_first",
           groom: {
-            name: data.groomName || "",
-            shortName: data.groomShortName || "",
-            title: data.groomTitle || "",
-            familyTitle: data.groomFamilyTitle || "",
-            father: data.groomFatherName || "",
-            mother: data.groomMotherName || "",
-            address: data.groomAddress || "",
-            photo: data.groomPhotoUrl || "",
+            name: wedding.groomName || "",
+            shortName: wedding.groomShortName || "",
+            title: wedding.groomTitle || "",
+            familyTitle: wedding.groomFamilyTitle || "",
+            father: wedding.groomFatherName || "",
+            mother: wedding.groomMotherName || "",
+            address: wedding.groomAddress || "",
+            photo: wedding.groomPhotoUrl || "",
             bankAccount: {
-              bankName: data.groomBankName || "",
-              accountName: data.groomBankOwner || "",
-              accountNumber: data.groomBankAccount || "",
-              qrUrl: data.groomQrUrl || "",
+              bankName: wedding.groomBankName || "",
+              accountName: wedding.groomBankOwner || "",
+              accountNumber: wedding.groomBankAccount || "",
+              qrUrl: wedding.groomQrUrl || "",
             },
           },
           bride: {
-            name: data.brideName || "",
-            shortName: data.brideShortName || "",
-            title: data.brideTitle || "",
-            familyTitle: data.brideFamilyTitle || "",
-            father: data.brideFatherName || "",
-            mother: data.brideMotherName || "",
-            address: data.brideAddress || "",
-            photo: data.bridePhotoUrl || "",
+            name: wedding.brideName || "",
+            shortName: wedding.brideShortName || "",
+            title: wedding.brideTitle || "",
+            familyTitle: wedding.brideFamilyTitle || "",
+            father: wedding.brideFatherName || "",
+            mother: wedding.brideMotherName || "",
+            address: wedding.brideAddress || "",
+            photo: wedding.bridePhotoUrl || "",
             bankAccount: {
-              bankName: data.brideBankName || "",
-              accountName: data.brideBankOwner || "",
-              accountNumber: data.brideBankAccount || "",
-              qrUrl: data.brideQrUrl || "",
+              bankName: wedding.brideBankName || "",
+              accountName: wedding.brideBankOwner || "",
+              accountNumber: wedding.brideBankAccount || "",
+              qrUrl: wedding.brideQrUrl || "",
             },
           },
-          showHeroImage: data.showHeroImage ?? true,
-          heroImageMain: data.heroImageMain || "",
-          showIntro: data.showIntro ?? true,
-          introText: data.invitationText || "",
-          events: sortAndMapEvents(data.events),
-          showGallery: data.showGallery ?? true,
-          galleryLayout: data.galleryLayout || "grid",
-          gallery: (data.photos || [])
+          showHeroImage: wedding.showHeroImage ?? true,
+          heroImageMain: wedding.heroImageMain || "",
+          showIntro: wedding.showIntro ?? true,
+          introText: wedding.invitationText || "",
+          events: sortAndMapEvents(wedding.events),
+          showGallery: wedding.showGallery ?? true,
+          galleryLayout: wedding.galleryLayout || "grid",
+          gallery: (wedding.photos || [])
             .sort((a: any, b: any) => a.sortOrder - b.sortOrder)
             .map((p: any) => p.url),
-          showParty: data.showParty ?? true,
-          partyType: data.partyType || "wedding",
-          partyDate: formatDateISO(data.ceremonyAt),
-          partyWelcomeTime: data.receptionWelcomeTime || "17:30",
-          partyStartTime: formatTime2Digit(data.ceremonyAt, "18:30"),
-          partyAddress: data.ceremonyAddress || "",
-          partyMapUrl: data.ceremonyMapsUrl || "",
-          showCountdown: data.showCountdown ?? true,
-          showMap: data.showMap ?? true,
-          showDressCode: data.showDressCode ?? true,
-          dressCodes: data.dressCodes || [],
-          showTimeline: data.showTimeline ?? true,
-          timelineTitle: data.timelineTitle || "Lịch trình ngày cưới",
-          timeline: sortAndMapTimeline(data.timelines),
-          showRsvp: data.showRsvp ?? true,
-          rsvpType: data.rsvpType || "form",
-          showGuestbook: data.showGuestbook ?? true,
-          guestbookStatic: data.guestbookStatic ?? true,
-          guestbookFloating: data.guestbookFloating ?? false,
-          showThankYou: data.showThankYou ?? true,
-          thankYouText: data.thankYouText || "",
-          showMusic: !!data.musicUrl,
-          musicUrl: data.musicUrl || "",
-          musicName: data.musicName || "",
+          showParty: wedding.showParty ?? true,
+          partyType: wedding.partyType || "wedding",
+          partyDate: formatDateISO(wedding.ceremonyAt),
+          partyWelcomeTime: wedding.receptionWelcomeTime || "17:30",
+          partyStartTime: formatTime2Digit(wedding.ceremonyAt, "18:30"),
+          partyAddress: wedding.ceremonyAddress || "",
+          partyMapUrl: wedding.ceremonyMapsUrl || "",
+          showCountdown: wedding.showCountdown ?? true,
+          showMap: wedding.showMap ?? true,
+          showDressCode: wedding.showDressCode ?? true,
+          dressCodes: wedding.dressCodes || [],
+          showTimeline: wedding.showTimeline ?? true,
+          timelineTitle: wedding.timelineTitle || "Lịch trình ngày cưới",
+          timeline: sortAndMapTimeline(wedding.timelines),
+          showRsvp: wedding.showRsvp ?? true,
+          rsvpType: wedding.rsvpType || "form",
+          showGuestbook: wedding.showGuestbook ?? true,
+          guestbookStatic: wedding.guestbookStatic ?? true,
+          guestbookFloating: wedding.guestbookFloating ?? false,
+          showThankYou: wedding.showThankYou ?? true,
+          thankYouText: wedding.thankYouText || "",
+          showMusic: !!wedding.musicUrl,
+          musicUrl: wedding.musicUrl || "",
+          musicName: wedding.musicName || "",
+          guestName: guest ? guest.fullName : undefined,
+          salutation: guest ? guest.salutation : undefined,
         });
-      })
-      .catch(() => setError("Không tìm thấy thiệp cưới"))
-      .finally(() => setLoading(false));
-  }, [slug]);
+      } catch (err) {
+        console.error(err);
+        setError("Không tìm thấy thiệp cưới");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadData();
+  }, [slug, code]);
 
   if (loading) {
     return (
@@ -125,4 +154,16 @@ export default function WeddingPublicPage() {
 
   const ThemeComponent = getThemeComponent(weddingData.themeCode);
   return <ThemeComponent data={weddingData} isPreview={false} />;
+}
+
+export default function WeddingPublicPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex min-h-screen items-center justify-center bg-[#fdfbf7] text-[#666]">
+        <p>Đang tải...</p>
+      </div>
+    }>
+      <WeddingPublicContent />
+    </Suspense>
+  );
 }
