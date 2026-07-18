@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { authService } from "@/services/auth.service";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/useToast";
-import { User, Lock, Phone, Calendar, Mail, Smile } from "lucide-react";
+import { authService } from "@/services/auth.service";
+import { Calendar, Lock, Mail, Phone, User } from "lucide-react";
+import { useEffect, useState } from "react";
 
 const C = {
   bg: "#0b0507",
@@ -23,14 +23,11 @@ export default function ProfilePage() {
   const [savingInfo, setSavingInfo] = useState(false);
   const [savingPassword, setSavingPassword] = useState(false);
 
-  // Profile fields
   const [email, setEmail] = useState("");
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
   const [gender, setGender] = useState("");
   const [dateOfBirth, setDateOfBirth] = useState("");
-
-  // Password fields
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -43,19 +40,24 @@ export default function ProfilePage() {
           const user = res.data;
           setEmail(user.email || "");
           setPhone(user.phone || "");
-          
+
           if (user.customer) {
             setFullName(user.customer.fullName || "");
             setGender(user.customer.gender || "");
             if (user.customer.dateOfBirth) {
-              setDateOfBirth(new Date(user.customer.dateOfBirth).toISOString().split("T")[0]);
+              setDateOfBirth(
+                new Date(user.customer.dateOfBirth).toISOString().split("T")[0],
+              );
             }
           }
         }
       })
       .catch((err) => {
         console.error(err);
-        showToast({ message: "Không thể lấy thông tin tài khoản", type: "error" });
+        showToast({
+          message: "Không thể lấy thông tin tài khoản",
+          type: "error",
+        });
       })
       .finally(() => setLoading(false));
   }, []);
@@ -74,10 +76,16 @@ export default function ProfilePage() {
         gender,
         dateOfBirth: dateOfBirth || null,
       });
-      showToast({ message: "Cập nhật thông tin cá nhân thành công!", type: "success" });
+      showToast({
+        message: "Cập nhật thông tin cá nhân thành công!",
+        type: "success",
+      });
     } catch (err: any) {
       console.error(err);
-      showToast({ message: err.response?.data?.message || "Cập nhật thất bại", type: "error" });
+      showToast({
+        message: err.response?.data?.message || "Cập nhật thất bại",
+        type: "error",
+      });
     } finally {
       setSavingInfo(false);
     }
@@ -86,11 +94,17 @@ export default function ProfilePage() {
   const handleChangePassword = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!currentPassword || !newPassword || !confirmPassword) {
-      showToast({ message: "Vui lòng điền đầy đủ thông tin mật khẩu", type: "error" });
+      showToast({
+        message: "Vui lòng điền đầy đủ thông tin mật khẩu",
+        type: "error",
+      });
       return;
     }
     if (newPassword.length < 6) {
-      showToast({ message: "Mật khẩu mới phải có tối thiểu 6 ký tự", type: "error" });
+      showToast({
+        message: "Mật khẩu mới phải có tối thiểu 6 ký tự",
+        type: "error",
+      });
       return;
     }
     if (newPassword !== confirmPassword) {
@@ -111,7 +125,10 @@ export default function ProfilePage() {
       setConfirmPassword("");
     } catch (err: any) {
       console.error(err);
-      showToast({ message: err.response?.data?.message || "Đổi mật khẩu thất bại", type: "error" });
+      showToast({
+        message: err.response?.data?.message || "Đổi mật khẩu thất bại",
+        type: "error",
+      });
     } finally {
       setSavingPassword(false);
     }
@@ -119,7 +136,10 @@ export default function ProfilePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex justify-center items-center" style={{ background: C.bg }}>
+      <div
+        className="min-h-screen flex justify-center items-center"
+        style={{ background: C.bg }}
+      >
         <div className="w-12 h-12 border-4 border-[#d4af37]/20 border-t-[#d4af37] rounded-full animate-spin" />
       </div>
     );
@@ -155,14 +175,19 @@ export default function ProfilePage() {
         <div className="grid grid-cols-1 gap-8">
           {/* Personal Info Section */}
           <div className="profile-container p-8 shadow-xl">
-            <h2 className="text-lg font-semibold mb-6 flex items-center gap-2" style={{ fontFamily: "'Cinzel', serif", color: C.goldLight }}>
+            <h2
+              className="text-lg font-semibold mb-6 flex items-center gap-2"
+              style={{ fontFamily: "'Cinzel', serif", color: C.goldLight }}
+            >
               <User size={18} />
               Thông tin cá nhân
             </h2>
 
             <form onSubmit={handleUpdateProfile} className="space-y-5">
               <div>
-                <label className="text-xs uppercase tracking-wider block mb-2 text-[#f5e6d3]/60 font-medium">Email (Đăng nhập)</label>
+                <label className="text-xs uppercase tracking-wider block mb-2 text-[#f5e6d3]/60 font-medium">
+                  Email (Đăng nhập)
+                </label>
                 <div className="relative">
                   <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-[#f5e6d3]/40">
                     <Mail size={16} />
@@ -177,7 +202,9 @@ export default function ProfilePage() {
               </div>
 
               <div>
-                <label className="text-xs uppercase tracking-wider block mb-2 text-[#f5e6d3]/60 font-medium">Họ và tên</label>
+                <label className="text-xs uppercase tracking-wider block mb-2 text-[#f5e6d3]/60 font-medium">
+                  Họ và tên
+                </label>
                 <div className="relative">
                   <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-[#f5e6d3]/40">
                     <User size={16} />
@@ -195,7 +222,9 @@ export default function ProfilePage() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <div>
-                  <label className="text-xs uppercase tracking-wider block mb-2 text-[#f5e6d3]/60 font-medium">Số điện thoại</label>
+                  <label className="text-xs uppercase tracking-wider block mb-2 text-[#f5e6d3]/60 font-medium">
+                    Số điện thoại
+                  </label>
                   <div className="relative">
                     <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-[#f5e6d3]/40">
                       <Phone size={16} />
@@ -211,7 +240,9 @@ export default function ProfilePage() {
                 </div>
 
                 <div>
-                  <label className="text-xs uppercase tracking-wider block mb-2 text-[#f5e6d3]/60 font-medium">Ngày sinh</label>
+                  <label className="text-xs uppercase tracking-wider block mb-2 text-[#f5e6d3]/60 font-medium">
+                    Ngày sinh
+                  </label>
                   <div className="relative">
                     <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-[#f5e6d3]/40">
                       <Calendar size={16} />
@@ -227,10 +258,15 @@ export default function ProfilePage() {
               </div>
 
               <div>
-                <label className="text-xs uppercase tracking-wider block mb-2 text-[#f5e6d3]/60 font-medium">Giới tính</label>
+                <label className="text-xs uppercase tracking-wider block mb-2 text-[#f5e6d3]/60 font-medium">
+                  Giới tính
+                </label>
                 <div className="flex gap-6 mt-1 text-sm">
                   {["Nam", "Nữ", "Khác"].map((g) => (
-                    <label key={g} className="flex items-center gap-2 cursor-pointer">
+                    <label
+                      key={g}
+                      className="flex items-center gap-2 cursor-pointer"
+                    >
                       <input
                         type="radio"
                         name="gender"
@@ -264,14 +300,19 @@ export default function ProfilePage() {
 
           {/* Change Password Section */}
           <div className="profile-container p-8 shadow-xl">
-            <h2 className="text-lg font-semibold mb-6 flex items-center gap-2" style={{ fontFamily: "'Cinzel', serif", color: C.goldLight }}>
+            <h2
+              className="text-lg font-semibold mb-6 flex items-center gap-2"
+              style={{ fontFamily: "'Cinzel', serif", color: C.goldLight }}
+            >
               <Lock size={18} />
               Đổi mật khẩu
             </h2>
 
             <form onSubmit={handleChangePassword} className="space-y-5">
               <div>
-                <label className="text-xs uppercase tracking-wider block mb-2 text-[#f5e6d3]/60 font-medium">Mật khẩu hiện tại</label>
+                <label className="text-xs uppercase tracking-wider block mb-2 text-[#f5e6d3]/60 font-medium">
+                  Mật khẩu hiện tại
+                </label>
                 <div className="relative">
                   <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-[#f5e6d3]/40">
                     <Lock size={16} />
@@ -289,7 +330,9 @@ export default function ProfilePage() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <div>
-                  <label className="text-xs uppercase tracking-wider block mb-2 text-[#f5e6d3]/60 font-medium">Mật khẩu mới</label>
+                  <label className="text-xs uppercase tracking-wider block mb-2 text-[#f5e6d3]/60 font-medium">
+                    Mật khẩu mới
+                  </label>
                   <div className="relative">
                     <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-[#f5e6d3]/40">
                       <Lock size={16} />
@@ -306,7 +349,9 @@ export default function ProfilePage() {
                 </div>
 
                 <div>
-                  <label className="text-xs uppercase tracking-wider block mb-2 text-[#f5e6d3]/60 font-medium">Xác nhận mật khẩu mới</label>
+                  <label className="text-xs uppercase tracking-wider block mb-2 text-[#f5e6d3]/60 font-medium">
+                    Xác nhận mật khẩu mới
+                  </label>
                   <div className="relative">
                     <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-[#f5e6d3]/40">
                       <Lock size={16} />
