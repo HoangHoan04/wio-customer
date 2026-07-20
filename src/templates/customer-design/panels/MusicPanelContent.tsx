@@ -29,6 +29,7 @@ interface AudioItem {
   url?: string;
   duration: string;
   source?: "admin" | "user";
+  status?: string;
 }
 
 interface UploadedAudio {
@@ -75,6 +76,8 @@ export default function MusicPanelContent({
   const [uploadedAudios, setUploadedAudios] = useState<UploadedAudio[]>([]);
   const [uploadLoading, setUploadLoading] = useState(false);
   const [youtubeUrl, setYoutubeUrl] = useState("");
+  const [youtubeImportLoading, setYoutubeImportLoading] = useState(false);
+  const [youtubeImportPending, setYoutubeImportPending] = useState(false);
   const existingWidget = elements.find(
     (el) => el.type === "widget" && el.widgetType === "music" && el.widgetConfig?.audioEnabled
   );
@@ -109,7 +112,7 @@ export default function MusicPanelContent({
     };
   }, []);
 
-  useEffect(() => {
+  const fetchLibrary = useCallback(() => {
     setLibLoading(true);
     musicBackgroundService
       .getMusics()
@@ -121,6 +124,7 @@ export default function MusicPanelContent({
           url: item.audioUrl || item.fileUrl || "",
           duration: item.duration || "3:00",
           source: "admin" as const,
+          status: item.status || "",
         }));
         setLibrary(mapped);
       })
@@ -129,6 +133,28 @@ export default function MusicPanelContent({
       })
       .finally(() => setLibLoading(false));
   }, []);
+
+  useEffect(() => {
+    fetchLibrary();
+  }, [fetchLibrary]);
+
+  useEffect(() => {
+    const hasProcessing = library.some(
+      (s) => s.status === "PROCESSING" || s.status === "PENDING",
+    );
+    if (!hasProcessing && !youtubeImportPending) return;
+
+    let elapsed = 0;
+    const interval = setInterval(() => {
+      fetchLibrary();
+      elapsed += 3000;
+      if (youtubeImportPending && elapsed >= 60000) {
+        setYoutubeImportPending(false);
+      }
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [library, fetchLibrary, youtubeImportPending]);
 
   useEffect(() => {
     try {
@@ -248,16 +274,31 @@ export default function MusicPanelContent({
     e.preventDefault();
   }, []);
 
-  const handleImportYoutube = useCallback(() => {
+  const handleImportYoutube = useCallback(async () => {
     if (!youtubeUrl.trim()) return;
-    showToast({
-      title: "Đang phát triển",
-      message: "Tính năng nhập nhạc từ YouTube đang được phát triển",
-      type: "info",
-      timeout: 3000,
-    });
-    setYoutubeUrl("");
-  }, [youtubeUrl, showToast]);
+    setYoutubeImportLoading(true);
+    try {
+      await musicBackgroundService.importYoutube(youtubeUrl);
+      showToast({
+        title: "Đã thêm",
+        message: "Nhạc đang được tải từ YouTube, vui lòng chờ...",
+        type: "success",
+        timeout: 3000,
+      });
+      setYoutubeUrl("");
+      setYoutubeImportPending(true);
+      fetchLibrary();
+    } catch {
+      showToast({
+        title: "Lỗi",
+        message: "Không thể nhập nhạc từ YouTube",
+        type: "error",
+        timeout: 3000,
+      });
+    } finally {
+      setYoutubeImportLoading(false);
+    }
+  }, [youtubeUrl, showToast, fetchLibrary]);
 
   const handleRemoveUploaded = useCallback(
     (id: string) => {
@@ -450,9 +491,14 @@ export default function MusicPanelContent({
             </div>
             <button
               onClick={handleImportYoutube}
-              className="px-3 py-2 bg-red-600/20 text-red-400 text-xs font-medium rounded-xl border border-red-800/40 hover:bg-red-600/30 transition-colors whitespace-nowrap"
+              disabled={youtubeImportLoading}
+              className="px-3 py-2 bg-red-600/20 text-red-400 text-xs font-medium rounded-xl border border-red-800/40 hover:bg-red-600/30 transition-colors whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Import
+              {youtubeImportLoading ? (
+                <Loader2 size={14} className="animate-spin" />
+              ) : (
+                "Import"
+              )}
             </button>
           </div>
 

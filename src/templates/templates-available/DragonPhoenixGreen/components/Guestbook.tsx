@@ -3,6 +3,7 @@ import dragon from "@/assets/decorations/dragon_phoenix_green/dragon.webp";
 import phoenix from "@/assets/decorations/dragon_phoenix_green/phoenix.webp";
 import { formatDateTime } from "@/common/helpers";
 import type { ThemeTemplateConfig } from "@/dto/theme.dto";
+import { useGuestbook } from "@/hooks/useGuestbook";
 import { useEffect, useState } from "react";
 
 export const Guestbook = ({
@@ -12,24 +13,31 @@ export const Guestbook = ({
   data?: any;
   config: ThemeTemplateConfig;
 }) => {
-  const realMessages = data?.guestbook || data?.messages || [];
+  const {
+    messages,
+    submitting,
+    guestName,
+    setGuestName,
+    content,
+    setContent,
+    submit,
+  } = useGuestbook(data);
   const [activeFloaters, setActiveFloaters] = useState<any[]>([]);
 
   useEffect(() => {
-    if (!data?.guestbookFloating || realMessages.length === 0) {
+    if (!data?.guestbookFloating || messages.length === 0) {
       setActiveFloaters([]);
       return;
     }
 
     const interval = setInterval(() => {
-      const randomMsg =
-        realMessages[Math.floor(Math.random() * realMessages.length)];
+      const randomMsg = messages[Math.floor(Math.random() * messages.length)];
       if (!randomMsg) return;
 
       const newFloater = {
         id: Math.random().toString(),
-        name: randomMsg.name || randomMsg.guestName,
-        content: randomMsg.content || randomMsg.message,
+        name: randomMsg.guestName,
+        content: randomMsg.content,
         left:
           Math.random() > 0.5
             ? Math.random() * 20 + 5
@@ -45,7 +53,7 @@ export const Guestbook = ({
     }, 3500);
 
     return () => clearInterval(interval);
-  }, [data?.guestbookFloating, data?.guestbook, data?.messages]);
+  }, [data?.guestbookFloating, messages]);
 
   if (!data?.showGuestbook) return null;
 
@@ -81,7 +89,7 @@ export const Guestbook = ({
         className="absolute left-16 bottom-1/4 w-16 md:w-24 opacity-5 lg:opacity-10 pointer-events-none select-none z-0 hidden md:block"
       />
 
-      {data?.guestbookFloating && realMessages.length > 0 && (
+      {data?.guestbookFloating && messages.length > 0 && (
         <style>{`
           @keyframes floatUpCircle {
             0% { transform: translateY(35vh) translateX(0) scale(0.85); opacity: 0; }
@@ -91,7 +99,7 @@ export const Guestbook = ({
           }
         `}</style>
       )}
-      {data?.guestbookFloating && realMessages.length > 0 && (
+      {data?.guestbookFloating && messages.length > 0 && (
         <div className="fixed bottom-0 left-0 w-full h-[35vh] overflow-hidden pointer-events-none z-40">
           {activeFloaters.map((f) => (
             <div
@@ -142,6 +150,8 @@ export const Guestbook = ({
             <input
               type="text"
               placeholder="Tên của bạn"
+              value={guestName}
+              onChange={(e) => setGuestName(e.target.value)}
               className="w-full px-4 py-3 bg-white/5 border rounded-lg outline-none focus:border-opacity-100 transition-colors"
               style={{
                 borderColor: `${config.colors.textPrimary}25`,
@@ -151,6 +161,8 @@ export const Guestbook = ({
             <textarea
               placeholder="Lời chúc"
               rows={4}
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
               className="w-full px-4 py-3 bg-white/5 border rounded-lg outline-none focus:border-opacity-100 resize-none transition-colors"
               style={{
                 borderColor: `${config.colors.textPrimary}25`,
@@ -158,20 +170,22 @@ export const Guestbook = ({
               }}
             ></textarea>
             <button
-              className="w-full py-3 rounded-lg font-bold tracking-widest uppercase shadow-lg hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200"
+              onClick={submit}
+              disabled={submitting || !guestName.trim() || !content.trim()}
+              className="w-full py-3 rounded-lg font-bold tracking-widest uppercase shadow-lg hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed"
               style={{
                 backgroundColor: config.colors.buttonBg,
                 color: config.colors.buttonText,
               }}
             >
-              Gửi Lời Chúc
+              {submitting ? "Đang gửi..." : "Gửi Lời Chúc"}
             </button>
           </div>
 
           {data?.guestbookStatic && (
             <div className="w-full lg:col-span-2 h-100 lg:h-90 overflow-y-auto pr-2 custom-scrollbar flex flex-col gap-4 relative z-20">
-              {realMessages.length > 0 ? (
-                realMessages.map((msg: any, index: number) => (
+              {messages.length > 0 ? (
+                messages.map((msg: any, index: number) => (
                   <div
                     key={msg.id || index}
                     className="p-4 rounded-xl border bg-white/5 shadow-sm backdrop-blur-[2px] transition-all hover:bg-white/10"
@@ -185,7 +199,7 @@ export const Guestbook = ({
                           color: config.colors.accent,
                         }}
                       >
-                        {msg.name || msg.guestName}
+                        {msg.guestName}
                       </h4>
                       {msg.createdAt && (
                         <span
@@ -206,7 +220,7 @@ export const Guestbook = ({
                         color: config.colors.textPrimary,
                       }}
                     >
-                      {msg.content || msg.message}
+                      {msg.content}
                     </p>
                   </div>
                 ))

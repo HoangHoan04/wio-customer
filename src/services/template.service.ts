@@ -1,3 +1,4 @@
+import { PaginationRes } from "@/dto";
 import apiService from "./api.service";
 import { API_ENDPOINTS } from "./endpoint";
 
@@ -18,13 +19,8 @@ export interface ITemplate {
   previewCount?: number;
 }
 
-export interface PageResponse<T> {
-  data: T[];
-  total: number;
-}
-
 export const templateService = {
-  getTemplates: async (params: any = {}): Promise<PageResponse<ITemplate>> => {
+  getTemplates: async (params: any = {}): Promise<PaginationRes<ITemplate>> => {
     const response = await apiService.post(
       API_ENDPOINTS.TEMPLATE.PAGINATION,
       params,

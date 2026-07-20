@@ -59,6 +59,15 @@ export const API_ENDPOINTS = {
     PUBLIC_RSVP: "/api/user/guest/public/rsvp",
   },
 
+  WISH: {
+    PAGINATION: "/api/user/wish/pagination",
+    CREATE: "/api/user/wish/create",
+    APPROVE: "/api/user/wish/approve",
+    REJECT: "/api/user/wish/reject",
+    PIN: "/api/user/wish/pin",
+    UNPIN: "/api/user/wish/unpin",
+    DELETE: "/api/user/wish/delete",
+  },
   TABLE: {
     PAGINATION: "/api/user/table/pagination",
     FIND_BY_ID: "/api/user/table/find-by-id",

@@ -280,6 +280,12 @@ export default function AppHeader({ isScrolled = false }: AppHeaderProps) {
                           Sơ đồ bàn tiệc
                         </DropdownMenuItem>
                         <DropdownMenuItem
+                          onClick={() => router.push("/my-wishes")}
+                          className="px-4 py-2.5 text-[#f5e6d3]/90 text-[12px] tracking-wide rounded-lg cursor-pointer hover:bg-[#d4af37]/10 hover:text-[#f5c842] transition-all focus:bg-[#d4af37]/10 focus:text-[#f5c842]"
+                        >
+                          Quản lý lời chúc
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
                           onClick={() => router.push("/profile")}
                           className="px-4 py-2.5 text-[#f5e6d3]/90 text-[12px] tracking-wide rounded-lg cursor-pointer hover:bg-[#d4af37]/10 hover:text-[#f5c842] transition-all focus:bg-[#d4af37]/10 focus:text-[#f5c842]"
                         >

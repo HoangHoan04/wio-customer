@@ -78,9 +78,14 @@ export default function TemplateDetailModal({
 
   const features: string[] = Array.isArray(template.features)
     ? template.features
-    : Array.isArray(template.features?.list)
-      ? template.features.list
-      : [];
+    : typeof template.features === "string"
+      ? template.features
+          .split(/\r?\n/)
+          .map((s) => s.trim())
+          .filter(Boolean)
+      : Array.isArray(template.features?.list)
+        ? template.features.list
+        : [];
 
   return (
     <Modal
@@ -204,7 +209,7 @@ export default function TemplateDetailModal({
               Tính năng nổi bật
             </h4>
             {features.length > 0 ? (
-              <ul className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-xs text-[#f5e6d3]/70 list-none pl-0">
+              <ul className="grid grid-cols-1 sm:grid-cols-1 gap-1.5 text-xs text-[#f5e6d3]/70 list-none pl-0">
                 {features.map((feat, idx) => (
                   <li key={idx} className="flex items-start gap-1.5">
                     <span className="text-[#d4af37] text-[10px] mt-0.5">◆</span>

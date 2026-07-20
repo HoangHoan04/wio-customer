@@ -121,6 +121,8 @@ function WeddingPublicContent() {
           showMusic: !!wedding.musicUrl,
           musicUrl: wedding.musicUrl || "",
           musicName: wedding.musicName || "",
+          weddingId: wedding.id,
+          guestId: guest ? guest.id : undefined,
           guestName: guest ? guest.fullName : undefined,
           salutation: guest ? guest.salutation : undefined,
         });

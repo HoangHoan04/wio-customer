@@ -240,16 +240,27 @@ export default function CreatorPage() {
 
   const [musics, setMusics] = useState<any[]>([]);
   const [isAddingYoutube, setIsAddingYoutube] = useState(false);
+  const [youtubeImportPending, setYoutubeImportPending] = useState(false);
 
   useEffect(() => {
     let interval: any;
+    let elapsed = 0;
     const fetchMusics = async () => {
       try {
         const res = (await musicBackgroundService.getMusics()) as any;
         const list = res.data?.data || res.data || [];
         setMusics(list);
-        if (list.some((m: any) => m.status === "PROCESSING")) {
-          interval = setTimeout(fetchMusics, 3000);
+        const hasProcessing = list.some(
+          (m: any) => m.status === "PROCESSING" || m.status === "PENDING",
+        );
+        if (hasProcessing || (youtubeImportPending && elapsed < 60000)) {
+          interval = setTimeout(() => {
+            elapsed += 3000;
+            if (youtubeImportPending && elapsed >= 60000) {
+              setYoutubeImportPending(false);
+            }
+            fetchMusics();
+          }, 3000);
         }
       } catch (err) {
         console.error(err);
@@ -259,7 +270,7 @@ export default function CreatorPage() {
       fetchMusics();
     }
     return () => clearTimeout(interval);
-  }, [showMusicModal]);
+  }, [showMusicModal, youtubeImportPending]);
 
   const handleAddYoutube = async () => {
     if (!youtubeUrl) return;
@@ -267,6 +278,7 @@ export default function CreatorPage() {
     try {
       await musicBackgroundService.importYoutube(youtubeUrl);
       setYoutubeUrl("");
+      setYoutubeImportPending(true);
       showToast({
         title: "Đang tải",
         message: "Hệ thống đang tải nhạc từ YouTube...",
@@ -1004,9 +1016,18 @@ export default function CreatorPage() {
         className={`w-full md:w-1/2 shrink-0 border-r border-[#d4af37]/25 flex-col h-full bg-[#0f0608] ${activeTab === "edit" ? "flex" : "hidden md:flex"}`}
       >
         <div className="p-4 border-b border-[#d4af37]/15 bg-white/2 flex justify-between items-center shrink-0">
-          <h2 className="text-lg font-bold text-[#d4af37]">
-            Trình tạo thiệp cưới
-          </h2>
+          <div className="flex items-center gap-2 shrink-0">
+            <div
+              className="flex items-center gap-2.5 cursor-pointer"
+              onClick={() => router.push(PUBLIC_ROUTES.HOME)}
+            >
+              <div className="flex flex-col leading-none">
+                <span className="text-[clamp(1rem,3vw,1rem)] font-bold text-[#f5c842] whitespace-nowrap logo-shimmer">
+                  Tiệm cưới tân thời
+                </span>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-8 text-[#f5e6d3] text-left custom-scrollbar pb-32">

@@ -1,6 +1,7 @@
 import decorFlower from "@/assets/decorations/boho-floral-pink/flower_mid.webp";
 import { formatDateTime } from "@/common/helpers";
 import type { ThemeTemplateConfig } from "@/dto/theme.dto";
+import { useGuestbook } from "@/hooks/useGuestbook";
 import { useEffect, useState } from "react";
 
 export const Guestbook = ({
@@ -10,26 +11,15 @@ export const Guestbook = ({
   data?: any;
   config: ThemeTemplateConfig;
 }) => {
-  const [messages] = useState([
-    {
-      id: 1,
-      name: "Minh Tuấn",
-      content: "Chúc hai bạn trăm năm hạnh phúc nhé!",
-      createdAt: "2026-06-05T14:30:00.000Z",
-    },
-    {
-      id: 2,
-      name: "Ngọc Lan",
-      content: "Chúc mừng hạnh phúc hai em. Sớm có quý tử nha!",
-      createdAt: "2026-06-05T12:15:00.000Z",
-    },
-    {
-      id: 3,
-      name: "Hoàng Phong",
-      content: "Happy Wedding! Chúc hai bạn răng long đầu bạc.",
-      createdAt: "2026-06-05T08:00:00.000Z",
-    },
-  ]);
+  const {
+    messages,
+    submitting,
+    guestName,
+    setGuestName,
+    content,
+    setContent,
+    submit,
+  } = useGuestbook(data);
 
   const [activeFloaters, setActiveFloaters] = useState<any[]>([]);
 
@@ -45,7 +35,7 @@ export const Guestbook = ({
 
       const newFloater = {
         id: Math.random().toString(),
-        name: randomMsg.name,
+        name: randomMsg.guestName,
         content: randomMsg.content,
         left: Math.random() * 70 + 5,
         duration: Math.random() * 5 + 10,
@@ -150,6 +140,8 @@ export const Guestbook = ({
             <input
               type="text"
               placeholder="Tên của bạn"
+              value={guestName}
+              onChange={(e) => setGuestName(e.target.value)}
               className="w-full px-4 py-3 bg-white/5 border rounded-lg outline-none focus:border-opacity-100"
               style={{
                 borderColor: `${config.colors.textPrimary}30`,
@@ -159,6 +151,8 @@ export const Guestbook = ({
             <textarea
               placeholder="Lời chúc"
               rows={4}
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
               className="w-full px-4 py-3 bg-white/5 border rounded-lg outline-none focus:border-opacity-100 resize-none"
               style={{
                 borderColor: `${config.colors.textPrimary}30`,
@@ -166,13 +160,15 @@ export const Guestbook = ({
               }}
             ></textarea>
             <button
-              className="w-full py-3 rounded-lg font-bold tracking-widest uppercase shadow-lg hover:-translate-y-1 transition-transform"
+              onClick={submit}
+              disabled={submitting || !guestName.trim() || !content.trim()}
+              className="w-full py-3 rounded-lg font-bold tracking-widest uppercase shadow-lg hover:-translate-y-1 transition-transform disabled:opacity-60 disabled:cursor-not-allowed"
               style={{
                 backgroundColor: config.colors.buttonBg,
                 color: config.colors.buttonText,
               }}
             >
-              Gửi Lời Chúc
+              {submitting ? "Đang gửi..." : "Gửi Lời Chúc"}
             </button>
           </div>
 
@@ -192,7 +188,7 @@ export const Guestbook = ({
                         color: config.colors.accent,
                       }}
                     >
-                      {msg.name}
+                      {msg.guestName}
                     </h4>
                     <span
                       className="text-[10px] opacity-40 font-medium"

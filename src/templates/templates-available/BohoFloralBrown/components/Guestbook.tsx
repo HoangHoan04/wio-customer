@@ -1,29 +1,25 @@
 import decorFlower from "@/assets/decorations/boho-floral-brown/flower_mid.webp";
 import { formatDateTime } from "@/common/helpers";
 import type { ThemeTemplateConfig } from "@/dto/theme.dto";
+import { useGuestbook } from "@/hooks/useGuestbook";
 import { useEffect, useState } from "react";
 
-export const Guestbook = ({ data, config }: { data?: any; config: ThemeTemplateConfig }) => {
-  const [messages] = useState([
-    {
-      id: 1,
-      name: "Minh Tuấn",
-      content: "Chúc hai bạn trăm năm hạnh phúc nhé!",
-      createdAt: "2026-06-05T14:30:00.000Z",
-    },
-    {
-      id: 2,
-      name: "Ngọc Lan",
-      content: "Chúc mừng hạnh phúc hai em. Sớm có quý tử nha!",
-      createdAt: "2026-06-05T12:15:00.000Z",
-    },
-    {
-      id: 3,
-      name: "Hoàng Phong",
-      content: "Happy Wedding! Chúc hai bạn răng long đầu bạc.",
-      createdAt: "2026-06-05T08:00:00.000Z",
-    },
-  ]);
+export const Guestbook = ({
+  data,
+  config,
+}: {
+  data?: any;
+  config: ThemeTemplateConfig;
+}) => {
+  const {
+    messages,
+    submitting,
+    guestName,
+    setGuestName,
+    content,
+    setContent,
+    submit,
+  } = useGuestbook(data);
 
   const [activeFloaters, setActiveFloaters] = useState<any[]>([]);
 
@@ -39,7 +35,7 @@ export const Guestbook = ({ data, config }: { data?: any; config: ThemeTemplateC
 
       const newFloater = {
         id: Math.random().toString(),
-        name: randomMsg.name,
+        name: randomMsg.guestName,
         content: randomMsg.content,
         left: Math.random() * 70 + 5,
         duration: Math.random() * 5 + 10,
@@ -58,9 +54,22 @@ export const Guestbook = ({ data, config }: { data?: any; config: ThemeTemplateC
   if (!data?.showGuestbook) return null;
 
   return (
-    <section className="py-10 px-4 relative overflow-hidden" style={{ backgroundColor: config.colors.background }}>
-      <img src={decorFlower.src} alt="" aria-hidden="true" className="absolute right-0 top-1/2 -translate-y-1/2 w-24 md:w-44 opacity-10 pointer-events-none translate-x-8 select-none z-0" />
-      <img src={decorFlower.src} alt="" aria-hidden="true" className="absolute left-0 bottom-0 w-20 md:w-36 opacity-10 pointer-events-none -translate-x-6 translate-y-4 select-none z-0 scale-x-[-1]" />
+    <section
+      className="py-10 px-4 relative overflow-hidden"
+      style={{ backgroundColor: config.colors.background }}
+    >
+      <img
+        src={decorFlower.src}
+        alt=""
+        aria-hidden="true"
+        className="absolute right-0 top-1/2 -translate-y-1/2 w-24 md:w-44 opacity-10 pointer-events-none translate-x-8 select-none z-0"
+      />
+      <img
+        src={decorFlower.src}
+        alt=""
+        aria-hidden="true"
+        className="absolute left-0 bottom-0 w-20 md:w-36 opacity-10 pointer-events-none -translate-x-6 translate-y-4 select-none z-0 scale-x-[-1]"
+      />
       {data?.guestbookFloating && (
         <style>{`
           @keyframes floatUpCircle {
@@ -131,6 +140,8 @@ export const Guestbook = ({ data, config }: { data?: any; config: ThemeTemplateC
             <input
               type="text"
               placeholder="Tên của bạn"
+              value={guestName}
+              onChange={(e) => setGuestName(e.target.value)}
               className="w-full px-4 py-3 bg-white/5 border rounded-lg outline-none focus:border-opacity-100"
               style={{
                 borderColor: `${config.colors.textPrimary}30`,
@@ -140,6 +151,8 @@ export const Guestbook = ({ data, config }: { data?: any; config: ThemeTemplateC
             <textarea
               placeholder="Lời chúc"
               rows={4}
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
               className="w-full px-4 py-3 bg-white/5 border rounded-lg outline-none focus:border-opacity-100 resize-none"
               style={{
                 borderColor: `${config.colors.textPrimary}30`,
@@ -147,10 +160,15 @@ export const Guestbook = ({ data, config }: { data?: any; config: ThemeTemplateC
               }}
             ></textarea>
             <button
-              className="w-full py-3 rounded-lg font-bold tracking-widest uppercase shadow-lg hover:-translate-y-1 transition-transform"
-              style={{ backgroundColor: config.colors.buttonBg, color: config.colors.buttonText }}
+              onClick={submit}
+              disabled={submitting || !guestName.trim() || !content.trim()}
+              className="w-full py-3 rounded-lg font-bold tracking-widest uppercase shadow-lg hover:-translate-y-1 transition-transform disabled:opacity-60 disabled:cursor-not-allowed"
+              style={{
+                backgroundColor: config.colors.buttonBg,
+                color: config.colors.buttonText,
+              }}
             >
-              Gửi Lời Chúc
+              {submitting ? "Đang gửi..." : "Gửi Lời Chúc"}
             </button>
           </div>
 
@@ -165,20 +183,29 @@ export const Guestbook = ({ data, config }: { data?: any; config: ThemeTemplateC
                   <div className="flex justify-between items-center mb-2">
                     <h4
                       className="font-bold"
-                      style={{ fontFamily: config.fonts.heading, color: config.colors.accent }}
+                      style={{
+                        fontFamily: config.fonts.heading,
+                        color: config.colors.accent,
+                      }}
                     >
-                      {msg.name}
+                      {msg.guestName}
                     </h4>
                     <span
                       className="text-[10px] opacity-40 font-medium"
-                      style={{ fontFamily: config.fonts.body, color: config.colors.textPrimary }}
+                      style={{
+                        fontFamily: config.fonts.body,
+                        color: config.colors.textPrimary,
+                      }}
                     >
                       {formatDateTime(msg.createdAt)}
                     </span>
                   </div>
                   <p
                     className="text-sm opacity-90 text-left"
-                    style={{ fontFamily: config.fonts.body, color: config.colors.textPrimary }}
+                    style={{
+                      fontFamily: config.fonts.body,
+                      color: config.colors.textPrimary,
+                    }}
                   >
                     {msg.content}
                   </p>

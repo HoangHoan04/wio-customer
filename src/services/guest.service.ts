@@ -69,13 +69,12 @@ export const guestService = {
     const formData = new FormData();
     formData.append("file", file);
     formData.append("weddingId", weddingId);
-    const response = await apiService.post<{ message: string; data: GuestDto[] }>(
-      API_ENDPOINTS.GUEST.IMPORT_EXCEL,
-      formData,
-      {
-        headers: { "Content-Type": "multipart/form-data" },
-      },
-    );
+    const response = await apiService.post<{
+      message: string;
+      data: GuestDto[];
+    }>(API_ENDPOINTS.GUEST.IMPORT_EXCEL, formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
     return response.data;
   },
 
@@ -83,10 +82,10 @@ export const guestService = {
     weddingId: string,
     guests: CreateGuestReq[],
   ): Promise<{ message: string; data: GuestDto[] }> => {
-    const response = await apiService.post<{ message: string; data: GuestDto[] }>(
-      API_ENDPOINTS.GUEST.CREATE_MANY,
-      { weddingId, guests },
-    );
+    const response = await apiService.post<{
+      message: string;
+      data: GuestDto[];
+    }>(API_ENDPOINTS.GUEST.CREATE_MANY, { weddingId, guests });
     return response.data;
   },
 
@@ -99,11 +98,12 @@ export const guestService = {
     return response.data;
   },
 
-  identify: async (invitationCode: string): Promise<{ data: { guest: GuestDto; wedding: any } }> => {
-    const response = await apiService.post<{ data: { guest: GuestDto; wedding: any } }>(
-      API_ENDPOINTS.GUEST.PUBLIC_IDENTIFY,
-      { invitationCode },
-    );
+  identify: async (
+    invitationCode: string,
+  ): Promise<{ data: { guest: GuestDto; wedding: any } }> => {
+    const response = await apiService.post<{
+      data: { guest: GuestDto; wedding: any };
+    }>(API_ENDPOINTS.GUEST.PUBLIC_IDENTIFY, { invitationCode });
     return response.data;
   },
 

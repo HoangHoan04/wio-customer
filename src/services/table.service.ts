@@ -5,8 +5,8 @@ import type {
   PaginationReq,
   PaginationRes,
   TableDto,
-  UpdateTableReq,
   UnassignGuestReq,
+  UpdateTableReq,
 } from "@/dto";
 import apiService from "./api.service";
 import { API_ENDPOINTS } from "./endpoint";
