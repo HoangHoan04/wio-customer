@@ -65,6 +65,42 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
+      - name: Deploy to Server via SSH
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          envs: NEXT_PUBLIC_API_URL
+          script: |
+            IS_PROD=${{ github.event.workflow_run.head_branch == 'main' || github.event.workflow_run.head_branch == 'production' }}
+            TARGET_DIR=$(if [ "$IS_PROD" = "true" ]; then echo "/opt/wio/prod"; else echo "/opt/wio/dev"; fi)
+            TAG=$(if [ "$IS_PROD" = "true" ]; then echo "latest"; else echo "develop"; fi)
+            PORT=$(if [ "$IS_PROD" = "true" ]; then echo "5002"; else echo "4002"; fi)
+            CONTAINER_NAME=$(if [ "$IS_PROD" = "true" ]; then echo "wio_customer_prod"; else echo "wio_customer_dev"; fi)
+
+            mkdir -p $TARGET_DIR
+            cd $TARGET_DIR
+
+            cat <<EOF > .env
+            NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
+            NODE_ENV=production
+            PORT=2504
+            EOF
+
+            docker pull ghcr.io/${{ github.repository }}:$TAG
+            docker stop $CONTAINER_NAME || true
+            docker rm $CONTAINER_NAME || true
+            docker run -d \
+              --name $CONTAINER_NAME \
+              --restart always \
+              --net wio_net \
+              -p 127.0.0.1:$PORT:2504 \
+              --env-file .env \
+              ghcr.io/${{ github.repository }}:$TAG
+
+
+
       - name: Prepare commit info
         id: info
         if: always()
