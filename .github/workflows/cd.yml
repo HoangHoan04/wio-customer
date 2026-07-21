@@ -57,7 +57,7 @@ jobs:
           context: .
           push: true
           build-args: |
-            NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL || 'https://api-dev.tiemcuoitanthoi.id.vn' }}
+            NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL || (github.ref_name == 'main' || github.ref_name == 'production' && 'https://api.tiemcuoitanthoi.id.vn' || 'https://api-dev.tiemcuoitanthoi.id.vn') }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
