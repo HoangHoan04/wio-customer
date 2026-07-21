@@ -2,9 +2,9 @@ name: CI Pipeline
 
 on:
   push:
-    branches: [main]
+    branches: [develop, main]
   pull_request:
-    branches: [main]
+    branches: [develop, main]
 
 env:
   NODE_VERSION: "22"
@@ -25,10 +25,11 @@ jobs:
           MSG=$(echo "${COMMIT_MSG}" | head -n1 | tr -d '\r' | sed 's/["`$]//g')
           SHA_SHORT=$(echo ${COMMIT_SHA} | cut -c1-7)
           REPO_NAME=$(echo '${{ github.repository }}' | cut -d/ -f2)
+          ENV_LABEL=$(if [ "${{ github.ref_name }}" = "main" ]; then echo "PRODUCTION"; else echo "DEVELOP"; fi)
           curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
             -d chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" \
             -d parse_mode="HTML" \
-            -d text="<b>🚀 CI BUILD IN PROGRESS</b>%0A%0A<b>Repo:</b>     ${REPO_NAME}%0A<b>Người:</b>    ${{ github.actor }}%0A<b>Nhánh:</b>    ${{ github.ref_name }} (<code>${SHA_SHORT}</code>)%0A<b>Commit:</b>   ${MSG}%0A<b>Status:</b>   In Progress"
+            -d text="<b>🚀 CI BUILD IN PROGRESS [${ENV_LABEL}]</b>%0A%0A<b>Repo:</b>     ${REPO_NAME}%0A<b>Người:</b>    ${{ github.actor }}%0A<b>Nhánh:</b>    ${{ github.ref_name }} (<code>${SHA_SHORT}</code>)%0A<b>Commit:</b>   ${MSG}%0A<b>Status:</b>   In Progress"
 
       - uses: actions/checkout@v4
 
@@ -88,10 +89,11 @@ jobs:
           REPO: ${{ steps.info.outputs.repo_name }}
           DURATION: ${{ needs.build-and-lint.outputs.duration }}
         run: |
+          ENV_LABEL=$(if [ "${{ github.ref_name }}" = "main" ]; then echo "PRODUCTION"; else echo "DEVELOP"; fi)
           curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
             -d chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" \
             -d parse_mode="HTML" \
-            -d text="<b>✅ CI BUILD SUCCESS</b>%0A%0A<b>Repo:</b>     ${REPO}%0A<b>Người:</b>    ${{ github.actor }}%0A<b>Nhánh:</b>    ${{ github.ref_name }} (<code>${SHA}</code>)%0A<b>Commit:</b>   ${MSG}%0A<b>Duration:</b> ${DURATION}%0A<b>Status:</b>   Success"
+            -d text="<b>✅ CI BUILD SUCCESS [${ENV_LABEL}]</b>%0A%0A<b>Repo:</b>     ${REPO}%0A<b>Người:</b>    ${{ github.actor }}%0A<b>Nhánh:</b>    ${{ github.ref_name }} (<code>${SHA}</code>)%0A<b>Commit:</b>   ${MSG}%0A<b>Duration:</b> ${DURATION}%0A<b>Status:</b>   Success"
 
       - name: Notify Telegram - Failure
         if: needs.build-and-lint.result == 'failure'
@@ -100,7 +102,8 @@ jobs:
           MSG: ${{ steps.info.outputs.msg_first }}
           REPO: ${{ steps.info.outputs.repo_name }}
         run: |
+          ENV_LABEL=$(if [ "${{ github.ref_name }}" = "main" ]; then echo "PRODUCTION"; else echo "DEVELOP"; fi)
           curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
             -d chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" \
             -d parse_mode="HTML" \
-            -d text="<b>❌ CI BUILD FAILED</b>%0A%0A<b>Repo:</b>     ${REPO}%0A<b>Người:</b>    ${{ github.actor }}%0A<b>Nhánh:</b>    ${{ github.ref_name }} (<code>${SHA}</code>)%0A<b>Commit:</b>   ${MSG}%0A<b>Duration:</b> ${{ needs.build-and-lint.outputs.duration }}%0A<b>Status:</b>   Failed"
+            -d text="<b>❌ CI BUILD FAILED [${ENV_LABEL}]</b>%0A%0A<b>Repo:</b>     ${REPO}%0A<b>Người:</b>    ${{ github.actor }}%0A<b>Nhánh:</b>    ${{ github.ref_name }} (<code>${SHA}</code>)%0A<b>Commit:</b>   ${MSG}%0A<b>Duration:</b> ${{ needs.build-and-lint.outputs.duration }}%0A<b>Status:</b>   Failed"
