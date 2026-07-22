@@ -16,7 +16,7 @@ export const Welcome = ({
 
   const handleOpen = () => {
     setIsOpening(true);
-    setTimeout(() => onOpen(), 600);
+    setTimeout(() => onOpen(), 900);
   };
 
   const eventDate = data?.eventDetails?.date
@@ -97,6 +97,7 @@ export const Welcome = ({
             userSelect: "none",
             zIndex: 2,
             opacity: 0.5,
+            animation: isOpening ? "flowerTopScaleOut 0.9s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards" : undefined
           }}
         />
 
@@ -114,6 +115,7 @@ export const Welcome = ({
             zIndex: 2,
             transform: "rotate(270deg) scaleX(-1)",
             opacity: 0.5,
+            animation: isOpening ? "flowerBottomScaleOut 0.9s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards" : undefined
           }}
         />
 
@@ -158,8 +160,8 @@ export const Welcome = ({
               <span
                 style={{
                   fontFamily: config.fonts.script,
-                  fontSize: "clamp(2rem, 6.5vw, 2.8rem)",
-                  color: "#3d1a0d",
+                  fontSize: "clamp(2rem, 7vw, 3rem)",
+                  color: config.colors.textPrimary,
                   lineHeight: 1,
                   fontWeight: 400,
                   whiteSpace: "nowrap",
@@ -173,7 +175,7 @@ export const Welcome = ({
               <span
                 style={{
                   fontSize: "clamp(1.2rem, 4vw, 1.8rem)",
-                  color: "#7a5030",
+                  color: config.colors.accent,
                   fontFamily: config.fonts.heading,
                   lineHeight: 1,
                   paddingBottom: "4px",
@@ -185,8 +187,8 @@ export const Welcome = ({
               <span
                 style={{
                   fontFamily: config.fonts.script,
-                  fontSize: "clamp(2rem, 6.5vw, 2.8rem)",
-                  color: "#3d1a0d",
+                  fontSize: "clamp(2rem, 7vw, 3rem)",
+                  color: config.colors.textPrimary,
                   lineHeight: 1,
                   fontWeight: 400,
                   whiteSpace: "nowrap",
@@ -212,16 +214,16 @@ export const Welcome = ({
               style={{
                 width: 40,
                 height: 0.5,
-                background: "#7a5030",
+                background: config.colors.accent,
                 opacity: 0.5,
               }}
             />
-            <i className="pi pi-star-fill" style={{ color: "#7a5030" }}></i>
+            <i className="pi pi-star-fill" style={{ color: config.colors.accent }}></i>
             <div
               style={{
                 width: 40,
                 height: 0.5,
-                background: "#7a5030",
+                background: config.colors.accent,
                 opacity: 0.5,
               }}
             />
@@ -230,7 +232,7 @@ export const Welcome = ({
           <p
             style={{
               fontSize: 14,
-              color: "#5a3520",
+              color: config.colors.textSecondary,
               fontFamily: config.fonts.body,
               marginBottom: 14,
               letterSpacing: "0.02em",
@@ -242,10 +244,11 @@ export const Welcome = ({
           <p
             style={{
               fontSize: 13,
-              color: "#7a5030",
+              color: config.colors.accent,
               fontFamily: config.fonts.body,
               marginBottom: 10,
               letterSpacing: "0.05em",
+              fontWeight: 600,
             }}
           >
             {data?.salutation || "Kính mời"}
@@ -256,12 +259,12 @@ export const Welcome = ({
               style={{
                 display: "inline-block",
                 padding: "8px 24px",
-                background: "rgba(255,255,255,0.6)",
-                border: "0.5px solid #c8a882",
+                background: "rgba(255,255,255,0.7)",
+                border: `0.5px solid ${config.colors.accent}44`,
                 borderRadius: 999,
                 fontSize: 15,
-                fontWeight: 500,
-                color: "#3d1a0d",
+                fontWeight: 600,
+                color: config.colors.textPrimary,
                 fontFamily: config.fonts.heading,
                 marginBottom: 10,
                 backdropFilter: "blur(4px)",
@@ -274,7 +277,7 @@ export const Welcome = ({
           <p
             style={{
               fontSize: 12,
-              color: "#7a5030",
+              color: config.colors.textSecondary,
               fontFamily: config.fonts.body,
               marginBottom: 28,
               opacity: 0.85,
@@ -286,28 +289,28 @@ export const Welcome = ({
           <button
             onClick={handleOpen}
             style={{
-              padding: "13px 44px",
-              background: "#3d1a0d",
-              color: "#fff",
+              padding: "13px 48px",
+              background: config.colors.buttonBg,
+              color: config.colors.buttonText,
               border: "none",
               borderRadius: 999,
               fontSize: 15,
-              fontWeight: 500,
+              fontWeight: 600,
               fontFamily: config.fonts.body,
-              letterSpacing: "0.05em",
+              letterSpacing: "0.08em",
               cursor: "pointer",
-              boxShadow: "0 4px 20px rgba(61,26,13,0.4)",
-              transition: "transform 0.15s, box-shadow 0.15s",
+              boxShadow: `0 4px 20px ${config.colors.buttonBg}44`,
+              transition: "all 0.25s ease",
             }}
             onMouseEnter={(e) => {
-              (e.target as HTMLButtonElement).style.transform = "scale(1.04)";
-              (e.target as HTMLButtonElement).style.boxShadow =
-                "0 6px 28px rgba(61,26,13,0.55)";
+              const target = e.currentTarget;
+              target.style.transform = "translateY(-2px)";
+              target.style.boxShadow = `0 6px 25px ${config.colors.buttonBg}66`;
             }}
             onMouseLeave={(e) => {
-              (e.target as HTMLButtonElement).style.transform = "scale(1)";
-              (e.target as HTMLButtonElement).style.boxShadow =
-                "0 4px 20px rgba(61,26,13,0.4)";
+              const target = e.currentTarget;
+              target.style.transform = "translateY(0)";
+              target.style.boxShadow = `0 4px 20px ${config.colors.buttonBg}44`;
             }}
           >
             Mở thiệp
@@ -321,6 +324,14 @@ export const Welcome = ({
           8%   { opacity: 0.6; }
           90%  { opacity: 0.4; }
           100% { opacity: 0;   transform: translateY(105vh) rotate(540deg) scale(0.4); }
+        }
+        @keyframes flowerTopScaleOut {
+          0% { transform: scale(1); opacity: 0.5; }
+          100% { transform: scale(2) translate(30px, -30px); opacity: 0; }
+        }
+        @keyframes flowerBottomScaleOut {
+          0% { transform: rotate(270deg) scaleX(-1) scale(1); opacity: 0.5; }
+          100% { transform: rotate(270deg) scaleX(-1) scale(2) translate(30px, -30px); opacity: 0; }
         }
       `}</style>
     </div>

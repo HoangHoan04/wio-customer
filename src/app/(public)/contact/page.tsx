@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import contactService from "@/services/contact.service";
 import { ChevronDown, MessageSquare, Send, Sparkles } from "lucide-react";
 import { useState } from "react";
 
@@ -81,15 +82,23 @@ export default function ContactPage() {
     setFormState((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleFormSubmit = (e: React.FormEvent) => {
+  const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    setTimeout(() => {
-      setIsSubmitting(false);
+    try {
+      await contactService.sendContact({
+        name: formState.name,
+        email: formState.email,
+        message: formState.message,
+      });
       setSuccess(true);
       setFormState({ name: "", email: "", message: "" });
-      setTimeout(() => setSuccess(false), 4000);
-    }, 1500);
+      setTimeout(() => setSuccess(false), 5000);
+    } catch (err) {
+      console.error("Lỗi khi gửi yêu cầu liên hệ:", err);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (

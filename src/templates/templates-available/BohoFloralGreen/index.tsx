@@ -8,15 +8,15 @@ const config: ThemeTemplateConfig = {
   code: enumData.THEME_CODE.BOHO_FLORAL_GREEN.code,
   colors: {
     background: "#f5f7f2",
-    textPrimary: "#3a5a40",
-    textSecondary: "#3a5a40cc",
-    accent: "#6b8f5e",
-    envelope: "#2d6a4f",
+    textPrimary: "#2c4c38",
+    textSecondary: "#4a6b53",
+    accent: "#5a7859",
+    envelope: "#3a5a40",
     buttonBg: "#3a5a40",
-    buttonText: "#ffffff",
+    buttonText: "#f5f7f2",
   },
   fonts: {
-    heading: "'Cormorant Garamond', serif",
+    heading: "'Playfair Display', serif",
     body: "'Cormorant Garamond', serif",
     script: "'Great Vibes', cursive",
   },
@@ -39,7 +39,7 @@ export default function BohoFloralGreenTemplate({
   useEffect(() => {
     const link = document.createElement("link");
     link.href =
-      "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&family=Great+Vibes&display=swap";
+      "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Great+Vibes&family=Montserrat:wght@300;400;500;600;700&display=swap";
     link.rel = "stylesheet";
     document.head.appendChild(link);
     return () => {
@@ -73,7 +73,7 @@ export default function BohoFloralGreenTemplate({
     <div
       className="relative min-h-screen font-body overflow-x-hidden"
       style={{
-        backgroundColor: config.colors.background,
+        background: "linear-gradient(135deg, #f5f7f2 0%, #edf0ea 50%, #e2e8dc 100%)",
         color: config.colors.textPrimary,
       }}
     >

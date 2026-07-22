@@ -1,5 +1,6 @@
 import fixedFlower from "@/assets/decorations/boho-floral-green/flower.webp";
 import type { ThemeTemplateConfig } from "@/dto/theme.dto";
+
 export const FamilyInfo = ({
   data,
   config,
@@ -59,6 +60,7 @@ export const FamilyInfo = ({
           </p>
         )}
       </div>
+
       <p
         className="text-xs font-semibold leading-relaxed max-w-60 border-t pt-1 w-full border-gray-200/30"
         style={{

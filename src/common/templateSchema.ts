@@ -15,11 +15,7 @@ const schemaByCode: Record<string, TemplateSchema> = {
   [enumData.THEME_CODE.BOHO_FLORAL_BROWN.code]: { heroStyle: "split" },
   [enumData.THEME_CODE.BOHO_FLORAL_GREEN.code]: { heroStyle: "split" },
   [enumData.THEME_CODE.BOHO_FLORAL_PINK.code]: { heroStyle: "split" },
-  [enumData.THEME_CODE.ROYAL_BLUE.code]: { heroStyle: "split" },
-  [enumData.THEME_CODE.ROYAL_GREEN.code]: { heroStyle: "split" },
   [enumData.THEME_CODE.ROYAL_RED.code]: { heroStyle: "split" },
-  [enumData.THEME_CODE.DRAGON_PHOENIX_BLUE.code]: { heroStyle: "single" },
-  [enumData.THEME_CODE.DRAGON_PHOENIX_GREEN.code]: { heroStyle: "single" },
   [enumData.THEME_CODE.DRAGON_PHOENIX_RED.code]: { heroStyle: "single" },
   [enumData.THEME_CODE.RED_DOUBLE_HAPPINESS.code]: { heroStyle: "single" },
 };

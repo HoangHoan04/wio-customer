@@ -27,4 +27,12 @@ export const templateService = {
     );
     return response.data;
   },
+
+  incrementView: async (id: string): Promise<void> => {
+    await apiService.post(API_ENDPOINTS.TEMPLATE.INCREMENT_VIEW, { id }).catch(() => {});
+  },
+
+  incrementPreview: async (id: string): Promise<void> => {
+    await apiService.post(API_ENDPOINTS.TEMPLATE.INCREMENT_PREVIEW, { id }).catch(() => {});
+  },
 };

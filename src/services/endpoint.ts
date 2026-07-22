@@ -19,8 +19,16 @@ export const API_ENDPOINTS = {
     CLEAN_TOKENS: "/api/user/auth/clean-tokens",
     UPDATE_PROFILE: "/api/user/auth/update-profile",
   },
+  SERVICE_PLAN: {
+    PUBLIC_LIST: "/api/user/service-plan/public/list",
+  },
+  CONTACT: {
+    CREATE: "/api/user/contact/public/create",
+  },
   TEMPLATE: {
     PAGINATION: "/api/user/template/pagination",
+    INCREMENT_VIEW: "/api/user/template/increment-view",
+    INCREMENT_PREVIEW: "/api/user/template/increment-preview",
   },
   WEDDING: {
     CREATE: "/api/user/wedding/create",

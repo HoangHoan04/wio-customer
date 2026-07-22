@@ -7,16 +7,16 @@ import { Welcome } from "./components/Welcome";
 const config: ThemeTemplateConfig = {
   code: enumData.THEME_CODE.BOHO_FLORAL_BROWN.code,
   colors: {
-    background: "#fdfbf7",
-    textPrimary: "#5d4037",
-    textSecondary: "#5d4037cc",
-    accent: "#d4af37",
-    envelope: "#d32f2f",
-    buttonBg: "#5d4037",
-    buttonText: "#ffffff",
+    background: "#fdfcf9",
+    textPrimary: "#4e3629",
+    textSecondary: "#705446",
+    accent: "#b35a38",
+    envelope: "#8b5e3c",
+    buttonBg: "#8b5e3c",
+    buttonText: "#fdfcf9",
   },
   fonts: {
-    heading: "'Cormorant Garamond', serif",
+    heading: "'Playfair Display', serif",
     body: "'Cormorant Garamond', serif",
     script: "'Great Vibes', cursive",
   },
@@ -39,7 +39,7 @@ export default function BohoFloralBrownTemplate({
   useEffect(() => {
     const link = document.createElement("link");
     link.href =
-      "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&family=Great+Vibes&display=swap";
+      "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Great+Vibes&family=Montserrat:wght@300;400;500;600;700&display=swap";
     link.rel = "stylesheet";
     document.head.appendChild(link);
     return () => {
@@ -73,7 +73,8 @@ export default function BohoFloralBrownTemplate({
     <div
       className="relative min-h-screen font-body overflow-x-hidden"
       style={{
-        backgroundColor: config.colors.background,
+        background:
+          "linear-gradient(135deg, #fdfcf9 0%, #f7f3eb 50%, #f1e9dc 100%)",
         color: config.colors.textPrimary,
       }}
     >
