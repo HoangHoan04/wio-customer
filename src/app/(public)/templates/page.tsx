@@ -124,6 +124,7 @@ export default function TemplatesPage() {
               onClick={() => {
                 setSelectedTemplate(tpl);
                 setIsDetailModalOpen(true);
+                templateService.incrementPreview(tpl.id);
               }}
               className="template-card no-underline text-left w-full"
             >
@@ -214,16 +215,27 @@ export default function TemplatesPage() {
         <div className="absolute left-0 top-0 bottom-0 w-0.75 bg-linear-to-b from-transparent via-[#e5c483] to-transparent max-sm:w-auto max-sm:h-0.75 max-sm:inset-x-0 max-sm:top-0 max-sm:bottom-auto" />
         <div className="relative z-1 flex-1">
           <div
-            className="inline-flex items-center gap-2.5 text-xs font-bold tracking-widest uppercase mb-4"
-            style={{ color: C.gold }}
+            className="inline-flex items-center gap-2.5 text-xs tracking-widest uppercase mb-4 font-light font-cormorant"
+            style={{
+              color: C.gold,
+              fontFamily: "'Cinzel', serif",
+              background: `linear-gradient(135deg, ${C.goldLight} 0%, ${C.gold} 50%, ${C.goldLight} 100%)`,
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+            }}
           >
             <span className="w-6 h-px bg-[#c5a059] opacity-60" />
             Sáng tạo không giới hạn
             <span className="w-6 h-px bg-[#c5a059] opacity-60" />
           </div>
           <h2
-            className="text-3xl sm:text-4xl font-bold mb-4 leading-tight tracking-wide"
-            style={{ fontFamily: "'Cinzel', serif", color: C.cream }}
+            className="text-3xl sm:text-4xl font-bold mb-4 leading-tight tracking-wide font-cormorant"
+            style={{
+              color: C.cream,
+              background: `linear-gradient(135deg, ${C.goldLight} 0%, ${C.gold} 50%, ${C.goldLight} 100%)`,
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+            }}
           >
             Bạn đã có ý tưởng
             <br />

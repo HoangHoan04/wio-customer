@@ -1,7 +1,6 @@
 import type { ThemeTemplateConfig } from "@/dto/theme.dto";
 import { Music } from "lucide-react";
 import { Ceremonies } from "./Ceremonies";
-import { CoupleNames } from "./CoupleNames";
 import { FamilyInfo } from "./FamilyInfo";
 import { Gallery } from "./Gallery";
 import { GiftBox } from "./GiftBox";
@@ -13,6 +12,7 @@ import { RSVP } from "./RSVP";
 import { Rules } from "./Rules";
 import { ThankYou } from "./ThankYou";
 import { Timeline } from "./Timeline";
+import { CoupleNames } from "./CoupleNames";
 
 export const StandardLayout = ({
   data,

@@ -7,16 +7,16 @@ import { Welcome } from "./components/Welcome";
 const config: ThemeTemplateConfig = {
   code: enumData.THEME_CODE.DRAGON_PHOENIX_RED.code,
   colors: {
-    background: "#3d0a0a",
-    textPrimary: "#e8d5a3",
-    textSecondary: "#e8d5a3cc",
-    accent: "#c9a84c",
-    envelope: "#6b0f0f",
-    buttonBg: "#c9a84c",
-    buttonText: "#3d0a0a",
+    background: "#3a0505",
+    textPrimary: "#f3e5ab",
+    textSecondary: "#dfd0a3",
+    accent: "#d4af37",
+    envelope: "#7e1212",
+    buttonBg: "#d4af37",
+    buttonText: "#2d0303",
   },
   fonts: {
-    heading: "'Cormorant Garamond', serif",
+    heading: "'Cinzel', serif",
     body: "'Cormorant Garamond', serif",
     script: "'Great Vibes', cursive",
   },
@@ -39,7 +39,7 @@ export default function DragonPhoenixRedTemplate({
   useEffect(() => {
     const link = document.createElement("link");
     link.href =
-      "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&family=Great+Vibes&display=swap";
+      "https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;800;900&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Great+Vibes&family=Montserrat:wght@300;400;500;600;700&display=swap";
     link.rel = "stylesheet";
     document.head.appendChild(link);
     return () => {
@@ -73,7 +73,7 @@ export default function DragonPhoenixRedTemplate({
     <div
       className="relative min-h-screen font-body overflow-x-hidden"
       style={{
-        backgroundColor: config.colors.background,
+        background: "radial-gradient(circle at center, #520b0b 0%, #200303 60%, #110101 100%)",
         color: config.colors.textPrimary,
       }}
     >

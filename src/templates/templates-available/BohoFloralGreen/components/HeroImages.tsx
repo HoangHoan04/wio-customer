@@ -1,5 +1,6 @@
 import flowerCornerFloral from "@/assets/decorations/boho-floral-green/flower.webp";
 import type { ThemeTemplateConfig } from "@/dto/theme.dto";
+
 export const HeroImages = ({
   data,
   config,
@@ -11,23 +12,19 @@ export const HeroImages = ({
   const isGroomFirst = data?.displayOrder !== "bride_first";
 
   const renderTopPerson = (person: any) => (
-    <div className="relative flex justify-start pl-8">
+    <div className="relative flex justify-start pl-6">
       <div
-        className="relative w-44 h-64 md:w-56 md:h-80 bg-white p-2 shadow-2xl rotate-[5deg] z-10 shrink-0"
-        style={{ border: `2px solid ${config.colors.accent || "#d4b896"}` }}
+        className="relative w-48 h-64 md:w-56 md:h-80 bg-white p-3 pb-12 shadow-[0_15px_35px_rgba(44,76,56,0.12)] rotate-[3deg] z-10 shrink-0 rounded-sm border border-[#e2e8dc]/60"
       >
         <img
           src={person?.photo || "https://placehold.co/300x400"}
-          alt="Person"
-          className="w-full h-full object-cover"
+          alt={person?.name}
+          className="w-full h-full object-cover rounded-sm"
+          style={{ height: "82%" }}
         />
-
-        <div
-          className="absolute top-0 -right-12 h-full flex flex-col items-start justify-start pt-1 gap-1 z-20"
-          style={{ writingMode: "vertical-rl", textOrientation: "mixed" }}
-        >
+        <div className="absolute bottom-2 left-0 right-0 text-center">
           <span
-            className="text-[9px] tracking-[0.2em] uppercase"
+            className="text-[9px] tracking-[0.2em] uppercase block opacity-70 font-semibold mb-0.5"
             style={{
               fontFamily: config.fonts.body,
               color: config.colors.textSecondary,
@@ -36,10 +33,10 @@ export const HeroImages = ({
             {person?.title}
           </span>
           <h2
-            className="text-lg md:text-xl font-normal uppercase tracking-widest"
+            className="text-2xl md:text-3xl font-normal leading-none mt-1"
             style={{
-              fontFamily: config.fonts.heading,
-              color: config.colors.textPrimary,
+              fontFamily: config.fonts.script,
+              color: config.colors.accent,
             }}
           >
             {person?.shortName || person?.name}
@@ -50,27 +47,19 @@ export const HeroImages = ({
   );
 
   const renderBottomPerson = (person: any) => (
-    <div className="relative flex justify-end pr-8 -mt-20 md:-mt-24">
+    <div className="relative flex justify-end pr-6 -mt-16 md:-mt-20">
       <div
-        className="relative w-44 h-64 md:w-56 md:h-80 bg-white p-2 shadow-2xl rotate-[-4deg] z-10 shrink-0"
-        style={{ border: `2px solid ${config.colors.accent || "#d4b896"}` }}
+        className="relative w-48 h-64 md:w-56 md:h-80 bg-white p-3 pb-12 shadow-[0_15px_35px_rgba(44,76,56,0.12)] rotate-[-4deg] z-10 shrink-0 rounded-sm border border-[#e2e8dc]/60"
       >
         <img
           src={person?.photo || "https://placehold.co/300x400"}
-          alt="Person"
-          className="w-full h-full object-cover"
+          alt={person?.name}
+          className="w-full h-full object-cover rounded-sm"
+          style={{ height: "82%" }}
         />
-
-        <div
-          className="absolute top-0 -left-12 h-full flex flex-col items-start justify-start pt-1 gap-1 z-20"
-          style={{
-            writingMode: "vertical-rl",
-            textOrientation: "mixed",
-            transform: "rotate(180deg)",
-          }}
-        >
+        <div className="absolute bottom-2 left-0 right-0 text-center">
           <span
-            className="text-[9px] tracking-[0.2em] uppercase"
+            className="text-[9px] tracking-[0.2em] uppercase block opacity-70 font-semibold mb-0.5"
             style={{
               fontFamily: config.fonts.body,
               color: config.colors.textSecondary,
@@ -79,10 +68,10 @@ export const HeroImages = ({
             {person?.title}
           </span>
           <h2
-            className="text-lg md:text-xl font-normal uppercase tracking-widest"
+            className="text-2xl md:text-3xl font-normal leading-none mt-1"
             style={{
-              fontFamily: config.fonts.heading,
-              color: config.colors.textPrimary,
+              fontFamily: config.fonts.script,
+              color: config.colors.accent,
             }}
           >
             {person?.shortName || person?.name}

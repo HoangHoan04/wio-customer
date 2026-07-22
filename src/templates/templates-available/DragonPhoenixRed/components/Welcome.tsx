@@ -21,7 +21,7 @@ export const Welcome = ({
 
   const handleOpen = () => {
     setIsOpening(true);
-    setTimeout(() => onOpen(), 600);
+    setTimeout(() => onOpen(), 900);
   };
 
   const eventDate = formatDateToVietnamese(data?.eventDetails?.date);
@@ -36,7 +36,7 @@ export const Welcome = ({
         alignItems: "center",
         justifyContent: "center",
         background:
-          "radial-gradient(ellipse at center, #162542 0%, #3d0a0a 60%, #060b14 100%)",
+          "radial-gradient(ellipse at center, #6b0c0c 0%, #2a0303 70%, #0c0000 100%)",
         transition: "opacity 0.6s ease",
         opacity: isOpening ? 0 : 1,
         pointerEvents: isOpening ? "none" : undefined,
@@ -62,7 +62,7 @@ export const Welcome = ({
               width: cloud.size,
               height: cloud.size * 0.6,
               background:
-                "radial-gradient(ellipse at center, rgba(232,213,163,0.12) 0%, rgba(232,213,163,0.03) 60%, transparent 100%)",
+                "radial-gradient(ellipse at center, rgba(243,229,171,0.15) 0%, rgba(243,229,171,0.04) 60%, transparent 100%)",
               borderRadius: "50%",
               opacity: 0,
               animation: `cloudFloat ${cloud.dur}s ${cloud.delay}s ease-in-out infinite`,
@@ -79,8 +79,8 @@ export const Welcome = ({
           minHeight: 480,
           borderRadius: 20,
           boxShadow:
-            "0 30px 100px rgba(0,0,0,0.7), inset 0 0 20px rgba(139,94,22,0.2)",
-          border: "3px solid #d4af37",
+            "0 30px 100px rgba(0,0,0,0.85), inset 0 0 30px rgba(212,175,55,0.15)",
+          border: `3px double ${config.colors.accent}`,
           textAlign: "center",
           padding: "40px 24px",
           display: "flex",
@@ -88,6 +88,8 @@ export const Welcome = ({
           alignItems: "center",
           justifyContent: "center",
           boxSizing: "border-box",
+          background: "rgba(42, 3, 3, 0.45)",
+          backdropFilter: "blur(8px)",
         }}
       >
         <img
@@ -103,7 +105,8 @@ export const Welcome = ({
             pointerEvents: "none",
             userSelect: "none",
             zIndex: 1,
-            opacity: 0.18,
+            opacity: 0.22,
+            animation: isOpening ? "dragonStandingSpinOut 0.9s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards" : undefined
           }}
         />
         <img
@@ -119,7 +122,8 @@ export const Welcome = ({
             pointerEvents: "none",
             userSelect: "none",
             zIndex: 1,
-            opacity: 0.15,
+            opacity: 0.18,
+            animation: isOpening ? "phoenixStandingSpinOut 0.9s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards" : undefined
           }}
         />
         <img
@@ -134,7 +138,8 @@ export const Welcome = ({
             pointerEvents: "none",
             userSelect: "none",
             zIndex: 1,
-            opacity: 0.25,
+            opacity: 0.3,
+            animation: isOpening ? "dragonLeftCircleOut 0.9s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards" : undefined
           }}
         />
         <img
@@ -149,7 +154,8 @@ export const Welcome = ({
             pointerEvents: "none",
             userSelect: "none",
             zIndex: 1,
-            opacity: 0.25,
+            opacity: 0.3,
+            animation: isOpening ? "dragonRightCircleOut 0.9s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards" : undefined
           }}
         />
         <img
@@ -163,8 +169,7 @@ export const Welcome = ({
             width: 45,
             pointerEvents: "none",
             zIndex: 2,
-            opacity: 0.15,
-            mixBlendMode: "darken",
+            opacity: 0.25,
           }}
         />
 
@@ -179,8 +184,7 @@ export const Welcome = ({
             width: 55,
             pointerEvents: "none",
             zIndex: 2,
-            opacity: 0.15,
-            mixBlendMode: "darken",
+            opacity: 0.25,
           }}
         />
         <div style={{ position: "relative", zIndex: 3, width: "100%" }}>
@@ -195,7 +199,7 @@ export const Welcome = ({
               style={{
                 width: 85,
                 height: 85,
-                filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.1))",
+                filter: "drop-shadow(0 4px 8px rgba(0,0,0,0.3))",
               }}
             />
           </div>
@@ -207,10 +211,11 @@ export const Welcome = ({
               <span
                 style={{
                   fontFamily: config.fonts.heading,
-                  fontSize: "clamp(1.2rem, 7vw, 3rem)",
-                  color: "#b08b33",
+                  fontSize: "clamp(1.4rem, 8vw, 2.6rem)",
+                  color: config.colors.textPrimary,
                   lineHeight: 1.1,
-                  fontWeight: 400,
+                  fontWeight: 600,
+                  textShadow: "0 2px 4px rgba(0,0,0,0.5)",
                 }}
               >
                 {data?.displayOrder === "bride_first"
@@ -221,7 +226,7 @@ export const Welcome = ({
               <span
                 style={{
                   fontSize: "clamp(1.2rem, 4vw, 1.6rem)",
-                  color: "#b08b33",
+                  color: config.colors.accent,
                   fontFamily: config.fonts.heading,
                   lineHeight: 1,
                   transform: "translateY(4px)",
@@ -233,10 +238,11 @@ export const Welcome = ({
               <span
                 style={{
                   fontFamily: config.fonts.heading,
-                  fontSize: "clamp(1.2rem, 7vw, 3rem)",
-                  color: "#b08b33",
+                  fontSize: "clamp(1.4rem, 8vw, 2.6rem)",
+                  color: config.colors.textPrimary,
                   lineHeight: 1.1,
-                  fontWeight: 400,
+                  fontWeight: 600,
+                  textShadow: "0 2px 4px rgba(0,0,0,0.5)",
                 }}
               >
                 {data?.displayOrder === "bride_first"
@@ -258,25 +264,25 @@ export const Welcome = ({
               style={{
                 width: 50,
                 height: 1,
-                background: "linear-gradient(to left, #b08b33, transparent)",
+                background: `linear-gradient(to left, ${config.colors.accent}, transparent)`,
               }}
             />
             <i
               className="pi pi-star-fill"
-              style={{ color: "#b08b33", fontSize: 10 }}
+              style={{ color: config.colors.accent, fontSize: 10 }}
             ></i>
             <div
               style={{
                 width: 50,
                 height: 1,
-                background: "linear-gradient(to right, #b08b33, transparent)",
+                background: `linear-gradient(to right, ${config.colors.accent}, transparent)`,
               }}
             />
           </div>
           <p
             style={{
               fontSize: 14,
-              color: "#6b531e",
+              color: config.colors.textSecondary,
               fontFamily: config.fonts.body,
               marginBottom: 16,
               letterSpacing: "0.05em",
@@ -288,7 +294,7 @@ export const Welcome = ({
           <p
             style={{
               fontSize: 13,
-              color: "#b08b33",
+              color: config.colors.accent,
               fontFamily: config.fonts.body,
               marginBottom: 12,
               letterSpacing: "0.15em",
@@ -303,16 +309,16 @@ export const Welcome = ({
               style={{
                 display: "inline-block",
                 padding: "8px 28px",
-                background: "rgba(176, 139, 51, 0.1)",
-                border: "1px solid rgba(176, 139, 51, 0.4)",
-                borderRadius: 4,
+                background: "rgba(212, 175, 55, 0.12)",
+                border: `1px solid ${config.colors.accent}66`,
+                borderRadius: 8,
                 fontSize: 16,
                 fontWeight: 600,
-                color: "#b08b33",
+                color: config.colors.textPrimary,
                 fontFamily: config.fonts.heading,
                 marginBottom: 12,
                 backdropFilter: "blur(4px)",
-                boxShadow: "inset 0 1px 3px rgba(0,0,0,0.05)",
+                boxShadow: "inset 0 1px 3px rgba(0,0,0,0.2)",
               }}
             >
               {data.guestName || "Quý Khách"}
@@ -322,11 +328,11 @@ export const Welcome = ({
           <p
             style={{
               fontSize: 13,
-              color: "#6b531e",
+              color: config.colors.textSecondary,
               fontFamily: config.fonts.body,
               marginBottom: 35,
               fontStyle: "italic",
-              opacity: 0.9,
+              opacity: 0.95,
             }}
           >
             đến dự buổi tiệc chung vui cùng gia đình chúng tôi
@@ -335,23 +341,27 @@ export const Welcome = ({
             onClick={handleOpen}
             style={{
               padding: "14px 48px",
-              color: "#e2ce97",
+              color: config.colors.buttonText,
               borderRadius: 999,
               fontSize: 15,
-              fontWeight: 600,
+              fontWeight: 700,
               fontFamily: config.fonts.body,
-              letterSpacing: "0.1em",
+              letterSpacing: "0.15em",
               cursor: "pointer",
-              background: "transparent",
-              transition: "all 0.25s ease",
+              background: `linear-gradient(135deg, #f5e6b3 0%, ${config.colors.accent} 50%, #b8922f 100%)`,
+              border: "1px solid #f5e6b3",
+              boxShadow: "0 6px 20px rgba(212, 175, 55, 0.35), inset 0 1px 0 rgba(255,255,255,0.4)",
+              transition: "all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
             }}
             onMouseEnter={(e) => {
               const target = e.currentTarget;
-              target.style.transform = "translateY(-2px)";
+              target.style.transform = "translateY(-3px)";
+              target.style.boxShadow = "0 10px 25px rgba(212, 175, 55, 0.5), inset 0 1px 0 rgba(255,255,255,0.5)";
             }}
             onMouseLeave={(e) => {
               const target = e.currentTarget;
               target.style.transform = "translateY(0)";
+              target.style.boxShadow = "0 6px 20px rgba(212, 175, 55, 0.35), inset 0 1px 0 rgba(255,255,255,0.4)";
             }}
           >
             MỞ THIỆP
@@ -365,6 +375,24 @@ export const Welcome = ({
           20%  { opacity: 0.4; }
           80%  { opacity: 0.3; }
           100% { opacity: 0;   transform: translateX(30px) scale(1.1); }
+        }
+        @keyframes dragonStandingSpinOut {
+          0% { transform: scale(1) rotate(0deg); opacity: 0.22; }
+          100% { transform: scale(2.2) rotate(180deg); opacity: 0; }
+        }
+        @keyframes phoenixStandingSpinOut {
+          0% { transform: scale(1) rotate(0deg); opacity: 0.18; }
+          100% { transform: scale(2.2) rotate(-180deg); opacity: 0; }
+        }
+        @keyframes dragonLeftCircleOut {
+          0% { transform: translate(0, 0) rotate(0deg) scale(1); opacity: 0.3; }
+          40% { transform: translate(60px, -40px) rotate(120deg) scale(1.4); opacity: 0.6; }
+          100% { transform: translate(250px, -200px) rotate(360deg) scale(0.1); opacity: 0; }
+        }
+        @keyframes dragonRightCircleOut {
+          0% { transform: translate(0, 0) rotate(0deg) scale(1); opacity: 0.3; }
+          40% { transform: translate(-60px, -40px) rotate(-120deg) scale(1.4); opacity: 0.6; }
+          100% { transform: translate(-250px, -200px) rotate(-360deg) scale(0.1); opacity: 0; }
         }
       `}</style>
     </div>
