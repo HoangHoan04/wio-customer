@@ -6,7 +6,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
+  IMAGE_NAME: hoanghoan04/wio-customer
 
 jobs:
   deploy:
@@ -65,14 +65,14 @@ jobs:
 
       - name: Deploy to Server via SSH
         uses: appleboy/ssh-action@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_ACTOR: ${{ github.actor }}
         with:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           envs: NEXT_PUBLIC_API_URL,GITHUB_TOKEN,GITHUB_ACTOR
-          env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-            GITHUB_ACTOR: ${{ github.actor }}
           script: |
             IS_PROD=${{ github.ref_name == 'main' || github.ref_name == 'production' }}
             TARGET_DIR=$(if [ "$IS_PROD" = "true" ]; then echo "/opt/wio/prod"; else echo "/opt/wio/dev"; fi)
@@ -91,7 +91,8 @@ jobs:
 
             docker network create wio_net || true
             echo "$GITHUB_TOKEN" | docker login ghcr.io -u $GITHUB_ACTOR --password-stdin
-            docker pull ghcr.io/${{ github.repository }}:$TAG
+            REPO_LOWER=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+            docker pull ghcr.io/$REPO_LOWER:$TAG
             docker stop $CONTAINER_NAME || true
             docker rm $CONTAINER_NAME || true
             docker run -d \
@@ -100,7 +101,7 @@ jobs:
               --net wio_net \
               -p 127.0.0.1:$PORT:2504 \
               --env-file .env \
-              ghcr.io/${{ github.repository }}:$TAG
+              ghcr.io/$REPO_LOWER:$TAG
 
       - name: Prepare commit info
         id: info
