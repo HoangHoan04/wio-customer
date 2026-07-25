@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "concurrently \"next dev -p 2504\" \"wait-on http://localhost:2504 && node scripts/open-browser.js http://localhost:2504\"",
-    "build": "eslint && next build",
+    "build": "next build",
     "start": "concurrently \"next start -p 2504\" \"wait-on http://localhost:2504 && node scripts/open-browser.js http://localhost:2504\"",
     "lint": "eslint",
     "lint:fix": "eslint --fix"

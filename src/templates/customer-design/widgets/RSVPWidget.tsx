@@ -204,7 +204,8 @@ export default function RSVPWidget({
       <div
         style={{
           width: width * scale,
-          height: height * scale,
+          height: "auto",
+          minHeight: height * scale,
           fontFamily,
           display: "flex",
           flexDirection: "column",
@@ -213,7 +214,6 @@ export default function RSVPWidget({
           border: `1px solid ${color}30`,
           borderRadius: 10 * scale,
           backgroundColor: `${color}08`,
-          overflow: "auto",
           position: "relative",
         }}
       >
@@ -250,7 +250,8 @@ export default function RSVPWidget({
         onClick={() => setShowModal(true)}
         style={{
           width: width * scale,
-          height: height * scale,
+          height: "auto",
+          minHeight: height * scale,
           fontFamily,
           display: "flex",
           alignItems: "center",

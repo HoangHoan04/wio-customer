@@ -1,10 +1,9 @@
-import {
-  default as flowerBottom,
-  default as flowerTop,
-} from "@/assets/decorations/royal-red/flower.webp";
+import flowerImg from "@/assets/decorations/royal-red/flower.webp";
+import cornerFrame from "@/assets/decorations/common/frame-corner-top-left.webp";
 import { WelcomeIcon } from "@/assets/icons";
 import type { ThemeTemplateConfig } from "@/dto/theme.dto";
 import { useState } from "react";
+
 export const Welcome = ({
   data,
   config,
@@ -18,7 +17,7 @@ export const Welcome = ({
 
   const handleOpen = () => {
     setIsOpening(true);
-    setTimeout(() => onOpen(), 600);
+    setTimeout(() => onOpen(), 900);
   };
 
   const eventDate = data?.eventDetails?.date
@@ -39,11 +38,12 @@ export const Welcome = ({
         alignItems: "center",
         justifyContent: "center",
         background:
-          "radial-gradient(ellipse at center, #1a3d2b 0%, #0d2618 60%, #081a10 100%)",
+          "radial-gradient(ellipse at center, #6b0c0c 0%, #2a0303 70%, #0c0000 100%)",
         transition: "opacity 0.6s ease",
         opacity: isOpening ? 0 : 1,
         pointerEvents: isOpening ? "none" : undefined,
         fontFamily: config.fonts.heading,
+        overflow: "hidden",
       }}
     >
       <div
@@ -54,20 +54,19 @@ export const Welcome = ({
           pointerEvents: "none",
         }}
       >
-        {LEAVES.map((leaf, i) => (
+        {SPARKLES.map((sparkle, i) => (
           <div
             key={i}
             style={{
               position: "absolute",
-              left: `${leaf.left}%`,
+              left: `${sparkle.left}%`,
               top: "-20px",
-              width: leaf.size,
-              height: leaf.size * 1.6,
-              background: "#4a7c59",
-              borderRadius: "50% 10% 50% 10%",
+              width: sparkle.size,
+              height: sparkle.size,
+              background: sparkle.color,
+              borderRadius: "50%",
               opacity: 0,
-              animation: `leafFall ${leaf.dur}s ${leaf.delay}s linear infinite`,
-              transform: `rotate(${leaf.rot}deg)`,
+              animation: `sparkleFall ${sparkle.dur}s ${sparkle.delay}s linear infinite`,
             }}
           />
         ))}
@@ -76,149 +75,154 @@ export const Welcome = ({
       <div
         style={{
           position: "relative",
-          width: "90%",
-          maxWidth: 480,
-          background: "linear-gradient(160deg, #eef4ec 0%, #ddeedd 100%)",
-          borderRadius: 16,
-          boxShadow: "0 24px 80px rgba(0,0,0,0.6)",
-          overflow: "hidden",
+          width: "92%",
+          maxWidth: 450,
+          background: "linear-gradient(160deg, #470a0d 0%, #1a0205 100%)",
+          borderRadius: 20,
+          boxShadow: "0 30px 100px rgba(0,0,0,0.85), inset 0 0 30px rgba(212,175,55,0.15)",
+          border: `3px double ${config.colors.accent}`,
           textAlign: "center",
-          padding: "0 0 40px",
+          padding: "45px 24px",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          boxSizing: "border-box",
+          backdropFilter: "blur(8px)",
+          animation: isOpening ? "cardScaleOut 0.9s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards" : undefined
         }}
       >
+        <img src={cornerFrame.src} alt="" className="absolute top-2.5 left-2.5 w-7 h-7 pointer-events-none opacity-60" />
+        <img src={cornerFrame.src} alt="" className="absolute top-2.5 right-2.5 w-7 h-7 pointer-events-none opacity-60 rotate-90" />
+        <img src={cornerFrame.src} alt="" className="absolute bottom-2.5 left-2.5 w-7 h-7 pointer-events-none opacity-60 -rotate-90" />
+        <img src={cornerFrame.src} alt="" className="absolute bottom-2.5 right-2.5 w-7 h-7 pointer-events-none opacity-60 rotate-180" />
+
         <img
-          src={flowerTop.src}
+          src={flowerImg.src}
           alt=""
           aria-hidden="true"
           style={{
             position: "absolute",
-            top: -10,
-            right: -10,
-            width: 200,
+            top: -15,
+            right: -15,
+            width: 90,
+            opacity: 0.8,
             pointerEvents: "none",
             userSelect: "none",
             zIndex: 2,
-            opacity: 0.5,
           }}
         />
-
         <img
-          src={flowerBottom.src}
+          src={flowerImg.src}
           alt=""
           aria-hidden="true"
           style={{
             position: "absolute",
-            bottom: -10,
-            left: -10,
-            width: 160,
+            bottom: -15,
+            left: -15,
+            width: 90,
+            opacity: 0.8,
             pointerEvents: "none",
             userSelect: "none",
             zIndex: 2,
-            transform: "rotate(270deg) scaleX(-1)",
-            opacity: 0.5,
+            transform: "rotate(180deg)",
           }}
         />
 
-        <div
-          style={{
-            position: "relative",
-            zIndex: 3,
-            marginTop: 40,
-            marginBottom: 16,
-          }}
-        >
+        <div style={{ position: "relative", zIndex: 3, width: "100%" }}>
           <div
             style={{
-              display: "inline-flex",
-              alignItems: "center",
+              marginBottom: 16,
+              display: "flex",
               justifyContent: "center",
-              borderRadius: "50%",
             }}
           >
             <WelcomeIcon
               style={{
-                width: 100,
-                height: 100,
+                width: 80,
+                height: 80,
+                filter: "drop-shadow(0 4px 8px rgba(0,0,0,0.3))",
               }}
             />
           </div>
-        </div>
 
-        <div style={{ position: "relative", zIndex: 3 }}>
-          <h1
-            style={{
-              fontFamily: config.fonts.script,
-              fontSize: "clamp(2rem, 7vw, 2.8rem)",
-              color: "#1a3d2b",
-              lineHeight: 1.2,
-              margin: "0 0 4px",
-              fontWeight: 400,
-            }}
-          >
-            {data?.displayOrder === "bride_first"
-              ? data?.bride?.shortName || data?.bride?.name
-              : data?.groom?.shortName || data?.groom?.name}
-          </h1>
           <p
             style={{
-              fontSize: 18,
-              color: "#3a6e50",
-              margin: "0 0 4px",
-              fontFamily: config.fonts.heading,
+              fontSize: 13,
+              color: config.colors.accent,
+              fontFamily: config.fonts.body,
+              marginBottom: 8,
+              letterSpacing: "0.2em",
+              textTransform: "uppercase",
+              fontWeight: 600,
             }}
           >
-            &amp;
+            LỄ THÀNH HÔN
           </p>
-          <h1
-            style={{
-              fontFamily: config.fonts.script,
-              fontSize: "clamp(2rem, 7vw, 2.8rem)",
-              color: "#1a3d2b",
-              lineHeight: 1.2,
-              margin: "0 0 16px",
-              fontWeight: 400,
-            }}
-          >
-            {data?.displayOrder === "bride_first"
-              ? data?.groom?.shortName || data?.groom?.name
-              : data?.bride?.shortName || data?.bride?.name}
-          </h1>
+
+          <div className="flex flex-col items-center mb-5">
+            <h1
+              style={{
+                fontFamily: config.fonts.script,
+                fontSize: "clamp(2rem, 10vw, 3rem)",
+                color: config.colors.textPrimary,
+                lineHeight: 1.1,
+                textShadow: "0 2px 4px rgba(0,0,0,0.5)",
+              }}
+            >
+              {data?.displayOrder === "bride_first"
+                ? data?.bride?.fullName || data?.bride?.name
+                : data?.groom?.fullName || data?.groom?.name}
+            </h1>
+            
+            <span
+              style={{
+                fontSize: "clamp(1.2rem, 4vw, 1.5rem)",
+                color: config.colors.accent,
+                fontFamily: config.fonts.script,
+                margin: "4px 0",
+              }}
+            >
+              &amp;
+            </span>
+
+            <h1
+              style={{
+                fontFamily: config.fonts.script,
+                fontSize: "clamp(2rem, 10vw, 3rem)",
+                color: config.colors.textPrimary,
+                lineHeight: 1.1,
+                textShadow: "0 2px 4px rgba(0,0,0,0.5)",
+              }}
+            >
+              {data?.displayOrder === "bride_first"
+                ? data?.groom?.fullName || data?.groom?.name
+                : data?.bride?.fullName || data?.bride?.name}
+            </h1>
+          </div>
 
           <div
             style={{
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              gap: 8,
-              margin: "0 0 14px",
+              gap: 12,
+              margin: "0 0 16px",
             }}
           >
-            <div
-              style={{
-                width: 40,
-                height: 0.5,
-                background: "#3a6e50",
-                opacity: 0.5,
-              }}
-            />
-            <i className="pi pi-star-fill" style={{ color: "#3a6e50" }}></i>
-            <div
-              style={{
-                width: 40,
-                height: 0.5,
-                background: "#3a6e50",
-                opacity: 0.5,
-              }}
-            />
+            <div style={{ width: 50, height: 1, background: `linear-gradient(to left, ${config.colors.accent}, transparent)` }} />
+            <i className="pi pi-heart-fill animate-pulse" style={{ color: config.colors.accent, fontSize: 10 }}></i>
+            <div style={{ width: 50, height: 1, background: `linear-gradient(to right, ${config.colors.accent}, transparent)` }} />
           </div>
 
           <p
             style={{
               fontSize: 14,
-              color: "#2d5c3a",
+              color: config.colors.textSecondary,
               fontFamily: config.fonts.body,
-              marginBottom: 14,
-              letterSpacing: "0.02em",
+              marginBottom: 16,
+              letterSpacing: "0.05em",
+              fontWeight: 500,
             }}
           >
             {eventDate}
@@ -227,13 +231,15 @@ export const Welcome = ({
           <p
             style={{
               fontSize: 13,
-              color: "#3a6e50",
+              color: config.colors.accent,
               fontFamily: config.fonts.body,
               marginBottom: 10,
-              letterSpacing: "0.05em",
+              letterSpacing: "0.15em",
+              textTransform: "uppercase",
+              fontWeight: 600,
             }}
           >
-            {data?.salutation || "Kính mời"}
+            {data?.salutation || "Trân Trọng Kính Mời"}
           </p>
 
           {data?.guestName && (
@@ -241,15 +247,16 @@ export const Welcome = ({
               style={{
                 display: "inline-block",
                 padding: "8px 24px",
-                background: "rgba(255,255,255,0.6)",
-                border: "0.5px solid #7aab8a",
-                borderRadius: 999,
+                background: "rgba(212, 175, 55, 0.12)",
+                border: `1px solid ${config.colors.accent}66`,
+                borderRadius: 8,
                 fontSize: 15,
-                fontWeight: 500,
-                color: "#2d5a3d",
+                fontWeight: 600,
+                color: config.colors.textPrimary,
                 fontFamily: config.fonts.heading,
-                marginBottom: 10,
+                marginBottom: 12,
                 backdropFilter: "blur(4px)",
+                boxShadow: "inset 0 1px 3px rgba(0,0,0,0.2)",
               }}
             >
               {data.guestName}
@@ -258,71 +265,74 @@ export const Welcome = ({
 
           <p
             style={{
-              fontSize: 12,
-              color: "#3a6e50",
+              fontSize: 13,
+              color: config.colors.textSecondary,
               fontFamily: config.fonts.body,
-              marginBottom: 28,
-              opacity: 0.85,
+              marginBottom: 30,
+              fontStyle: "italic",
+              opacity: 0.9,
             }}
           >
-            đến dự buổi tiệc chung vui cùng gia đình
+            đến dự buổi tiệc chung vui cùng gia đình chúng tôi
           </p>
 
           <button
             onClick={handleOpen}
             style={{
-              padding: "13px 44px",
-              background: "#1a3d2b",
-              color: "#fff",
-              border: "none",
+              padding: "14px 44px",
+              color: config.colors.buttonText,
               borderRadius: 999,
-              fontSize: 15,
-              fontWeight: 500,
+              fontSize: 14,
+              fontWeight: 700,
               fontFamily: config.fonts.body,
-              letterSpacing: "0.05em",
+              letterSpacing: "0.15em",
               cursor: "pointer",
-              boxShadow: "0 4px 20px rgba(26,61,43,0.4)",
-              transition: "transform 0.15s, box-shadow 0.15s",
+              background: `linear-gradient(135deg, #f5e6b3 0%, ${config.colors.accent} 50%, #b8922f 100%)`,
+              border: "1px solid #f5e6b3",
+              boxShadow: "0 6px 20px rgba(212, 175, 55, 0.35), inset 0 1px 0 rgba(255,255,255,0.4)",
+              transition: "all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
             }}
             onMouseEnter={(e) => {
-              (e.target as HTMLButtonElement).style.transform = "scale(1.04)";
-              (e.target as HTMLButtonElement).style.boxShadow =
-                "0 6px 28px rgba(26,61,43,0.55)";
+              const target = e.currentTarget;
+              target.style.transform = "translateY(-3px)";
+              target.style.boxShadow = "0 10px 25px rgba(212, 175, 55, 0.5), inset 0 1px 0 rgba(255,255,255,0.5)";
             }}
             onMouseLeave={(e) => {
-              (e.target as HTMLButtonElement).style.transform = "scale(1)";
-              (e.target as HTMLButtonElement).style.boxShadow =
-                "0 4px 20px rgba(61,26,13,0.4)";
+              const target = e.currentTarget;
+              target.style.transform = "translateY(0)";
+              target.style.boxShadow = "0 6px 20px rgba(212, 175, 55, 0.35), inset 0 1px 0 rgba(255,255,255,0.4)";
             }}
           >
-            Mở thiệp
+            MỞ THIỆP
           </button>
         </div>
       </div>
 
       <style>{`
-        @keyframes leafFall {
-          0%   { opacity: 0;   transform: translateY(0)    rotate(0deg)   scale(0.7); }
-          8%   { opacity: 0.6; }
-          90%  { opacity: 0.4; }
-          100% { opacity: 0;   transform: translateY(105vh) rotate(540deg) scale(0.4); }
+        @keyframes sparkleFall {
+          0% { transform: translateY(-50px) rotate(0deg) scale(0.6); opacity: 0; }
+          20% { opacity: 0.8; }
+          80% { opacity: 0.6; }
+          100% { transform: translateY(105vh) rotate(360deg) scale(1.1); opacity: 0; }
+        }
+        @keyframes cardScaleOut {
+          0% { transform: scale(1); opacity: 1; }
+          100% { transform: scale(1.5); opacity: 0; }
         }
       `}</style>
     </div>
   );
 };
 
-const LEAVES = [
-  { left: 8, size: 7, dur: 9, delay: 0, rot: 20 },
-  { left: 22, size: 5, dur: 7, delay: 2.5, rot: -15 },
-  { left: 35, size: 6, dur: 11, delay: 1, rot: 40 },
-  { left: 48, size: 8, dur: 8, delay: 4, rot: -30 },
-  { left: 60, size: 5, dur: 10, delay: 0.5, rot: 15 },
-  { left: 72, size: 7, dur: 7, delay: 3, rot: -45 },
-  { left: 83, size: 6, dur: 9, delay: 1.5, rot: 60 },
-  { left: 91, size: 5, dur: 12, delay: 2, rot: -20 },
-  { left: 15, size: 6, dur: 8, delay: 5, rot: 30 },
-  { left: 55, size: 8, dur: 10, delay: 3.5, rot: -10 },
-  { left: 78, size: 5, dur: 7, delay: 6, rot: 50 },
-  { left: 42, size: 7, dur: 9, delay: 7, rot: -35 },
+const SPARKLES = [
+  { left: 5, size: 6, dur: 10, delay: 0, color: "#d4af37" },
+  { left: 15, size: 4, dur: 8, delay: 1.5, color: "#f5e6b3" },
+  { left: 25, size: 5, dur: 11, delay: 0.5, color: "#d4af37" },
+  { left: 35, size: 3, dur: 7, delay: 2.2, color: "#b8922f" },
+  { left: 45, size: 6, dur: 9, delay: 1, color: "#d4af37" },
+  { left: 55, size: 4, dur: 8.5, delay: 3, color: "#f5e6b3" },
+  { left: 65, size: 5, dur: 10.5, delay: 0.2, color: "#d4af37" },
+  { left: 75, size: 3, dur: 7.5, delay: 1.8, color: "#b8922f" },
+  { left: 85, size: 6, dur: 9.5, delay: 2.5, color: "#d4af37" },
+  { left: 95, size: 4, dur: 8.2, delay: 0.8, color: "#f5e6b3" },
 ];

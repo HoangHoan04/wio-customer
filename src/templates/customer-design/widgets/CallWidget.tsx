@@ -1,4 +1,5 @@
-import { MessageCircle, Phone } from "lucide-react";
+import { PhoneIcon } from "@/templates/customer-design/icons";
+import { MessengerIcon, ZaloIcon } from "@/assets/icons";
 
 interface Props {
   phoneEnabled?: boolean;
@@ -10,21 +11,9 @@ interface Props {
   zaloEnabled?: boolean;
   zaloLabel?: string;
   zaloPhone?: string;
-  color?: string;
-  fontFamily?: string;
   width: number;
   height: number;
   scale: number;
-}
-
-function ZaloIcon({ size, color }: { size: number; color: string }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-      <text x="12" y="16" textAnchor="middle" fontSize="13" fontWeight="700" fill={color}>
-        Z
-      </text>
-    </svg>
-  );
 }
 
 export default function CallWidget({
@@ -37,17 +26,11 @@ export default function CallWidget({
   zaloEnabled,
   zaloLabel = "Zalo",
   zaloPhone,
-  color = "#d4af37",
-  fontFamily = "Quicksand",
   width,
   height,
   scale,
 }: Props) {
-  const cw = width * scale;
-  const ch = height * scale;
-  const iconSize = Math.min(cw * 0.1, ch * 0.28, 22 * scale);
-  const fSize = Math.max(8, iconSize * 0.5);
-  const btnSize = iconSize * 2;
+  const iconSize = 32 * scale;
 
   const contacts: {
     enabled?: boolean;
@@ -58,39 +41,46 @@ export default function CallWidget({
     {
       enabled: phoneEnabled,
       label: phoneLabel,
-      icon: <Phone size={iconSize} />,
+      icon: <PhoneIcon width={iconSize} height={iconSize} />,
       action: () => phoneNumber && window.open(`tel:${phoneNumber}`, "_self"),
     },
     {
       enabled: messengerEnabled,
       label: messengerLabel,
-      icon: <MessageCircle size={iconSize} />,
+      icon: <MessengerIcon width={iconSize} height={iconSize} />,
       action: () => {
         if (!messengerUrl) return;
-        try {
-          const u = new URL(
-            messengerUrl.includes("://") ? messengerUrl : `https://${messengerUrl}`
-          );
-          const username = u.pathname.replace(/\/+$/, "").split("/").pop();
-          if (
-            u.hostname.includes("facebook") ||
-            u.hostname === "fb.com" ||
-            u.hostname === "fb.me"
-          ) {
+        const trimmed = messengerUrl.trim();
+        if (
+          trimmed.includes("facebook.com") ||
+          trimmed.includes("messenger.com") ||
+          trimmed.includes("m.me") ||
+          trimmed.includes("fb.com")
+        ) {
+          try {
+            const urlString = trimmed.startsWith("http") ? trimmed : `https://${trimmed}`;
+            const u = new URL(urlString);
+            const username = u.pathname.replace(/\/+$/, "").split("/").pop();
             window.open(`https://m.me/${username}`, "_blank", "noopener");
-          } else {
-            window.open(messengerUrl, "_blank", "noopener");
+          } catch {
+            window.open(`https://m.me/${trimmed}`, "_blank", "noopener");
           }
-        } catch {
-          window.open(messengerUrl, "_blank", "noopener");
+        } else if (trimmed.startsWith("http")) {
+          window.open(trimmed, "_blank", "noopener");
+        } else {
+          window.open(`https://m.me/${trimmed}`, "_blank", "noopener");
         }
       },
     },
     {
       enabled: zaloEnabled,
       label: zaloLabel,
-      icon: <ZaloIcon size={iconSize} color="#fff" />,
-      action: () => zaloPhone && window.open(`https://zalo.me/${zaloPhone}`, "_blank", "noopener"),
+      icon: <ZaloIcon width={iconSize} height={iconSize} />,
+      action: () => {
+        if (!zaloPhone) return;
+        const cleanPhone = zaloPhone.replace(/[^0-9]/g, "");
+        window.open(`https://zalo.me/${cleanPhone}`, "_blank", "noopener");
+      },
     },
   ].filter((c) => c.enabled);
 
@@ -99,14 +89,16 @@ export default function CallWidget({
   return (
     <div
       style={{
-        width: cw,
-        height: ch,
-        fontFamily,
+        width: width * scale,
+        height: height * scale,
         display: "flex",
+        flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        gap: Math.max(4 * scale, (cw - contacts.length * btnSize * 1.6) / (contacts.length + 1)),
-        padding: 4 * scale,
+        gap: 10 * scale,
+        padding: 0,
+        boxSizing: "border-box",
+        background: "transparent",
       }}
     >
       {contacts.map((c, i) => (
@@ -115,38 +107,15 @@ export default function CallWidget({
           onClick={c.action}
           style={{
             display: "flex",
-            flexDirection: "column",
             alignItems: "center",
-            gap: 2 * scale,
+            justifyContent: "center",
             cursor: "pointer",
             userSelect: "none",
+            width: "100%",
+            height: "auto",
           }}
         >
-          <div
-            style={{
-              width: btnSize,
-              height: btnSize,
-              borderRadius: "50%",
-              backgroundColor: color,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              color: "#fff",
-            }}
-          >
-            {c.icon}
-          </div>
-          <span
-            style={{
-              fontSize: fSize,
-              color: "#fff",
-              whiteSpace: "nowrap",
-              textAlign: "center",
-              lineHeight: 1.2,
-            }}
-          >
-            {c.label}
-          </span>
+          {c.icon}
         </div>
       ))}
     </div>

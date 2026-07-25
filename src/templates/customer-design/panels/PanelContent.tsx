@@ -8,6 +8,7 @@ import ShapePanelContent from "./ShapePanelContent";
 import StockPanelContent from "./StockPanelContent";
 import TextPanelContent from "./TextPanelContent";
 import UtilityPanelContent from "./UtilityPanelContent";
+import PresetPanelContent from "./PresetPanelContent";
 
 export default function PanelContent({
   tool,
@@ -30,6 +31,7 @@ export default function PanelContent({
   onDeselectImage,
   selectedAudio,
   onSelectAudio,
+  onAddElements,
 }: {
   tool: EditorTool;
   elements: EditorElement[];
@@ -68,6 +70,7 @@ export default function PanelContent({
   onDeselectImage?: () => void;
   selectedAudio?: { id: string; name: string; url?: string; duration: string; source?: "admin" | "user" } | null;
   onSelectAudio?: (audio: { id: string; name: string; url?: string; duration: string; source?: "admin" | "user" } | null) => void;
+  onAddElements?: (els: Omit<EditorElement, "id" | "zIndex">[], grouped: boolean) => void;
 }) {
   switch (tool) {
     case "text":
@@ -143,7 +146,11 @@ export default function PanelContent({
         <UtilityPanelContent elements={elements} onUpdateWidgetConfig={onUpdateWidgetConfig} />
       );
     case "preset":
-      return <ComingSoon icon={Presentation} text="Bảng màu & font phối hợp sẵn" />;
+      return (
+        <PresetPanelContent
+          onAddElements={onAddElements ?? (() => {})}
+        />
+      );
     case "template":
       return <ComingSoon icon={Sparkles} text="Hiệu ứng động cho thiệp" />;
     case "effect":

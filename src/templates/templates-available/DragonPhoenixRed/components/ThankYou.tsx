@@ -21,13 +21,11 @@ export const ThankYou = ({
           boxShadow: "0 15px 35px rgba(0,0,0,0.25), inset 0 0 15px rgba(212,175,55,0.05)",
         }}
       >
-        {/* Inner Dashed Border */}
         <div 
           className="absolute inset-2 rounded-lg border border-dashed pointer-events-none"
           style={{ borderColor: `${config.colors.accent}33` }}
         />
 
-        {/* Section Heading */}
         <h3
           className="text-lg md:text-xl uppercase tracking-[0.3em] font-semibold mb-6 text-center"
           style={{
@@ -39,7 +37,6 @@ export const ThankYou = ({
           Trân Trọng Cảm Ơn
         </h3>
 
-        {/* Thank You Text */}
         <p
           className="text-lg md:text-xl relative z-20 leading-relaxed font-medium text-center"
           style={{
@@ -51,10 +48,9 @@ export const ThankYou = ({
           {data.thankYouText}
         </p>
 
-        {/* Signature Names */}
         <div className="mt-8 flex flex-col items-center">
           <span 
-            className="w-16 h-[1px] mb-4" 
+            className="w-16 h-px mb-4" 
             style={{ background: `linear-gradient(to right, transparent, ${config.colors.accent}, transparent)` }} 
           />
           <h4
@@ -69,7 +65,6 @@ export const ThankYou = ({
         </div>
       </div>
 
-      {/* Decorative Dragons */}
       <img
         src={dragonLeftImg.src}
         alt=""

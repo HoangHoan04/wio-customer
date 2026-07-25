@@ -36,7 +36,7 @@ const extractAddressFromMapUrl = (url: string): string => {
       return decodeURIComponent(placeMatch[1]).replace(/\+/g, " ");
     }
   } catch {
-    // ignore parse error
+    //! ignore parse error
   }
   return "";
 };
@@ -96,7 +96,7 @@ export default function MapWidget({
           return "";
         }
       } catch {
-        // ignore parse error
+        //! ignore parse error
       }
     }
 
@@ -120,12 +120,14 @@ export default function MapWidget({
     return extracted || "Xem chỉ đường trên Google Maps";
   }, [locationAddress, mapEmbedUrl]);
 
+  const displayHeight = Math.max(280, height);
+
   if (!embedUrl) {
     return (
       <div
         style={{
           width: width * scale,
-          height: height * scale,
+          height: displayHeight * scale,
           fontFamily,
           display: "flex",
           flexDirection: "column",
@@ -144,56 +146,86 @@ export default function MapWidget({
     );
   }
 
+  const isIframe = mapEmbedUrl?.trim().includes("<iframe");
+
   return (
     <div
       style={{
         width: width * scale,
-        height: height * scale,
-        borderRadius: 10 * scale,
+        height: displayHeight * scale,
+        borderRadius: 12 * scale,
         overflow: "hidden",
-        border: `1px solid ${color}30`,
+        border: `1.5px solid ${color}40`,
         position: "relative",
-        backgroundColor: "#111",
+        backgroundColor: "#121214",
+        boxShadow: "0 8px 24px rgba(0,0,0,0.2)",
         display: "flex",
         flexDirection: "column",
       }}
     >
-      <iframe
-        src={embedUrl}
-        width="100%"
-        height={height * scale - 28 * scale}
-        style={{ border: 0, flexShrink: 0 }}
-        loading="lazy"
-        allowFullScreen
-        referrerPolicy="no-referrer-when-downgrade"
-        title="Google Maps"
-      />
+      <div style={{ width: "100%", height: "100%", position: "relative" }}>
+        {isIframe ? (
+          <div
+            dangerouslySetInnerHTML={{ __html: mapEmbedUrl || "" }}
+            style={{
+              width: "100%",
+              height: "100%",
+              border: 0,
+              overflow: "hidden",
+              position: "absolute",
+              inset: 0,
+            }}
+            className="[&>iframe]:w-full [&>iframe]:h-full [&>iframe]:border-0 [&>iframe]:absolute [&>iframe]:inset-0"
+          />
+        ) : (
+          <iframe
+            src={embedUrl}
+            width="100%"
+            height="100%"
+            style={{
+              border: 0,
+              position: "absolute",
+              inset: 0,
+            }}
+            loading="lazy"
+            allowFullScreen
+            referrerPolicy="no-referrer-when-downgrade"
+            title="Google Maps"
+          />
+        )}
+      </div>
+
       <a
         href={directionsUrl}
         target="_blank"
         rel="noopener noreferrer"
         style={{
+          position: "absolute",
+          bottom: 10 * scale,
+          left: "50%",
+          transform: "translateX(-50%)",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          gap: 4 * scale,
-          height: 28 * scale,
-          padding: `0 ${8 * scale}px`,
+          gap: 5 * scale,
+          padding: `${6 * scale}px ${14 * scale}px`,
           backgroundColor: color,
-          color: "#fff",
+          color: "#000000",
           fontSize: 9 * scale,
           fontFamily,
-          fontWeight: 600,
+          fontWeight: 700,
+          textTransform: "uppercase",
+          letterSpacing: "0.5px",
           textDecoration: "none",
-          flexShrink: 0,
+          borderRadius: 20 * scale,
+          boxShadow: "0 4px 12px rgba(0,0,0,0.35)",
           whiteSpace: "nowrap",
-          overflow: "hidden",
-          textOverflow: "ellipsis",
+          zIndex: 10,
         }}
       >
         <MapPin size={10 * scale} style={{ flexShrink: 0 }} />
-        <span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>{displayText}</span>
-        <ExternalLink size={8 * scale} style={{ marginLeft: 2 * scale, flexShrink: 0 }} />
+        <span>Chỉ đường bằng Google Maps</span>
+        <ExternalLink size={8 * scale} style={{ flexShrink: 0 }} />
       </a>
     </div>
   );

@@ -9,6 +9,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useAuthStore } from "@/stores/useAuthStore";
+import { useModalStore } from "@/stores/useModalStore";
 import { Menu, UserIcon, X } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useRef, useState } from "react";
@@ -31,7 +32,17 @@ export default function AppHeader({ isScrolled = false }: AppHeaderProps) {
   const pathname = usePathname();
   const { user, isAuthenticated, clearAuth } = useAuthStore();
   const [, setShowUserMenu] = useState(false);
-  const [showAuthModal, setShowAuthModal] = useState(false);
+  
+  const { activeModal, openModal, closeModal } = useModalStore();
+  const showAuthModal = activeModal === "login" || activeModal === "register" || activeModal === "forgotPassword";
+  const setShowAuthModal = (show: boolean) => {
+    if (show) {
+      openModal("login");
+    } else {
+      closeModal();
+    }
+  };
+
   const [activeMenu, setActiveMenu] = useState("/");
   const [hoveredMenu, setHoveredMenu] = useState<string | null>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);

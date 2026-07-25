@@ -48,6 +48,9 @@ export const API_ENDPOINTS = {
     FIND_ALL_ACTIVATE: "/api/user/music-background/active",
     IMPORT_YOUTUBE: "/api/user/music-background/import-youtube",
     INCREMENT_USAGE: "/api/user/music-background/increment-usage",
+    GET_INFO: "/api/user/music-background/info",
+    CANCEL_IMPORT: "/api/user/music-background/cancel-import",
+    CREATE_USER_MUSIC: "/api/user/music-background/create",
   },
   GIPHY: {
     SEARCH: "/api/user/giphy/search",

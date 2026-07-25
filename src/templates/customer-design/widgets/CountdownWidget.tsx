@@ -8,17 +8,22 @@ interface Props {
   width: number;
   height: number;
   scale: number;
+  styleType?: "classic" | "modern" | "romantic" | "luxury-navy";
+  orientation?: "horizontal" | "vertical";
 }
 
 export default function CountdownWidget({
   targetDate,
   countdownType = "days-hours-min-sec",
   color = "#d4af37",
-  fontFamily = "Quicksand",
+  fontFamily,
   width,
   height,
   scale,
+  styleType = "classic",
+  orientation = "horizontal",
 }: Props) {
+  const s = scale;
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
 
   useEffect(() => {
@@ -58,29 +63,208 @@ export default function CountdownWidget({
     ];
   }, [timeLeft, countdownType]);
 
-  const boxSize = Math.min(
-    (width * scale - (boxes.length + 1) * 6 * scale) / boxes.length,
-    height * scale * 0.7
-  );
-  const fontSize = Math.max(10, boxSize * 0.38);
-  const labelSize = Math.max(7, fontSize * 0.5);
+  const isCol = orientation === "vertical";
 
-  return (
-    <div
-      style={{
-        width: width * scale,
-        height: height * scale,
-        fontFamily,
+  const boxSize = useMemo(() => {
+    if (isCol) {
+      return Math.min(
+        (height * s - (boxes.length - 1) * 8 * s) / boxes.length,
+        width * s
+      );
+    }
+    return Math.min(
+      (width * s - (boxes.length - 1) * 8 * s) / boxes.length,
+      height * s
+    );
+  }, [width, height, s, boxes.length, isCol]);
+
+  const numFontSize = Math.max(12, boxSize * 0.38);
+  const labelFontSize = Math.max(8, numFontSize * 0.45);
+
+  const styleFonts: Record<string, string> = {
+    classic: "'Playfair Display', 'Cormorant Garamond', serif",
+    modern: "'Montserrat', 'Inter', sans-serif",
+    romantic: "'Cormorant Garamond', 'Playfair Display', serif",
+    "luxury-navy": "'Cinzel', 'Playfair Display', serif",
+  };
+  const font = fontFamily || styleFonts[styleType] || styleFonts.classic;
+
+  if (!targetDate) {
+    return (
+      <div style={{
+        width: width * s,
+        height: height * s,
+        fontFamily: font,
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        gap: 6 * scale,
-        border: `1px solid ${color}30`,
-        borderRadius: 10 * scale,
-        backgroundColor: `${color}08`,
-        padding: `0 ${8 * scale}px`,
-      }}
-    >
+        background: "rgba(0,0,0,0.05)",
+        borderRadius: 8 * s,
+        border: "1px dashed rgba(0,0,0,0.15)"
+      }}>
+        <span style={{ fontSize: 12 * s, color: "#999" }}>Chưa chọn ngày cưới để đếm ngược</span>
+      </div>
+    );
+  }
+
+  const containerStyle: React.CSSProperties = {
+    width: width * s,
+    height: height * s,
+    fontFamily: font,
+    display: "flex",
+    flexDirection: isCol ? "column" : "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: isCol ? 8 * s : 10 * s,
+    boxSizing: "border-box",
+    background: "transparent",
+    border: "none",
+    boxShadow: "none",
+  };
+
+  if (styleType === "classic") {
+    return (
+      <div style={containerStyle}>
+        {boxes.map((box, i) => (
+          <div
+            key={i}
+            style={{
+              width: boxSize,
+              height: boxSize,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              background: "linear-gradient(135deg, #2b080c 0%, #140204 100%)",
+              borderRadius: 8 * s,
+              border: `1px solid ${color}44`,
+              gap: 3 * s,
+              boxShadow: "0 8px 20px rgba(0,0,0,0.35)",
+            }}
+          >
+            <span
+              style={{
+                fontSize: numFontSize,
+                fontWeight: 700,
+                color,
+                lineHeight: 1,
+                textShadow: `0 0 6px ${color}33`,
+              }}
+            >
+              {box.value}
+            </span>
+            <span
+              style={{
+                fontSize: labelFontSize,
+                color: `${color}cc`,
+                fontWeight: 500,
+                letterSpacing: "0.05em",
+                textTransform: "uppercase",
+              }}
+            >
+              {box.label}
+            </span>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  if (styleType === "modern") {
+    return (
+      <div style={containerStyle}>
+        {boxes.map((box, i) => (
+          <div
+            key={i}
+            style={{
+              width: boxSize,
+              height: boxSize,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              background: "linear-gradient(135deg, rgba(255,255,255,0.92) 0%, rgba(248,249,250,0.85) 100%)",
+              backdropFilter: "blur(10px)",
+              border: "1px solid rgba(255, 255, 255, 0.7)",
+              borderRadius: 10 * s,
+              gap: 3 * s,
+              boxShadow: "0 6px 16px rgba(170, 140, 150, 0.08)",
+            }}
+          >
+            <span
+              style={{
+                fontSize: numFontSize,
+                fontWeight: 800,
+                color: "#1e293b",
+                lineHeight: 1,
+              }}
+            >
+              {box.value}
+            </span>
+            <span
+              style={{
+                fontSize: labelFontSize,
+                color: "#64748b",
+                fontWeight: 600,
+                letterSpacing: "0.02em",
+              }}
+            >
+              {box.label}
+            </span>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  if (styleType === "romantic") {
+    return (
+      <div style={containerStyle}>
+        {boxes.map((box, i) => (
+          <div
+            key={i}
+            style={{
+              width: boxSize,
+              height: boxSize,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              backgroundColor: "#d6c5af",
+              borderRadius: 8 * s,
+              border: "1px solid #c2b099",
+              gap: 3 * s,
+              boxShadow: "0 6px 14px rgba(90, 75, 56, 0.12)",
+            }}
+          >
+            <span
+              style={{
+                fontSize: numFontSize,
+                fontWeight: 700,
+                color: "#423525",
+                lineHeight: 1,
+              }}
+            >
+              {box.value}
+            </span>
+            <span
+              style={{
+                fontSize: labelFontSize,
+                color: "#6e5d47",
+                fontWeight: 600,
+                letterSpacing: "0.04em",
+              }}
+            >
+              {box.label}
+            </span>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  return (
+    <div style={containerStyle}>
       {boxes.map((box, i) => (
         <div
           key={i}
@@ -91,29 +275,35 @@ export default function CountdownWidget({
             flexDirection: "column",
             alignItems: "center",
             justifyContent: "center",
-            backgroundColor: `${color}18`,
-            borderRadius: 8 * scale,
-            border: `1px solid ${color}30`,
-            gap: 2 * scale,
+            backgroundColor: "#0f1b29",
+            borderRadius: 6 * s,
+            border: "1px solid #c5a86a",
+            gap: 3 * s,
+            boxShadow: "0 8px 18px rgba(0,0,0,0.25)",
+            position: "relative",
           }}
         >
+          <div style={{ position: "absolute", top: 3 * s, left: 3 * s, right: 3 * s, bottom: 3 * s, border: "1px solid rgba(197,168,106,0.15)", pointerEvents: "none", borderRadius: 4 * s }} />
+          
           <span
             style={{
-              fontSize,
+              fontSize: numFontSize,
               fontWeight: 700,
-              color,
+              color: "#ffd685",
               lineHeight: 1,
-              fontFamily,
+              zIndex: 1,
             }}
           >
             {box.value}
           </span>
           <span
             style={{
-              fontSize: labelSize,
-              color: `${color}99`,
-              fontWeight: 500,
-              fontFamily,
+              fontSize: labelFontSize,
+              color: "#c5a86a",
+              fontWeight: 600,
+              letterSpacing: "0.08em",
+              textTransform: "uppercase",
+              zIndex: 1,
             }}
           >
             {box.label}

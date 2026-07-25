@@ -1,5 +1,7 @@
 import fixedFlower from "@/assets/decorations/royal-red/flower.webp";
+import cornerFrame from "@/assets/decorations/royal-red/frame-corner-top-left.webp";
 import type { ThemeTemplateConfig } from "@/dto/theme.dto";
+
 export const ThankYou = ({
   data,
   config,
@@ -10,22 +12,69 @@ export const ThankYou = ({
   if (!data?.showThankYou || !data?.thankYouText) return null;
 
   return (
-    <section className="py-2 mb-5 px-6 flex flex-col items-center text-center relative overflow-hidden w-full">
+    <section className="py-16 pb-24 px-6 flex flex-col items-center text-center relative overflow-hidden w-full select-none">
+      <div 
+        className="relative z-20 max-w-xl w-full p-8 md:p-12 rounded-2xl border-4 backdrop-blur-xs"
+        style={{
+          background: "transparent",
+          borderColor: config.colors.accent,
+          boxShadow: "0 15px 35px rgba(0,0,0,0.25), inset 0 0 15px rgba(212,175,55,0.05)",
+        }}
+      >
+        <div 
+          className="absolute inset-2 rounded-lg border border-dashed pointer-events-none"
+          style={{ borderColor: `${config.colors.accent}33` }}
+        />
+
+        <img src={cornerFrame.src} alt="" className="absolute top-2 left-2 w-6 h-6 pointer-events-none opacity-50" />
+        <img src={cornerFrame.src} alt="" className="absolute top-2 right-2 w-6 h-6 pointer-events-none opacity-50 rotate-90" />
+        <img src={cornerFrame.src} alt="" className="absolute bottom-2 left-2 w-6 h-6 pointer-events-none opacity-50 -rotate-90" />
+        <img src={cornerFrame.src} alt="" className="absolute bottom-2 right-2 w-6 h-6 pointer-events-none opacity-50 rotate-180" />
+
+        <h3
+          className="text-lg md:text-xl uppercase tracking-[0.3em] font-semibold mb-6 text-center"
+          style={{
+            fontFamily: config.fonts.heading,
+            color: config.colors.accent,
+            textShadow: "0 2px 4px rgba(0,0,0,0.5)",
+          }}
+        >
+          Trân Trọng Cảm Ơn
+        </h3>
+
+        <p
+          className="text-lg md:text-xl relative z-20 leading-relaxed font-medium text-center"
+          style={{
+            fontFamily: config.fonts.body,
+            color: config.colors.textPrimary,
+            textShadow: "0 1px 3px rgba(0,0,0,0.3)",
+          }}
+        >
+          {data.thankYouText}
+        </p>
+
+        <div className="mt-8 flex flex-col items-center">
+          <span 
+            className="w-16 h-px mb-4" 
+            style={{ background: `linear-gradient(to right, transparent, ${config.colors.accent}, transparent)` }} 
+          />
+          <h4
+            className="text-3xl md:text-4xl font-normal text-[#f3e5ab]"
+            style={{
+              fontFamily: config.fonts.script,
+              textShadow: "0 2px 4px rgba(0,0,0,0.5)",
+            }}
+          >
+            {data?.groom?.shortName || data?.groom?.name} &amp; {data?.bride?.shortName || data?.bride?.name}
+          </h4>
+        </div>
+      </div>
+
       <img
         src={fixedFlower.src}
         alt="decor"
-        className="absolute right-0 bottom-0 w-48 md:w-64 opacity-25 pointer-events-none translate-x-12 translate-y-8 select-none z-0 rotate-180"
+        className="absolute right-0 bottom-0 w-48 md:w-64 opacity-20 pointer-events-none translate-x-12 translate-y-8 select-none z-0 rotate-180"
       />
-      <p
-        className="text-xl md:text-2xl mb-5 relative z-10"
-        style={{
-          fontFamily: config.fonts.heading,
-          color: config.colors.textPrimary,
-          textShadow: `0.5px 0 0 ${config.colors.textPrimary}, -0.5px 0 0 ${config.colors.textPrimary}`,
-        }}
-      >
-        {data.thankYouText}
-      </p>
     </section>
   );
 };

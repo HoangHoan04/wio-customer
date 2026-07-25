@@ -13,9 +13,27 @@ export interface InputSwitchProps {
 }
 
 const sizeMap = {
-  sm: { wrapper: "w-9 h-5", thumb: "w-4 h-4", translate: "translate-x-4" },
-  md: { wrapper: "w-11 h-6", thumb: "w-5 h-5", translate: "translate-x-5" },
-  lg: { wrapper: "w-14 h-7", thumb: "w-6 h-6", translate: "translate-x-7" },
+  sm: { 
+    wrapper: "w-9 h-5", 
+    thumb: "w-4 h-4", 
+    translate: "translate-x-4",
+    label: "text-xs",
+    desc: "text-[10px]"
+  },
+  md: { 
+    wrapper: "w-11 h-6", 
+    thumb: "w-5 h-5", 
+    translate: "translate-x-5",
+    label: "text-sm",
+    desc: "text-xs"
+  },
+  lg: { 
+    wrapper: "w-14 h-7", 
+    thumb: "w-6 h-6", 
+    translate: "translate-x-7",
+    label: "text-base",
+    desc: "text-sm"
+  },
 };
 
 const InputSwitch = forwardRef<HTMLInputElement, InputSwitchProps>(
@@ -43,11 +61,11 @@ const InputSwitch = forwardRef<HTMLInputElement, InputSwitchProps>(
     };
 
     return (
-      <div className={`flex items-start gap-3 ${wrapperClassName}`}>
+      <div className={`flex items-center gap-3 ${wrapperClassName}`}>
         <label
           htmlFor={inputId}
           className={`
-            relative inline-flex ${sizes.wrapper} cursor-pointer rounded-full transition-all duration-200
+            relative inline-flex shrink-0 ${sizes.wrapper} cursor-pointer rounded-full transition-all duration-200
             ${checked ? "bg-[#d4af37]" : "bg-gray-300 dark:bg-gray-600"}
             ${disabled ? "opacity-50 cursor-not-allowed" : ""}
           `}
@@ -70,12 +88,13 @@ const InputSwitch = forwardRef<HTMLInputElement, InputSwitchProps>(
             `}
           />
         </label>
+        
         {(label || description) && (
           <div className="flex flex-col gap-0.5">
             {label && (
               <label
                 htmlFor={inputId}
-                className={`text-sm font-medium text-gray-700 dark:text-gray-300 ${
+                className={`font-medium text-gray-700 dark:text-gray-300 ${sizes.label} ${
                   disabled ? "opacity-50" : "cursor-pointer"
                 }`}
               >
@@ -83,7 +102,7 @@ const InputSwitch = forwardRef<HTMLInputElement, InputSwitchProps>(
               </label>
             )}
             {description && (
-              <span className={`text-xs text-gray-500 ${disabled ? "opacity-50" : ""}`}>
+              <span className={`text-gray-500 ${sizes.desc} ${disabled ? "opacity-50" : ""}`}>
                 {description}
               </span>
             )}

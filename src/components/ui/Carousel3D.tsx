@@ -137,11 +137,11 @@ export default function Carousel3D({
             aria-label="Previous"
             style={{
               position: "absolute",
-              left: "20px",
+              left: "12px",
               top: "50%",
               transform: "translateY(-50%)",
-              width: "56px",
-              height: "56px",
+              width: "40px",
+              height: "40px",
               borderRadius: "50%",
               border: `2px solid ${accentColor}`,
               background: "rgba(26, 10, 15, 0.9)",
@@ -163,7 +163,7 @@ export default function Carousel3D({
             }}
           >
             <ChevronLeft
-              style={{ color: accentColor, width: "28px", height: "28px" }}
+              style={{ color: accentColor, width: "20px", height: "20px" }}
             />
           </button>
 
@@ -172,11 +172,11 @@ export default function Carousel3D({
             aria-label="Next"
             style={{
               position: "absolute",
-              right: "20px",
+              right: "12px",
               top: "50%",
               transform: "translateY(-50%)",
-              width: "56px",
-              height: "56px",
+              width: "40px",
+              height: "40px",
               borderRadius: "50%",
               border: `2px solid ${accentColor}`,
               background: "rgba(26, 10, 15, 0.9)",
@@ -198,7 +198,7 @@ export default function Carousel3D({
             }}
           >
             <ChevronRight
-              style={{ color: accentColor, width: "28px", height: "28px" }}
+              style={{ color: accentColor, width: "20px", height: "20px" }}
             />
           </button>
         </>

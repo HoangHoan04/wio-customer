@@ -13,20 +13,18 @@ export const ThankYou = ({
   return (
     <section className="py-16 px-6 flex flex-col items-center text-center relative overflow-hidden w-full select-none">
       <div 
-        className="relative z-20 max-w-xl w-full p-8 md:p-12 rounded-2xl border relative backdrop-blur-xs"
+        className="relative z-20 max-w-xl w-full p-8 md:p-12 rounded-2xl border backdrop-blur-xs"
         style={{
           background: "rgba(255, 255, 255, 0.35)",
           borderColor: `${config.colors.accent}33`,
           boxShadow: "0 15px 35px rgba(139, 94, 60, 0.08)",
         }}
       >
-        {/* Inner Dashed Border */}
         <div 
           className="absolute inset-2 rounded-lg border border-dashed pointer-events-none"
           style={{ borderColor: `${config.colors.accent}22` }}
         />
 
-        {/* Section Heading */}
         <h3
           className="text-lg md:text-xl uppercase tracking-[0.25em] font-semibold mb-6 text-center"
           style={{
@@ -37,7 +35,6 @@ export const ThankYou = ({
           Trân Trọng Cảm Ơn
         </h3>
 
-        {/* Thank You Text */}
         <p
           className="text-lg md:text-xl relative z-20 leading-relaxed font-medium text-center"
           style={{
@@ -48,10 +45,9 @@ export const ThankYou = ({
           {data.thankYouText}
         </p>
 
-        {/* Signature Names */}
         <div className="mt-8 flex flex-col items-center">
           <span 
-            className="w-16 h-[1px] mb-4" 
+            className="w-16 h-px mb-4" 
             style={{ background: `linear-gradient(to right, transparent, ${config.colors.accent}, transparent)` }} 
           />
           <h4

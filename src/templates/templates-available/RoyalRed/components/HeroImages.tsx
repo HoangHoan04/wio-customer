@@ -1,5 +1,7 @@
 import flowerCornerFloral from "@/assets/decorations/royal-red/flower.webp";
+import cornerFrame from "@/assets/decorations/royal-red/frame-corner-top-left.webp";
 import type { ThemeTemplateConfig } from "@/dto/theme.dto";
+
 export const HeroImages = ({
   data,
   config,
@@ -13,13 +15,22 @@ export const HeroImages = ({
   const renderTopPerson = (person: any) => (
     <div className="relative flex justify-start pl-8">
       <div
-        className="relative w-44 h-64 md:w-56 md:h-80 bg-white p-2 shadow-2xl rotate-[5deg] z-10 shrink-0"
-        style={{ border: `2px solid ${config.colors.accent || "#d4b896"}` }}
+        className="relative w-44 h-64 md:w-56 md:h-80 p-2 shadow-2xl rotate-[5deg] z-10 shrink-0 border-4 rounded-xl"
+        style={{ 
+          borderColor: config.colors.accent || "#d4af37",
+          background: "rgba(71, 7, 18, 0.45)",
+          backdropFilter: "blur(4px)"
+        }}
       >
+        <img src={cornerFrame.src} alt="" className="absolute top-1.5 left-1.5 w-4 h-4 pointer-events-none opacity-60 z-30" />
+        <img src={cornerFrame.src} alt="" className="absolute top-1.5 right-1.5 w-4 h-4 pointer-events-none opacity-60 z-30 rotate-90" />
+        <img src={cornerFrame.src} alt="" className="absolute bottom-1.5 left-1.5 w-4 h-4 pointer-events-none opacity-60 z-30 -rotate-90" />
+        <img src={cornerFrame.src} alt="" className="absolute bottom-1.5 right-1.5 w-4 h-4 pointer-events-none opacity-60 z-30 rotate-180" />
+
         <img
           src={person?.photo || "https://placehold.co/300x400"}
           alt="Person"
-          className="w-full h-full object-cover"
+          className="w-full h-full object-cover rounded-lg"
         />
 
         <div
@@ -27,7 +38,7 @@ export const HeroImages = ({
           style={{ writingMode: "vertical-rl", textOrientation: "mixed" }}
         >
           <span
-            className="text-[9px] tracking-[0.2em] uppercase"
+            className="text-[9px] tracking-[0.2em] uppercase font-bold"
             style={{
               fontFamily: config.fonts.body,
               color: config.colors.textSecondary,
@@ -52,13 +63,22 @@ export const HeroImages = ({
   const renderBottomPerson = (person: any) => (
     <div className="relative flex justify-end pr-8 -mt-20 md:-mt-24">
       <div
-        className="relative w-44 h-64 md:w-56 md:h-80 bg-white p-2 shadow-2xl rotate-[-4deg] z-10 shrink-0"
-        style={{ border: `2px solid ${config.colors.accent || "#d4b896"}` }}
+        className="relative w-44 h-64 md:w-56 md:h-80 p-2 shadow-2xl rotate-[-4deg] z-10 shrink-0 border-4 rounded-xl"
+        style={{ 
+          borderColor: config.colors.accent || "#d4af37",
+          background: "rgba(71, 7, 18, 0.45)",
+          backdropFilter: "blur(4px)"
+        }}
       >
+        <img src={cornerFrame.src} alt="" className="absolute top-1.5 left-1.5 w-4 h-4 pointer-events-none opacity-60 z-30" />
+        <img src={cornerFrame.src} alt="" className="absolute top-1.5 right-1.5 w-4 h-4 pointer-events-none opacity-60 z-30 rotate-90" />
+        <img src={cornerFrame.src} alt="" className="absolute bottom-1.5 left-1.5 w-4 h-4 pointer-events-none opacity-60 z-30 -rotate-90" />
+        <img src={cornerFrame.src} alt="" className="absolute bottom-1.5 right-1.5 w-4 h-4 pointer-events-none opacity-60 z-30 rotate-180" />
+
         <img
           src={person?.photo || "https://placehold.co/300x400"}
           alt="Person"
-          className="w-full h-full object-cover"
+          className="w-full h-full object-cover rounded-lg"
         />
 
         <div
@@ -70,7 +90,7 @@ export const HeroImages = ({
           }}
         >
           <span
-            className="text-[9px] tracking-[0.2em] uppercase"
+            className="text-[9px] tracking-[0.2em] uppercase font-bold"
             style={{
               fontFamily: config.fonts.body,
               color: config.colors.textSecondary,
@@ -79,7 +99,7 @@ export const HeroImages = ({
             {person?.title}
           </span>
           <h2
-            className="text-lg md:text-xl font-normal uppercase tracking-widest"
+            className="text-lg md:text-xl uppercase tracking-widest font-bold"
             style={{
               fontFamily: config.fonts.heading,
               color: config.colors.textPrimary,

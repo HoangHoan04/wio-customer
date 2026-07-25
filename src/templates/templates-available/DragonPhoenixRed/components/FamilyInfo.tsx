@@ -1,6 +1,8 @@
 import chineseHappiness from "@/assets/decorations/dragon_phoenix_red/chinese_happiness.webp";
 import cloudBig from "@/assets/decorations/dragon_phoenix_red/cloud_big.webp";
 import type { ThemeTemplateConfig } from "@/dto/theme.dto";
+import cornerFrame from "@/assets/decorations/common/frame-corner-top-left.webp";
+import frameMiddle from "@/assets/decorations/common/frame-middle-horizontal.webp";
 
 export const FamilyInfo = ({
   data,
@@ -101,7 +103,7 @@ export const FamilyInfo = ({
         />
       </div>
       <h2
-        className="text-xl md:text-2xl uppercase font-black mb-10"
+        className="text-xl md:text-2xl uppercase font-black mb-3"
         style={{
           fontFamily: config.fonts.heading,
           color: config.colors.textPrimary,
@@ -110,8 +112,26 @@ export const FamilyInfo = ({
       >
         THÔNG TIN LỄ CƯỚI
       </h2>
+      <img
+        src={frameMiddle.src}
+        alt=""
+        aria-hidden="true"
+        className="w-36 h-auto opacity-80 mb-10 object-contain"
+      />
 
-      <div className="grid grid-cols-2 gap-8 md:gap-16 w-full max-w-2xl mx-auto items-start">
+      <div 
+        className="relative grid grid-cols-2 gap-8 md:gap-16 w-full max-w-2xl mx-auto items-start p-8 rounded-2xl border"
+        style={{ 
+          borderColor: `${config.colors.accent}44`,
+          background: "rgba(42, 3, 3, 0.25)",
+          backdropFilter: "blur(2px)"
+        }}
+      >
+        <img src={cornerFrame.src} alt="" className="absolute top-2 left-2 w-7 h-7 pointer-events-none opacity-50" />
+        <img src={cornerFrame.src} alt="" className="absolute top-2 right-2 w-7 h-7 pointer-events-none opacity-50 rotate-90" />
+        <img src={cornerFrame.src} alt="" className="absolute bottom-2 left-2 w-7 h-7 pointer-events-none opacity-50 -rotate-90" />
+        <img src={cornerFrame.src} alt="" className="absolute bottom-2 right-2 w-7 h-7 pointer-events-none opacity-50 rotate-180" />
+
         {isGroomFirst ? (
           <>
             {renderFamily("Nhà Trai", data?.groom)}

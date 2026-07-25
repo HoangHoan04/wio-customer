@@ -52,7 +52,8 @@ function WeddingPublicContent() {
         }
 
         setWeddingData({
-          themeCode: wedding.template?.themeCode || "",
+          themeCode: wedding.template?.themeCode || "CUSTOM_DESIGN",
+          customDesign: wedding.customDesign,
           slug: wedding.slug,
           displayOrder: wedding.displayOrder || "groom_first",
           groom: {

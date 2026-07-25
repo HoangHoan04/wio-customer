@@ -6,6 +6,7 @@ import {
   getYearStr,
 } from "@/common/helpers";
 import type { ThemeTemplateConfig } from "@/dto/theme.dto";
+import cornerFrame from "@/assets/decorations/common/frame-corner-top-left.webp";
 
 export const Ceremonies = ({
   data,
@@ -25,9 +26,22 @@ export const Ceremonies = ({
               event.lunarDate || getLunarDateStr(event.date);
 
             return (
-              <div key={index} className="flex flex-col items-center w-full">
+              <div 
+                key={index} 
+                className="relative flex flex-col items-center w-full max-w-md mx-auto p-6 md:p-8 rounded-2xl border"
+                style={{ 
+                  borderColor: `${config.colors.accent}44`,
+                  background: "rgba(138, 11, 19, 0.05)",
+                  backdropFilter: "blur(2px)"
+                }}
+              >
+                <img src={cornerFrame.src} alt="" className="absolute top-2 left-2 w-6 h-6 pointer-events-none opacity-50" />
+                <img src={cornerFrame.src} alt="" className="absolute top-2 right-2 w-6 h-6 pointer-events-none opacity-50 rotate-90" />
+                <img src={cornerFrame.src} alt="" className="absolute bottom-2 left-2 w-6 h-6 pointer-events-none opacity-50 -rotate-90" />
+                <img src={cornerFrame.src} alt="" className="absolute bottom-2 right-2 w-6 h-6 pointer-events-none opacity-50 rotate-180" />
+
                 <h3
-                  className="text-base md:text-lg font-bold uppercase text-center whitespace-nowrap"
+                  className="text-base md:text-lg font-bold uppercase text-center whitespace-normal max-w-xs"
                   style={{
                     fontFamily: config.fonts.heading,
                     color: config.colors.textPrimary,
@@ -36,25 +50,25 @@ export const Ceremonies = ({
                   {event.title}
                 </h3>
                 <h3
-                  className="text-base md:text-lg font-bold uppercase mb-2 text-center whitespace-nowrap"
+                  className="text-sm md:text-base uppercase mb-4 text-center"
                   style={{
-                    fontFamily: config.fonts.heading,
-                    color: config.colors.textPrimary,
+                    fontFamily: config.fonts.body,
+                    color: config.colors.textSecondary,
                   }}
                 >
                   {event.address}
                 </h3>
                 <h3
-                  className="text-base md:text-lg font-bold uppercase mb-2 text-center whitespace-nowrap"
+                  className="text-xs uppercase tracking-widest mb-4 text-center"
                   style={{
-                    fontFamily: config.fonts.heading,
-                    color: config.colors.textPrimary,
+                    fontFamily: config.fonts.body,
+                    color: config.colors.accent,
                   }}
                 >
                   VÀO LÚC
                 </h3>
 
-                <div className="flex flex-col items-center mb-8">
+                <div className="flex flex-col items-center">
                   <p
                     className="text-3xl font-light mb-6"
                     style={{

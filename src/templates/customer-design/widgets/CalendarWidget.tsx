@@ -1,9 +1,9 @@
-import { useMemo } from "react";
+import React, { useMemo } from "react";
 
 interface Props {
   targetDate?: string;
   displayMode?: "full" | "date-only";
-  calendarStyle?: "classic" | "modern" | "romantic" | "minimal";
+  calendarStyle?: "classic" | "modern" | "romantic" | "luxury-navy";
   color?: string;
   fontFamily?: string;
   width: number;
@@ -12,33 +12,32 @@ interface Props {
 }
 
 const MONTHS = [
-  "Tháng 1",
-  "Tháng 2",
-  "Tháng 3",
-  "Tháng 4",
-  "Tháng 5",
-  "Tháng 6",
-  "Tháng 7",
-  "Tháng 8",
-  "Tháng 9",
-  "Tháng 10",
-  "Tháng 11",
-  "Tháng 12",
+  "THÁNG 1", "THÁNG 2", "THÁNG 3", "THÁNG 4", "THÁNG 5", "THÁNG 6",
+  "THÁNG 7", "THÁNG 8", "THÁNG 9", "THÁNG 10", "THÁNG 11", "THÁNG 12",
 ];
-const DOW = ["CN", "T2", "T3", "T4", "T5", "T6", "T7"];
+const DOW = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const DOW_NAVY = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
-const PAD_H = 8;
-const PAD_V = 8;
-const HEADER_H = 22;
+const PAD_H = 14;
+const PAD_V = 16;
+const HEADER_H = 26;
+const HEADER_GAP = 12;
 const DOW_H = 16;
-const DIV_H = 5;
-const CELL_GAP = 5;
+const DOW_GAP = 8;
+const DIVIDER_H = 1;
+const DIVIDER_GAP = 10;
+const COL_GAP = 5;
+const ROW_GAP = 8;
+const MAX_CELL = 32;
+const MIN_CELL = 18;
 
-function calcCellSize(width: number, height: number): number {
-  const fromWidth = (width - 2 * PAD_H - 6 * CELL_GAP) / 7;
-  const rowsArea = height - 2 * PAD_V - HEADER_H - DOW_H - DIV_H - 5 * CELL_GAP;
-  const fromHeight = rowsArea / 6;
-  return Math.floor(Math.min(fromWidth, fromHeight, 36));
+function calcCellSize(width: number, height: number, hasLeftBlock = false): number {
+  const availableWidth = hasLeftBlock ? width * 0.55 : width;
+  const fromWidth = (availableWidth - 2 * PAD_H - 6 * COL_GAP) / 7;
+  const usedVertical = 2 * PAD_V + HEADER_H + HEADER_GAP + DOW_H + DOW_GAP + 5 * ROW_GAP;
+  const fromHeight = (height - usedVertical) / 6;
+  const raw = Math.min(fromWidth, fromHeight > 0 ? fromHeight : fromWidth, MAX_CELL);
+  return Math.max(MIN_CELL, Math.floor(raw));
 }
 
 export default function CalendarWidget({
@@ -54,8 +53,8 @@ export default function CalendarWidget({
   const s = scale;
 
   const dateObj = useMemo(() => {
-    if (!targetDate) return null;
-    const d = new Date(targetDate);
+    const defaultDate = targetDate || new Date().toISOString().split("T")[0];
+    const d = new Date(defaultDate);
     return isNaN(d.getTime()) ? null : d;
   }, [targetDate]);
 
@@ -77,68 +76,38 @@ export default function CalendarWidget({
 
   if (!dateObj) {
     return (
-      <div
-        style={{
-          width: width * s,
-          height: height * s,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <span style={{ fontSize: 10 * s, color: "#9a7d52", letterSpacing: "0.08em" }}>
-          Chưa chọn ngày
-        </span>
+      <div style={{ width: width * s, height: height * s, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(0,0,0,0.05)", borderRadius: 8 * s }}>
+        <span style={{ fontSize: 12 * s, color: "#999" }}>Chưa chọn ngày cưới</span>
       </div>
     );
   }
 
-  if (displayMode === "date-only") {
-    return (
-      <DateOnly
-        day={day!}
-        month={month!}
-        year={year!}
-        color={color}
-        calendarStyle={calendarStyle}
-        s={s}
-        width={width}
-        height={height}
-      />
-    );
-  }
-
   const styleFonts: Record<string, string> = {
-    classic: "Cormorant Garamond, Georgia, serif",
-    modern: "Montserrat, Helvetica Neue, sans-serif",
-    romantic: "IM Fell English, Palatino Linotype, serif",
-    minimal: "Montserrat, Helvetica Neue, sans-serif",
+    classic: "'Playfair Display', 'Cormorant Garamond', serif",
+    modern: "'Montserrat', 'Inter', sans-serif",
+    romantic: "'Cormorant Garamond', 'Playfair Display', serif",
+    "luxury-navy": "'Cinzel', 'Playfair Display', serif",
   };
-  const font = fontFamily || styleFonts[calendarStyle] || styleFonts.classic;
-  const cell = calcCellSize(width, height);
 
-  const sharedProps = {
-    day: day!,
-    month: month!,
-    year: year!,
-    grid: calendarGrid,
-    color,
-    font,
-    width,
-    height,
-    s,
-    cell,
-  };
+  const font = fontFamily || styleFonts[calendarStyle] || styleFonts.classic;
+
+  const cell = calcCellSize(width, height, true);
+
+  const sharedProps = { day: day!, month: month!, year: year!, grid: calendarGrid, color, font, width, height, s, cell };
+
+  if (displayMode === "date-only") {
+    return <DateOnlyView {...sharedProps} calendarStyle={calendarStyle} />;
+  }
 
   switch (calendarStyle) {
     case "modern":
-      return <ModernCalendar {...sharedProps} />;
+      return <ModernStyle {...sharedProps} />;
     case "romantic":
-      return <RomanticCalendar {...sharedProps} />;
-    case "minimal":
-      return <MinimalCalendar {...sharedProps} />;
+      return <RomanticStyle {...sharedProps} />;
+    case "luxury-navy":
+      return <LuxuryNavyStyle {...sharedProps} />;
     default:
-      return <ClassicCalendar {...sharedProps} />;
+      return <ClassicStyle {...sharedProps} />;
   }
 }
 
@@ -155,837 +124,241 @@ interface CalProps {
   cell: number;
 }
 
-function ClassicCalendar({
-  day,
-  month,
-  year,
-  grid,
-  color,
-  font,
-  width,
-  height,
-  s,
-  cell,
-}: CalProps) {
+const makeGridStyle = (cs: number, colGap: number, rowGap: number): React.CSSProperties => ({
+  display: "grid",
+  gridTemplateColumns: `repeat(7, ${cs}px)`,
+  gap: `${rowGap}px ${colGap}px`,
+  justifyContent: "center",
+});
+
+function ClassicStyle({ day, month, year, grid, color, font, width, height, s, cell }: CalProps) {
   const cs = cell * s;
-  const gap = CELL_GAP * s;
-  const fs = Math.max(7 * s, Math.min(10 * s, cs * 0.45));
+  const fs = Math.max(9 * s, cs * 0.4);
 
   return (
-    <div
-      style={{
-        width: width * s,
-        height: height * s,
-        fontFamily: font,
-        background: "linear-gradient(160deg,#1e1608,#241b0a)",
-        border: `1px solid ${color}44`,
-        borderRadius: 10 * s,
-        padding: `${PAD_V * s}px ${PAD_H * s}px`,
-        boxShadow: `inset 0 1px 0 ${color}18`,
-        display: "flex",
-        flexDirection: "column",
-        overflow: "hidden",
-        boxSizing: "border-box",
-      }}
-    >
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: 5 * s,
-          marginBottom: 6 * s,
-          paddingBottom: 5 * s,
-          borderBottom: `1px solid ${color}28`,
-          flexShrink: 0,
-        }}
-      >
-        <div
-          style={{
-            flex: 1,
-            height: 1,
-            background: `linear-gradient(90deg,transparent,${color}50)`,
-          }}
-        />
-        <span
-          style={{
-            fontSize: 9 * s,
-            fontWeight: 700,
-            letterSpacing: "0.14em",
-            textTransform: "uppercase",
-            color,
-            whiteSpace: "nowrap",
-          }}
-        >
-          {MONTHS[month]} {year}
-        </span>
-        <div
-          style={{
-            flex: 1,
-            height: 1,
-            background: `linear-gradient(90deg,${color}50,transparent)`,
-          }}
-        />
-      </div>
-
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: `repeat(7,${cs}px)`,
-          gap: `${gap}px`,
-          justifyContent: "center",
-          flexShrink: 0,
-        }}
-      >
-        {DOW.map((d) => (
-          <div
-            key={d}
-            style={{
-              textAlign: "center",
-              fontSize: 7 * s,
-              fontWeight: 600,
-              letterSpacing: "0.04em",
-              color: `${color}80`,
-              height: DOW_H * s,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            {d}
-          </div>
-        ))}
-      </div>
-
-      <div
-        style={{
-          height: 1,
-          background: `${color}18`,
-          margin: `${2 * s}px 0 ${3 * s}px`,
-          flexShrink: 0,
-        }}
-      />
-
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: `repeat(7,${cs}px)`,
-          gap: `${gap}px`,
-          justifyContent: "center",
-          flexShrink: 0,
-        }}
-      >
-        {grid.map((d, i) => {
-          const isT = d === day;
-          return (
-            <div
-              key={i}
-              style={{
-                width: cs,
-                height: cs,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              {d && (
-                <div
-                  style={{
-                    width: cs - s,
-                    height: cs - s,
-                    borderRadius: "50%",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    ...(isT
-                      ? {
-                          background: `radial-gradient(circle,${color},${color}cc)`,
-                          boxShadow: `0 0 ${8 * s}px ${color}88`,
-                        }
-                      : {}),
-                  }}
-                >
-                  <span
-                    style={{
-                      fontSize: fs,
-                      fontWeight: isT ? 800 : 400,
-                      color: isT ? "#1c1108" : "#dfc998",
-                      lineHeight: 1,
-                    }}
-                  >
-                    {d}
-                  </span>
-                </div>
-              )}
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
-
-function ModernCalendar({ day, month, year, grid, color, font, width, height, s, cell }: CalProps) {
-  const cs = cell * s;
-  const gap = CELL_GAP * s;
-  const fs = Math.max(7 * s, Math.min(10 * s, cs * 0.45));
-
-  return (
-    <div
-      style={{
-        width: width * s,
-        height: height * s,
-        fontFamily: font,
-        background: "#0f1221",
-        border: "1px solid rgba(255,255,255,0.08)",
-        borderRadius: 10 * s,
-        padding: `${PAD_V * s}px ${PAD_H * s}px`,
-        display: "flex",
-        flexDirection: "column",
-        overflow: "hidden",
-        boxSizing: "border-box",
-      }}
-    >
-      <div
-        style={{
-          display: "flex",
-          alignItems: "baseline",
-          justifyContent: "space-between",
-          marginBottom: 6 * s,
-          paddingBottom: 5 * s,
-          borderBottom: "1px solid rgba(255,255,255,0.07)",
-          flexShrink: 0,
-        }}
-      >
-        <span
-          style={{ fontSize: 11 * s, fontWeight: 300, color: "#c8d3f5", letterSpacing: "0.02em" }}
-        >
-          {MONTHS[month]}
-        </span>
-        <span style={{ fontSize: 11 * s, fontWeight: 700, color }}>{year}</span>
-      </div>
-
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: `repeat(7,${cs}px)`,
-          gap: `${gap}px`,
-          justifyContent: "center",
-          flexShrink: 0,
-        }}
-      >
-        {DOW.map((d, i) => (
-          <div
-            key={d}
-            style={{
-              textAlign: "center",
-              fontSize: 7 * s,
-              fontWeight: 600,
-              letterSpacing: "0.06em",
-              color: i === 0 || i === 6 ? `${color}90` : "#4a5578",
-              height: DOW_H * s,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            {d}
-          </div>
-        ))}
-      </div>
-
-      <div
-        style={{
-          height: 1,
-          background: "rgba(255,255,255,0.06)",
-          margin: `${2 * s}px 0 ${3 * s}px`,
-          flexShrink: 0,
-        }}
-      />
-
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: `repeat(7,${cs}px)`,
-          gap: `${gap}px`,
-          justifyContent: "center",
-          flexShrink: 0,
-        }}
-      >
-        {grid.map((d, i) => {
-          const isT = d === day;
-          const col = i % 7;
-          const isWE = col === 0 || col === 6;
-          return (
-            <div
-              key={i}
-              style={{
-                width: cs,
-                height: cs,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                borderRadius: 4 * s,
-                ...(isT ? { background: color } : isWE && d ? { background: `${color}12` } : {}),
-              }}
-            >
-              {d && (
-                <span
-                  style={{
-                    fontSize: fs,
-                    fontWeight: isT ? 700 : isWE ? 500 : 400,
-                    color: isT ? "#0f1221" : isWE ? `${color}cc` : "#8892b0",
-                    lineHeight: 1,
-                  }}
-                >
-                  {d}
-                </span>
-              )}
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
-
-function RomanticCalendar({
-  day,
-  month,
-  year,
-  grid,
-  color,
-  font,
-  width,
-  height,
-  s,
-  cell,
-}: CalProps) {
-  const cs = cell * s;
-  const gap = CELL_GAP * s;
-  const fs = Math.max(7 * s, Math.min(10 * s, cs * 0.45));
-
-  return (
-    <div
-      style={{
-        width: width * s,
-        height: height * s,
-        fontFamily: font,
-        background: "linear-gradient(160deg,#1e0c12,#2b1219)",
-        border: `1px solid ${color}28`,
-        borderRadius: 10 * s,
-        padding: `${PAD_V * s}px ${PAD_H * s}px`,
-        display: "flex",
-        flexDirection: "column",
-        overflow: "hidden",
-        boxSizing: "border-box",
-        position: "relative",
-      }}
-    >
-      <div
-        style={{
-          position: "absolute",
-          top: -15 * s,
-          right: -15 * s,
-          width: 60 * s,
-          height: 60 * s,
-          borderRadius: "50%",
-          background: `radial-gradient(circle,${color}15,transparent)`,
-          pointerEvents: "none",
-        }}
-      />
-
-      <div
-        style={{
-          textAlign: "center",
-          marginBottom: 5 * s,
-          paddingBottom: 5 * s,
-          borderBottom: `1px solid ${color}18`,
-          flexShrink: 0,
-        }}
-      >
-        <div style={{ fontSize: 9 * s, color: `${color}70`, lineHeight: 1, marginBottom: 2 * s }}>
-          ♥
+    <div style={{
+      width: width * s, height: height * s, fontFamily: font, boxSizing: "border-box",
+      background: "#fbf8f5", padding: `${PAD_V * s}px ${PAD_H * s}px`,
+      display: "flex", alignItems: "center", position: "relative", overflow: "hidden",
+      border: "1px solid #efebd8"
+    }}>
+      <div style={{ width: "42%", height: "85%", border: "1px solid #d9cbb3", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: 6 * s, boxSizing: "border-box", marginRight: "3%" }}>
+        <span style={{ fontSize: 10 * s, letterSpacing: "0.1em", color: "#666", textTransform: "uppercase" }}>SATURDAY</span>
+        <div style={{ display: "flex", alignItems: "center", margin: `${4 * s}px 0`, borderTop: "1px solid #d9cbb3", borderBottom: "1px solid #d9cbb3", padding: `${2 * s}px 8 * s` }}>
+          <span style={{ fontSize: 12 * s, fontStyle: "italic", color: "#888", marginRight: 6 * s }}>May</span>
+          <span style={{ fontSize: 22 * s, fontWeight: 700, color: "#333" }}>{day}</span>
         </div>
-        <span
-          style={{
-            fontSize: 9 * s,
-            fontStyle: "italic",
-            color: "#f0d0d8",
-            letterSpacing: "0.06em",
-          }}
-        >
-          {MONTHS[month]} {year}
-        </span>
+        <span style={{ fontSize: 9 * s, color: "#999" }}>THỨ BẢY</span>
       </div>
 
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: `repeat(7,${cs}px)`,
-          gap: `${gap}px`,
-          justifyContent: "center",
-          flexShrink: 0,
-        }}
-      >
-        {DOW.map((d) => (
-          <div
-            key={d}
-            style={{
-              textAlign: "center",
-              fontSize: 7 * s,
-              fontStyle: "italic",
-              color: `${color}70`,
-              height: DOW_H * s,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            {d}
-          </div>
-        ))}
-      </div>
+      <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
+        <div style={{ textAlign: "center", marginBottom: HEADER_GAP * s }}>
+          <div style={{ fontSize: 9 * s, fontWeight: 600, color: "#555", letterSpacing: "0.08em" }}>NGÀY VUI ĐÔI TA</div>
+          <div style={{ fontSize: 11 * s, fontWeight: 700, color: "#222", marginTop: 2 * s }}>{MONTHS[month]}, {year}</div>
+        </div>
 
-      <div
-        style={{
-          height: 1,
-          background: `linear-gradient(90deg,transparent,${color}20,transparent)`,
-          margin: `${2 * s}px 0 ${3 * s}px`,
-          flexShrink: 0,
-        }}
-      />
+        <div style={{ ...makeGridStyle(cs, COL_GAP * s, ROW_GAP * s), marginBottom: DOW_GAP * s }}>
+          {DOW.map((d) => <div key={d} style={{ fontSize: 9 * s, color: "#777", textAlign: "center", fontWeight: 600 }}>{d}</div>)}
+        </div>
 
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: `repeat(7,${cs}px)`,
-          gap: `${gap}px`,
-          justifyContent: "center",
-          flexShrink: 0,
-        }}
-      >
-        {grid.map((d, i) => {
-          const isT = d === day;
-          return (
-            <div
-              key={i}
-              style={{
-                width: cs,
-                height: cs,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                borderRadius: "50%",
-                ...(isT
-                  ? {
-                      background: `linear-gradient(135deg,${color}ee,${color}88)`,
-                      boxShadow: `0 0 ${7 * s}px ${color}55`,
-                    }
-                  : {}),
-              }}
-            >
-              {d && (
-                <span
-                  style={{
-                    fontSize: fs,
-                    fontStyle: "italic",
-                    fontWeight: isT ? 700 : 400,
-                    color: isT ? "#fff" : "#e8c0cc",
-                    lineHeight: 1,
-                  }}
-                >
-                  {d}
-                </span>
-              )}
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
-
-function MinimalCalendar({
-  day,
-  month,
-  year,
-  grid,
-  color,
-  font,
-  width,
-  height,
-  s,
-  cell,
-}: CalProps) {
-  const cs = cell * s;
-  const gap = CELL_GAP * s;
-  const fs = Math.max(7 * s, Math.min(10 * s, cs * 0.45));
-
-  return (
-    <div
-      style={{
-        width: width * s,
-        height: height * s,
-        fontFamily: font,
-        padding: `${PAD_V * s}px ${PAD_H * s}px`,
-        display: "flex",
-        flexDirection: "column",
-        overflow: "hidden",
-        boxSizing: "border-box",
-      }}
-    >
-      <div
-        style={{
-          display: "flex",
-          alignItems: "baseline",
-          gap: 5 * s,
-          marginBottom: 5 * s,
-          paddingBottom: 5 * s,
-          flexShrink: 0,
-        }}
-      >
-        <span
-          style={{
-            fontSize: 8 * s,
-            fontWeight: 300,
-            letterSpacing: "0.2em",
-            textTransform: "uppercase",
-            color: "rgba(200,190,170,0.5)",
-          }}
-        >
-          {MONTHS[month].toUpperCase()}
-        </span>
-        <span style={{ fontSize: 8 * s, fontWeight: 600, letterSpacing: "0.08em", color }}>
-          {year}
-        </span>
-      </div>
-
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: `repeat(7,${cs}px)`,
-          gap: `${gap}px`,
-          justifyContent: "center",
-          flexShrink: 0,
-        }}
-      >
-        {DOW.map((d) => (
-          <div
-            key={d}
-            style={{
-              textAlign: "center",
-              fontSize: 7 * s,
-              fontWeight: 400,
-              letterSpacing: "0.08em",
-              color: "rgba(160,148,128,0.4)",
-              height: DOW_H * s,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            {d}
-          </div>
-        ))}
-      </div>
-
-      <div
-        style={{
-          height: 1,
-          background: "rgba(180,160,120,0.13)",
-          margin: `${2 * s}px 0 ${3 * s}px`,
-          flexShrink: 0,
-        }}
-      />
-
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: `repeat(7,${cs}px)`,
-          gap: `${gap}px`,
-          justifyContent: "center",
-          flexShrink: 0,
-        }}
-      >
-        {grid.map((d, i) => {
-          const isT = d === day;
-          return (
-            <div
-              key={i}
-              style={{
-                width: cs,
-                height: cs,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                borderBottom: isT ? `1.5px solid ${color}` : "1.5px solid transparent",
-              }}
-            >
-              {d && (
-                <span
-                  style={{
-                    fontSize: fs,
-                    fontWeight: isT ? 600 : 300,
-                    color: isT ? color : "rgba(200,185,155,0.6)",
-                    lineHeight: 1,
-                  }}
-                >
-                  {d}
-                </span>
-              )}
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
-
-interface DateOnlyProps {
-  day: number;
-  month: number;
-  year: number;
-  color: string;
-  calendarStyle: "classic" | "modern" | "romantic" | "minimal" | string;
-  s: number;
-  width: number;
-  height: number;
-}
-
-export function DateOnly({
-  day,
-  month,
-  year,
-  color,
-  calendarStyle,
-  s = 1,
-  width,
-  height,
-}: DateOnlyProps) {
-  const styleFonts: Record<string, string> = {
-    classic: "'Cormorant Garamond', 'Georgia', serif",
-    modern: "'Montserrat', 'Helvetica Neue', sans-serif",
-    romantic: "'Playfair Display', 'Georgia', serif",
-    minimal: "'Inter', 'System-ui', sans-serif",
-  };
-
-  const font = styleFonts[calendarStyle] || styleFonts.classic;
-
-  const base: React.CSSProperties = {
-    width: width * s,
-    height: height * s,
-    fontFamily: font,
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-    boxSizing: "border-box",
-    overflow: "hidden",
-    position: "relative",
-    containerType: "size",
-  };
-
-  if (calendarStyle === "classic") {
-    return (
-      <div style={{ ...base, justifyContent: "space-evenly", padding: "8% 5%" }}>
-        <div
-          style={{
-            width: "70%",
-            height: "2px",
-            background: `linear-gradient(90deg, transparent, ${color} 20%, ${color} 80%, transparent)`,
-          }}
-        />
-
-        <span
-          style={{
-            fontSize: "35cqh",
-            fontWeight: 700,
-            color: color,
-            lineHeight: 1,
-            letterSpacing: "-0.01em",
-            textShadow: `1px 1px 0px ${color}20`,
-          }}
-        >
-          {String(day).padStart(2, "0")}
-        </span>
-
-        <span
-          style={{
-            fontSize: "10cqh",
-            fontWeight: 600,
-            letterSpacing: "0.2em",
-            textTransform: "uppercase",
-            color: color,
-            opacity: 0.9,
-          }}
-        >
-          {MONTHS[month]} {year}
-        </span>
-
-        <div
-          style={{
-            width: "70%",
-            height: "2px",
-            background: `linear-gradient(90deg, transparent, ${color} 20%, ${color} 80%, transparent)`,
-          }}
-        />
-      </div>
-    );
-  }
-
-  if (calendarStyle === "modern") {
-    return (
-      <div style={{ ...base, padding: "6%" }}>
-        <div
-          style={{
-            width: "100%",
-            height: "100%",
-            borderRadius: "16%",
-            border: `3px solid ${color}`,
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-            backgroundColor: `${color}06`,
-            boxShadow: `inset 0 0 20px ${color}10, 0 8px 24px ${color}15`,
-            position: "relative",
-            overflow: "hidden",
-          }}
-        >
-          <div
-            style={{
-              position: "absolute",
-              top: "-20%",
-              right: "-20%",
-              width: "50%",
-              height: "50%",
-              background: color,
-              opacity: 0.1,
-              borderRadius: "50%",
-              filter: "blur(10px)",
-            }}
-          />
-
-          <span
-            style={{
-              fontSize: "42cqh",
-              fontWeight: 900,
-              color: color,
-              lineHeight: 0.9,
-              letterSpacing: "-0.03em",
-            }}
-          >
-            {day}
-          </span>
-
-          <span
-            style={{
-              fontSize: "9cqh",
-              fontWeight: 800,
-              letterSpacing: "0.12em",
-              textTransform: "uppercase",
-              color: color,
-              marginTop: "4%",
-              padding: "2% 6%",
-              background: `${color}15`,
-              borderRadius: "4px",
-            }}
-          >
-            {MONTHS[month]} · {year}
-          </span>
+        <div style={makeGridStyle(cs, COL_GAP * s, ROW_GAP * s)}>
+          {grid.map((d, i) => {
+            const isT = d === day;
+            return (
+              <div key={i} style={{ width: cs, height: cs, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                {d && (
+                  <div style={{
+                    width: cs - 2 * s, height: cs - 2 * s, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center",
+                    ...(isT ? { border: "1px dashed #c9a054", background: "#f5eeda" } : {})
+                  }}>
+                    <span style={{ fontSize: fs, fontWeight: isT ? 700 : 400, color: isT ? "#b28731" : "#444" }}>{d}</span>
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
       </div>
-    );
-  }
+    </div>
+  );
+}
 
-  if (calendarStyle === "romantic") {
-    return (
-      <div style={{ ...base, justifyContent: "center", padding: "5%" }}>
-        <style>{`
-          @keyframes heartPulse {
-            0% { transform: scale(1); opacity: 0.5; }
-            50% { transform: scale(1.2); opacity: 0.9; }
-            100% { transform: scale(1); opacity: 0.5; }
-          }
-        `}</style>
-
-        <span
-          style={{
-            fontSize: "14cqh",
-            color: color,
-            animation: "heartPulse 2.5s infinite ease-in-out",
-            marginBottom: "2%",
-          }}
-        >
-          ♥
-        </span>
-
-        <span
-          style={{
-            fontSize: "45cqh",
-            fontStyle: "italic",
-            fontWeight: 400,
-            color: color,
-            lineHeight: 0.9,
-          }}
-        >
-          {day}
-        </span>
-
-        <span
-          style={{
-            fontSize: "10cqh",
-            fontStyle: "italic",
-            letterSpacing: "0.02em",
-            color: color,
-            opacity: 0.85,
-            marginTop: "2%",
-            borderTop: `1px dashed ${color}40`,
-            paddingTop: "2%",
-            width: "60%",
-            textAlign: "center",
-          }}
-        >
-          {MONTHS[month].toLowerCase()}, {year}
-        </span>
-      </div>
-    );
-  }
+function ModernStyle({ day, month, year, grid, color, font, width, height, s, cell }: CalProps) {
+  const cs = cell * s;
+  const fs = Math.max(9 * s, cs * 0.4);
 
   return (
-    <div style={{ ...base, justifyContent: "center", gap: "6%" }}>
-      <span
-        style={{
-          fontSize: "48cqh",
-          fontWeight: 200,
-          color: color,
-          lineHeight: 0.85,
-          letterSpacing: "-0.05em",
-        }}
-      >
+    <div style={{
+      width: width * s, height: height * s, fontFamily: font, boxSizing: "border-box",
+      background: "#ffffff", padding: `${PAD_V * s}px ${PAD_H * s}px`,
+      display: "flex", alignItems: "center", border: "1px solid #eee"
+    }}>
+      <div style={{ width: "42%", borderRight: "1px solid #eaeaea", paddingRight: "4%", display: "flex", flexDirection: "column", justifyContent: "center" }}>
+        <div style={{ fontSize: 8 * s, fontWeight: 700, color: "#a5a5a5", letterSpacing: "0.05em" }}>MỜI TIỆC VÀO LÚC</div>
+        <div style={{ fontSize: 24 * s, fontWeight: 800, color: "#111", margin: `${2 * s}px 0` }}>{day}.{(month + 1).toString().padStart(2, '0')}.{year}</div>
+        <div style={{ fontSize: 9 * s, fontWeight: 600, color: "#444" }}>THÁNG TÁM NĂM {year}</div>
+      </div>
+
+      <div style={{ flex: 1, paddingLeft: "4%", display: "flex", flexDirection: "column" }}>
+        <div style={{ fontSize: 11 * s, fontWeight: 700, color: "#111", marginBottom: HEADER_GAP * s, letterSpacing: "0.02em" }}>
+          {MONTHS[month]} {year}
+        </div>
+
+        <div style={{ ...makeGridStyle(cs, COL_GAP * s, ROW_GAP * s), marginBottom: DOW_GAP * s }}>
+          {DOW.map((d) => <div key={d} style={{ fontSize: 9 * s, color: "#999", textAlign: "center", fontWeight: 600 }}>{d}</div>)}
+        </div>
+
+        <div style={makeGridStyle(cs, COL_GAP * s, ROW_GAP * s)}>
+          {grid.map((d, i) => {
+            const isT = d === day;
+            return (
+              <div key={i} style={{ width: cs, height: cs, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                {d && (
+                  <div style={{
+                    width: cs - 2 * s, height: cs - 2 * s, display: "flex", alignItems: "center", justifyContent: "center",
+                    ...(isT ? { background: "#111", borderRadius: "50%" } : {})
+                  }}>
+                    <span style={{ fontSize: fs, fontWeight: isT ? 700 : 500, color: isT ? "#fff" : "#333" }}>{d}</span>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function RomanticStyle({ day, month, year, grid, color, font, width, height, s, cell }: CalProps) {
+  const cs = cell * s;
+  const fs = Math.max(9 * s, cs * 0.4);
+
+  return (
+    <div style={{
+      width: width * s, height: height * s, fontFamily: font, boxSizing: "border-box",
+      background: "#d6c5af", padding: `${PAD_V * s}px ${PAD_H * s}px`,
+      display: "flex", alignItems: "center", border: "1px solid #c2b099"
+    }}>
+      <div style={{
+        width: "42%", height: "85%", marginRight: "4%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+        border: "2px solid #dfba6b", borderRadius: "20% 0 20% 0", position: "relative", boxSizing: "border-box"
+      }}>
+        <span style={{ fontSize: 9 * s, fontWeight: 600, color: "#5a4b38", letterSpacing: "0.08em" }}>THURSDAY</span>
+        <div style={{ display: "flex", alignItems: "baseline", margin: `${2 * s}px 0` }}>
+          <span style={{ fontSize: 11 * s, color: "#dfba6b", fontWeight: 700, marginRight: 3 * s }}>OCT</span>
+          <span style={{ fontSize: 26 * s, fontWeight: 700, color: "#dfba6b" }}>{day}</span>
+        </div>
+        <span style={{ fontSize: 9 * s, fontWeight: 600, color: "#5a4b38" }}>THÁNG MƯỜI</span>
+      </div>
+
+      <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
+        <div style={{ textAlign: "center", marginBottom: HEADER_GAP * s }}>
+          <span style={{ fontSize: 11 * s, fontWeight: 700, color: "#423525", letterSpacing: "0.04em" }}>{MONTHS[month]} {year}</span>
+        </div>
+
+        <div style={{ ...makeGridStyle(cs, COL_GAP * s, ROW_GAP * s), marginBottom: DOW_GAP * s }}>
+          {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((d) => (
+            <div key={d} style={{ fontSize: 8.5 * s, color: "#6e5d47", textAlign: "center", fontWeight: 600 }}>{d}</div>
+          ))}
+        </div>
+
+        <div style={makeGridStyle(cs, COL_GAP * s, ROW_GAP * s)}>
+          {grid.map((d, i) => {
+            const isT = d === day;
+            return (
+              <div key={i} style={{ width: cs, height: cs, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                {d && (
+                  <div style={{
+                    width: cs - 2 * s, height: cs - 2 * s, display: "flex", alignItems: "center", justifyContent: "center",
+                    ...(isT ? { border: "1.5px solid #dfba6b", borderRadius: "50%" } : {})
+                  }}>
+                    {isT && <span style={{ position: "absolute", fontSize: 14 * s, color: "rgba(223,186,107,0.25)", top: "25%" }}>✿</span>}
+                    <span style={{ fontSize: fs, fontWeight: isT ? 700 : 400, color: isT ? "#dfba6b" : "#423525", zIndex: 1 }}>{d}</span>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function LuxuryNavyStyle({ day, month, year, grid, color, font, width, height, s, cell }: CalProps) {
+  const cs = cell * s;
+  const fs = Math.max(9 * s, cs * 0.4);
+
+  return (
+    <div style={{
+      width: width * s, height: height * s, fontFamily: font, boxSizing: "border-box",
+      background: "#0f1b29", padding: `${PAD_V * s}px ${PAD_H * s}px`,
+      display: "flex", alignItems: "center", border: "1px solid #1a2e44", position: "relative"
+    }}>
+      <div style={{ position: "absolute", top: 6 * s, left: 6 * s, right: 6 * s, bottom: 6 * s, border: "1px solid #c5a86a", opacity: 0.35, pointerEvents: "none" }} />
+
+      <div style={{ width: "42%", marginRight: "2%", zIndex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", borderRight: "1px solid rgba(197,168,106,0.2)", paddingRight: "2%" }}>
+        <span style={{ fontSize: 8 * s, color: "#c5a86a", letterSpacing: "0.12em", textTransform: "uppercase" }}>SUNDAY</span>
+        <span style={{ fontSize: 24 * s, fontWeight: 700, color: "#c5a86a", margin: `${2 * s}px 0` }}>{day}</span>
+        <span style={{ fontSize: 8 * s, color: "#c5a86a", letterSpacing: "0.05em" }}>THÁNG MƯỜI HAI</span>
+      </div>
+
+      <div style={{ flex: 1, zIndex: 1, display: "flex", flexDirection: "column" }}>
+        <div style={{ textAlign: "center", marginBottom: HEADER_GAP * s }}>
+          <span style={{ fontSize: 10 * s, fontWeight: 600, color: "#c5a86a", letterSpacing: "0.1em" }}>{MONTHS[month]} {year}</span>
+        </div>
+
+        <div style={{ ...makeGridStyle(cs, COL_GAP * s, ROW_GAP * s), marginBottom: DOW_GAP * s }}>
+          {DOW_NAVY.map((d) => <div key={d} style={{ fontSize: 8.5 * s, color: "rgba(197,168,106,0.7)", textAlign: "center" }}>{d}</div>)}
+        </div>
+
+        <div style={makeGridStyle(cs, COL_GAP * s, ROW_GAP * s)}>
+          {grid.map((d, i) => {
+            const isT = d === day;
+            return (
+              <div key={i} style={{ width: cs, height: cs, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                {d && (
+                  <div style={{
+                    width: cs - 1 * s, height: cs - 1 * s, display: "flex", alignItems: "center", justifyContent: "center", borderRadius: 4 * s,
+                    ...(isT ? { border: "1px solid #c5a86a", backgroundColor: "rgba(197,168,106,0.15)" } : {})
+                  }}>
+                    <span style={{ fontSize: fs, fontWeight: isT ? 700 : 400, color: isT ? "#ffd685" : "#e2ecf7" }}>{d}</span>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function DateOnlyView({ day, month, year, color, font, width, height, s, calendarStyle }: CalProps & { calendarStyle: string }) {
+  const bgMap: Record<string, string> = {
+    classic: "#fbf8f5",
+    modern: "#ffffff",
+    romantic: "#d6c5af",
+    "luxury-navy": "#0f1b29",
+  };
+  const txtMap: Record<string, string> = {
+    classic: "#333333",
+    modern: "#111111",
+    romantic: "#423525",
+    "luxury-navy": "#c5a86a",
+  };
+
+  return (
+    <div style={{
+      width: width * s, height: height * s, fontFamily: font, boxSizing: "border-box",
+      background: bgMap[calendarStyle] || "#fff", display: "flex", flexDirection: "column",
+      alignItems: "center", justifyContent: "center", border: "1px solid rgba(0,0,0,0.05)"
+    }}>
+      <span style={{ fontSize: 36 * s, fontWeight: 800, color: txtMap[calendarStyle], lineHeight: 1 }}>
         {String(day).padStart(2, "0")}
       </span>
-
-      <div
-        style={{
-          width: "20%",
-          height: "2px",
-          background: color,
-          opacity: 0.3,
-        }}
-      />
-
-      <span
-        style={{
-          fontSize: "9cqh",
-          fontWeight: 500,
-          letterSpacing: "0.3em",
-          textTransform: "uppercase",
-          color: color,
-          opacity: 0.7,
-          paddingLeft: "0.3em",
-        }}
-      >
+      <span style={{ fontSize: 11 * s, fontWeight: 600, color: txtMap[calendarStyle], letterSpacing: "0.1em", marginTop: 8 * s }}>
         {MONTHS[month]} {year}
       </span>
     </div>

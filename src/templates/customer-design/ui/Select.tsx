@@ -1,6 +1,7 @@
 import { Check, ChevronDown, X } from "lucide-react";
 import type { ReactNode } from "react";
-import { forwardRef, useEffect, useRef, useState } from "react";
+import { forwardRef, useCallback, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 
 export interface SelectOption {
   label: string;
@@ -62,7 +63,10 @@ const Select = forwardRef<HTMLDivElement, SelectProps>(
     const [isOpen, setIsOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
     const containerRef = useRef<HTMLDivElement>(null);
+    const triggerRef = useRef<HTMLDivElement>(null);
+    const popupRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
+    const [popupPos, setPopupPos] = useState<{ top: number; left: number; width: number } | null>(null);
 
     const currentValue =
       value !== undefined && value !== null && value !== "" ? value : defaultValue;
@@ -72,9 +76,39 @@ const Select = forwardRef<HTMLDivElement, SelectProps>(
       ? options.filter((opt) => opt.label.toLowerCase().includes(searchQuery.toLowerCase()))
       : options;
 
+    const updatePopupPos = useCallback(() => {
+      if (triggerRef.current) {
+        const rect = triggerRef.current.getBoundingClientRect();
+        setPopupPos({ top: rect.bottom + 4, left: rect.left, width: rect.width });
+      }
+    }, []);
+
+    useEffect(() => {
+      if (isOpen) {
+        updatePopupPos();
+      } else {
+        setPopupPos(null);
+        setSearchQuery("");
+      }
+    }, [isOpen, updatePopupPos]);
+
+    useEffect(() => {
+      if (!isOpen) return;
+      const handle = () => updatePopupPos();
+      window.addEventListener("scroll", handle, true);
+      window.addEventListener("resize", handle);
+      return () => {
+        window.removeEventListener("scroll", handle, true);
+        window.removeEventListener("resize", handle);
+      };
+    }, [isOpen, updatePopupPos]);
+
     useEffect(() => {
       const handleClickOutside = (e: MouseEvent) => {
-        if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        const target = e.target as Node;
+        const isInsideContainer = containerRef.current?.contains(target);
+        const isInsidePopup = popupRef.current?.contains(target);
+        if (!isInsideContainer && !isInsidePopup) {
           setIsOpen(false);
           setSearchQuery("");
         }
@@ -117,7 +151,7 @@ const Select = forwardRef<HTMLDivElement, SelectProps>(
         )}
 
         <div ref={containerRef} className="relative">
-          <div
+          <div ref={triggerRef}
             onClick={handleToggle}
             className={`
               ${sizeMap[size]} w-full px-4 rounded-lg border transition-all duration-200
@@ -167,17 +201,17 @@ const Select = forwardRef<HTMLDivElement, SelectProps>(
               />
             </div>
           </div>
-          {isOpen && (
+          {isOpen && popupPos && createPortal(
             <div
-              className={`
-                absolute z-50 w-full mt-1 py-1 
-                bg-white dark:bg-[#191919]
-                border border-[#d4af37] 
-                rounded-lg shadow-lg
-                max-h-60 overflow-auto
-                animate-dropdown-in
-                ${popupClassName}
-              `}
+              ref={popupRef}
+              style={{
+                position: "fixed",
+                top: popupPos.top,
+                left: popupPos.left,
+                width: popupPos.width,
+                zIndex: 9999,
+              }}
+              className="py-1 bg-white dark:bg-[#191919] border border-[#d4af37] rounded-lg shadow-lg max-h-60 overflow-auto animate-dropdown-in"
             >
               {searchable && (
                 <div className="px-2 pb-2">
@@ -250,7 +284,8 @@ const Select = forwardRef<HTMLDivElement, SelectProps>(
                   })
                 )}
               </div>
-            </div>
+            </div>,
+            document.body
           )}
         </div>
 

@@ -90,6 +90,8 @@ interface Props {
     id: string,
     align: { h?: "left" | "center" | "right"; v?: "top" | "middle" | "bottom" }
   ) => void;
+  onAddElements?: (els: Omit<EditorElement, "id" | "zIndex">[], grouped: boolean) => void;
+  onUngroupElements?: (groupId: string) => void;
 }
 
 export default function LeftToolbar({
@@ -114,6 +116,8 @@ export default function LeftToolbar({
   onAlignElement,
   selectedAudio,
   onSelectAudio,
+  onAddElements,
+  onUngroupElements,
 }: Props) {
   const [hoveredTool, setHoveredTool] = useState<EditorTool | null>(null);
   const panelRef = useRef<HTMLDivElement>(null);
@@ -156,7 +160,7 @@ export default function LeftToolbar({
       className="flex h-full shrink-0 select-none"
       onMouseLeave={handleMouseLeave}
     >
-      <aside className="w-18 bg-[#0e0f11] flex flex-col items-center py-2 h-full shrink-0 border-r border-[#252627]">
+      <aside className="w-18 bg-[#0e0d0f] flex flex-col items-center py-2 h-full shrink-0 border-r border-[#2a252c]">
         {TOOLS.map((tool) => {
           const Icon = tool.icon;
           const isActive = selectedTool === tool.id;
@@ -169,12 +173,12 @@ export default function LeftToolbar({
               className={clsx(
                 "w-16 h-16 flex flex-col items-center justify-center rounded-lg transition-all duration-150 my-0.5 relative group",
                 isActive
-                  ? "bg-[#252627] text-white"
-                  : "text-gray-400 hover:text-white hover:bg-[#252627]/50"
+                  ? "bg-[#2a252c] text-[#d4af37]"
+                  : "text-gray-400 hover:text-[#d4af37] hover:bg-[#2a252c]/50"
               )}
             >
               {isActive && (
-                <div className="absolute left-0 top-1/4 bottom-1/4 w-0.75 bg-white rounded-r-full" />
+                <div className="absolute left-0 top-1/4 bottom-1/4 w-0.75 bg-[#d4af37] rounded-r-full" />
               )}
 
               <div className="transition-transform duration-150 group-hover:scale-105">
@@ -192,7 +196,7 @@ export default function LeftToolbar({
       {activePanel && (
         <div
           ref={panelRef}
-          className="w-75 bg-[#222] border-r border-[#333] flex flex-col overflow-hidden animate-panel-in"
+          className="w-[330px] bg-[#141215] border-r border-[#2a252c] flex flex-col overflow-hidden animate-panel-in"
           onMouseEnter={() => {
             if (isPinned) setHoveredTool(activePanel);
           }}
@@ -200,13 +204,13 @@ export default function LeftToolbar({
             if (!isPinned) setHoveredTool(null);
           }}
         >
-          <div className="flex items-center justify-between px-4 py-3 border-b border-[#333] shrink-0">
-            <h3 className="text-white text-sm font-bold uppercase tracking-wider">
+          <div className="flex items-center justify-between px-4 py-3 bg-[#1c181e] border-b border-[#2a252c] shrink-0">
+            <h3 className="text-[#d4af37] text-sm font-bold uppercase tracking-wider">
               {TOOLS.find((t) => t.id === activePanel)?.label || activePanel}
             </h3>
             <button
               onClick={handleCollapse}
-              className="p-1 text-gray-400 hover:text-white hover:bg-[#333] rounded transition-colors"
+              className="p-1 text-gray-400 hover:text-white hover:bg-[#2a252c] rounded transition-colors"
               title="Thu gọn"
             >
               <ChevronLeft size={16} />
@@ -235,6 +239,7 @@ export default function LeftToolbar({
               onAlignElement={onAlignElement}
               selectedAudio={selectedAudio}
               onSelectAudio={onSelectAudio}
+              onAddElements={onAddElements}
             />
           </div>
         </div>

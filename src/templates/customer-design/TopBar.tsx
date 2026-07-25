@@ -20,6 +20,14 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const ZOOM_PRESETS = [25, 50, 75, 100, 150, 200];
 
@@ -40,6 +48,10 @@ interface Props {
   ) => void;
   showGrid?: boolean;
   onToggleGrid?: () => void;
+  gridType?: "lines" | "dots";
+  onGridTypeChange?: (type: "lines" | "dots") => void;
+  gridSize?: number;
+  onGridSizeChange?: (size: number) => void;
   projectName?: string;
   onProjectNameChange?: (name: string) => void;
   showBottomBar?: boolean;
@@ -74,6 +86,10 @@ export default function TopBar({
   onOpenPreview,
   showGrid = false,
   onToggleGrid,
+  gridType = "lines",
+  onGridTypeChange,
+  gridSize = 40,
+  onGridSizeChange,
   projectName = "Thiết kế của tôi",
   onProjectNameChange,
   showBottomBar = true,
@@ -217,7 +233,7 @@ export default function TopBar({
       </div>
 
       <button
-        onClick={() => setShowPreviewModal(true)}
+        onClick={() => onOpenPreview?.("phone", 440, 956)}
         className="flex items-center gap-2 px-4 py-1.5 bg-[#d4af37] text-[#1a1a1a] text-sm font-semibold rounded-lg hover:bg-[#e5c04a] transition-colors"
       >
         <Eye size={16} />
@@ -269,17 +285,74 @@ export default function TopBar({
 
         {onToggleGrid && (
           <>
-            <button
-              onClick={onToggleGrid}
-              className={`p-1.5 rounded transition-colors ${
-                showGrid
-                  ? "bg-[#d4af37] text-[#1a1a1a]"
-                  : "text-gray-400 hover:text-white hover:bg-[#3a3a3a]"
-              }`}
-              title={showGrid ? "Ẩn lưới" : "Hiện lưới"}
-            >
-              <Grid3x3 size={15} />
-            </button>
+            <Popover>
+              <PopoverTrigger
+                className={`p-1.5 rounded transition-colors ${
+                  showGrid
+                    ? "bg-[#d4af37] text-[#1a1a1a]"
+                    : "text-gray-400 hover:text-white hover:bg-[#3a3a3a]"
+                }`}
+                title="Cấu hình lưới"
+              >
+                <Grid3x3 size={15} />
+              </PopoverTrigger>
+              <PopoverContent align="end" className="w-50 bg-[#2a2a2a] border border-[#3a3a3a] rounded-lg shadow-xl p-3 flex flex-col gap-3">
+                <div className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">
+                  Cấu hình lưới
+                </div>
+
+                <div className="flex items-center justify-between py-1 border-b border-[#3a3a3a] pb-2">
+                  <span className="text-gray-300 text-xs font-medium">Bật lưới:</span>
+                  <button
+                    onClick={onToggleGrid}
+                    className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                      showGrid ? "bg-[#d4af37]" : "bg-[#3a3a3a]"
+                    }`}
+                  >
+                    <span
+                      className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out ${
+                        showGrid ? "translate-x-4" : "translate-x-0"
+                      }`}
+                    />
+                  </button>
+                </div>
+
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-gray-400 text-xs">Loại lưới:</label>
+                  <Select
+                    value={gridType}
+                    onValueChange={(val) => onGridTypeChange?.(val as "lines" | "dots")}
+                    disabled={!showGrid}
+                  >
+                    <SelectTrigger className="h-8 text-xs bg-[#202020] border-[#333] text-white">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-[#2a2a2a] border-[#3a3a3a] text-white">
+                      <SelectItem value="lines">Đường kẻ</SelectItem>
+                      <SelectItem value="dots">Điểm chấm</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-gray-400 text-xs">Kích thước ô:</label>
+                  <Select
+                    value={String(gridSize)}
+                    onValueChange={(val) => onGridSizeChange?.(Number(val))}
+                    disabled={!showGrid}
+                  >
+                    <SelectTrigger className="h-8 text-xs bg-[#202020] border-[#333] text-white">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-[#2a2a2a] border-[#3a3a3a] text-white">
+                      <SelectItem value="20">20px</SelectItem>
+                      <SelectItem value="40">40px</SelectItem>
+                      <SelectItem value="80">80px</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </PopoverContent>
+            </Popover>
             <div className="h-5 w-px bg-[#3a3a3a] mx-0.5" />
           </>
         )}

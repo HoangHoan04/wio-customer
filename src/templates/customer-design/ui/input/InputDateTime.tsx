@@ -76,7 +76,7 @@ export default function InputDateTime({
       </div>
 
       {isOpen && (
-        <div className="absolute top-18.5 left-0 z-50 w-full min-w-[240px] bg-[#0f0608]/95 border border-[#d4af37]/35 rounded-xl p-4 shadow-2xl backdrop-blur-md flex flex-col gap-4">
+        <div className="absolute top-18.5 left-0 z-50 w-full bg-[#0f0608]/95 border border-[#d4af37]/35 rounded-xl p-4 shadow-2xl backdrop-blur-md flex flex-col gap-4">
           <div className="text-xs font-bold text-[#d4af37] border-b border-[#d4af37]/15 pb-2 uppercase tracking-wide">
             Cấu hình thời gian
           </div>

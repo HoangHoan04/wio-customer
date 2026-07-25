@@ -1,5 +1,6 @@
 import { Calendar as CalendarIcon, ChevronLeft, ChevronRight } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 
 interface InputDateProps {
   label?: string;
@@ -18,6 +19,9 @@ export default function InputDate({
 }: InputDateProps) {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLDivElement>(null);
+  const popupRef = useRef<HTMLDivElement>(null);
+  const [popupPos, setPopupPos] = useState<{ top: number; left: number } | null>(null);
 
   const parsedDate = value ? new Date(value) : new Date();
   const [currentYear, setCurrentYear] = useState(parsedDate.getFullYear());
@@ -33,9 +37,38 @@ export default function InputDate({
     }
   }, [value]);
 
+  const updatePopupPos = useCallback(() => {
+    if (triggerRef.current) {
+      const rect = triggerRef.current.getBoundingClientRect();
+      setPopupPos({ top: rect.bottom + 4, left: rect.left });
+    }
+  }, []);
+
+  useEffect(() => {
+    if (isOpen) {
+      updatePopupPos();
+    } else {
+      setPopupPos(null);
+    }
+  }, [isOpen, updatePopupPos]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const handle = () => updatePopupPos();
+    window.addEventListener("scroll", handle, true);
+    window.addEventListener("resize", handle);
+    return () => {
+      window.removeEventListener("scroll", handle, true);
+      window.removeEventListener("resize", handle);
+    };
+  }, [isOpen, updatePopupPos]);
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+      const target = event.target as Node;
+      const isInsideContainer = containerRef.current?.contains(target);
+      const isInsidePopup = popupRef.current?.contains(target);
+      if (!isInsideContainer && !isInsidePopup) {
         setIsOpen(false);
       }
     };
@@ -131,6 +164,7 @@ export default function InputDate({
       )}
 
       <div
+        ref={triggerRef}
         onClick={() => setIsOpen(!isOpen)}
         className="w-full h-12 bg-white/3 border border-[#d4af37]/20 hover:border-[#d4af37]/45 text-[#f5e6d3] px-3.5 flex items-center justify-between rounded-lg text-sm cursor-pointer select-none transition-colors"
       >
@@ -141,7 +175,7 @@ export default function InputDate({
       </div>
 
       {isOpen && (
-        <div className="absolute top-18.5 left-0 z-50 w-full min-w-[220px] bg-[#0f0608]/95 border border-[#d4af37]/35 rounded-xl p-4 shadow-2xl backdrop-blur-md flex flex-col gap-3">
+        <div className="absolute top-18.5 left-0 z-50 w-full  bg-[#0f0608]/95 border border-[#d4af37]/35 rounded-xl p-4 shadow-2xl backdrop-blur-md flex flex-col gap-3">
           <div className="flex items-center justify-between border-b border-[#d4af37]/15 pb-2">
             <button
               type="button"
