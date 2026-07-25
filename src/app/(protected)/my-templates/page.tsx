@@ -39,6 +39,7 @@ interface IWedding {
   status: string;
   ceremonyAt?: string;
   ceremonyVenue?: string;
+  templateId?: string;
   template?: {
     name: string;
     themeCode: string;
@@ -285,7 +286,13 @@ export default function MyTemplatesPage() {
                     {w.status !== enumData.WEDDING_STATUS.PUBLISHED.code ? (
                       <Button
                         variant="outline"
-                        onClick={() => router.push(`/edit/${w.id}`)}
+                        onClick={() => {
+                          if (!w.templateId || w.template?.themeCode === "CUSTOM_DESIGN") {
+                            router.push(`/design?id=${w.id}`);
+                          } else {
+                            router.push(`/edit/${w.id}`);
+                          }
+                        }}
                         className="flex-1 py-4 bg-white/3! border-[#d4af37]/20! hover:border-[#d4af37]/40! text-[#f5e6d3]! flex items-center justify-center gap-1.5 rounded-lg text-xs font-semibold"
                       >
                         <Edit2 size={13} />

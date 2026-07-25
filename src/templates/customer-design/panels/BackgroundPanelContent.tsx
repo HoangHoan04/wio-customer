@@ -9,6 +9,7 @@ import {
   WEDDING_BG_COLORS,
   WEDDING_GRADIENT_COLORS,
 } from "../utils/constants";
+import ColorPickerRow from "../components/ColorPickerRow";
 
 interface BackgroundPanelContentProps {
   canvasBackground: string;
@@ -44,7 +45,7 @@ export default function BackgroundPanelContent({
       const saved = localStorage.getItem("bg_uploaded_images");
       if (saved) setUploadedImages(JSON.parse(saved));
     } catch {
-      // ignore parse error
+      //! ignore parse error
     }
   }, []);
 
@@ -53,7 +54,7 @@ export default function BackgroundPanelContent({
     try {
       localStorage.setItem("bg_uploaded_images", JSON.stringify(imgs));
     } catch {
-      // ignore storage error
+      //! ignore storage error
     }
   }, []);
 
@@ -83,7 +84,7 @@ export default function BackgroundPanelContent({
           persistImages([...results, ...uploadedImages]);
         }
       } catch {
-        // ignore upload errors
+        //! ignore upload errors
       } finally {
         setLoading(false);
       }
@@ -206,6 +207,21 @@ export default function BackgroundPanelContent({
                   </span>
                 </div>
               </div>
+            </div>
+
+            <div className="space-y-3">
+              <div>
+                <span className="text-sm font-bold text-[#f5e6d3] block">
+                  Tùy chỉnh màu nền
+                </span>
+                <span className="text-xs text-[#f5e6d3]/40 block mt-0.5">
+                  Chọn màu nền tự do từ bảng màu
+                </span>
+              </div>
+              <ColorPickerRow
+                value={canvasBackground}
+                onChange={(color) => onSetBackground(color, "color")}
+              />
             </div>
 
             <div className="space-y-3">

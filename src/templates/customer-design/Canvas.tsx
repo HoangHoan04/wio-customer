@@ -11,6 +11,7 @@ import {
   Stage,
   Text,
   Transformer,
+  Path,
 } from "react-konva";
 import { useAudioPlayer } from "../../hooks/useAudioPlayer";
 import { useImageCache } from "./hooks/useImageCache";
@@ -37,12 +38,16 @@ interface Props {
   onSelect: (id: string | null) => void;
   onUpdate: (id: string, updates: Partial<EditorElement>) => void;
   onDragEnd: (id: string, x: number, y: number) => void;
+  onDragMove?: (id: string, x: number, y: number) => void;
   onTransformEnd: (
     id: string,
     attrs: { x: number; y: number; width: number; height: number; rotation: number }
   ) => void;
   readOnly?: boolean;
   onHeightChange?: (height: number) => void;
+  showGrid?: boolean;
+  gridType?: "lines" | "dots";
+  gridSize?: number;
 }
 
 export default function Canvas({
@@ -56,10 +61,15 @@ export default function Canvas({
   onSelect,
   onUpdate,
   onDragEnd,
+  onDragMove,
   onTransformEnd,
   readOnly = false,
   onHeightChange,
+  showGrid = false,
+  gridType = "lines",
+  gridSize = 40,
 }: Props) {
+  const scale = zoom / 100;
   const stageRef = useRef<Konva.Stage>(null);
   const transformerRef = useRef<Konva.Transformer>(null);
   const elementsLayerRef = useRef<Konva.Layer>(null);
@@ -69,7 +79,7 @@ export default function Canvas({
   const editInputRef = useRef<HTMLTextAreaElement>(null);
 
   const visibleElements = useMemo(
-    () => elements.filter((el) => el.visible && el.id !== editingTextId),
+    () => elements.filter((el) => el.visible !== false && el.id !== editingTextId),
     [elements, editingTextId]
   );
 
@@ -79,8 +89,7 @@ export default function Canvas({
         (el) =>
           el.type === "widget" &&
           el.widgetType === "music" &&
-          el.widgetConfig?.audioEnabled &&
-          el.widgetConfig?.audioUrl
+          el.visible !== false
       ),
     [elements]
   );
@@ -107,15 +116,17 @@ export default function Canvas({
     []
   );
 
-  const prevMusicIdRef = useRef<string | null>(null);
+  const prevAudioSrcRef = useRef<string | null>(null);
   useEffect(() => {
-    if (musicWidgetEl && musicWidgetEl.id !== prevMusicIdRef.current) {
-      prevMusicIdRef.current = musicWidgetEl.id;
-      playMusic();
-    } else if (!musicWidgetEl) {
-      prevMusicIdRef.current = null;
+    if (musicWidgetEl && audioSrc) {
+      if (audioSrc !== prevAudioSrcRef.current) {
+        prevAudioSrcRef.current = audioSrc;
+        playMusic();
+      }
+    } else {
+      prevAudioSrcRef.current = null;
     }
-  }, [musicWidgetEl, playMusic]);
+  }, [musicWidgetEl, audioSrc, playMusic]);
 
   const hasAnimatedImages = useMemo(
     () =>
@@ -166,10 +177,14 @@ export default function Canvas({
 
   useEffect(() => {
     const stage = stageRef.current;
-    if (!stage || readOnly) return;
+    const container = containerRef.current;
+    if (!stage || !container) return;
 
     animTweensRef.current.forEach((t) => t.destroy());
     animTweensRef.current = [];
+
+    const tweensToPlay: { id: string; tween: Konva.Tween; y: number }[] = [];
+    const playedIds = new Set<string>();
 
     visibleElements.forEach((el) => {
       const node = stage.findOne(`#el-${el.id}`);
@@ -230,18 +245,43 @@ export default function Canvas({
         }
 
         const tween = new Konva.Tween(tweenConfig as any);
-        tween.play();
+        tweensToPlay.push({
+          id: el.id,
+          tween,
+          y: el.y,
+        });
         animTweensRef.current.push(tween);
       } else if (el.continuousMotionEnabled) {
         startContinuousMotion(node, el);
       }
     });
 
+    const checkScroll = () => {
+      const scrollTop = container.scrollTop;
+      const clientHeight = container.clientHeight;
+      const triggerLimit = scrollTop + clientHeight;
+
+      tweensToPlay.forEach((item) => {
+        if (playedIds.has(item.id)) return;
+
+        const elTopScaled = item.y * scale;
+        if (elTopScaled < triggerLimit - 20) {
+          playedIds.add(item.id);
+          item.tween.play();
+        }
+      });
+    };
+
+    const timer = setTimeout(checkScroll, 100);
+    container.addEventListener("scroll", checkScroll);
+
     return () => {
+      clearTimeout(timer);
+      container.removeEventListener("scroll", checkScroll);
       animTweensRef.current.forEach((t) => t.destroy());
       animTweensRef.current = [];
     };
-  }, [visibleElements, readOnly]);
+  }, [visibleElements, scale]);
 
   function startContinuousMotion(node: Konva.Node, el: EditorElement) {
     const duration = el.continuousMotionDuration;
@@ -276,10 +316,70 @@ export default function Canvas({
     animTweensRef.current.push(anim);
   }
 
+  const forwardEventToUnderlying = (
+    e: Konva.KonvaEventObject<MouseEvent | TouchEvent>,
+    eventType: "click" | "mousedown" | "touchstart"
+  ) => {
+    const evt = e.evt as any;
+    const clientX = evt.clientX || (evt.touches && evt.touches[0]?.clientX);
+    const clientY = evt.clientY || (evt.touches && evt.touches[0]?.clientY);
+    if (clientX === undefined || clientY === undefined) return;
+
+    const targets = document.elementsFromPoint(clientX, clientY);
+    const underlyingTarget = targets.find(
+      (el) => !stageRef.current?.container().contains(el)
+    ) as HTMLElement | undefined;
+
+    if (underlyingTarget) {
+      let forwardedEvent;
+      if (eventType === "touchstart") {
+        forwardedEvent = new TouchEvent("touchstart", {
+          bubbles: true,
+          cancelable: true,
+          touches: evt.touches ? Array.from(evt.touches) as any : [],
+          targetTouches: evt.targetTouches ? Array.from(evt.targetTouches) as any : [],
+          changedTouches: evt.changedTouches ? Array.from(evt.changedTouches) as any : [],
+        });
+      } else {
+        forwardedEvent = new MouseEvent(eventType, {
+          clientX,
+          clientY,
+          bubbles: true,
+          cancelable: true,
+          button: evt.button ?? 0,
+          buttons: evt.buttons ?? 1,
+        });
+      }
+      underlyingTarget.dispatchEvent(forwardedEvent);
+      underlyingTarget.focus();
+    }
+  };
+
+  const handleStageMouseDown = useCallback(
+    (e: Konva.KonvaEventObject<MouseEvent>) => {
+      if (e.target === e.target.getStage()) {
+        onSelect(null);
+        forwardEventToUnderlying(e, "mousedown");
+      }
+    },
+    [onSelect]
+  );
+
+  const handleStageTouchStart = useCallback(
+    (e: Konva.KonvaEventObject<TouchEvent>) => {
+      if (e.target === e.target.getStage()) {
+        onSelect(null);
+        forwardEventToUnderlying(e, "touchstart");
+      }
+    },
+    [onSelect]
+  );
+
   const handleStageClick = useCallback(
     (e: Konva.KonvaEventObject<MouseEvent>) => {
       if (e.target === e.target.getStage()) {
         onSelect(null);
+        forwardEventToUnderlying(e, "click");
       }
     },
     [onSelect]
@@ -289,6 +389,7 @@ export default function Canvas({
     (e: Konva.KonvaEventObject<TouchEvent>) => {
       if (e.target === e.target.getStage()) {
         onSelect(null);
+        forwardEventToUnderlying(e, "touchstart");
       }
     },
     [onSelect]
@@ -341,8 +442,6 @@ export default function Canvas({
     }
     setEditingTextId(null);
   }, [editingTextId, editValue, onUpdate]);
-
-  const scale = zoom / 100;
 
   const [dragHeight, setDragHeight] = useState<number | null>(null);
   const dragRef = useRef<{ startY: number; startH: number; currH: number } | null>(null);
@@ -398,18 +497,62 @@ export default function Canvas({
     canvasBackground.startsWith("/");
   const bgStyle: React.CSSProperties = useMemo(() => {
     if (canvasBackground === "transparent") {
-      return {
-        backgroundImage:
-          "linear-gradient(45deg, #ccc 25%, transparent 25%), linear-gradient(-45deg, #ccc 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #ccc 75%), linear-gradient(-45deg, transparent 75%, #ccc 75%)",
-        backgroundSize: "8px 8px",
-        backgroundPosition: "0 0, 0 4px, 4px -4px, -4px 0",
-      };
+      return { background: "transparent" };
     }
     if (bgIsImage) {
       return { background: `url(${canvasBackground}) center/cover no-repeat` };
     }
     return { background: canvasBackground };
   }, [canvasBackground, bgIsImage]);
+
+  const gridShapes = useMemo(() => {
+    if (!showGrid) return null;
+
+    const shapes = [];
+    const strokeColor = "rgba(212, 175, 55, 0.15)";
+    const dotColor = "rgba(212, 175, 55, 0.25)";
+
+    if (gridType === "lines") {
+      for (let x = gridSize; x < canvasWidth; x += gridSize) {
+        shapes.push(
+          <Line
+            key={`v-${x}`}
+            points={[x, 0, x, displayHeight]}
+            stroke={strokeColor}
+            strokeWidth={1}
+            dash={[4, 4]}
+          />
+        );
+      }
+      for (let y = gridSize; y < displayHeight; y += gridSize) {
+        shapes.push(
+          <Line
+            key={`h-${y}`}
+            points={[0, y, canvasWidth, y]}
+            stroke={strokeColor}
+            strokeWidth={1}
+            dash={[4, 4]}
+          />
+        );
+      }
+    } else if (gridType === "dots") {
+      for (let x = gridSize; x < canvasWidth; x += gridSize) {
+        for (let y = gridSize; y < displayHeight; y += gridSize) {
+          shapes.push(
+            <Circle
+              key={`dot-${x}-${y}`}
+              x={x}
+              y={y}
+              radius={1.5}
+              fill={dotColor}
+            />
+          );
+        }
+      }
+    }
+
+    return shapes;
+  }, [showGrid, gridType, gridSize, canvasWidth, displayHeight]);
 
   return (
     <div
@@ -442,13 +585,22 @@ export default function Canvas({
               height={displayHeight * scale}
               scaleX={scale}
               scaleY={scale}
+              onMouseDown={handleStageMouseDown}
+              onTouchStart={handleStageTouchStart}
               onClick={handleStageClick}
               onTap={handleStageTap}
               onDblClick={handleDblClick}
               onDblTap={handleDblTap}
-              style={{ borderRadius: "4px" }}
+              style={{
+                borderRadius: "4px",
+                position: "absolute",
+                top: 0,
+                left: 0,
+                zIndex: 10,
+                pointerEvents: readOnly ? "none" : "auto",
+              }}
             >
-              <Layer />
+              <Layer>{gridShapes}</Layer>
 
               <Layer ref={elementsLayerRef}>
                 {konvaElements
@@ -459,6 +611,7 @@ export default function Canvas({
                       element={el}
                       onSelect={onSelect}
                       onDragEnd={onDragEnd}
+                      onDragMove={onDragMove}
                       readOnly={readOnly}
                     />
                   ))}
@@ -480,15 +633,22 @@ export default function Canvas({
                       const node = nodes[0];
                       const id = node.id()?.replace("el-", "");
                       if (!id) return;
+                      const el = elements.find((e) => e.id === id);
+                      if (!el) return;
+                      const isText = el.type === "text";
+                      const paddingL = isText ? (el.paddingLeft ?? 0) : 0;
+                      const paddingR = isText ? (el.paddingRight ?? 0) : 0;
+                      const paddingT = isText ? (el.paddingTop ?? 0) : 0;
+                      const paddingB = isText ? (el.paddingBottom ?? 0) : 0;
                       const scaleX = node.scaleX();
                       const scaleY = node.scaleY();
                       node.scaleX(1);
                       node.scaleY(1);
                       onTransformEnd(id, {
-                        x: node.x(),
-                        y: node.y(),
-                        width: Math.max(10, node.width() * scaleX),
-                        height: Math.max(10, node.height() * scaleY),
+                        x: node.x() + paddingL,
+                        y: node.y() + paddingT,
+                        width: Math.max(10, node.width() * scaleX) - paddingL - paddingR,
+                        height: Math.max(10, node.height() * scaleY) - paddingT - paddingB,
                         rotation: node.rotation(),
                       });
                     }}
@@ -498,6 +658,7 @@ export default function Canvas({
                     anchorFill="white"
                     anchorSize={8}
                     rotateEnabled={true}
+                    rotateAnchorBorder={false}
                     enabledAnchors={[
                       "top-left",
                       "top-right",
@@ -590,8 +751,11 @@ export default function Canvas({
                   onDragEnd={onDragEnd}
                   canvasWidth={canvasWidth}
                   canvasHeight={displayHeight}
+                  readOnly={readOnly}
                 />
               ))}
+
+
 
             {editingEl && editingTextId && (
               <textarea
@@ -684,17 +848,21 @@ interface ElementProps {
   element: EditorElement;
   onSelect: (id: string | null) => void;
   onDragEnd: (id: string, x: number, y: number) => void;
+  onDragMove?: (id: string, x: number, y: number) => void;
   readOnly?: boolean;
 }
 
-function CanvasElement({ element, onSelect, onDragEnd, readOnly = false }: ElementProps) {
+function CanvasElement({ element, onSelect, onDragEnd, onDragMove, readOnly = false }: ElementProps) {
   const image = useImageCache(element.type === "image" ? element.src : "");
 
   const handleDragEnd = useCallback(
     (e: Konva.KonvaEventObject<DragEvent>) => {
-      onDragEnd(element.id, e.target.x(), e.target.y());
+      const isText = element.type === "text";
+      const newX = e.target.x() + (isText ? (element.paddingLeft ?? 0) : 0);
+      const newY = e.target.y() + (isText ? (element.paddingTop ?? 0) : 0);
+      onDragEnd(element.id, newX, newY);
     },
-    [element.id, onDragEnd]
+    [element.id, element.type, element.paddingLeft, element.paddingTop, onDragEnd]
   );
 
   const handleClick = useCallback(() => {
@@ -703,6 +871,17 @@ function CanvasElement({ element, onSelect, onDragEnd, readOnly = false }: Eleme
       window.open(element.link, "_blank", "noopener,noreferrer");
     }
   }, [element.id, onSelect, element.link, readOnly]);
+
+  const handleDragMove = useCallback(
+    (e: Konva.KonvaEventObject<DragEvent>) => {
+      if (!onDragMove) return;
+      const isText = element.type === "text";
+      const newX = e.target.x() + (isText ? (element.paddingLeft ?? 0) : 0);
+      const newY = e.target.y() + (isText ? (element.paddingTop ?? 0) : 0);
+      onDragMove(element.id, newX, newY);
+    },
+    [element.id, element.type, element.paddingLeft, element.paddingTop, onDragMove]
+  );
 
   const commonProps = {
     id: `el-${element.id}`,
@@ -716,6 +895,7 @@ function CanvasElement({ element, onSelect, onDragEnd, readOnly = false }: Eleme
     onClick: readOnly ? undefined : handleClick,
     onTap: readOnly ? undefined : handleClick,
     onDragEnd: readOnly ? undefined : handleDragEnd,
+    onDragMove: readOnly || !onDragMove ? undefined : handleDragMove,
   };
 
   if (element.type === "text") {
@@ -843,6 +1023,7 @@ function CanvasElement({ element, onSelect, onDragEnd, readOnly = false }: Eleme
         y={element.y - element.paddingTop}
         width={groupW}
         height={groupH}
+        rotation={element.rotation}
         onClick={readOnly ? undefined : handleClick}
         onTap={readOnly ? undefined : handleClick}
         draggable={readOnly ? false : !element.locked}
@@ -900,7 +1081,6 @@ function CanvasElement({ element, onSelect, onDragEnd, readOnly = false }: Eleme
           shadowOffsetX={element.shadowOffsetX}
           shadowOffsetY={element.shadowOffsetY}
           shadowOpacity={element.shadowBlur > 0 ? 0.4 : 0}
-          rotation={element.rotation}
           opacity={element.opacity}
           perfectDrawEnabled={false}
           listening={!readOnly}
@@ -962,6 +1142,14 @@ function CanvasElement({ element, onSelect, onDragEnd, readOnly = false }: Eleme
 
     if (conf.audioEnabled) return null;
 
+    const isCountdownVertical = element.widgetType === "countdown" && conf.countdownOrientation === "vertical";
+    const overrideWidth = isCountdownVertical
+      ? Math.min(element.width, element.height)
+      : (element.widgetType === "calendar" && element.width === 280 ? 380 : element.width);
+    const overrideHeight = isCountdownVertical
+      ? Math.max(element.width, element.height)
+      : (element.widgetType === "calendar" && element.height === 120 ? 240 : element.height);
+
     let labelText = `[Widget: ${element.widgetType || "Tiện ích"}]`;
 
     if (conf.calendarEnabled) labelText = `📅 Lịch: ${conf.targetDate || "Chưa cài đặt"}`;
@@ -986,8 +1174,8 @@ function CanvasElement({ element, onSelect, onDragEnd, readOnly = false }: Eleme
         id={`el-${element.id}`}
         x={element.x}
         y={element.y}
-        width={element.width}
-        height={element.height}
+        width={overrideWidth}
+        height={overrideHeight}
         rotation={element.rotation}
         opacity={element.opacity}
         onClick={readOnly ? undefined : handleClick}
@@ -998,8 +1186,8 @@ function CanvasElement({ element, onSelect, onDragEnd, readOnly = false }: Eleme
         <Rect
           x={0}
           y={0}
-          width={element.width}
-          height={element.height}
+          width={overrideWidth}
+          height={overrideHeight}
           fill={conf.color || "#242526"}
           stroke="#d4af37"
           strokeWidth={1.5}
@@ -1030,6 +1218,7 @@ function WidgetOverlay({
   onDragEnd,
   canvasWidth,
   canvasHeight,
+  readOnly = false,
 }: {
   element: EditorElement;
   scale: number;
@@ -1038,6 +1227,7 @@ function WidgetOverlay({
   onDragEnd: (id: string, x: number, y: number) => void;
   canvasWidth: number;
   canvasHeight: number;
+  readOnly?: boolean;
 }) {
   const conf = element.widgetConfig || {};
   const [offset, setOffset] = useState({ x: 0, y: 0 });
@@ -1060,8 +1250,8 @@ function WidgetOverlay({
     let dragging = false;
 
     const clamp = (x: number, y: number) => ({
-      x: Math.max(0, Math.min(canvasWidth - element.width, x)),
-      y: Math.max(0, Math.min(canvasHeight - element.height, y)),
+      x: Math.max(0, Math.min(canvasWidth - overrideWidth, x)),
+      y: Math.max(0, Math.min(canvasHeight - overrideHeight, y)),
     });
 
     const handleMouseMove = (e: MouseEvent) => {
@@ -1094,12 +1284,28 @@ function WidgetOverlay({
     document.addEventListener("mouseup", handleMouseUp);
   };
 
+  const isCountdownVertical = element.widgetType === "countdown" && conf.countdownOrientation === "vertical";
+  
+  const overrideWidth = isCountdownVertical
+    ? Math.min(element.width, element.height)
+    : ((element.widgetType === "calendar" || element.widgetType === "youtube") && element.width === 280
+      ? 380
+      : element.widgetType === "call"
+        ? 60
+        : element.width);
+    
+  const overrideHeight = isCountdownVertical
+    ? Math.max(element.width, element.height)
+    : element.widgetType === "youtube"
+      ? (overrideWidth * 9) / 16
+      : (element.widgetType === "calendar" && element.height === 120 ? 240 : element.height);
+
   const commonStyle: React.CSSProperties = {
     position: "absolute",
     left: (element.x + offset.x) * scale,
     top: (element.y + offset.y) * scale,
-    width: element.width * scale,
-    height: element.height * scale,
+    width: overrideWidth * scale,
+    height: "auto",
     zIndex: element.zIndex,
     cursor: isSelected ? "move" : "pointer",
     outlineOffset: -1,
@@ -1120,8 +1326,8 @@ function WidgetOverlay({
     <div style={commonStyle} onMouseDown={handleMouseDown}>
       {element.widgetType === "calendar" && conf.calendarEnabled && (
         <CalendarWidget
-          width={element.width}
-          height={element.height}
+          width={overrideWidth}
+          height={overrideHeight}
           scale={scale}
           color={conf.color}
           fontFamily={conf.fontFamily}
@@ -1132,9 +1338,15 @@ function WidgetOverlay({
       )}
       {element.widgetType === "countdown" && conf.countdownEnabled && (
         <CountdownWidget
-          {...widgetProps}
+          color={conf.color}
+          fontFamily={conf.fontFamily}
+          width={overrideWidth}
+          height={overrideHeight}
+          scale={scale}
           targetDate={conf.countdownTarget}
           countdownType={conf.countdownType}
+          styleType={conf.countdownStyle || "classic"}
+          orientation={conf.countdownOrientation || "horizontal"}
         />
       )}
       {element.widgetType === "map" && conf.mapEnabled && (
@@ -1148,6 +1360,8 @@ function WidgetOverlay({
       {element.widgetType === "call" && conf.contactEnabled && (
         <CallWidget
           {...widgetProps}
+          width={overrideWidth}
+          height={overrideHeight}
           phoneEnabled={conf.phoneEnabled}
           phoneLabel={conf.phoneLabel}
           phoneNumber={conf.phoneNumber}
@@ -1189,6 +1403,17 @@ function WidgetOverlay({
       {element.widgetType === "youtube" && conf.youtubeEnabled && (
         <YouTubeWidget {...widgetProps} youtubeUrl={conf.youtubeUrl} />
       )}
+      
+      {!readOnly && (
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            zIndex: 50,
+            cursor: isSelected ? "move" : "pointer",
+          }}
+        />
+      )}
     </div>
   );
 }
@@ -1225,38 +1450,29 @@ function ShapeElement(props: any) {
         />
       );
     case "heart": {
-      const r = Math.min(element.width, element.height) / 4;
+      const w = element.width;
+      const h = element.height;
+      const pathData = `
+        M ${0.5 * w} ${0.9 * h}
+        C ${0.1 * w} ${0.48 * h}, 0 ${0.35 * h}, 0 ${0.22 * h}
+        C 0 ${0.08 * h}, ${0.08 * w} 0, ${0.22 * w} 0
+        C ${0.34 * w} 0, ${0.45 * w} ${0.09 * h}, ${0.5 * w} ${0.18 * h}
+        C ${0.55 * w} ${0.09 * h}, ${0.66 * w} 0, ${0.78 * w} 0
+        C ${0.92 * w} 0, ${1 * w} ${0.08 * h}, ${1 * w} ${0.22 * h}
+        C ${1 * w} ${0.35 * h}, ${0.9 * w} ${0.48 * h}, ${0.5 * w} ${0.9 * h}
+        Z
+      `;
       return (
-        <Group {...commonProps}>
-          <Circle
-            x={cx + r}
-            y={cy - r}
-            radius={r}
-            fill={element.fill}
-            stroke={element.stroke}
-            strokeWidth={element.strokeWidth}
-            {...shadowProps}
-          />
-          <Circle
-            x={cx - r}
-            y={cy - r}
-            radius={r}
-            fill={element.fill}
-            stroke={element.stroke}
-            strokeWidth={element.strokeWidth}
-            {...shadowProps}
-          />
-          <Rect
-            x={cx - r * 2}
-            y={cy - r}
-            width={r * 4}
-            height={r * 2}
-            fill={element.fill}
-            stroke={element.stroke}
-            strokeWidth={element.strokeWidth}
-            {...shadowProps}
-          />
-        </Group>
+        <Path
+          {...commonProps}
+          x={element.x}
+          y={element.y}
+          data={pathData}
+          fill={element.fill}
+          stroke={element.stroke}
+          strokeWidth={element.strokeWidth}
+          {...shadowProps}
+        />
       );
     }
     case "star": {

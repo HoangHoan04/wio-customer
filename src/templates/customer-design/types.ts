@@ -29,7 +29,7 @@ export type WidgetType =
 export interface WidgetConfig {
   calendarEnabled?: boolean;
   calendarDisplayMode?: "full" | "date-only";
-  calendarStyle?: "classic" | "modern" | "romantic" | "minimal";
+  calendarStyle?: "classic" | "modern" | "romantic" | "luxury-navy";
   targetDate?: string;
   eventTitle?: string;
   eventLocation?: string;
@@ -37,6 +37,8 @@ export interface WidgetConfig {
   countdownEnabled?: boolean;
   countdownType?: "hours-min-sec" | "days-hours-min-sec";
   countdownTarget?: string;
+  countdownStyle?: "classic" | "modern" | "romantic" | "luxury-navy";
+  countdownOrientation?: "horizontal" | "vertical";
   mapEnabled?: boolean;
   locationAddress?: string;
   mapType?: "normal" | "satellite" | "terrain" | "hybrid";
@@ -111,6 +113,8 @@ export interface EditorElement {
   textDecoration: "none" | "underline" | "line-through" | "underline line-through";
   textTransform: "none" | "uppercase" | "lowercase" | "capitalize";
   backgroundColor: string;
+  frameAlignH?: "left" | "center" | "right";
+  frameAlignV?: "top" | "middle" | "bottom";
 
   paddingTop: number;
   paddingRight: number;
@@ -121,15 +125,15 @@ export interface EditorElement {
   borderColor: string;
   borderStyle: "solid" | "dashed" | "dotted" | "double";
   borderPosition:
-    | "all"
-    | "top"
-    | "bottom"
-    | "left"
-    | "right"
-    | "top-left"
-    | "top-right"
-    | "bottom-left"
-    | "bottom-right";
+  | "all"
+  | "top"
+  | "bottom"
+  | "left"
+  | "right"
+  | "top-left"
+  | "top-right"
+  | "bottom-left"
+  | "bottom-right";
   borderRadiusTopLeft: number;
   borderRadiusTopRight: number;
   borderRadiusBottomLeft: number;
@@ -158,6 +162,7 @@ export interface EditorElement {
 
   widgetType?: WidgetType;
   widgetConfig?: WidgetConfig;
+  groupId?: string;
 }
 
 export interface EditorState {

@@ -1,5 +1,8 @@
 import fixedFlower from "@/assets/decorations/royal-red/flower.webp";
+import cornerFrame from "@/assets/decorations/royal-red/frame-corner-top-left.webp";
+import frameMiddle from "@/assets/decorations/royal-red/frame-middle-horizontal.webp";
 import type { ThemeTemplateConfig } from "@/dto/theme.dto";
+
 export const FamilyInfo = ({
   data,
   config,
@@ -11,7 +14,7 @@ export const FamilyInfo = ({
   const isGroomFirst = data?.displayOrder !== "bride_first";
 
   const renderFamily = (title: string, person: any) => (
-    <div className="flex flex-col items-center flex-1">
+    <div className="flex flex-col items-center flex-1 z-10">
       <p
         className="text-xs uppercase tracking-widest mb-1"
         style={{
@@ -72,14 +75,20 @@ export const FamilyInfo = ({
   );
 
   return (
-    <div className="py-2 px-4 flex flex-col items-center text-center relative overflow-hidden z-10 w-full">
+    <div className="py-12 px-4 flex flex-col items-center text-center relative overflow-hidden z-10 w-full">
       <img
         src={fixedFlower.src}
         alt="decor"
-        className="absolute right-0 top-1/2 -translate-y-1/2 w-40 md:w-56 opacity-20 pointer-events-none translate-x-12 select-none z-0"
+        className="absolute right-0 top-1/2 -translate-y-1/2 w-40 md:w-56 opacity-10 pointer-events-none translate-x-12 select-none z-0"
       />
+      <img
+        src={fixedFlower.src}
+        alt="decor"
+        className="absolute left-0 top-1/2 -translate-y-1/2 w-40 md:w-56 opacity-10 pointer-events-none -translate-x-12 select-none z-0 rotate-180"
+      />
+
       <h2
-        className="text-xl md:text-2xl uppercase font-black mb-10"
+        className="text-xl md:text-2xl uppercase font-black mb-3"
         style={{
           fontFamily: config.fonts.heading,
           color: config.colors.textPrimary,
@@ -88,8 +97,26 @@ export const FamilyInfo = ({
       >
         THÔNG TIN LỄ CƯỚI
       </h2>
+      <img
+        src={frameMiddle.src}
+        alt=""
+        aria-hidden="true"
+        className="w-36 h-auto opacity-80 mb-10 object-contain"
+      />
 
-      <div className="grid grid-cols-2 gap-8 md:gap-16 w-full max-w-2xl mx-auto items-start">
+      <div 
+        className="relative grid grid-cols-2 gap-8 md:gap-16 w-full max-w-2xl mx-auto items-start p-8 rounded-2xl border"
+        style={{ 
+          borderColor: `${config.colors.accent}44`,
+          background: "rgba(88, 5, 18, 0.25)",
+          backdropFilter: "blur(2px)"
+        }}
+      >
+        <img src={cornerFrame.src} alt="" className="absolute top-2 left-2 w-7 h-7 pointer-events-none opacity-50" />
+        <img src={cornerFrame.src} alt="" className="absolute top-2 right-2 w-7 h-7 pointer-events-none opacity-50 rotate-90" />
+        <img src={cornerFrame.src} alt="" className="absolute bottom-2 left-2 w-7 h-7 pointer-events-none opacity-50 -rotate-90" />
+        <img src={cornerFrame.src} alt="" className="absolute bottom-2 right-2 w-7 h-7 pointer-events-none opacity-50 rotate-180" />
+
         {isGroomFirst ? (
           <>
             {renderFamily("Nhà Trai", data?.groom)}

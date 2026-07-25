@@ -53,7 +53,7 @@ export const CoupleNames = ({
           <>
             {renderPerson(data?.groom)}
             <div className="my-4 flex items-center justify-center gap-3">
-              <span className="w-8 h-[1px]" style={{ background: `linear-gradient(to left, ${config.colors.accent}, transparent)` }} />
+              <span className="w-8 h-px" style={{ background: `linear-gradient(to left, ${config.colors.accent}, transparent)` }} />
               <span
                 className="text-3xl"
                 style={{
@@ -63,7 +63,7 @@ export const CoupleNames = ({
               >
                 &
               </span>
-              <span className="w-8 h-[1px]" style={{ background: `linear-gradient(to right, ${config.colors.accent}, transparent)` }} />
+              <span className="w-8 h-px" style={{ background: `linear-gradient(to right, ${config.colors.accent}, transparent)` }} />
             </div>
             {renderPerson(data?.bride)}
           </>
@@ -71,7 +71,7 @@ export const CoupleNames = ({
           <>
             {renderPerson(data?.bride)}
             <div className="my-4 flex items-center justify-center gap-3">
-              <span className="w-8 h-[1px]" style={{ background: `linear-gradient(to left, ${config.colors.accent}, transparent)` }} />
+              <span className="w-8 h-px" style={{ background: `linear-gradient(to left, ${config.colors.accent}, transparent)` }} />
               <span
                 className="text-3xl"
                 style={{
@@ -81,7 +81,7 @@ export const CoupleNames = ({
               >
                 &
               </span>
-              <span className="w-8 h-[1px]" style={{ background: `linear-gradient(to right, ${config.colors.accent}, transparent)` }} />
+              <span className="w-8 h-px" style={{ background: `linear-gradient(to right, ${config.colors.accent}, transparent)` }} />
             </div>
             {renderPerson(data?.groom)}
           </>

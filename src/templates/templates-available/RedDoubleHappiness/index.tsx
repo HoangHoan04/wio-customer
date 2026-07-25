@@ -7,13 +7,13 @@ import { Welcome } from "./components/Welcome";
 const config: ThemeTemplateConfig = {
   code: enumData.THEME_CODE.RED_DOUBLE_HAPPINESS.code,
   colors: {
-    background: "#470a0d",
-    textPrimary: "#e8d5a3",
-    textSecondary: "#e8d5a3cc",
+    background: "#FAF6F0",
+    textPrimary: "#5C0612",
+    textSecondary: "#8A0B13",
     accent: "#c9a84c",
     envelope: "#7a0e14",
-    buttonBg: "#c9a84c",
-    buttonText: "#470a0d",
+    buttonBg: "#8A0B13",
+    buttonText: "#FFFFFF",
   },
   fonts: {
     heading: "'Cormorant Garamond', serif",

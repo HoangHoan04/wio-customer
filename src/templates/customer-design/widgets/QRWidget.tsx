@@ -40,7 +40,8 @@ export default function QRWidget({
         onClick={() => setIsOpen(true)}
         style={{
           width: width * scale,
-          height: height * scale,
+          height: "auto",
+          minHeight: height * scale,
           fontFamily,
           display: "flex",
           alignItems: "center",
@@ -151,6 +152,24 @@ export default function QRWidget({
   );
 }
 
+function getBankId(bankName: string): string {
+  const name = (bankName || "").toLowerCase().replace(/\s+/g, "");
+  if (name.includes("vietcombank")) return "vietcombank";
+  if (name.includes("bidv")) return "bidv";
+  if (name.includes("vietinbank")) return "vietinbank";
+  if (name.includes("agribank")) return "agribank";
+  if (name.includes("mbbank") || name === "mb") return "mb";
+  if (name.includes("techcombank")) return "techcombank";
+  if (name.includes("acb")) return "acb";
+  if (name.includes("vpbank")) return "vpbank";
+  if (name.includes("tpbank")) return "tpbank";
+  if (name.includes("sacombank")) return "sacombank";
+  if (name.includes("vib")) return "vib";
+  if (name.includes("shb")) return "shb";
+  if (name.includes("hdbank")) return "hdb";
+  return "";
+}
+
 function BankCard({
   data,
   label,
@@ -164,6 +183,16 @@ function BankCard({
   scale: number;
   fontFamily: string;
 }) {
+  let qrUrl = data.qrUrl;
+  if (!qrUrl && data.bankName && data.accountNumber) {
+    const bankId = getBankId(data.bankName);
+    if (bankId) {
+      const cleanAcc = data.accountNumber.replace(/\s+/g, "");
+      const cleanName = encodeURIComponent(data.accountName || "");
+      qrUrl = `https://img.vietqr.io/image/${bankId}-${cleanAcc}-compact2.jpg?accountName=${cleanName}`;
+    }
+  }
+
   return (
     <div
       style={{
@@ -189,16 +218,18 @@ function BankCard({
       <span style={{ fontSize: 9 * scale, color: "#999" }}>
         {data.bankName}
       </span>
-      {data.qrUrl && (
+      {qrUrl && (
         <img
-          src={data.qrUrl}
+          src={qrUrl}
           alt={`QR ${label}`}
           style={{
-            width: 80 * scale,
-            height: 80 * scale,
+            width: 160 * scale,
+            height: 160 * scale,
             marginTop: 6 * scale,
             borderRadius: 6 * scale,
             objectFit: "contain",
+            backgroundColor: "#ffffff",
+            padding: 6 * scale,
           }}
         />
       )}

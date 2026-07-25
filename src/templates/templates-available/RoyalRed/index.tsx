@@ -7,13 +7,13 @@ import { Welcome } from "./components/Welcome";
 const config: ThemeTemplateConfig = {
   code: enumData.THEME_CODE.ROYAL_RED.code,
   colors: {
-    background: "#4c0519",
-    textPrimary: "#3a5a40",
-    textSecondary: "#3a5a40cc",
-    accent: "#6b8f5e",
-    envelope: "#881337",
-    buttonBg: "#3a5a40",
-    buttonText: "#ffffff",
+    background: "#470712",
+    textPrimary: "#e8d5a3",
+    textSecondary: "#e8d5a3cc",
+    accent: "#d4af37",
+    envelope: "#700c19",
+    buttonBg: "#d4af37",
+    buttonText: "#470712",
   },
   fonts: {
     heading: "'Cormorant Garamond', serif",

@@ -185,7 +185,10 @@ export default function TextPanelContent({
   };
 
   return (
-    <div className="space-y-4">
+    <div
+      onKeyDown={(e) => e.stopPropagation()}
+      className="space-y-4"
+    >
       <InputTextarea
         value={el.content}
         onChange={(e) => onUpdate(el.id, { content: e.target.value })}
@@ -439,9 +442,7 @@ export default function TextPanelContent({
                 className="bg-[#2a2a2a] text-white text-[11px] font-mono border border-[#444] focus:border-[#d4af37] rounded  text-center transition-all outline-none "
                 tooltip="Padding Trên"
               />
-              <span className="text-[9px] text-gray-500 font-bold leading-none">
-                <ArrowUpFromLine />
-              </span>
+
             </div>
             <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 flex flex-col-reverse items-center gap-0.5 z-10">
               <InputNumber
@@ -452,9 +453,7 @@ export default function TextPanelContent({
                 className="bg-[#2a2a2a] text-white text-[11px] font-mono border border-[#444] focus:border-[#d4af37] rounded  text-center transition-all outline-none "
                 tooltip="Padding Dưới"
               />
-              <span className="text-[9px] text-gray-500 font-bold leading-none">
-                <ArrowDownFromLine />
-              </span>
+
             </div>
             <div className="absolute -left-4 top-1/2 -translate-y-1/2 flex items-center gap-1 z-10">
               <InputNumber
@@ -465,9 +464,7 @@ export default function TextPanelContent({
                 className="bg-[#2a2a2a] text-white text-[11px] font-mono border border-[#444] focus:border-[#d4af37]! rounded  text-center transition-all outline-none "
                 tooltip="Padding Trái"
               />
-              <span className="text-[9px] text-gray-500 font-bold">
-                <ArrowLeftFromLine />
-              </span>
+
             </div>
             <div className="absolute -right-4 top-1/2 -translate-y-1/2 flex flex-row-reverse items-center gap-1 z-10">
               <InputNumber
@@ -478,9 +475,7 @@ export default function TextPanelContent({
                 className="bg-[#2a2a2a] text-white text-[11px] font-mono border border-[#444] focus:border-[#d4af37]! rounded text-center transition-all outline-none "
                 tooltip="Padding Phải"
               />
-              <span className="text-[9px] text-gray-500 font-bold">
-                <ArrowRightFromLine />
-              </span>
+
             </div>
 
             <div className="w-30 h-20 rounded-md flex items-center justify-center shadow-inner z-0 pointer-events-none">
@@ -494,21 +489,21 @@ export default function TextPanelContent({
             <label className="text-[10px] text-gray-500 uppercase">Căn lề khung</label>
             <div className="flex items-center gap-1 justify-center">
               <FormatButton
-                active={el.textAlign === "left"}
+                active={el.frameAlignH === "left"}
                 onClick={() => onAlignElement(el.id, { h: "left" })}
                 title="Trái"
               >
                 <AlignLeft size={14} />
               </FormatButton>
               <FormatButton
-                active={el.textAlign === "center"}
+                active={el.frameAlignH === "center"}
                 onClick={() => onAlignElement(el.id, { h: "center" })}
                 title="Giữa ngang"
               >
                 <AlignCenter size={14} />
               </FormatButton>
               <FormatButton
-                active={el.textAlign === "right"}
+                active={el.frameAlignH === "right"}
                 onClick={() => onAlignElement(el.id, { h: "right" })}
                 title="Phải"
               >
@@ -516,21 +511,21 @@ export default function TextPanelContent({
               </FormatButton>
               <div className="w-px h-5 bg-[#333] mx-1" />
               <FormatButton
-                active={el.verticalAlign === "top"}
+                active={el.frameAlignV === "top"}
                 onClick={() => onAlignElement(el.id, { v: "top" })}
                 title="Trên"
               >
                 <ArrowUpFromLine size={14} />
               </FormatButton>
               <FormatButton
-                active={el.verticalAlign === "middle"}
+                active={el.frameAlignV === "middle"}
                 onClick={() => onAlignElement(el.id, { v: "middle" })}
                 title="Giữa dọc"
               >
                 <AlignCenter size={14} />
               </FormatButton>
               <FormatButton
-                active={el.verticalAlign === "bottom"}
+                active={el.frameAlignV === "bottom"}
                 onClick={() => onAlignElement(el.id, { v: "bottom" })}
                 title="Dưới"
               >

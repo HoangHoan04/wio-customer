@@ -10,6 +10,7 @@ const BohoFloralPink = dynamic(() => import("./BohoFloralPink/index"));
 const DragonPhoenixRed = dynamic(() => import("./DragonPhoenixRed/index"));
 const RedDoubleHappiness = dynamic(() => import("./RedDoubleHappiness/index"));
 const RoyalRed = dynamic(() => import("./RoyalRed/index"));
+const CustomDesignTemplate = dynamic(() => import("./CustomDesignTemplate/index"));
 
 const DefaultComponent: React.FC = () => (
   <div
@@ -35,6 +36,7 @@ const themeList = [
     ...enumData.THEME_CODE.RED_DOUBLE_HAPPINESS,
   },
   { component: RoyalRed, ...enumData.THEME_CODE.ROYAL_RED },
+  { component: CustomDesignTemplate, ...enumData.THEME_CODE.CUSTOM_DESIGN },
 ];
 
 export const ThemeRegistry: Record<string, React.ComponentType<any>> = {};

@@ -17,10 +17,13 @@ import {
   Play,
   Search,
   Trash2,
+  Scissors,
   UploadCloud,
+  X,
 } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import ColorPickerRow from "../components/ColorPickerRow";
+import AudioTrimmerModal from "../components/AudioTrimmerModal";
 import type { EditorElement, WidgetConfig } from "../types";
 
 interface AudioItem {
@@ -71,18 +74,34 @@ export default function MusicPanelContent({
 
   const [library, setLibrary] = useState<AudioItem[]>([]);
   const [libLoading, setLibLoading] = useState(false);
+  const [userLibrary, setUserLibrary] = useState<AudioItem[]>([]);
+  const [userLibLoading, setUserLibLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
-  const [uploadedAudios, setUploadedAudios] = useState<UploadedAudio[]>([]);
   const [uploadLoading, setUploadLoading] = useState(false);
   const [youtubeUrl, setYoutubeUrl] = useState("");
   const [youtubeImportLoading, setYoutubeImportLoading] = useState(false);
-  const [youtubeImportPending, setYoutubeImportPending] = useState(false);
+  const [youtubePreview, setYoutubePreview] = useState<{
+    title: string;
+    author: string;
+    duration: string;
+    thumbnailUrl?: string;
+  } | null>(null);
+  const [previewLoading, setPreviewLoading] = useState(false);
+  const [youtubeImports, setYoutubeImports] = useState<{
+    id: string;
+    name: string;
+    youtubeUrl: string;
+    status: "PROCESSING" | "FAILED";
+    createdAt: number;
+  }[]>([]);
+
   const existingWidget = elements.find(
     (el) => el.type === "widget" && el.widgetType === "music" && el.widgetConfig?.audioEnabled
   );
   const [iconId, setIconId] = useState(existingWidget?.widgetConfig?.iconId || "music-1");
   const [iconColor, setIconColor] = useState(existingWidget?.widgetConfig?.color || "#d4af37");
+  const [trimmingSong, setTrimmingSong] = useState<AudioItem | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [previewingId, setPreviewingId] = useState<string | null>(null);
@@ -91,31 +110,75 @@ export default function MusicPanelContent({
   const handlePreview = useCallback(
     (song: AudioItem) => {
       if (!song.url) return;
+
+      if (selectedAudio?.id === song.id) {
+        window.dispatchEvent(new CustomEvent("wio-toggle-canvas-audio"));
+        return;
+      }
+
       if (previewingId === song.id) {
         previewAudioRef.current?.pause();
+        window.dispatchEvent(new CustomEvent("wio-preview-audio-stop"));
         setPreviewingId(null);
       } else {
-        previewAudioRef.current?.pause();
+        if (previewAudioRef.current) {
+          previewAudioRef.current.pause();
+        }
+
         const audio = new Audio(song.url);
-        audio.onended = () => setPreviewingId(null);
-        audio.play().catch(() => {});
+        audio.onended = () => {
+          setPreviewingId(null);
+          window.dispatchEvent(new CustomEvent("wio-preview-audio-stop"));
+        };
+
+        window.dispatchEvent(new CustomEvent("wio-preview-audio-start"));
+
+        audio.play().catch(() => {
+          window.dispatchEvent(new CustomEvent("wio-preview-audio-stop"));
+        });
+
         previewAudioRef.current = audio;
         setPreviewingId(song.id);
       }
     },
-    [previewingId]
+    [previewingId, selectedAudio]
   );
 
   useEffect(() => {
+    const handleCanvasAudioStatus = (e: Event) => {
+      const customEvent = e as CustomEvent;
+      const isCanvasPlaying = customEvent.detail?.isPlaying;
+
+      if (selectedAudio) {
+        if (isCanvasPlaying) {
+          setPreviewingId(selectedAudio.id);
+        } else {
+          setPreviewingId((prev) => (prev === selectedAudio.id ? null : prev));
+        }
+      }
+    };
+
+    window.addEventListener("wio-canvas-audio-status", handleCanvasAudioStatus);
     return () => {
-      previewAudioRef.current?.pause();
+      window.removeEventListener("wio-canvas-audio-status", handleCanvasAudioStatus);
+    };
+  }, [selectedAudio]);
+
+  useEffect(() => {
+    return () => {
+      if (previewAudioRef.current) {
+        previewAudioRef.current.pause();
+        window.dispatchEvent(new CustomEvent("wio-preview-audio-stop"));
+      }
     };
   }, []);
 
   const fetchLibrary = useCallback(() => {
     setLibLoading(true);
+    setUserLibLoading(true);
+
     musicBackgroundService
-      .getMusics()
+      .getMusics({ where: { type: "admin" } })
       .then((res: any) => {
         const items = Array.isArray(res?.data) ? res.data : Array.isArray(res) ? res : [];
         const mapped = items.map((item: any) => ({
@@ -125,6 +188,7 @@ export default function MusicPanelContent({
           duration: item.duration || "3:00",
           source: "admin" as const,
           status: item.status || "",
+          youtubeUrl: item.youtubeUrl || "",
         }));
         setLibrary(mapped);
       })
@@ -132,6 +196,53 @@ export default function MusicPanelContent({
         setLibrary([]);
       })
       .finally(() => setLibLoading(false));
+
+    musicBackgroundService
+      .getMusics({ where: { type: "user" } })
+      .then((res: any) => {
+        const items = Array.isArray(res?.data) ? res.data : Array.isArray(res) ? res : [];
+        const mapped = items.map((item: any) => ({
+          id: item.id || item._id,
+          name: item.name || "Unknown",
+          url: item.audioUrl || item.fileUrl || "",
+          duration: item.duration || "3:00",
+          source: "user" as const,
+          status: item.status || "",
+          youtubeUrl: item.youtubeUrl || "",
+        }));
+        setUserLibrary(mapped);
+
+        setYoutubeImports((prev) => {
+          let changed = false;
+          const updated = prev.filter((imp) => {
+            const found = mapped.find(
+              (m: any) =>
+                m.youtubeUrl &&
+                (m.youtubeUrl.trim() === imp.youtubeUrl.trim() ||
+                  m.youtubeUrl.includes(imp.youtubeUrl) ||
+                  imp.youtubeUrl.includes(m.youtubeUrl))
+            );
+            if (found) {
+              changed = true;
+              return false; 
+            }
+            if (imp.status === "PROCESSING" && Date.now() - imp.createdAt > 600000) {
+              imp.status = "FAILED";
+              changed = true;
+            }
+            return true;
+          });
+          if (changed) {
+            localStorage.setItem("wio_youtube_imports", JSON.stringify(updated));
+            return [...updated];
+          }
+          return prev;
+        });
+      })
+      .catch(() => {
+        setUserLibrary([]);
+      })
+      .finally(() => setUserLibLoading(false));
   }, []);
 
   useEffect(() => {
@@ -139,40 +250,25 @@ export default function MusicPanelContent({
   }, [fetchLibrary]);
 
   useEffect(() => {
-    const hasProcessing = library.some(
-      (s) => s.status === "PROCESSING" || s.status === "PENDING",
-    );
-    if (!hasProcessing && !youtubeImportPending) return;
+    const hasProcessing = youtubeImports.some((s) => s.status === "PROCESSING");
+    if (!hasProcessing) return;
 
-    let elapsed = 0;
     const interval = setInterval(() => {
       fetchLibrary();
-      elapsed += 3000;
-      if (youtubeImportPending && elapsed >= 60000) {
-        setYoutubeImportPending(false);
-      }
-    }, 3000);
+    }, 8000);
 
     return () => clearInterval(interval);
-  }, [library, fetchLibrary, youtubeImportPending]);
+  }, [youtubeImports, fetchLibrary]);
 
   useEffect(() => {
     try {
-      const saved = localStorage.getItem("my_audios");
-      if (saved) setUploadedAudios(JSON.parse(saved));
+      const savedImports = localStorage.getItem("wio_youtube_imports");
+      if (savedImports) setYoutubeImports(JSON.parse(savedImports));
     } catch {
-      // ignore parse error
+      //! ignore parse error
     }
   }, []);
 
-  const persistAudios = useCallback((list: UploadedAudio[]) => {
-    setUploadedAudios(list);
-    try {
-      localStorage.setItem("my_audios", JSON.stringify(list));
-    } catch {
-      // ignore storage error
-    }
-  }, []);
 
   const filteredLibrary = library.filter((s) =>
     s.name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -181,12 +277,19 @@ export default function MusicPanelContent({
   const handleUseSong = useCallback(
     (song: AudioItem) => {
       previewAudioRef.current?.pause();
+      window.dispatchEvent(new CustomEvent("wio-preview-audio-stop"));
       setPreviewingId(null);
       if (selectedAudio?.id === song.id) {
         onSelectAudio(null);
         onUpdateWidgetConfig("music", false);
       } else {
         onSelectAudio(song);
+        onUpdateWidgetConfig("music", true, {
+          audioEnabled: true,
+          audioUrl: song.url,
+          songTitle: song.name,
+          audioSource: song.source,
+        });
         showToast({
           title: "Đã chọn bài hát",
           message: `Đang sử dụng: ${song.name}`,
@@ -216,28 +319,31 @@ export default function MusicPanelContent({
       }
       setUploadLoading(true);
       try {
-        const formData = new FormData();
-        formData.append("file", file);
         const res = await uploadService.uploadAudio(file);
         const url = res?.fileUrl;
         if (url) {
-          const newItem: UploadedAudio = {
-            id: `user-${Date.now()}`,
-            name: file.name.replace(/\.[^/.]+$/, ""),
-            url,
-          };
-          persistAudios([newItem, ...uploadedAudios]);
+          const name = file.name.replace(/\.[^/.]+$/, "");
+
+          const savedSong = await musicBackgroundService.createUserMusic({
+            name,
+            audioUrl: url,
+            author: "Nhạc tải lên",
+            duration: "—"
+          });
+
+          fetchLibrary();
 
           const audioItem: AudioItem = {
-            id: newItem.id,
-            name: newItem.name,
-            url: newItem.url,
-            duration: "",
+            id: savedSong.id,
+            name: savedSong.name,
+            url: savedSong.audioUrl,
+            duration: savedSong.duration || "—",
             source: "user",
           };
+
           handleUseSong(audioItem);
         }
-      } catch {
+      } catch (err) {
         showToast({
           title: "Lỗi",
           message: "Không thể tải audio lên",
@@ -248,7 +354,7 @@ export default function MusicPanelContent({
         setUploadLoading(false);
       }
     },
-    [uploadedAudios, persistAudios, handleUseSong, showToast]
+    [handleUseSong, fetchLibrary, showToast]
   );
 
   const handleFilePick = useCallback(
@@ -274,38 +380,94 @@ export default function MusicPanelContent({
     e.preventDefault();
   }, []);
 
-  const handleImportYoutube = useCallback(async () => {
+  const handleFetchYoutubeInfo = useCallback(async () => {
     if (!youtubeUrl.trim()) return;
+    setPreviewLoading(true);
+    setYoutubePreview(null);
+    try {
+      const info = await musicBackgroundService.getYoutubeInfo(youtubeUrl);
+      if (info) {
+        setYoutubePreview({
+          title: info.title || "YouTube Video",
+          author: info.author || "Unknown Uploader",
+          duration: info.duration || info.durationText || "3:00",
+          thumbnailUrl: info.thumbnailUrl || info.thumbnail || "",
+        });
+      }
+    } catch (err: any) {
+      showToast({
+        title: "Lỗi",
+        message: err.response?.data?.message || "Không thể lấy thông tin video",
+        type: "error",
+        timeout: 3000,
+      });
+    } finally {
+      setPreviewLoading(false);
+    }
+  }, [youtubeUrl, showToast]);
+
+  const handleImportYoutube = useCallback(async () => {
+    if (!youtubeUrl.trim() || !youtubePreview) return;
     setYoutubeImportLoading(true);
     try {
       await musicBackgroundService.importYoutube(youtubeUrl);
       showToast({
-        title: "Đã thêm",
-        message: "Nhạc đang được tải từ YouTube, vui lòng chờ...",
+        title: "Đã gửi yêu cầu",
+        message: "Hệ thống đang tải nhạc từ YouTube, vui lòng chờ...",
         type: "success",
         timeout: 3000,
       });
+
+      const newImport = {
+        id: `yt-import-${Date.now()}`,
+        name: youtubePreview.title,
+        youtubeUrl: youtubeUrl.trim(),
+        status: "PROCESSING" as const,
+        createdAt: Date.now(),
+      };
+
+      const nextImports = [newImport, ...youtubeImports];
+      setYoutubeImports(nextImports);
+      localStorage.setItem("wio_youtube_imports", JSON.stringify(nextImports));
+
       setYoutubeUrl("");
-      setYoutubeImportPending(true);
+      setYoutubePreview(null);
       fetchLibrary();
-    } catch {
+    } catch (err: any) {
       showToast({
         title: "Lỗi",
-        message: "Không thể nhập nhạc từ YouTube",
+        message: err.response?.data?.message || "Không thể yêu cầu nhập nhạc từ YouTube",
         type: "error",
         timeout: 3000,
       });
     } finally {
       setYoutubeImportLoading(false);
     }
-  }, [youtubeUrl, showToast, fetchLibrary]);
+  }, [youtubeUrl, youtubePreview, youtubeImports, fetchLibrary, showToast]);
 
-  const handleRemoveUploaded = useCallback(
-    (id: string) => {
-      persistAudios(uploadedAudios.filter((a) => a.id !== id));
-    },
-    [uploadedAudios, persistAudios]
-  );
+  const handleCancelImport = useCallback(async (url: string, id: string) => {
+    try {
+      await musicBackgroundService.cancelImport(url);
+
+      const next = youtubeImports.filter((x) => x.id !== id);
+      setYoutubeImports(next);
+      localStorage.setItem("wio_youtube_imports", JSON.stringify(next));
+
+      showToast({
+        title: "Đã hủy",
+        message: "Đã hủy tải bài hát từ YouTube",
+        type: "success",
+        timeout: 3000,
+      });
+    } catch (err: any) {
+      showToast({
+        title: "Lỗi",
+        message: err.response?.data?.message || "Không thể hủy tải bài hát",
+        type: "error",
+        timeout: 3000,
+      });
+    }
+  }, [youtubeImports, showToast]);
 
   const handleIconChange = useCallback(
     (id: string) => {
@@ -329,14 +491,19 @@ export default function MusicPanelContent({
 
   return (
     <div className="w-full font-sans text-zinc-100 space-y-4 pb-6">
+      <style>{`
+        @keyframes wio-marquee {
+          0% { transform: translate3d(0, 0, 0); }
+          100% { transform: translate3d(-100%, 0, 0); }
+        }
+      `}</style>
       <div className="flex border-b border-zinc-800">
         <button
           onClick={() => setActiveTab("library")}
-          className={`flex-1 text-center pb-2.5 text-sm font-medium transition-colors relative ${
-            activeTab === "library"
-              ? "text-amber-400 font-semibold"
-              : "text-zinc-400 hover:text-zinc-200"
-          }`}
+          className={`flex-1 text-center pb-2.5 text-sm font-medium transition-colors relative ${activeTab === "library"
+            ? "text-amber-400 font-semibold"
+            : "text-zinc-400 hover:text-zinc-200"
+            }`}
         >
           Thư viện nhạc
           {activeTab === "library" && (
@@ -345,11 +512,10 @@ export default function MusicPanelContent({
         </button>
         <button
           onClick={() => setActiveTab("my-music")}
-          className={`flex-1 text-center pb-2.5 text-sm font-medium transition-colors relative ${
-            activeTab === "my-music"
-              ? "text-amber-400 font-semibold"
-              : "text-zinc-400 hover:text-zinc-200"
-          }`}
+          className={`flex-1 text-center pb-2.5 text-sm font-medium transition-colors relative ${activeTab === "my-music"
+            ? "text-amber-400 font-semibold"
+            : "text-zinc-400 hover:text-zinc-200"
+            }`}
         >
           Nhạc của tôi
           {activeTab === "my-music" && (
@@ -361,11 +527,25 @@ export default function MusicPanelContent({
       <div className="bg-zinc-900/40 border border-zinc-800 rounded-2xl p-4 text-center">
         <p className="text-xs text-zinc-500 uppercase tracking-wider mb-1">Nhạc hiện tại</p>
         {selectedAudio ? (
-          <div className="flex items-center justify-center gap-2">
+          <div className="flex items-center justify-center gap-2 overflow-hidden w-full max-w-64 mx-auto">
             <Disc size={14} className="animate-spin text-amber-500 shrink-0" />
-            <span className="text-sm text-amber-400 font-medium truncate max-w-50">
-              {selectedAudio.name}
-            </span>
+            {selectedAudio.name.length > 18 ? (
+              <div className="w-36 overflow-hidden relative flex-1 text-left">
+                <div
+                  className="inline-block whitespace-nowrap text-sm text-amber-400 font-medium"
+                  style={{
+                    animation: "wio-marquee 8s linear infinite",
+                    paddingLeft: "100%",
+                  }}
+                >
+                  {selectedAudio.name}
+                </div>
+              </div>
+            ) : (
+              <span className="text-sm text-amber-400 font-medium truncate max-w-40 flex-1">
+                {selectedAudio.name}
+              </span>
+            )}
             <button
               onClick={handleRemoveMusic}
               className="text-zinc-600 hover:text-red-400 transition-colors shrink-0"
@@ -404,7 +584,7 @@ export default function MusicPanelContent({
               filteredLibrary.map((song) => (
                 <div
                   key={song.id}
-                  className="flex items-center justify-between py-2.5 px-3 hover:bg-zinc-900/50 transition-colors group"
+                  className="flex flex-col items-stretch gap-2 py-2.5 px-3 hover:bg-zinc-900/50 transition-colors group"
                 >
                   <div className="flex items-center gap-3 min-w-0">
                     <button
@@ -420,23 +600,47 @@ export default function MusicPanelContent({
                         <Play size={12} fill="currentColor" className="ml-0.5" />
                       )}
                     </button>
-                    <div className="min-w-0">
-                      <p className="text-xs font-medium text-zinc-200 truncate">{song.name}</p>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-1.5 justify-between">
+                        {song.name.length > 22 ? (
+                          <div className="w-36 overflow-hidden relative">
+                            <div 
+                              className="inline-block whitespace-nowrap text-xs font-medium text-zinc-200"
+                              style={{
+                                animation: "wio-marquee 8s linear infinite",
+                                paddingLeft: "100%",
+                              }}
+                            >
+                              {song.name}
+                            </div>
+                          </div>
+                        ) : (
+                          <p className="text-xs font-medium text-zinc-200 truncate max-w-36">{song.name}</p>
+                        )}
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setTrimmingSong(song);
+                          }}
+                          className="text-zinc-500 hover:text-amber-400 transition-colors p-1 shrink-0"
+                          title="Cắt nhạc"
+                        >
+                          <Scissors size={12} />
+                        </button>
+                      </div>
                       {song.duration && (
                         <p className="text-[10px] text-zinc-500 mt-0.5">{song.duration}</p>
                       )}
                     </div>
                   </div>
-                  <button
+                  <Button
                     onClick={() => handleUseSong(song)}
-                    className={`text-xs font-medium px-3 py-1.5 rounded-lg border transition-all ${
-                      selectedAudio?.id === song.id
-                        ? "bg-amber-500/10 text-amber-400 border-amber-500/40"
-                        : "bg-zinc-900 text-zinc-300 border-zinc-800 hover:border-zinc-600 hover:text-white"
-                    }`}
+                    variant="secondary"
+                    buttonSize="sm"
+                    className="py-1! px-3! h-8! w-full! text-xs font-medium z-10 relative"
                   >
                     {selectedAudio?.id === song.id ? "Đang dùng" : "Sử dụng"}
-                  </button>
+                  </Button>
                 </div>
               ))
             )}
@@ -478,69 +682,206 @@ export default function MusicPanelContent({
             />
           </div>
 
-          <div className="flex items-center gap-2">
-            <div className="relative flex-1">
-              <Link2 size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" />
-              <input
-                type="text"
-                value={youtubeUrl}
-                onChange={(e) => setYoutubeUrl(e.target.value)}
-                placeholder="Dán link YouTube..."
-                className="w-full bg-zinc-900 border border-zinc-800 rounded-xl pl-9 pr-3 py-2 text-sm text-zinc-200 placeholder-zinc-500 outline-hidden focus:border-zinc-700"
-              />
+          <div className="space-y-3">
+            <div className="flex items-center gap-2">
+              <div className="relative flex-1">
+                <Link2 size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" />
+                <input
+                  type="text"
+                  value={youtubeUrl}
+                  onChange={(e) => setYoutubeUrl(e.target.value)}
+                  placeholder="Dán link YouTube..."
+                  className="w-full bg-zinc-900 border border-zinc-800 rounded-xl pl-9 pr-3 py-2 text-sm text-zinc-200 placeholder-zinc-500 outline-hidden focus:border-zinc-700"
+                />
+              </div>
+              <button
+                onClick={handleFetchYoutubeInfo}
+                disabled={previewLoading || !youtubeUrl.trim()}
+                className="px-3 py-2 bg-amber-500/20 text-amber-400 text-xs font-medium rounded-xl border border-amber-800/40 hover:bg-amber-500/30 transition-colors whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {previewLoading ? (
+                  <Loader2 size={14} className="animate-spin" />
+                ) : (
+                  "Xem trước"
+                )}
+              </button>
             </div>
-            <button
-              onClick={handleImportYoutube}
-              disabled={youtubeImportLoading}
-              className="px-3 py-2 bg-red-600/20 text-red-400 text-xs font-medium rounded-xl border border-red-800/40 hover:bg-red-600/30 transition-colors whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {youtubeImportLoading ? (
-                <Loader2 size={14} className="animate-spin" />
-              ) : (
-                "Import"
-              )}
-            </button>
+
+            {youtubePreview && (
+              <div className="bg-zinc-900/80 border border-zinc-800 rounded-xl p-3 space-y-3">
+                <div className="flex gap-3">
+                  {youtubePreview.thumbnailUrl && (
+                    <img
+                      src={youtubePreview.thumbnailUrl}
+                      alt={youtubePreview.title}
+                      className="w-20 aspect-video object-cover rounded-lg bg-zinc-950 shrink-0 border border-zinc-800"
+                    />
+                  )}
+                  <div className="min-w-0 flex-1 flex flex-col justify-between py-0.5">
+                    <div>
+                      <p className="text-xs font-semibold text-zinc-200 line-clamp-1">
+                        {youtubePreview.title}
+                      </p>
+                      <p className="text-[10px] text-zinc-400 mt-1 truncate">
+                        {youtubePreview.author}
+                      </p>
+                    </div>
+                    <p className="text-[10px] text-amber-400 font-mono">
+                      Thời lượng: {youtubePreview.duration}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex gap-2">
+                  <button
+                    onClick={handleImportYoutube}
+                    disabled={youtubeImportLoading}
+                    className="flex-1 py-1.5 bg-emerald-600/20 hover:bg-emerald-600/30 border border-emerald-800/40 text-emerald-400 text-xs font-medium rounded-lg transition-colors flex items-center justify-center gap-1.5 disabled:opacity-50"
+                  >
+                    {youtubeImportLoading ? (
+                      <Loader2 size={12} className="animate-spin" />
+                    ) : (
+                      "Xác nhận Import"
+                    )}
+                  </button>
+                  <button
+                    onClick={() => setYoutubePreview(null)}
+                    disabled={youtubeImportLoading}
+                    className="px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs font-medium rounded-lg transition-colors disabled:opacity-50"
+                  >
+                    Hủy
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
 
-          {uploadedAudios.length > 0 && (
-            <div className="space-y-1">
-              <p className="text-[10px] text-zinc-500 uppercase tracking-wider">Đã tải lên</p>
-              <div className="max-h-50 overflow-y-auto space-y-1 custom-scrollbar">
-                {uploadedAudios.map((item) => (
+          {youtubeImports.length > 0 && (
+            <div className="space-y-1.5 pt-2 border-t border-zinc-800/60">
+              <p className="text-[10px] text-zinc-500 uppercase tracking-wider">Đang xử lý từ YouTube</p>
+              <div className="space-y-1">
+                {youtubeImports.map((imp) => (
                   <div
-                    key={item.id}
-                    className="flex items-center justify-between py-2 px-3 rounded-lg bg-zinc-900/40 border border-zinc-800/60 group"
+                    key={imp.id}
+                    className="flex items-center justify-between py-2 px-3 rounded-lg bg-zinc-900/30 border border-zinc-800/40"
                   >
-                    <div className="flex items-center gap-2 min-w-0">
-                      <Music size={14} className="text-zinc-500 shrink-0" />
-                      <span className="text-xs text-zinc-300 truncate">{item.name}</span>
+                    <div className="min-w-0 flex-1 pr-3">
+                      <p className="text-xs text-zinc-300 truncate">{imp.name}</p>
+                      <p className="text-[9px] text-zinc-500 mt-0.5 truncate">{imp.youtubeUrl}</p>
                     </div>
-                    <div className="flex items-center gap-1.5">
-                      <button
-                        onClick={() =>
-                          handleUseSong({
-                            id: item.id,
-                            name: item.name,
-                            url: item.url,
-                            duration: "",
-                            source: "user",
-                          })
-                        }
-                        className={`text-xs px-2.5 py-1 rounded-lg border transition-all ${
-                          selectedAudio?.id === item.id
-                            ? "bg-amber-500/10 text-amber-400 border-amber-500/40"
-                            : "bg-zinc-800 text-zinc-400 border-zinc-700 hover:border-zinc-600"
-                        }`}
-                      >
-                        {selectedAudio?.id === item.id ? <Pause size={14} /> : <Play size={14} />}
-                      </button>
-                      <button
-                        onClick={() => handleRemoveUploaded(item.id)}
-                        className="p-1 text-red-400 hover:text-red-700 group-hover:opacity-100 transition-all"
-                      >
-                        <Trash2 size={12} />
-                      </button>
+                    <div className="shrink-0 flex items-center gap-2">
+                      {imp.status === "PROCESSING" ? (
+                        <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-1 text-[10px] text-amber-500">
+                            <Loader2 size={12} className="animate-spin" />
+                            <span>Đang tải...</span>
+                          </div>
+                          <button
+                            onClick={() => handleCancelImport(imp.youtubeUrl, imp.id)}
+                            className="p-1 hover:bg-zinc-800 text-zinc-400 hover:text-red-400 rounded transition-colors"
+                            title="Hủy tải lên"
+                          >
+                            <X size={12} />
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-[10px] text-red-400">Lỗi</span>
+                          <button
+                            onClick={() => {
+                              setYoutubeUrl(imp.youtubeUrl);
+                              setTimeout(() => {
+                                handleFetchYoutubeInfo();
+                              }, 100);
+                              const next = youtubeImports.filter((x) => x.id !== imp.id);
+                              setYoutubeImports(next);
+                              localStorage.setItem("wio_youtube_imports", JSON.stringify(next));
+                            }}
+                            className="text-[10px] px-2 py-0.5 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 rounded text-zinc-300 transition-colors"
+                          >
+                            Thử lại
+                          </button>
+                        </div>
+                      )}
                     </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {userLibLoading ? (
+            <div className="flex items-center justify-center py-12">
+              <Loader2 size={24} className="text-amber-400 animate-spin" />
+            </div>
+          ) : userLibrary.length === 0 ? (
+            <div className="text-center py-8 text-xs text-zinc-600">
+              Chưa có nhạc cá nhân nào được tải lên
+            </div>
+          ) : (
+            <div className="space-y-1">
+              <p className="text-[10px] text-zinc-500 uppercase tracking-wider">Nhạc cá nhân của bạn</p>
+              <div className="max-h-60 overflow-y-auto border border-zinc-900 bg-zinc-900/10 rounded-xl divide-y divide-zinc-800/60 custom-scrollbar">
+                {userLibrary.map((song) => (
+                  <div
+                    key={song.id}
+                    className="flex flex-col items-stretch gap-2 py-2.5 px-3 hover:bg-zinc-900/50 transition-colors group"
+                  >
+                    <div className="flex items-center gap-3 min-w-0">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handlePreview(song);
+                        }}
+                        className="w-7 h-7 rounded-full bg-zinc-900 flex items-center justify-center text-amber-400 group-hover:bg-amber-500 group-hover:text-white transition-all shrink-0"
+                      >
+                        {previewingId === song.id ? (
+                          <Pause size={12} fill="currentColor" />
+                        ) : (
+                          <Play size={12} fill="currentColor" className="ml-0.5" />
+                        )}
+                      </button>
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center gap-1.5 justify-between">
+                          {song.name.length > 22 ? (
+                            <div className="w-36 overflow-hidden relative">
+                              <div 
+                                className="inline-block whitespace-nowrap text-xs font-medium text-zinc-200"
+                                style={{
+                                  animation: "wio-marquee 8s linear infinite",
+                                  paddingLeft: "100%",
+                                }}
+                              >
+                                {song.name}
+                              </div>
+                            </div>
+                          ) : (
+                            <p className="text-xs font-medium text-zinc-200 truncate max-w-36">{song.name}</p>
+                          )}
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setTrimmingSong(song);
+                            }}
+                            className="text-zinc-500 hover:text-amber-400 transition-colors p-1 shrink-0"
+                            title="Cắt nhạc"
+                          >
+                            <Scissors size={12} />
+                          </button>
+                        </div>
+                        {song.duration && (
+                          <p className="text-[10px] text-zinc-500 mt-0.5">{song.duration}</p>
+                        )}
+                      </div>
+                    </div>
+                    <Button
+                      onClick={() => handleUseSong(song)}
+                      variant="secondary"
+                      buttonSize="sm"
+                      className="py-1! px-3! h-8! w-full! text-xs font-medium z-10 relative"
+                    >
+                      {selectedAudio?.id === song.id ? "Đang dùng" : "Sử dụng"}
+                    </Button>
                   </div>
                 ))}
               </div>
@@ -561,11 +902,10 @@ export default function MusicPanelContent({
                 <button
                   key={ic.id}
                   onClick={() => handleIconChange(ic.id)}
-                  className={`aspect-square rounded-lg flex items-center justify-center border transition-all ${
-                    iconId === ic.id
-                      ? "border-amber-400 bg-amber-500/10 text-amber-400 ring-1 ring-amber-400/30"
-                      : "border-zinc-800 bg-zinc-900 text-zinc-400 hover:border-zinc-700"
-                  }`}
+                  className={`aspect-square rounded-lg flex items-center justify-center border transition-all ${iconId === ic.id
+                    ? "border-amber-400 bg-amber-500/10 text-amber-400 ring-1 ring-amber-400/30"
+                    : "border-zinc-800 bg-zinc-900 text-zinc-400 hover:border-zinc-700"
+                    }`}
                 >
                   <LucidIcon size={18} />
                 </button>
@@ -581,6 +921,16 @@ export default function MusicPanelContent({
           <ColorPickerRow value={iconColor} onChange={handleColorChange} />
         </div>
       </div>
+
+      {trimmingSong && (
+        <AudioTrimmerModal
+          song={trimmingSong}
+          onClose={() => setTrimmingSong(null)}
+          onSuccess={() => {
+            fetchLibrary();
+          }}
+        />
+      )}
     </div>
   );
 }

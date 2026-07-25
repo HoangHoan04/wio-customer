@@ -16,14 +16,12 @@ export const HeroImages = ({
 
   return (
     <div className="relative w-full min-h-[90vh] sm:min-h-screen flex flex-col items-center justify-center select-none overflow-hidden py-16 px-6">
-      {/* Background Image */}
       <img
         src={mainImageSrc}
         alt="Couple Main"
         className="absolute inset-0 w-full h-full object-cover z-0 pointer-events-none"
       />
       
-      {/* Premium Dark Gradient Overlay */}
       <div 
         className="absolute inset-0 z-10 pointer-events-none"
         style={{
@@ -31,7 +29,6 @@ export const HeroImages = ({
         }}
       />
 
-      {/* Decorative Dragons/Phoenixes on overlay corners */}
       <img
         src={dragon.src}
         alt=""
@@ -55,9 +52,7 @@ export const HeroImages = ({
         }}
       />
 
-      {/* Center Content Overlay */}
       <div className="relative z-20 flex flex-col items-center justify-center max-w-lg w-full text-center px-4 mt-auto mb-10">
-        {/* Chinese Happiness Icon */}
         <img
           src={chineseHappinessBig.src}
           alt="Chữ Hỷ"
@@ -65,7 +60,6 @@ export const HeroImages = ({
           style={{ animationDuration: "3s" }}
         />
 
-        {/* Title */}
         <p
           className="text-xs uppercase tracking-[0.25em] mb-4 text-[#dfd0a3]/90 font-semibold"
           style={{
@@ -76,7 +70,6 @@ export const HeroImages = ({
           LỄ THÀNH HÔN
         </p>
 
-        {/* Groom & Bride Names Overlay */}
         <div className="flex flex-col items-center gap-1 w-full">
           <h1
             className="text-4xl sm:text-5xl md:text-6xl font-normal leading-tight text-[#f3e5ab] px-2"
@@ -89,7 +82,7 @@ export const HeroImages = ({
           </h1>
 
           <div className="my-2 flex items-center justify-center gap-4">
-            <span className="w-12 h-[1px]" style={{ background: "linear-gradient(to left, #d4af37, transparent)" }} />
+            <span className="w-12 h-px" style={{ background: "linear-gradient(to left, #d4af37, transparent)" }} />
             <span
               className="text-2xl text-[#f3e5ab]"
               style={{
@@ -99,7 +92,7 @@ export const HeroImages = ({
             >
               &amp;
             </span>
-            <span className="w-12 h-[1px]" style={{ background: "linear-gradient(to right, #d4af37, transparent)" }} />
+            <span className="w-12 h-px" style={{ background: "linear-gradient(to right, #d4af37, transparent)" }} />
           </div>
 
           <h1

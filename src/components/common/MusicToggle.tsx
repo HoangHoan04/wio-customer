@@ -17,6 +17,7 @@ const MusicToggle = ({
   const [isLoaded, setIsLoaded] = useState(false);
   const [currentVolume, setCurrentVolume] = useState(initialVolume);
   const [showVolumeSlider, setShowVolumeSlider] = useState(false);
+  const [isPausedByPreview, setIsPausedByPreview] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const sliderTimeoutRef = useRef<number | null>(null);
 
@@ -37,18 +38,66 @@ const MusicToggle = ({
     const attemptAutoplay = async () => {
       try {
         await audio.play();
-      } catch { /* autoplay rejected by browser policy */ }
+      } catch {
+        //! autoplay rejected by browser policy
+      }
     };
     attemptAutoplay();
+
+    const handlePreviewStart = () => {
+      if (audio && !audio.paused) {
+        audio.pause();
+        setIsPausedByPreview(true);
+      }
+    };
+
+    const handlePreviewStop = () => {
+      if (audio && audio.paused) {
+        setIsPausedByPreview((prev) => {
+          if (prev) {
+            audio.play().catch(() => {});
+          }
+          return false;
+        });
+      }
+    };
+
+    window.addEventListener("wio-preview-audio-start", handlePreviewStart);
+    window.addEventListener("wio-preview-audio-stop", handlePreviewStop);
+
+    const handleExternalToggle = () => {
+      if (audio) {
+        if (!audio.paused) {
+          audio.pause();
+        } else {
+          audio.play().catch(() => {});
+        }
+      }
+    };
+    window.addEventListener("wio-toggle-canvas-audio", handleExternalToggle);
 
     return () => {
       audio.pause();
       audio.removeEventListener("canplaythrough", handleCanPlay);
       audio.removeEventListener("play", handlePlay);
       audio.removeEventListener("pause", handlePause);
+      window.removeEventListener("wio-preview-audio-start", handlePreviewStart);
+      window.removeEventListener("wio-preview-audio-stop", handlePreviewStop);
+      window.removeEventListener(
+        "wio-toggle-canvas-audio",
+        handleExternalToggle,
+      );
       audio.src = "";
     };
   }, [audioSrc, initialVolume]);
+
+  useEffect(() => {
+    window.dispatchEvent(
+      new CustomEvent("wio-canvas-audio-status", {
+        detail: { isPlaying },
+      }),
+    );
+  }, [isPlaying]);
 
   useEffect(() => {
     if (audioRef.current) {

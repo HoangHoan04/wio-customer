@@ -8,6 +8,7 @@ import { useEffect, useRef, useState } from "react";
 import { Button } from "../ui/button";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { useToast } from "@/hooks/useToast";
+import { useModalStore } from "@/stores/useModalStore";
 
 interface TemplateDetailModalProps {
   isOpen: boolean;
@@ -51,7 +52,9 @@ export default function TemplateDetailModal({
           } else {
             win.scrollBy(0, SCROLL_SPEED);
           }
-        } catch { /* cross-origin iframe, silently ignore */ }
+        } catch {
+          //! cross-origin iframe, silently ignore */
+        }
       }, 25);
     } else {
       stopAutoScroll();
@@ -69,22 +72,25 @@ export default function TemplateDetailModal({
 
   const { user, isAuthenticated } = useAuthStore();
   const { showToast } = useToast();
+  const { openModal } = useModalStore();
 
   if (!template) return null;
 
   const handleCreate = () => {
+    if (!isAuthenticated) {
+      showToast({
+        message: "Vui lòng đăng nhập để tạo thiệp",
+        type: "error",
+      });
+      openModal("login");
+      return;
+    }
+
     if (template.isPremium) {
-      if (!isAuthenticated) {
-        showToast({
-          message: "Vui lòng đăng nhập để tạo thiệp Premium",
-          type: "error",
-        });
-        router.push("/login");
-        return;
-      }
       if (!user?.activeSubscription) {
         showToast({
-          message: "Giao diện này thuộc gói Premium. Vui lòng đăng ký gói dịch vụ để sử dụng.",
+          message:
+            "Giao diện này thuộc gói Premium. Vui lòng đăng ký gói dịch vụ để sử dụng.",
           type: "error",
         });
         return;
@@ -103,9 +109,9 @@ export default function TemplateDetailModal({
     ? template.features
     : typeof template.features === "string"
       ? template.features
-        .split(/\r?\n/)
-        .map((s) => s.trim())
-        .filter(Boolean)
+          .split(/\r?\n/)
+          .map((s) => s.trim())
+          .filter(Boolean)
       : Array.isArray(template.features?.list)
         ? template.features.list
         : [];
@@ -130,13 +136,15 @@ export default function TemplateDetailModal({
             <img
               src={template.thumbnailUrl}
               alt={template.name}
-              className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${isHovered ? "opacity-0" : "opacity-100"
-                }`}
+              className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${
+                isHovered ? "opacity-0" : "opacity-100"
+              }`}
             />
 
             <div
-              className={`absolute inset-0 transition-opacity duration-500 ${isHovered ? "opacity-100" : "opacity-0"
-                }`}
+              className={`absolute inset-0 transition-opacity duration-500 ${
+                isHovered ? "opacity-100" : "opacity-0"
+              }`}
             >
               <iframe
                 ref={iframeRef}
@@ -156,8 +164,9 @@ export default function TemplateDetailModal({
             </div>
 
             <div
-              className={`absolute bottom-0 left-0 right-0 h-14 bg-linear-to-t from-black/60 to-transparent flex items-end justify-center pb-2.5 transition-opacity duration-300 ${isHovered ? "opacity-0" : "opacity-100"
-                }`}
+              className={`absolute bottom-0 left-0 right-0 h-14 bg-linear-to-t from-black/60 to-transparent flex items-end justify-center pb-2.5 transition-opacity duration-300 ${
+                isHovered ? "opacity-0" : "opacity-100"
+              }`}
             >
               <span className="text-white/65 text-[10px] font-medium tracking-wider flex items-center gap-1.5">
                 <Eye size={11} />
@@ -166,8 +175,9 @@ export default function TemplateDetailModal({
             </div>
 
             <div
-              className={`absolute bottom-0 left-0 right-0 h-10 bg-linear-to-t from-black/40 to-transparent flex items-end justify-center pb-2 transition-opacity duration-300 ${isHovered && iframeLoaded ? "opacity-100" : "opacity-0"
-                }`}
+              className={`absolute bottom-0 left-0 right-0 h-10 bg-linear-to-t from-black/40 to-transparent flex items-end justify-center pb-2 transition-opacity duration-300 ${
+                isHovered && iframeLoaded ? "opacity-100" : "opacity-0"
+              }`}
             >
               <span className="text-white/50 text-[9px] font-medium tracking-widest flex items-center gap-1 animate-pulse">
                 ▼ ĐANG CUỘN
