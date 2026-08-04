@@ -1,25 +1,41 @@
 "use client";
 
+import Modal from "@/components/ui/Modal";
 import { useToast } from "@/hooks/useToast";
+import { weddingService } from "@/services/wedding.service";
+import BottomToolbar from "@/templates/customer-design/BottomToolbar";
+import Canvas from "@/templates/customer-design/Canvas";
+import { useEditorHistory } from "@/templates/customer-design/hooks/useEditorHistory";
+import LeftToolbar from "@/templates/customer-design/LeftToolbar";
+import RightPanel from "@/templates/customer-design/RightPanel";
+import TopBar from "@/templates/customer-design/TopBar";
+import type {
+  EditorElement,
+  EditorTool,
+  WidgetConfig,
+  WidgetType,
+} from "@/templates/customer-design/types";
+import Button from "@/templates/customer-design/ui/button/Button";
+import Input from "@/templates/customer-design/ui/input/Input";
 import {
   createDefaultImage,
   createDefaultShape,
   createDefaultText,
 } from "@/templates/customer-design/utils/constants";
-import { useEditorHistory } from "@/templates/customer-design/hooks/useEditorHistory";
-import type { EditorElement, EditorTool, WidgetConfig, WidgetType } from "@/templates/customer-design/types";
-import BottomToolbar from "@/templates/customer-design/BottomToolbar";
-import Canvas from "@/templates/customer-design/Canvas";
-import LeftToolbar from "@/templates/customer-design/LeftToolbar";
-import RightPanel from "@/templates/customer-design/RightPanel";
-import TopBar from "@/templates/customer-design/TopBar";
-import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { weddingService } from "@/services/wedding.service";
-import Modal from "@/components/ui/Modal";
+import {
+  fitImageToCanvas,
+  loadImageSize,
+} from "@/templates/customer-design/utils/image-fit";
 import tokenCache from "@/utils/token-cache";
-import Input from "@/templates/customer-design/ui/input/Input";
-import Button from "@/templates/customer-design/ui/button/Button";
+import { useRouter, useSearchParams } from "next/navigation";
+import {
+  Suspense,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 
 const CANVAS_WIDTH = 440;
 const DEFAULT_CANVAS_HEIGHT = 956;
@@ -39,8 +55,12 @@ const slugify = (text: string) => {
 function DesignEditorContent() {
   const { showToast } = useToast();
   const [elements, setElements] = useState<EditorElement[]>([]);
-  const [selectedElementId, setSelectedElementId] = useState<string | null>(null);
-  const [selectedTool, setSelectedTool] = useState<EditorTool | null>("template");
+  const [selectedElementId, setSelectedElementId] = useState<string | null>(
+    null,
+  );
+  const [selectedTool, setSelectedTool] = useState<EditorTool | null>(
+    "template",
+  );
   const [canvasBackground, setCanvasBackground] = useState("#FDFBF7");
   const [backgroundOpacity, setBackgroundOpacity] = useState(1);
   const [zoom, setZoom] = useState(100);
@@ -53,7 +73,9 @@ function DesignEditorContent() {
     duration: string;
     source?: "admin" | "user";
   } | null>(null);
-  const [selectedCanvasImageUrl, setSelectedCanvasImageUrl] = useState<string | null>(null);
+  const [selectedCanvasImageUrl, setSelectedCanvasImageUrl] = useState<
+    string | null
+  >(null);
   const [showLeftBar, setShowLeftBar] = useState(true);
   const [showRightBar, setShowRightBar] = useState(true);
   const [showBottomBar, setShowBottomBar] = useState(true);
@@ -62,7 +84,9 @@ function DesignEditorContent() {
   const [gridSize, setGridSize] = useState<number>(40);
   const [projectName, setProjectName] = useState("Thiết kế của tôi");
 
-  const dragStartPositions = useRef<Record<string, { x: number; y: number }>>({});
+  const dragStartPositions = useRef<Record<string, { x: number; y: number }>>(
+    {},
+  );
 
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -78,7 +102,9 @@ function DesignEditorContent() {
 
   useEffect(() => {
     if (initForm.groomShortName || initForm.brideShortName) {
-      const suggested = slugify(initForm.groomShortName + "-" + initForm.brideShortName);
+      const suggested = slugify(
+        initForm.groomShortName + "-" + initForm.brideShortName,
+      );
       setInitForm((f) => ({ ...f, slug: suggested }));
     } else if (projectName && projectName !== "Thiết kế của tôi") {
       setInitForm((f) => ({ ...f, slug: slugify(projectName) }));
@@ -86,9 +112,8 @@ function DesignEditorContent() {
   }, [initForm.groomShortName, initForm.brideShortName, projectName]);
   const [saving, setSaving] = useState(false);
 
-  const { present, pushHistory, canUndo, canRedo, undo, redo, replacePresent } = useEditorHistory(
-    elements
-  );
+  const { present, pushHistory, canUndo, canRedo, undo, redo, replacePresent } =
+    useEditorHistory(elements);
 
   useEffect(() => {
     if (present !== elements) {
@@ -112,7 +137,8 @@ function DesignEditorContent() {
       }
       if (e.key === "Delete" || e.key === "Backspace") {
         const target = e.target as HTMLElement;
-        if (target.closest("input, textarea, select, [contenteditable]")) return;
+        if (target.closest("input, textarea, select, [contenteditable]"))
+          return;
         if (selectedElementId) {
           handleDeleteElement(selectedElementId);
         }
@@ -124,25 +150,27 @@ function DesignEditorContent() {
 
   const selectedElement = useMemo(
     () => elements.find((el) => el.id === selectedElementId) || null,
-    [elements, selectedElementId]
+    [elements, selectedElementId],
   );
 
   const updateElements = useCallback(
-    (updater: EditorElement[] | ((prev: EditorElement[]) => EditorElement[])) => {
+    (
+      updater: EditorElement[] | ((prev: EditorElement[]) => EditorElement[]),
+    ) => {
       const next = typeof updater === "function" ? updater(elements) : updater;
       setElements(next);
       pushHistory(next);
     },
-    [elements, pushHistory]
+    [elements, pushHistory],
   );
 
   const handleUpdateElement = useCallback(
     (id: string, updates: Partial<EditorElement>) => {
       updateElements((prev) =>
-        prev.map((el) => (el.id === id ? { ...el, ...updates } : el))
+        prev.map((el) => (el.id === id ? { ...el, ...updates } : el)),
       );
     },
-    [updateElements]
+    [updateElements],
   );
 
   const handleDeleteElement = useCallback(
@@ -150,15 +178,16 @@ function DesignEditorContent() {
       updateElements((prev) => prev.filter((el) => el.id !== id));
       if (selectedElementId === id) setSelectedElementId(null);
     },
-    [updateElements, selectedElementId]
+    [updateElements, selectedElementId],
   );
 
   const handleDeleteElements = useCallback(
     (ids: string[]) => {
       updateElements((prev) => prev.filter((el) => !ids.includes(el.id)));
-      if (selectedElementId && ids.includes(selectedElementId)) setSelectedElementId(null);
+      if (selectedElementId && ids.includes(selectedElementId))
+        setSelectedElementId(null);
     },
-    [updateElements, selectedElementId]
+    [updateElements, selectedElementId],
   );
 
   const handleAddText = useCallback(() => {
@@ -176,16 +205,19 @@ function DesignEditorContent() {
       const newEl = createDefaultShape(crypto.randomUUID(), type as any);
       updateElements((prev) => [
         ...prev,
-        { ...newEl, zIndex: Math.max(0, ...prev.map((e) => e.zIndex || 0)) + 1 },
+        {
+          ...newEl,
+          zIndex: Math.max(0, ...prev.map((e) => e.zIndex || 0)) + 1,
+        },
       ]);
       setSelectedElementId(newEl.id);
       setSelectedTool("shape");
     },
-    [updateElements]
+    [updateElements],
   );
 
   const handleAddImageToCanvas = useCallback(
-    (
+    async (
       url: string,
       settings?: {
         width?: number;
@@ -194,13 +226,26 @@ function DesignEditorContent() {
         borderRadius?: number;
         shadowBlur?: number;
         shadowColor?: string;
-      }
+      },
     ) => {
+      let width = settings?.width;
+      let height = settings?.height;
+
+      if (!width || !height) {
+        const natural = await loadImageSize(url);
+        ({ width, height } = fitImageToCanvas(
+          natural.width,
+          natural.height,
+          CANVAS_WIDTH,
+          canvasHeight,
+        ));
+      }
+
       const newEl = createDefaultImage(crypto.randomUUID(), url);
       const configured = {
         ...newEl,
-        ...(settings?.width && { width: settings.width }),
-        ...(settings?.height && { height: settings.height }),
+        width,
+        height,
         ...(settings?.opacity !== undefined && { opacity: settings.opacity }),
         ...(settings?.borderRadius !== undefined && {
           borderRadiusTopLeft: settings.borderRadius,
@@ -208,8 +253,12 @@ function DesignEditorContent() {
           borderRadiusBottomLeft: settings.borderRadius,
           borderRadiusBottomRight: settings.borderRadius,
         }),
-        ...(settings?.shadowBlur !== undefined && { shadowBlur: settings.shadowBlur }),
-        ...(settings?.shadowColor !== undefined && { shadowColor: settings.shadowColor }),
+        ...(settings?.shadowBlur !== undefined && {
+          shadowBlur: settings.shadowBlur,
+        }),
+        ...(settings?.shadowColor !== undefined && {
+          shadowColor: settings.shadowColor,
+        }),
         zIndex: Math.max(0, ...elements.map((e) => e.zIndex || 0)) + 1,
       };
       updateElements((prev) => [...prev, configured]);
@@ -217,7 +266,7 @@ function DesignEditorContent() {
       setSelectedCanvasImageUrl(url);
       setSelectedTool("uploads");
     },
-    [updateElements, elements]
+    [updateElements, elements, canvasHeight],
   );
 
   const handleDragMove = useCallback(
@@ -228,10 +277,15 @@ function DesignEditorContent() {
       const groupMembers = elements.filter((e) => e.groupId === el.groupId);
       if (!dragStartPositions.current[el.groupId]) {
         const startMap: Record<string, { x: number; y: number }> = {};
-        groupMembers.forEach((m) => { startMap[m.id] = { x: m.x, y: m.y }; });
+        groupMembers.forEach((m) => {
+          startMap[m.id] = { x: m.x, y: m.y };
+        });
         dragStartPositions.current[el.groupId] = { x: el.x, y: el.y };
         groupMembers.forEach((m) => {
-          dragStartPositions.current[`${el.groupId}:${m.id}`] = { x: m.x, y: m.y };
+          dragStartPositions.current[`${el.groupId}:${m.id}`] = {
+            x: m.x,
+            y: m.y,
+          };
         });
       }
 
@@ -244,13 +298,14 @@ function DesignEditorContent() {
       updateElements((prev) =>
         prev.map((e) => {
           if (e.groupId !== el.groupId || e.id === id) return e;
-          const memberStart = dragStartPositions.current[`${el.groupId}:${e.id}`];
+          const memberStart =
+            dragStartPositions.current[`${el.groupId}:${e.id}`];
           if (!memberStart) return e;
           return { ...e, x: memberStart.x + dx, y: memberStart.y + dy };
-        })
+        }),
       );
     },
-    [elements, updateElements]
+    [elements, updateElements],
   );
 
   const handleDragEnd = useCallback(
@@ -263,30 +318,54 @@ function DesignEditorContent() {
         delete dragStartPositions.current[el.groupId];
         elements
           .filter((e) => e.groupId === el.groupId)
-          .forEach((m) => delete dragStartPositions.current[`${el.groupId}:${m.id}`]);
+          .forEach(
+            (m) => delete dragStartPositions.current[`${el.groupId}:${m.id}`],
+          );
 
         updateElements((prev) =>
           prev.map((e) => {
             if (e.groupId !== el.groupId) return e;
-            if (e.id === id) return { ...e, x, y, frameAlignH: undefined, frameAlignV: undefined };
+            if (e.id === id)
+              return {
+                ...e,
+                x,
+                y,
+                frameAlignH: undefined,
+                frameAlignV: undefined,
+              };
             return { ...e, frameAlignH: undefined, frameAlignV: undefined };
-          })
+          }),
         );
       } else {
-        handleUpdateElement(id, { x, y, frameAlignH: undefined, frameAlignV: undefined });
+        handleUpdateElement(id, {
+          x,
+          y,
+          frameAlignH: undefined,
+          frameAlignV: undefined,
+        });
       }
     },
-    [elements, handleUpdateElement, updateElements]
+    [elements, handleUpdateElement, updateElements],
   );
 
   const handleTransformEnd = useCallback(
     (
       id: string,
-      attrs: { x: number; y: number; width: number; height: number; rotation: number }
+      attrs: {
+        x: number;
+        y: number;
+        width: number;
+        height: number;
+        rotation: number;
+      },
     ) => {
-      handleUpdateElement(id, { ...attrs, frameAlignH: undefined, frameAlignV: undefined });
+      handleUpdateElement(id, {
+        ...attrs,
+        frameAlignH: undefined,
+        frameAlignV: undefined,
+      });
     },
-    [handleUpdateElement]
+    [handleUpdateElement],
   );
 
   const handleBringToFront = useCallback(() => {
@@ -343,22 +422,28 @@ function DesignEditorContent() {
       updateElements((prev) => [...prev, ...newEls]);
       if (newEls.length > 0) setSelectedElementId(newEls[newEls.length - 1].id);
     },
-    [elements, updateElements]
+    [elements, updateElements],
   );
 
   const handleUngroupElements = useCallback(
     (groupId: string) => {
       updateElements((prev) =>
         prev.map((el) =>
-          el.groupId === groupId ? { ...el, groupId: undefined } : el
-        )
+          el.groupId === groupId ? { ...el, groupId: undefined } : el,
+        ),
       );
     },
-    [updateElements]
+    [updateElements],
   );
 
   const handleAlignElement = useCallback(
-    (id: string, align: { h?: "left" | "center" | "right"; v?: "top" | "middle" | "bottom" }) => {
+    (
+      id: string,
+      align: {
+        h?: "left" | "center" | "right";
+        v?: "top" | "middle" | "bottom";
+      },
+    ) => {
       const el = elements.find((e) => e.id === id);
       if (!el) return;
       const updates: Partial<EditorElement> = {};
@@ -401,12 +486,18 @@ function DesignEditorContent() {
       }
       handleUpdateElement(id, updates);
     },
-    [elements, canvasHeight, handleUpdateElement]
+    [elements, canvasHeight, handleUpdateElement],
   );
 
   const handleUpdateWidgetConfig = useCallback(
-    (widgetType: WidgetType, enabled: boolean, updates?: Partial<WidgetConfig>) => {
-      const existing = elements.find((el) => el.type === "widget" && el.widgetType === widgetType);
+    (
+      widgetType: WidgetType,
+      enabled: boolean,
+      updates?: Partial<WidgetConfig>,
+    ) => {
+      const existing = elements.find(
+        (el) => el.type === "widget" && el.widgetType === widgetType,
+      );
       if (enabled) {
         if (existing) {
           handleUpdateElement(existing.id, {
@@ -445,7 +536,9 @@ function DesignEditorContent() {
                   ? 240
                   : widgetType === "call"
                     ? 180
-                    : widgetType === "map" || widgetType === "youtube" || widgetType === "gallery"
+                    : widgetType === "map" ||
+                        widgetType === "youtube" ||
+                        widgetType === "gallery"
                       ? 280
                       : 120,
             zIndex: Math.max(0, ...elements.map((e) => e.zIndex || 0)) + 1,
@@ -457,11 +550,21 @@ function DesignEditorContent() {
         handleDeleteElement(existing.id);
       }
     },
-    [elements, handleUpdateElement, handleDeleteElement, updateElements, selectedAudio]
+    [
+      elements,
+      handleUpdateElement,
+      handleDeleteElement,
+      updateElements,
+      selectedAudio,
+    ],
   );
 
   const handleInitWedding = async (action: "draft" | "publish") => {
-    if (!initForm.groomShortName || !initForm.brideShortName || !initForm.slug) {
+    if (
+      !initForm.groomShortName ||
+      !initForm.brideShortName ||
+      !initForm.slug
+    ) {
       showToast({ message: "Vui lòng nhập đầy đủ thông tin", type: "warning" });
       return;
     }
@@ -478,7 +581,9 @@ function DesignEditorContent() {
         slug: initForm.slug,
         ceremonyVenue: "Chưa thiết lập",
         ceremonyAddress: "Chưa thiết lập",
-        ceremonyAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+        ceremonyAt: new Date(
+          Date.now() + 30 * 24 * 60 * 60 * 1000,
+        ).toISOString(),
         musicAutoplay: true,
         status: "DRAFT",
         customDesign: {
@@ -496,7 +601,10 @@ function DesignEditorContent() {
       if (newId) {
         if (action === "publish") {
           await weddingService.publishWedding(newId);
-          showToast({ message: "Xuất bản thiệp cưới thành công", type: "success" });
+          showToast({
+            message: "Xuất bản thiệp cưới thành công",
+            type: "success",
+          });
           window.open(`/thiep/${initForm.slug}`, "_blank");
         } else {
           showToast({ message: "Đã lưu bản nháp thành công", type: "success" });
@@ -551,12 +659,21 @@ function DesignEditorContent() {
     } else {
       showToast({
         title: "Đã lưu nháp",
-        message: "Đã lưu nháp trên thiết bị của bạn. Vui lòng thiết lập thông tin thiệp để lưu trực tuyến.",
+        message:
+          "Đã lưu nháp trên thiết bị của bạn. Vui lòng thiết lập thông tin thiệp để lưu trực tuyến.",
         type: "info",
         timeout: 2500,
       });
     }
-  }, [elements, canvasBackground, backgroundOpacity, canvasHeight, projectName, weddingId, showToast]);
+  }, [
+    elements,
+    canvasBackground,
+    backgroundOpacity,
+    canvasHeight,
+    projectName,
+    weddingId,
+    showToast,
+  ]);
 
   const executePublishOrSave = async (action: "draft" | "publish") => {
     if (!weddingId) return;
@@ -576,7 +693,8 @@ function DesignEditorContent() {
 
       if (action === "publish") {
         await weddingService.publishWedding(weddingId);
-        const currentWedding = wedding || (await weddingService.getWeddingById(weddingId));
+        const currentWedding =
+          wedding || (await weddingService.getWeddingById(weddingId));
         const slug = currentWedding?.slug || currentWedding?.data?.slug;
         showToast({
           title: "Xuất bản thành công",
@@ -610,9 +728,9 @@ function DesignEditorContent() {
   const handlePublish = useCallback(async () => {
     if (!weddingId) {
       if (!initForm.slug) {
-        setInitForm(f => ({
+        setInitForm((f) => ({
           ...f,
-          slug: slugify(projectName) || "thiep-cuoi"
+          slug: slugify(projectName) || "thiep-cuoi",
         }));
       }
       setShowInitModal(true);
@@ -640,22 +758,28 @@ function DesignEditorContent() {
             setWedding(wData);
             setProjectName(wData.groomShortName + " & " + wData.brideShortName);
             if (wData.customDesign) {
-              const parsed = typeof wData.customDesign === "string"
-                ? JSON.parse(wData.customDesign)
-                : wData.customDesign;
+              const parsed =
+                typeof wData.customDesign === "string"
+                  ? JSON.parse(wData.customDesign)
+                  : wData.customDesign;
               if (parsed.elements) {
                 replacePresent(parsed.elements);
                 setElements(parsed.elements);
               }
-              if (parsed.canvasBackground) setCanvasBackground(parsed.canvasBackground);
-              if (parsed.backgroundOpacity !== undefined) setBackgroundOpacity(parsed.backgroundOpacity);
+              if (parsed.canvasBackground)
+                setCanvasBackground(parsed.canvasBackground);
+              if (parsed.backgroundOpacity !== undefined)
+                setBackgroundOpacity(parsed.backgroundOpacity);
               if (parsed.canvasHeight) setCanvasHeight(parsed.canvasHeight);
             }
           }
         })
         .catch((err) => {
           console.error(err);
-          showToast({ message: "Không thể tải thông tin thiệp cưới", type: "error" });
+          showToast({
+            message: "Không thể tải thông tin thiệp cưới",
+            type: "error",
+          });
         });
     } else {
       try {
@@ -666,8 +790,10 @@ function DesignEditorContent() {
             replacePresent(parsed.elements);
             setElements(parsed.elements);
           }
-          if (parsed.canvasBackground) setCanvasBackground(parsed.canvasBackground);
-          if (parsed.backgroundOpacity !== undefined) setBackgroundOpacity(parsed.backgroundOpacity);
+          if (parsed.canvasBackground)
+            setCanvasBackground(parsed.canvasBackground);
+          if (parsed.backgroundOpacity !== undefined)
+            setBackgroundOpacity(parsed.backgroundOpacity);
           if (parsed.canvasHeight) setCanvasHeight(parsed.canvasHeight);
           if (parsed.projectName) setProjectName(parsed.projectName);
         }
@@ -724,7 +850,9 @@ function DesignEditorContent() {
           onBringForward={handleBringForward}
           onSendBackward={handleSendBackward}
           onDuplicate={handleDuplicate}
-          onDelete={() => selectedElementId && handleDeleteElement(selectedElementId)}
+          onDelete={() =>
+            selectedElementId && handleDeleteElement(selectedElementId)
+          }
           onZoomToFit={handleZoomToFit}
           onZoom100={handleZoom100}
           zoom={zoom}
@@ -804,9 +932,12 @@ function DesignEditorContent() {
         maxWidth="max-w-md"
       >
         <div className="flex flex-col gap-4 py-4 text-[#f5e6d3] font-sans">
-          <h2 className="text-lg font-bold text-[#d4af37]">Thiết lập thiệp cưới tự thiết kế</h2>
+          <h2 className="text-lg font-bold text-[#d4af37]">
+            Thiết lập thiệp cưới tự thiết kế
+          </h2>
           <p className="text-xs text-[#f5e6d3]/60">
-            Vui lòng nhập các thông tin cơ bản sau để khởi tạo thiệp cưới của bạn trong hệ thống.
+            Vui lòng nhập các thông tin cơ bản sau để khởi tạo thiệp cưới của
+            bạn trong hệ thống.
           </p>
 
           <div className="flex flex-col gap-1.5">
@@ -814,7 +945,9 @@ function DesignEditorContent() {
               type="text"
               label="Tên chú rể (viết tắt)"
               value={initForm.groomShortName}
-              onChange={(e) => setInitForm((f) => ({ ...f, groomShortName: e.target.value }))}
+              onChange={(e) =>
+                setInitForm((f) => ({ ...f, groomShortName: e.target.value }))
+              }
               placeholder="Ví dụ: Hoàng Anh"
               className="bg-[#1a0a0f] border-[#d4af37]/35 text-[#f5e6d3]"
             />
@@ -825,7 +958,9 @@ function DesignEditorContent() {
               type="text"
               label="Tên cô dâu (viết tắt)"
               value={initForm.brideShortName}
-              onChange={(e) => setInitForm((f) => ({ ...f, brideShortName: e.target.value }))}
+              onChange={(e) =>
+                setInitForm((f) => ({ ...f, brideShortName: e.target.value }))
+              }
               placeholder="Ví dụ: Mai Chi"
               className="bg-[#1a0a0f] border-[#d4af37]/35 text-[#f5e6d3]"
             />
@@ -836,14 +971,18 @@ function DesignEditorContent() {
               Đường dẫn thiệp (Slug)
             </label>
             <div className="flex items-center gap-1 bg-[#1a0a0f] border border-[#d4af37]/35 rounded-md px-3">
-              <span className="text-xs text-[#f5e6d3]/40 select-none">/thiep/</span>
+              <span className="text-xs text-[#f5e6d3]/40 select-none">
+                /thiep/
+              </span>
               <input
                 type="text"
                 value={initForm.slug}
                 onChange={(e) =>
                   setInitForm((f) => ({
                     ...f,
-                    slug: e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ""),
+                    slug: e.target.value
+                      .toLowerCase()
+                      .replace(/[^a-z0-9-]/g, ""),
                   }))
                 }
                 placeholder="hoanganh-maichi"
@@ -892,9 +1031,12 @@ function DesignEditorContent() {
         maxWidth="max-w-md"
       >
         <div className="flex flex-col gap-4 py-4 text-[#f5e6d3] font-sans">
-          <h2 className="text-lg font-bold text-[#d4af37]">Lưu và Xuất bản thiệp</h2>
+          <h2 className="text-lg font-bold text-[#d4af37]">
+            Lưu và Xuất bản thiệp
+          </h2>
           <p className="text-sm text-[#f5e6d3]/80">
-            Bạn muốn lưu thiết kế này dưới dạng bản nháp trực tuyến hay xuất bản chính thức luôn?
+            Bạn muốn lưu thiết kế này dưới dạng bản nháp trực tuyến hay xuất bản
+            chính thức luôn?
           </p>
           <div className="flex items-center justify-end gap-3 mt-6">
             <Button
@@ -929,7 +1071,13 @@ function DesignEditorContent() {
 
 export default function DesignEditorPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-[#0a0508] flex items-center justify-center text-[#f5e6d3] font-sans">Đang tải thiết kế...</div>}>
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-[#0a0508] flex items-center justify-center text-[#f5e6d3] font-sans">
+          Đang tải thiết kế...
+        </div>
+      }
+    >
       <DesignEditorContent />
     </Suspense>
   );

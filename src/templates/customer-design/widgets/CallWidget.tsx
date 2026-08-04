@@ -1,5 +1,4 @@
-import { PhoneIcon } from "@/templates/customer-design/icons";
-import { MessengerIcon, ZaloIcon } from "@/assets/icons";
+import { MessengerIcon, PhoneIcon, ZaloIcon } from "@/assets/icons";
 
 interface Props {
   phoneEnabled?: boolean;

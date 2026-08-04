@@ -183,11 +183,11 @@ export default function AboutPage() {
         <div className="absolute inset-x-0 bottom-0 h-40 bg-linear-to-t from-[#1b0a11]/20 to-transparent pointer-events-none" />
         <div className="max-w-4xl mx-auto text-center relative z-10">
           <ScrollReveal>
-            <h2 className="text-[clamp(1.8rem,4vw,2.6rem)] font-light font-serif mb-6">
+            <h1 className="text-[clamp(2.2rem,5vw,3.8rem)] font-light font-cormorant mb-6 leading-tight text-[#d4af37]">
               <span className="tct-shimmer-text italic block">
                 Sẵn sàng kiến tạo tuyệt tác của riêng bạn?
               </span>
-            </h2>
+            </h1>
             <p className="text-sm text-[#c9a98a] max-w-150 mx-auto leading-relaxed mb-10 font-light">
               Hãy để Tiệm Cưới Tân Thời giúp bạn chuyển hóa câu chuyện tình yêu
               ngọt ngào thành một tác phẩm nghệ thuật số đầy kiêu hãnh dành tặng

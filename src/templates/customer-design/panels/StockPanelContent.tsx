@@ -1,25 +1,24 @@
+import ColorPickerRow from "@/templates/customer-design/components/ColorPickerRow";
+import SectionHeader from "@/templates/customer-design/components/SectionHeader";
+import type { EditorElement } from "@/templates/customer-design/types";
 import InputNumber from "@/templates/customer-design/ui/input/InputNumber";
 import Select from "@/templates/customer-design/ui/Select";
 import Slider from "@/templates/customer-design/ui/Slider";
 import Switch from "@/templates/customer-design/ui/Switch";
-import type { GiphyImage } from "@/services/giphy.service";
-import giphyService from "@/services/giphy.service";
-import ColorPickerRow from "@/templates/customer-design/components/ColorPickerRow";
-import SectionHeader from "@/templates/customer-design/components/SectionHeader";
-import type { EditorElement } from "@/templates/customer-design/types";
 import { BORDER_RADIUS_MODES } from "@/templates/customer-design/utils/constants";
+import {
+  fitImageToCanvas,
+  loadImageSize,
+} from "@/templates/customer-design/utils/image-fit";
 import {
   ArrowLeft,
   CloudUpload,
-  ImageIcon,
-  Loader2,
-  Search,
   Smile,
   Square,
   Sun,
   Trash2,
 } from "lucide-react";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 interface StockPanelContentProps {
   onAddImageToCanvas: (
@@ -31,7 +30,7 @@ interface StockPanelContentProps {
       borderRadius?: number;
       shadowBlur?: number;
       shadowColor?: string;
-    }
+    },
   ) => void;
   selectedCanvasImageUrl?: string | null;
   onDeselect?: () => void;
@@ -93,17 +92,10 @@ const EMOJI_CATEGORIES = [
 ];
 
 function emojiToTwemojiUrl(emoji: string): string {
-  const codePoints = Array.from(emoji).map((c) => c.codePointAt(0)!.toString(16));
+  const codePoints = Array.from(emoji).map((c) =>
+    c.codePointAt(0)!.toString(16),
+  );
   return `https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/72x72/${codePoints.join("-")}.png`;
-}
-
-function loadImageSize(url: string): Promise<{ w: number; h: number }> {
-  return new Promise((resolve) => {
-    const img = new window.Image();
-    img.onload = () => resolve({ w: img.naturalWidth, h: img.naturalHeight });
-    img.onerror = () => resolve({ w: 200, h: 200 });
-    img.src = url;
-  });
 }
 
 export default function StockPanelContent({
@@ -118,12 +110,6 @@ export default function StockPanelContent({
   canvasWidth = 440,
 }: StockPanelContentProps) {
   const [activeTab, setActiveTab] = useState<Tab>("sticker");
-
-  const [giphyQuery, setGiphyQuery] = useState("");
-  const [giphyResults, setGiphyResults] = useState<GiphyImage[]>([]);
-  const [giphyLoading, setGiphyLoading] = useState(false);
-  const [giphyError, setGiphyError] = useState<string | null>(null);
-  const giphyTimerRef = useRef<ReturnType<typeof setTimeout>>(null);
   const [panelView, setPanelView] = useState<"list" | "detail">("list");
   const [selectedItem, setSelectedItem] = useState<{
     url: string;
@@ -133,43 +119,7 @@ export default function StockPanelContent({
 
   const editingEl = useMemo(
     () => (selectedElement?.type === "image" ? selectedElement : null),
-    [selectedElement]
-  );
-
-  useEffect(() => {
-    setGiphyLoading(true);
-    setGiphyError(null);
-    giphyService
-      .search()
-      .then((r) => setGiphyResults(r.data || []))
-      .catch((e) => {
-        setGiphyError(e?.message || "Không thể tải sticker");
-        setGiphyResults([]);
-      })
-      .finally(() => setGiphyLoading(false));
-  }, []);
-
-  const searchGiphy = useCallback((q: string) => {
-    setGiphyLoading(true);
-    setGiphyError(null);
-    giphyService
-      .search(q || undefined)
-      .then((r) => setGiphyResults(r.data || []))
-      .catch((e) => {
-        setGiphyError(e?.message || "Không thể tải sticker");
-        setGiphyResults([]);
-      })
-      .finally(() => setGiphyLoading(false));
-  }, []);
-
-  const handleGiphySearchChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const value = e.target.value;
-      setGiphyQuery(value);
-      if (giphyTimerRef.current) clearTimeout(giphyTimerRef.current);
-      giphyTimerRef.current = setTimeout(() => searchGiphy(value), 400);
-    },
-    [searchGiphy]
+    [selectedElement],
   );
 
   useEffect(() => {
@@ -191,18 +141,11 @@ export default function StockPanelContent({
     setPanelView("detail");
 
     const nat = await loadImageSize(url);
-    let w = nat.w;
-    let h = nat.h;
-    if (w > canvasWidth) {
-      const ratio = h / w;
-      w = canvasWidth;
-      h = Math.round(w * ratio);
-    }
-    if (w > 300) {
-      const ratio = h / w;
-      w = 300;
-      h = Math.round(w * ratio);
-    }
+    const { width: w, height: h } = fitImageToCanvas(
+      nat.width,
+      nat.height,
+      Math.min(canvasWidth, 300),
+    );
 
     onAddImageToCanvas(url, { width: w, height: h });
   };
@@ -218,7 +161,10 @@ export default function StockPanelContent({
     onDeselect?.();
   };
 
-  const getBorderRadiusCorners = (mode: string, changedCorner: string): string[] => {
+  const getBorderRadiusCorners = (
+    mode: string,
+    changedCorner: string,
+  ): string[] => {
     switch (mode) {
       case "all":
         return [
@@ -306,7 +252,9 @@ export default function StockPanelContent({
         <div className="h-px bg-zinc-800" />
 
         <div className="space-y-1">
-          <label className="text-[10px] text-gray-500 uppercase block">Độ trong suốt</label>
+          <label className="text-[10px] text-gray-500 uppercase block">
+            Độ trong suốt
+          </label>
           <div className="flex items-center gap-2">
             <Slider
               value={Math.round((editingEl?.opacity ?? 1) * 100)}
@@ -326,11 +274,16 @@ export default function StockPanelContent({
         <SectionHeader icon={<Square size={14} />} title="Bo góc" />
         <div className="space-y-3">
           <div>
-            <label className="text-[10px] text-gray-500 uppercase block mb-1">Chọn chế độ bo</label>
+            <label className="text-[10px] text-gray-500 uppercase block mb-1">
+              Chọn chế độ bo
+            </label>
             <Select
               size="sm"
               value={borderRadiusMode}
-              options={BORDER_RADIUS_MODES.map((m) => ({ label: m.label, value: m.value }))}
+              options={BORDER_RADIUS_MODES.map((m) => ({
+                label: m.label,
+                value: m.value,
+              }))}
               onValueChange={(val) => setBorderRadiusMode(String(val))}
               className="bg-[#333]! text-white! border-[#444]! text-center! text-xs!"
               wrapperClassName="w-full"
@@ -355,7 +308,9 @@ export default function StockPanelContent({
                     min={0}
                     max={500}
                     value={(editingEl as any)?.[key] ?? 0}
-                    onChange={(e) => handleBorderRadiusChange(key, Number(e.target.value))}
+                    onChange={(e) =>
+                      handleBorderRadiusChange(key, Number(e.target.value))
+                    }
                     className="text-[10px]! bg-[#333] text-white border border-[#444] rounded outline-none focus:border-[#d4af37] text-center p-1.5!"
                     wrapperClassName="w-full"
                     showButtons={false}
@@ -371,7 +326,9 @@ export default function StockPanelContent({
         <SectionHeader icon={<Sun size={14} />} title="Đổ bóng" />
         <div className="space-y-3">
           <div>
-            <label className="text-[10px] text-gray-500 uppercase block mb-1">Màu bóng</label>
+            <label className="text-[10px] text-gray-500 uppercase block mb-1">
+              Màu bóng
+            </label>
             <ColorPickerRow
               value={editingEl?.shadowColor ?? "#000000"}
               onChange={(v) => update({ shadowColor: v })}
@@ -397,7 +354,9 @@ export default function StockPanelContent({
               min={-100}
               max={100}
               value={editingEl?.shadowOffsetX ?? 0}
-              onChange={(e) => update({ shadowOffsetX: Number(e.target.value) })}
+              onChange={(e) =>
+                update({ shadowOffsetX: Number(e.target.value) })
+              }
               className="w-20! text-[10px]! bg-[#333] text-white border border-[#444] rounded outline-none focus:border-[#d4af37] text-center"
             />
           </div>
@@ -409,7 +368,9 @@ export default function StockPanelContent({
               min={-100}
               max={100}
               value={editingEl?.shadowOffsetY ?? 0}
-              onChange={(e) => update({ shadowOffsetY: Number(e.target.value) })}
+              onChange={(e) =>
+                update({ shadowOffsetY: Number(e.target.value) })
+              }
               className="w-20! text-[10px]! bg-[#333] text-white border border-[#444] rounded outline-none focus:border-[#d4af37] text-center"
             />
           </div>
@@ -475,16 +436,7 @@ export default function StockPanelContent({
         </button>
       </div>
 
-      {activeTab === "sticker" && (
-        <StickerTabContent
-          query={giphyQuery}
-          results={giphyResults}
-          loading={giphyLoading}
-          error={giphyError}
-          onSearchChange={handleGiphySearchChange}
-          onAdd={handleAddToCanvas}
-        />
-      )}
+      {activeTab === "sticker" && <></>}
 
       {activeTab === "emoji" && (
         <div className="space-y-4">
@@ -510,7 +462,9 @@ export default function StockPanelContent({
                         loading="lazy"
                         onError={(e) => {
                           (e.target as HTMLImageElement).style.display = "none";
-                          (e.target as HTMLImageElement).parentElement!.textContent = emoji;
+                          (
+                            e.target as HTMLImageElement
+                          ).parentElement!.textContent = emoji;
                         }}
                       />
                     </button>
@@ -519,74 +473,6 @@ export default function StockPanelContent({
               </div>
             </div>
           ))}
-        </div>
-      )}
-    </div>
-  );
-}
-
-function StickerTabContent({
-  query,
-  results,
-  loading,
-  error,
-  onSearchChange,
-  onAdd,
-}: {
-  query: string;
-  results: GiphyImage[];
-  loading: boolean;
-  error: string | null;
-  onSearchChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onAdd: (url: string, title: string) => void;
-}) {
-  return (
-    <div className="space-y-3">
-      <div className="relative">
-        <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
-        <input
-          type="text"
-          value={query}
-          onChange={onSearchChange}
-          placeholder="Tìm kiếm sticker..."
-          className="w-full bg-[#333] text-white text-sm border border-[#444] rounded-lg pl-9 pr-3 py-2 outline-none focus:border-[#d4af37] transition-colors"
-        />
-      </div>
-
-      {loading ? (
-        <div className="flex items-center justify-center py-12">
-          <Loader2 size={28} className="text-amber-400 animate-spin" />
-        </div>
-      ) : error ? (
-        <div className="flex flex-col items-center justify-center py-12 text-zinc-500 text-sm gap-2">
-          <ImageIcon size={24} className="text-zinc-600" />
-          <span>{error}</span>
-        </div>
-      ) : results.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-12 text-zinc-500 text-sm gap-2">
-          <ImageIcon size={24} className="text-zinc-600" />
-          <span>{query ? "Không tìm thấy sticker nào" : "Nhập từ khoá để tìm sticker"}</span>
-        </div>
-      ) : (
-        <div className="grid grid-cols-2 gap-2">
-          {results.map((item) => {
-            const preview = item.images?.fixed_width_downsampled;
-            if (!preview?.url) return null;
-            return (
-              <button
-                key={item.id}
-                onClick={() => onAdd(preview.url, item.title)}
-                className="aspect-square bg-[#2a2a2a] rounded-lg overflow-hidden border border-[#333] hover:border-[#d4af37]/50 transition-all hover:scale-[1.02] cursor-pointer group"
-              >
-                <img
-                  src={preview.url}
-                  alt={item.title || "Sticker"}
-                  className="w-full h-full object-cover"
-                  loading="lazy"
-                />
-              </button>
-            );
-          })}
         </div>
       )}
     </div>

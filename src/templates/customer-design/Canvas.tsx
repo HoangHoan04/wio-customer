@@ -7,15 +7,16 @@ import {
   Image as KonvaImage,
   Layer,
   Line,
+  Path,
   Rect,
   Stage,
   Text,
   Transformer,
-  Path,
 } from "react-konva";
 import { useAudioPlayer } from "../../hooks/useAudioPlayer";
 import { useImageCache } from "./hooks/useImageCache";
 import type { EditorElement } from "./types";
+import { getImageCoverCrop } from "./utils/image-fit";
 import {
   CalendarWidget,
   CallWidget,
@@ -41,7 +42,13 @@ interface Props {
   onDragMove?: (id: string, x: number, y: number) => void;
   onTransformEnd: (
     id: string,
-    attrs: { x: number; y: number; width: number; height: number; rotation: number }
+    attrs: {
+      x: number;
+      y: number;
+      width: number;
+      height: number;
+      rotation: number;
+    },
   ) => void;
   readOnly?: boolean;
   onHeightChange?: (height: number) => void;
@@ -79,8 +86,9 @@ export default function Canvas({
   const editInputRef = useRef<HTMLTextAreaElement>(null);
 
   const visibleElements = useMemo(
-    () => elements.filter((el) => el.visible !== false && el.id !== editingTextId),
-    [elements, editingTextId]
+    () =>
+      elements.filter((el) => el.visible !== false && el.id !== editingTextId),
+    [elements, editingTextId],
   );
 
   const musicWidgetEl = useMemo(
@@ -89,16 +97,21 @@ export default function Canvas({
         (el) =>
           el.type === "widget" &&
           el.widgetType === "music" &&
-          el.visible !== false
+          el.visible !== false,
       ),
-    [elements]
+    [elements],
   );
   const audioSrc = musicWidgetEl?.widgetConfig?.audioUrl || "";
   const { isPlaying, playMusic, toggleMusic } = useAudioPlayer(audioSrc);
 
   const konvaElements = useMemo(
     () => visibleElements.filter((el) => el.type !== "widget"),
-    [visibleElements]
+    [visibleElements],
+  );
+
+  const selectedElement = useMemo(
+    () => elements.find((el) => el.id === selectedElementId) ?? null,
+    [elements, selectedElementId],
   );
 
   const musicIconMap: Record<
@@ -113,7 +126,7 @@ export default function Canvas({
       headphones: Headphones,
       disc: Disc,
     }),
-    []
+    [],
   );
 
   const prevAudioSrcRef = useRef<string | null>(null);
@@ -129,11 +142,8 @@ export default function Canvas({
   }, [musicWidgetEl, audioSrc, playMusic]);
 
   const hasAnimatedImages = useMemo(
-    () =>
-      visibleElements.some(
-        (el) => el.type === "image" && (el.src.includes("giphy.com") || /\.gif/i.test(el.src))
-      ),
-    [visibleElements]
+    () => visibleElements.some((el) => el.type === "image"),
+    [visibleElements],
   );
 
   useEffect(() => {
@@ -200,7 +210,8 @@ export default function Canvas({
           duration: el.motionDuration,
           delay: el.motionDelay,
           easing:
-            Konva.Easings[el.motionEasing as keyof typeof Konva.Easings] || Konva.Easings.EaseOut,
+            Konva.Easings[el.motionEasing as keyof typeof Konva.Easings] ||
+            Konva.Easings.EaseOut,
           onFinish: () => {
             if (el.continuousMotionEnabled) {
               startContinuousMotion(node, el);
@@ -318,7 +329,7 @@ export default function Canvas({
 
   const forwardEventToUnderlying = (
     e: Konva.KonvaEventObject<MouseEvent | TouchEvent>,
-    eventType: "click" | "mousedown" | "touchstart"
+    eventType: "click" | "mousedown" | "touchstart",
   ) => {
     const evt = e.evt as any;
     const clientX = evt.clientX || (evt.touches && evt.touches[0]?.clientX);
@@ -327,7 +338,7 @@ export default function Canvas({
 
     const targets = document.elementsFromPoint(clientX, clientY);
     const underlyingTarget = targets.find(
-      (el) => !stageRef.current?.container().contains(el)
+      (el) => !stageRef.current?.container().contains(el),
     ) as HTMLElement | undefined;
 
     if (underlyingTarget) {
@@ -336,9 +347,13 @@ export default function Canvas({
         forwardedEvent = new TouchEvent("touchstart", {
           bubbles: true,
           cancelable: true,
-          touches: evt.touches ? Array.from(evt.touches) as any : [],
-          targetTouches: evt.targetTouches ? Array.from(evt.targetTouches) as any : [],
-          changedTouches: evt.changedTouches ? Array.from(evt.changedTouches) as any : [],
+          touches: evt.touches ? (Array.from(evt.touches) as any) : [],
+          targetTouches: evt.targetTouches
+            ? (Array.from(evt.targetTouches) as any)
+            : [],
+          changedTouches: evt.changedTouches
+            ? (Array.from(evt.changedTouches) as any)
+            : [],
         });
       } else {
         forwardedEvent = new MouseEvent(eventType, {
@@ -362,7 +377,7 @@ export default function Canvas({
         forwardEventToUnderlying(e, "mousedown");
       }
     },
-    [onSelect]
+    [onSelect],
   );
 
   const handleStageTouchStart = useCallback(
@@ -372,7 +387,7 @@ export default function Canvas({
         forwardEventToUnderlying(e, "touchstart");
       }
     },
-    [onSelect]
+    [onSelect],
   );
 
   const handleStageClick = useCallback(
@@ -382,7 +397,7 @@ export default function Canvas({
         forwardEventToUnderlying(e, "click");
       }
     },
-    [onSelect]
+    [onSelect],
   );
 
   const handleStageTap = useCallback(
@@ -392,7 +407,7 @@ export default function Canvas({
         forwardEventToUnderlying(e, "touchstart");
       }
     },
-    [onSelect]
+    [onSelect],
   );
 
   const handleContainerClick = useCallback(
@@ -401,7 +416,7 @@ export default function Canvas({
         onSelect(null);
       }
     },
-    [onSelect]
+    [onSelect],
   );
 
   const handleDblClick = useCallback(
@@ -417,7 +432,7 @@ export default function Canvas({
         onSelect(id);
       }
     },
-    [elements, onSelect]
+    [elements, onSelect],
   );
 
   const handleDblTap = useCallback(
@@ -433,7 +448,7 @@ export default function Canvas({
         onSelect(id);
       }
     },
-    [elements, onSelect]
+    [elements, onSelect],
   );
 
   const handleEditCommit = useCallback(() => {
@@ -444,7 +459,11 @@ export default function Canvas({
   }, [editingTextId, editValue, onUpdate]);
 
   const [dragHeight, setDragHeight] = useState<number | null>(null);
-  const dragRef = useRef<{ startY: number; startH: number; currH: number } | null>(null);
+  const dragRef = useRef<{
+    startY: number;
+    startH: number;
+    currH: number;
+  } | null>(null);
 
   const displayHeight = dragHeight ?? canvasHeight;
 
@@ -452,7 +471,11 @@ export default function Canvas({
     (e: React.MouseEvent) => {
       e.preventDefault();
       e.stopPropagation();
-      dragRef.current = { startY: e.clientY, startH: canvasHeight, currH: canvasHeight };
+      dragRef.current = {
+        startY: e.clientY,
+        startH: canvasHeight,
+        currH: canvasHeight,
+      };
       setDragHeight(canvasHeight);
 
       const handleMouseMove = (e: MouseEvent) => {
@@ -476,7 +499,7 @@ export default function Canvas({
       document.addEventListener("mousemove", handleMouseMove);
       document.addEventListener("mouseup", handleMouseUp);
     },
-    [canvasHeight, scale, onHeightChange]
+    [canvasHeight, scale, onHeightChange],
   );
 
   const handleHeightInputChange = useCallback(
@@ -486,10 +509,12 @@ export default function Canvas({
         onHeightChange?.(val);
       }
     },
-    [onHeightChange]
+    [onHeightChange],
   );
 
-  const editingEl = editingTextId ? elements.find((el) => el.id === editingTextId) : null;
+  const editingEl = editingTextId
+    ? elements.find((el) => el.id === editingTextId)
+    : null;
   const bgIsImage =
     canvasBackground.startsWith("http") ||
     canvasBackground.startsWith("blob:") ||
@@ -521,7 +546,7 @@ export default function Canvas({
             stroke={strokeColor}
             strokeWidth={1}
             dash={[4, 4]}
-          />
+          />,
         );
       }
       for (let y = gridSize; y < displayHeight; y += gridSize) {
@@ -532,7 +557,7 @@ export default function Canvas({
             stroke={strokeColor}
             strokeWidth={1}
             dash={[4, 4]}
-          />
+          />,
         );
       }
     } else if (gridType === "dots") {
@@ -545,7 +570,7 @@ export default function Canvas({
               y={y}
               radius={1.5}
               fill={dotColor}
-            />
+            />,
           );
         }
       }
@@ -621,8 +646,10 @@ export default function Canvas({
                 <Layer>
                   <Transformer
                     ref={transformerRef}
+                    keepRatio={selectedElement?.type === "image"}
                     boundBoxFunc={(oldBox, newBox) => {
-                      if (newBox.width < 10 || newBox.height < 10) return oldBox;
+                      if (newBox.width < 10 || newBox.height < 10)
+                        return oldBox;
                       return newBox;
                     }}
                     onTransformEnd={() => {
@@ -647,8 +674,14 @@ export default function Canvas({
                       onTransformEnd(id, {
                         x: node.x() + paddingL,
                         y: node.y() + paddingT,
-                        width: Math.max(10, node.width() * scaleX) - paddingL - paddingR,
-                        height: Math.max(10, node.height() * scaleY) - paddingT - paddingB,
+                        width:
+                          Math.max(10, node.width() * scaleX) -
+                          paddingL -
+                          paddingR,
+                        height:
+                          Math.max(10, node.height() * scaleY) -
+                          paddingT -
+                          paddingB,
                         rotation: node.rotation(),
                       });
                     }}
@@ -726,20 +759,30 @@ export default function Canvas({
                     />
                     <div
                       style={{
-                        animation: isPlaying ? "spin 3s linear infinite" : "none",
+                        animation: isPlaying
+                          ? "spin 3s linear infinite"
+                          : "none",
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
                       }}
                     >
-                      <IconComp size={iconSize} color={isPlaying ? color : `${color}99`} />
+                      <IconComp
+                        size={iconSize}
+                        color={isPlaying ? color : `${color}99`}
+                      />
                     </div>
                   </div>
                 );
               })()}
 
             {visibleElements
-              .filter((el) => el.type === "widget" && el.widgetType !== "music" && el.widgetConfig)
+              .filter(
+                (el) =>
+                  el.type === "widget" &&
+                  el.widgetType !== "music" &&
+                  el.widgetConfig,
+              )
               .sort((a, b) => a.zIndex - b.zIndex)
               .map((el) => (
                 <WidgetOverlay
@@ -754,8 +797,6 @@ export default function Canvas({
                   readOnly={readOnly}
                 />
               ))}
-
-
 
             {editingEl && editingTextId && (
               <textarea
@@ -777,7 +818,7 @@ export default function Canvas({
                     (editingEl.width +
                       (editingEl.paddingLeft ?? 0) +
                       (editingEl.paddingRight ?? 0)) *
-                      scale
+                      scale,
                   ),
                   height:
                     (editingEl.height +
@@ -796,7 +837,9 @@ export default function Canvas({
                   lineHeight: editingEl.lineHeight || 1.4,
                   padding: `${(editingEl.paddingTop ?? 0) * scale}px ${(editingEl.paddingRight ?? 0) * scale}px ${(editingEl.paddingBottom ?? 0) * scale}px ${(editingEl.paddingLeft ?? 0) * scale}px`,
                   borderRadius: `${editingEl.borderRadiusTopLeft ?? 0}px ${editingEl.borderRadiusTopRight ?? 0}px ${editingEl.borderRadiusBottomRight ?? 0}px ${editingEl.borderRadiusBottomLeft ?? 0}px`,
-                  transform: editingEl.rotation ? `rotate(${editingEl.rotation}deg)` : undefined,
+                  transform: editingEl.rotation
+                    ? `rotate(${editingEl.rotation}deg)`
+                    : undefined,
                   boxSizing: "border-box",
                 }}
               />
@@ -852,7 +895,13 @@ interface ElementProps {
   readOnly?: boolean;
 }
 
-function CanvasElement({ element, onSelect, onDragEnd, onDragMove, readOnly = false }: ElementProps) {
+function CanvasElement({
+  element,
+  onSelect,
+  onDragEnd,
+  onDragMove,
+  readOnly = false,
+}: ElementProps) {
   const image = useImageCache(element.type === "image" ? element.src : "");
 
   const handleDragEnd = useCallback(
@@ -862,7 +911,13 @@ function CanvasElement({ element, onSelect, onDragEnd, onDragMove, readOnly = fa
       const newY = e.target.y() + (isText ? (element.paddingTop ?? 0) : 0);
       onDragEnd(element.id, newX, newY);
     },
-    [element.id, element.type, element.paddingLeft, element.paddingTop, onDragEnd]
+    [
+      element.id,
+      element.type,
+      element.paddingLeft,
+      element.paddingTop,
+      onDragEnd,
+    ],
   );
 
   const handleClick = useCallback(() => {
@@ -880,7 +935,13 @@ function CanvasElement({ element, onSelect, onDragEnd, onDragMove, readOnly = fa
       const newY = e.target.y() + (isText ? (element.paddingTop ?? 0) : 0);
       onDragMove(element.id, newX, newY);
     },
-    [element.id, element.type, element.paddingLeft, element.paddingTop, onDragMove]
+    [
+      element.id,
+      element.type,
+      element.paddingLeft,
+      element.paddingTop,
+      onDragMove,
+    ],
   );
 
   const commonProps = {
@@ -938,8 +999,10 @@ function CanvasElement({ element, onSelect, onDragEnd, onDragMove, readOnly = fa
 
     const getDecorationX = () => {
       const align = element.textAlign;
-      if (align === "center") return element.paddingLeft + (element.width - textMetrics) / 2;
-      if (align === "right") return element.paddingLeft + element.width - textMetrics;
+      if (align === "center")
+        return element.paddingLeft + (element.width - textMetrics) / 2;
+      if (align === "right")
+        return element.paddingLeft + element.width - textMetrics;
       return element.paddingLeft;
     };
 
@@ -950,16 +1013,39 @@ function CanvasElement({ element, onSelect, onDragEnd, onDragMove, readOnly = fa
       const bp = element.borderPosition;
       const bs = element.borderStyle;
       const isDouble = bs === "double";
-      const dash = bs === "dashed" ? [bw * 3, bw * 2] : bs === "dotted" ? [bw, bw] : undefined;
-      const renderTop = bp === "all" || bp === "top" || bp === "top-left" || bp === "top-right";
+      const dash =
+        bs === "dashed"
+          ? [bw * 3, bw * 2]
+          : bs === "dotted"
+            ? [bw, bw]
+            : undefined;
+      const renderTop =
+        bp === "all" || bp === "top" || bp === "top-left" || bp === "top-right";
       const renderBottom =
-        bp === "all" || bp === "bottom" || bp === "bottom-left" || bp === "bottom-right";
-      const renderLeft = bp === "all" || bp === "left" || bp === "top-left" || bp === "bottom-left";
+        bp === "all" ||
+        bp === "bottom" ||
+        bp === "bottom-left" ||
+        bp === "bottom-right";
+      const renderLeft =
+        bp === "all" ||
+        bp === "left" ||
+        bp === "top-left" ||
+        bp === "bottom-left";
       const renderRight =
-        bp === "all" || bp === "right" || bp === "top-right" || bp === "bottom-right";
+        bp === "all" ||
+        bp === "right" ||
+        bp === "top-right" ||
+        bp === "bottom-right";
 
       const B = ({ pts }: { pts: number[] }) => (
-        <Line points={pts} stroke={bc} strokeWidth={bw} dash={dash} tension={0} lineCap="round" />
+        <Line
+          points={pts}
+          stroke={bc}
+          strokeWidth={bw}
+          dash={dash}
+          tension={0}
+          lineCap="round"
+        />
       );
 
       return (
@@ -968,7 +1054,13 @@ function CanvasElement({ element, onSelect, onDragEnd, onDragMove, readOnly = fa
             (isDouble ? (
               <>
                 <Rect x={0} y={0} width={groupW} height={bw / 3} fill={bc} />
-                <Rect x={0} y={(bw * 2) / 3} width={groupW} height={bw / 3} fill={bc} />
+                <Rect
+                  x={0}
+                  y={(bw * 2) / 3}
+                  width={groupW}
+                  height={bw / 3}
+                  fill={bc}
+                />
               </>
             ) : (
               <B pts={[0, bw / 2, groupW, bw / 2]} />
@@ -976,7 +1068,13 @@ function CanvasElement({ element, onSelect, onDragEnd, onDragMove, readOnly = fa
           {renderBottom &&
             (isDouble ? (
               <>
-                <Rect x={0} y={groupH - bw / 3} width={groupW} height={bw / 3} fill={bc} />
+                <Rect
+                  x={0}
+                  y={groupH - bw / 3}
+                  width={groupW}
+                  height={bw / 3}
+                  fill={bc}
+                />
                 <Rect
                   x={0}
                   y={groupH - (bw * 2) / 3 - bw / 3}
@@ -992,7 +1090,13 @@ function CanvasElement({ element, onSelect, onDragEnd, onDragMove, readOnly = fa
             (isDouble ? (
               <>
                 <Rect x={0} y={0} width={bw / 3} height={groupH} fill={bc} />
-                <Rect x={(bw * 2) / 3} y={0} width={bw / 3} height={groupH} fill={bc} />
+                <Rect
+                  x={(bw * 2) / 3}
+                  y={0}
+                  width={bw / 3}
+                  height={groupH}
+                  fill={bc}
+                />
               </>
             ) : (
               <B pts={[bw / 2, 0, bw / 2, groupH]} />
@@ -1000,7 +1104,13 @@ function CanvasElement({ element, onSelect, onDragEnd, onDragMove, readOnly = fa
           {renderRight &&
             (isDouble ? (
               <>
-                <Rect x={groupW - bw / 3} y={0} width={bw / 3} height={groupH} fill={bc} />
+                <Rect
+                  x={groupW - bw / 3}
+                  y={0}
+                  width={bw / 3}
+                  height={groupH}
+                  fill={bc}
+                />
                 <Rect
                   x={groupW - (bw * 2) / 3 - bw / 3}
                   y={0}
@@ -1034,7 +1144,11 @@ function CanvasElement({ element, onSelect, onDragEnd, onDragMove, readOnly = fa
           y={0}
           width={groupW}
           height={groupH}
-          fill={element.backgroundColor !== "transparent" ? element.backgroundColor : undefined}
+          fill={
+            element.backgroundColor !== "transparent"
+              ? element.backgroundColor
+              : undefined
+          }
           cornerRadius={[
             element.borderRadiusTopLeft,
             element.borderRadiusTopRight,
@@ -1046,9 +1160,15 @@ function CanvasElement({ element, onSelect, onDragEnd, onDragMove, readOnly = fa
           shadowOffsetX={element.shadowOffsetX}
           shadowOffsetY={element.shadowOffsetY}
           shadowOpacity={element.shadowBlur > 0 ? 0.4 : 0}
-          stroke={hasBorder && element.borderStyle !== "double" ? element.borderColor : undefined}
+          stroke={
+            hasBorder && element.borderStyle !== "double"
+              ? element.borderColor
+              : undefined
+          }
           strokeWidth={
-            hasBorder && element.borderStyle !== "double" ? element.borderWidth : undefined
+            hasBorder && element.borderStyle !== "double"
+              ? element.borderWidth
+              : undefined
           }
           dash={
             hasBorder && element.borderStyle === "dashed"
@@ -1086,7 +1206,8 @@ function CanvasElement({ element, onSelect, onDragEnd, onDragMove, readOnly = fa
           listening={!readOnly}
         />
         {hasBorder &&
-          (element.borderPosition !== "all" || element.borderStyle === "double") &&
+          (element.borderPosition !== "all" ||
+            element.borderStyle === "double") &&
           renderBorder()}
         {(element.textDecoration === "underline" ||
           element.textDecoration === "underline line-through") && (
@@ -1113,10 +1234,13 @@ function CanvasElement({ element, onSelect, onDragEnd, onDragMove, readOnly = fa
   }
 
   if (element.type === "image" && image) {
+    const crop = getImageCoverCrop(image, element.width, element.height);
+
     return (
       <KonvaImage
         {...commonProps}
         image={image}
+        crop={crop ?? undefined}
         perfectDrawEnabled={false}
         cornerRadius={[
           element.borderRadiusTopLeft ?? 0,
@@ -1142,17 +1266,24 @@ function CanvasElement({ element, onSelect, onDragEnd, onDragMove, readOnly = fa
 
     if (conf.audioEnabled) return null;
 
-    const isCountdownVertical = element.widgetType === "countdown" && conf.countdownOrientation === "vertical";
+    const isCountdownVertical =
+      element.widgetType === "countdown" &&
+      conf.countdownOrientation === "vertical";
     const overrideWidth = isCountdownVertical
       ? Math.min(element.width, element.height)
-      : (element.widgetType === "calendar" && element.width === 280 ? 380 : element.width);
+      : element.widgetType === "calendar" && element.width === 280
+        ? 380
+        : element.width;
     const overrideHeight = isCountdownVertical
       ? Math.max(element.width, element.height)
-      : (element.widgetType === "calendar" && element.height === 120 ? 240 : element.height);
+      : element.widgetType === "calendar" && element.height === 120
+        ? 240
+        : element.height;
 
     let labelText = `[Widget: ${element.widgetType || "Tiện ích"}]`;
 
-    if (conf.calendarEnabled) labelText = `📅 Lịch: ${conf.targetDate || "Chưa cài đặt"}`;
+    if (conf.calendarEnabled)
+      labelText = `📅 Lịch: ${conf.targetDate || "Chưa cài đặt"}`;
     else if (conf.countdownEnabled)
       labelText = `⏳ Đếm ngược: ${conf.targetDate ? "Đã đặt ngày" : "Chưa đặt ngày"}`;
     else if (conf.mapEnabled)
@@ -1237,7 +1368,11 @@ function WidgetOverlay({
 
   const handleMouseDown = (e: React.MouseEvent) => {
     const target = e.target as HTMLElement;
-    if (target.closest("input, button, textarea, select, a, [role='button'], label, .no-drag"))
+    if (
+      target.closest(
+        "input, button, textarea, select, a, [role='button'], label, .no-drag",
+      )
+    )
       return;
     e.preventDefault();
     const { elementId, onDragEnd, scale } = depsRef.current;
@@ -1258,7 +1393,10 @@ function WidgetOverlay({
       const dx = (e.clientX - startX) / scale;
       const dy = (e.clientY - startY) / scale;
       if (!dragging) {
-        if (Math.abs(e.clientX - startX) > 3 || Math.abs(e.clientY - startY) > 3) {
+        if (
+          Math.abs(e.clientX - startX) > 3 ||
+          Math.abs(e.clientY - startY) > 3
+        ) {
           dragging = true;
         } else {
           return;
@@ -1284,21 +1422,26 @@ function WidgetOverlay({
     document.addEventListener("mouseup", handleMouseUp);
   };
 
-  const isCountdownVertical = element.widgetType === "countdown" && conf.countdownOrientation === "vertical";
-  
+  const isCountdownVertical =
+    element.widgetType === "countdown" &&
+    conf.countdownOrientation === "vertical";
+
   const overrideWidth = isCountdownVertical
     ? Math.min(element.width, element.height)
-    : ((element.widgetType === "calendar" || element.widgetType === "youtube") && element.width === 280
+    : (element.widgetType === "calendar" || element.widgetType === "youtube") &&
+        element.width === 280
       ? 380
       : element.widgetType === "call"
         ? 60
-        : element.width);
-    
+        : element.width;
+
   const overrideHeight = isCountdownVertical
     ? Math.max(element.width, element.height)
     : element.widgetType === "youtube"
       ? (overrideWidth * 9) / 16
-      : (element.widgetType === "calendar" && element.height === 120 ? 240 : element.height);
+      : element.widgetType === "calendar" && element.height === 120
+        ? 240
+        : element.height;
 
   const commonStyle: React.CSSProperties = {
     position: "absolute",
@@ -1398,12 +1541,16 @@ function WidgetOverlay({
         element.widgetType === "carousel" ||
         element.widgetType === "gallery") &&
         conf.galleryEnabled && (
-          <GalleryWidget {...widgetProps} images={conf.images} layout={conf.galleryLayout} />
+          <GalleryWidget
+            {...widgetProps}
+            images={conf.images}
+            layout={conf.galleryLayout}
+          />
         )}
       {element.widgetType === "youtube" && conf.youtubeEnabled && (
         <YouTubeWidget {...widgetProps} youtubeUrl={conf.youtubeUrl} />
       )}
-      
+
       {!readOnly && (
         <div
           style={{

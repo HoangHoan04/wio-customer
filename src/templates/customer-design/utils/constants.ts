@@ -1,4 +1,7 @@
 import type { EditorElement, EditorTool } from "../types";
+import { SYSTEM_WALLPAPERS } from "../assets/images";
+
+export { SYSTEM_WALLPAPERS };
 
 export const CANVAS_WIDTH = 800;
 export const CANVAS_HEIGHT = 1200;
@@ -116,18 +119,6 @@ export const WEDDING_GRADIENT_COLORS = [
   "linear-gradient(135deg, #FBBF24 0%, #D97706 100%)",
   "linear-gradient(135deg, #60A5FA 0%, #2563EB 100%)",
   "linear-gradient(135deg, #C084FC 0%, #A855F7 100%)",
-];
-
-export const SYSTEM_WALLPAPERS = [
-  "https://images.unsplash.com/photo-1522673607200-164d1b6ce486?w=400",
-  "https://images.unsplash.com/photo-1579546929518-9e396f3cc809?w=400",
-  "https://images.unsplash.com/photo-1533158326339-7f3cf2404354?w=400",
-  "https://images.unsplash.com/photo-1448375240586-882707db888b?w=400",
-  "https://images.unsplash.com/photo-1557683316-973673baf926?w=400",
-  "https://images.unsplash.com/photo-1508739773434-c26b3d09e071?w=400",
-  "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=400",
-  "https://images.unsplash.com/photo-1517842645767-c639042777db?w=400",
-  "https://images.unsplash.com/photo-1554034483-04fda0d350e3?w=400",
 ];
 
 export const WEDDING_SHAPES = [

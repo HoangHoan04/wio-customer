@@ -1,13 +1,4 @@
-import {
-  CalendarIcon,
-  CountdownIcon,
-  GiftQrIcon,
-  MapIcon,
-  PhoneIcon,
-  RSVPIcon,
-  StackPhotoIcon,
-  VideoYoutubeIcon,
-} from "@/templates/customer-design/icons";
+
 import Button from "@/templates/customer-design/ui/button/Button";
 import InputDate from "@/templates/customer-design/ui/input/InputDate";
 import InputDateTime from "@/templates/customer-design/ui/input/InputDateTime";
@@ -17,12 +8,12 @@ import Select, {
   type SelectOption,
 } from "@/templates/customer-design/ui/Select";
 import { weddingService } from "@/services/wedding.service";
-import { Loader2, Plus, Trash2, Check } from "lucide-react";
+import { Loader2, Plus, Trash2, Check, CalendarIcon, MapIcon, PhoneIcon } from "lucide-react";
 import { useState } from "react";
 import ColorPickerRow from "../components/ColorPickerRow";
 import Section from "../components/Section";
 import type { EditorElement, WidgetConfig, WidgetType } from "../types";
-import { MessengerIcon, ViberIcon, ZaloIcon } from "@/assets/icons";
+import { CountdownIcon, GiftQrIcon, MessengerIcon, RSVPIcon, StackPhotoIcon, ViberIcon, VideoYoutubeIcon, ZaloIcon } from "@/assets/icons";
 import FileUpload from "@/components/common/FileUpload";
 
 const BANK_OPTIONS: SelectOption[] = [

@@ -8,6 +8,10 @@ import Select from "@/templates/customer-design/ui/Select";
 import Slider from "@/templates/customer-design/ui/Slider";
 import Switch from "@/templates/customer-design/ui/Switch";
 import { BORDER_RADIUS_MODES } from "@/templates/customer-design/utils/constants";
+import {
+  fitImageToCanvas,
+  loadImageSize,
+} from "@/templates/customer-design/utils/image-fit";
 import tokenCache from "@/utils/token-cache";
 import {
   ArrowLeft,
@@ -62,15 +66,6 @@ const FIT_MODE_OPTIONS = [
   { label: "Vừa khung canvas (Contain)", value: "contain" },
   { label: "Tuỳ chỉnh", value: "custom" },
 ];
-
-function loadImageSize(url: string): Promise<{ w: number; h: number }> {
-  return new Promise((resolve) => {
-    const img = new window.Image();
-    img.onload = () => resolve({ w: img.naturalWidth, h: img.naturalHeight });
-    img.onerror = () => resolve({ w: 200, h: 200 });
-    img.src = url;
-  });
-}
 
 export default function ImageUploadContent({
   onAddImageToCanvas,
@@ -246,15 +241,13 @@ export default function ImageUploadContent({
     setFitMode("original");
 
     const nat = await loadImageSize(item.url);
-    setNaturalSize(nat);
+    setNaturalSize({ w: nat.width, h: nat.height });
 
-    let w = nat.w;
-    let h = nat.h;
-    if (w > canvasWidth) {
-      const ratio = h / w;
-      w = canvasWidth;
-      h = Math.round(w * ratio);
-    }
+    const { width: w, height: h } = fitImageToCanvas(
+      nat.width,
+      nat.height,
+      canvasWidth,
+    );
 
     onAddImageToCanvas(item.url, { width: w, height: h });
   };
@@ -265,13 +258,11 @@ export default function ImageUploadContent({
   ) => {
     if (!editingEl || !onUpdateElement || !nat) return;
     if (mode === "original" || mode === "contain") {
-      let w = nat.w;
-      let h = nat.h;
-      if (w > canvasWidth) {
-        const ratio = h / w;
-        w = canvasWidth;
-        h = Math.round(w * ratio);
-      }
+      const { width: w, height: h } = fitImageToCanvas(
+        nat.w,
+        nat.h,
+        canvasWidth,
+      );
       onUpdateElement(editingEl.id, { width: w, height: h });
     }
   };

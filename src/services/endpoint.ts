@@ -52,10 +52,7 @@ export const API_ENDPOINTS = {
     CANCEL_IMPORT: "/api/user/music-background/cancel-import",
     CREATE_USER_MUSIC: "/api/user/music-background/create",
   },
-  GIPHY: {
-    SEARCH: "/api/user/giphy/search",
-    PEXELS_SEARCH: "/api/user/giphy/pexels-search",
-  },
+
   GUEST: {
     PAGINATION: "/api/user/guest/pagination",
     FIND_BY_ID: "/api/user/guest/find-by-id",
