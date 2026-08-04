@@ -1,3 +1,4 @@
+import { normalizeAuthUser } from "@/utils/auth-user";
 import tokenCache from "@/utils/token-cache";
 import { create } from "zustand";
 
@@ -31,8 +32,31 @@ export const useAuthStore = create<AuthState>((set) => ({
   isHydrated: false,
   hydrate: () => {
     const user = tokenCache.getUser();
-    const isAuthenticated = tokenCache.isAuthenticated();
-    set({ user, isAuthenticated, isHydrated: true });
+    const hasToken = tokenCache.isAuthenticated();
+    set({
+      user,
+      isAuthenticated: hasToken && !!user,
+      isHydrated: true,
+    });
+
+    if (hasToken && !user) {
+      import("@/services/auth.service").then(({ authService }) => {
+        authService
+          .getUserInfo()
+          .then((res) => {
+            const accessToken = tokenCache.getAccessToken();
+            const refreshToken = tokenCache.getRefreshToken();
+            if (!accessToken || !refreshToken) return;
+
+            useAuthStore
+              .getState()
+              .setAuth(normalizeAuthUser(res.data), accessToken, refreshToken);
+          })
+          .catch(() => {
+            useAuthStore.getState().clearAuth();
+          });
+      });
+    }
   },
   setAuth: (user, accessToken, refreshToken) => {
     tokenCache.setAuthData(accessToken, refreshToken, user);

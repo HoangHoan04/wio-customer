@@ -88,6 +88,7 @@ apiService.interceptors.response.use(
           data.refreshToken,
           tokenCache.getUser(),
         );
+        document.cookie = `token=${data.accessToken}; path=/; max-age=86400; SameSite=Lax`;
 
         processQueue(null, data.accessToken);
 

@@ -1,0 +1,18 @@
+services:
+  customer:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:4300}
+        NEXT_PUBLIC_FACEBOOK_APP_ID: ${NEXT_PUBLIC_FACEBOOK_APP_ID:-}
+    container_name: wio_customer
+    restart: unless-stopped
+    ports:
+      - '${PORT:-2504}:2504'
+    networks:
+      - wio_customer_net
+
+networks:
+  wio_customer_net:
+    driver: bridge
