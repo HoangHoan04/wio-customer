@@ -18,9 +18,9 @@ export const MusicSection = ({
   onPause,
 }: MusicSectionProps) => {
   return (
-    <div className="bg-white/2 border border-white/5 p-5 rounded-xl shadow-lg flex flex-col gap-5 mb-10">
-      <div className="flex justify-between items-center border-b border-[#d4af37]/10 pb-2">
-        <h3 className="text-md font-bold text-[#d4af37]">14. Nhạc nền</h3>
+    <div className="bg-[#2D231F]/8 border border-white/5 p-5 rounded-xl shadow-lg flex flex-col gap-5 mb-10">
+      <div className="flex justify-between items-center border-b border-[#2D231F]/10 pb-2">
+        <h3 className="text-md font-bold text-[#2D231F]">14. Nhạc nền</h3>
         <Switch
           checked={formData.showMusic}
           onChange={(val) => handleChange("showMusic", val)}
@@ -30,19 +30,19 @@ export const MusicSection = ({
 
       {formData.showMusic && (
         <div className="flex flex-col gap-4">
-          <div className="flex flex-col items-center justify-center gap-3 text-center p-6 bg-[#1a1012] rounded-xl border border-[#d4af37]/10">
-            <div className="w-16 h-16 bg-[#d4af37]/10 rounded-full flex items-center justify-center">
+          <div className="flex flex-col items-center justify-center gap-3 text-center p-6 bg-[#f4f8e8] rounded-xl border border-[#2D231F]/10">
+            <div className="w-16 h-16 bg-[#2D231F]/10 rounded-full flex items-center justify-center">
               <Music
                 size={28}
-                className="text-[#f5c842]"
+                className="text-[#7A6A5C]"
                 strokeWidth={1.5}
               />
             </div>
             <div>
-              <p className="text-sm font-bold text-[#f5e6d3]">
+              <p className="text-sm font-bold text-[#2D231F]">
                 {formData.musicName || "Chưa chọn nhạc nền"}
               </p>
-              <p className="text-xs text-[#f5e6d3]/60 mt-1">
+              <p className="text-xs text-[#2D231F]/60 mt-1">
                 {formData.musicUrl
                   ? "Đang phát nhạc mp3"
                   : "Thêm giai điệu cho khoảnh khắc của bạn"}
@@ -50,7 +50,7 @@ export const MusicSection = ({
             </div>
             <Button
               onClick={onOpenMusicModal}
-              className="mt-2 bg-[#d4af37] text-black hover:bg-[#f5c842] text-xs px-6 py-2 rounded-full font-bold flex items-center gap-2"
+              className="mt-2 bg-[#2D231F] text-[#F3EDE3] hover:bg-[#C4B09A] text-xs px-6 py-2 rounded-full font-bold flex items-center gap-2"
             >
               <Music size={14} />
               {formData.musicUrl ? "Thay đổi nhạc" : "Chọn nhạc"}
@@ -58,7 +58,7 @@ export const MusicSection = ({
           </div>
 
           {formData.musicUrl && (
-            <div className="w-full bg-[#1a1012] rounded-xl p-3 border border-[#d4af37]/20">
+            <div className="w-full bg-[#f4f8e8] rounded-xl p-3 border border-[#2D231F]/20">
               <audio
                 controls
                 controlsList="nodownload"

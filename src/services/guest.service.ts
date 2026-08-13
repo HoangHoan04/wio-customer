@@ -8,8 +8,19 @@ import type {
   RsvpReq,
   UpdateGuestReq,
 } from "@/dto";
+import type { InvitationDto } from "@/dto/invitation.dto";
 import apiService from "./api.service";
 import { API_ENDPOINTS } from "./endpoint";
+
+function toGuestPayload(data: CreateGuestReq | UpdateGuestReq) {
+  const { side, groupCode, ...rest } = data as CreateGuestReq & {
+    side?: string;
+  };
+  return {
+    ...rest,
+    groupCode: groupCode || side,
+  };
+}
 
 export const guestService = {
   getGuests: async (
@@ -33,7 +44,7 @@ export const guestService = {
   createGuest: async (data: CreateGuestReq): Promise<{ data: GuestDto }> => {
     const response = await apiService.post<{ data: GuestDto }>(
       API_ENDPOINTS.GUEST.CREATE,
-      data,
+      toGuestPayload(data),
     );
     return response.data;
   },
@@ -41,7 +52,7 @@ export const guestService = {
   updateGuest: async (data: UpdateGuestReq): Promise<{ data: GuestDto }> => {
     const response = await apiService.post<{ data: GuestDto }>(
       API_ENDPOINTS.GUEST.UPDATE,
-      data,
+      toGuestPayload(data),
     );
     return response.data;
   },
@@ -63,12 +74,12 @@ export const guestService = {
   },
 
   importExcel: async (
-    weddingId: string,
+    invitationId: string,
     file: File,
   ): Promise<{ message: string; data: GuestDto[] }> => {
     const formData = new FormData();
     formData.append("file", file);
-    formData.append("weddingId", weddingId);
+    formData.append("invitationId", invitationId);
     const response = await apiService.post<{
       message: string;
       data: GuestDto[];
@@ -79,13 +90,19 @@ export const guestService = {
   },
 
   createMany: async (
-    weddingId: string,
+    invitationId: string,
     guests: CreateGuestReq[],
   ): Promise<{ message: string; data: GuestDto[] }> => {
     const response = await apiService.post<{
       message: string;
       data: GuestDto[];
-    }>(API_ENDPOINTS.GUEST.CREATE_MANY, { weddingId, guests });
+    }>(API_ENDPOINTS.GUEST.CREATE_MANY, {
+      invitationId,
+      guests: guests.map((g) => ({
+        ...toGuestPayload(g),
+        invitationId,
+      })),
+    });
     return response.data;
   },
 
@@ -100,9 +117,9 @@ export const guestService = {
 
   identify: async (
     invitationCode: string,
-  ): Promise<{ data: { guest: GuestDto; wedding: any } }> => {
+  ): Promise<{ data: { guest: GuestDto; invitation: InvitationDto } }> => {
     const response = await apiService.post<{
-      data: { guest: GuestDto; wedding: any };
+      data: { guest: GuestDto; invitation: InvitationDto };
     }>(API_ENDPOINTS.GUEST.PUBLIC_IDENTIFY, { invitationCode });
     return response.data;
   },
@@ -115,12 +132,26 @@ export const guestService = {
     return response.data;
   },
 
-  getStats: async (weddingId: string): Promise<{ data: GuestStatsRes }> => {
-    const response = await apiService.post<{ data: GuestStatsRes }>(
+  getStats: async (invitationId: string): Promise<{ data: GuestStatsRes }> => {
+    const response = await apiService.post<PaginationRes<GuestDto>>(
       API_ENDPOINTS.GUEST.PAGINATION,
-      { weddingId },
+      { skip: 0, take: 1000, where: { invitationId } },
     );
-    return response.data;
+    const guests = response.data?.data || [];
+    const attending = guests.filter((g) => g.rsvpStatus === "ATTENDING");
+    return {
+      data: {
+        total: guests.length,
+        attending: attending.length,
+        declined: guests.filter((g) => g.rsvpStatus === "DECLINED").length,
+        pending: guests.filter((g) => g.rsvpStatus === "PENDING").length,
+        attendingGuests: attending.reduce(
+          (sum, g) => sum + (g.attendingCount || 1),
+          0,
+        ),
+        needsTransport: guests.filter((g) => g.needsTransport).length,
+      },
+    };
   },
 };
 

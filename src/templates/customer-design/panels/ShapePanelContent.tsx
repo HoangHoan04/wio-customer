@@ -42,20 +42,20 @@ export default function ShapePanelContent({
     const update = (updates: Partial<EditorElement>) => onUpdate(el.id, updates);
 
     return (
-      <div className="w-full font-sans text-zinc-100 pb-10 space-y-4">
+      <div className="w-full font-sans text-[#2D231F] pb-10 space-y-4">
         <div className="flex items-center gap-3">
           <button
             onClick={() => {
               setPanelView("list");
               onSelect?.(null);
             }}
-            className="w-8 h-8 flex items-center justify-center rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-400 hover:text-white transition-colors"
+            className="w-8 h-8 flex items-center justify-center rounded-lg bg-[#EDE4D5] hover:bg-zinc-700 text-[#7A6A5C] hover:text-white transition-colors"
           >
             <ArrowLeft size={16} />
           </button>
           <div>
             <h3 className="text-sm font-bold text-white tracking-wide">Chi tiết hình khối</h3>
-            <p className="text-[11px] text-zinc-500 mt-0.5">
+            <p className="text-[11px] text-[#7A6A5C]/70 mt-0.5">
               {el.shapeType
                 ? SHAPE_LABELS[el.shapeType] +
                   " " +
@@ -65,12 +65,12 @@ export default function ShapePanelContent({
           </div>
         </div>
 
-        <div className="h-px bg-zinc-800" />
+        <div className="h-px bg-[#EDE4D5]" />
 
         <Section label="Kích thước">
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-[10px] text-zinc-500 uppercase font-semibold mb-1 block">
+              <label className="text-[10px] text-[#7A6A5C]/70 uppercase font-semibold mb-1 block">
                 Chiều rộng
               </label>
               <InputNumber
@@ -78,11 +78,11 @@ export default function ShapePanelContent({
                 onValueChange={(v) => update({ width: v ?? 10 })}
                 min={10}
                 max={2000}
-                className="w-full h-8 bg-zinc-900 border-zinc-800 text-xs text-center"
+                className="w-full h-8 bg-[#F3EDE3] border-[#D9CDBE] text-xs text-center"
               />
             </div>
             <div>
-              <label className="text-[10px] text-zinc-500 uppercase font-semibold mb-1 block">
+              <label className="text-[10px] text-[#7A6A5C]/70 uppercase font-semibold mb-1 block">
                 Chiều cao
               </label>
               <InputNumber
@@ -90,19 +90,19 @@ export default function ShapePanelContent({
                 onValueChange={(v) => update({ height: v ?? 10 })}
                 min={10}
                 max={2000}
-                className="w-full h-8 bg-zinc-900 border-zinc-800 text-xs text-center"
+                className="w-full h-8 bg-[#F3EDE3] border-[#D9CDBE] text-xs text-center"
               />
             </div>
           </div>
         </Section>
 
         <div className="flex flex-col gap-1.5">
-          <label className="text-[10px] text-zinc-500 uppercase font-semibold">Màu nền</label>
+          <label className="text-[10px] text-[#7A6A5C]/70 uppercase font-semibold">Màu nền</label>
           <ColorPickerRow value={el.fill} onChange={(v) => update({ fill: v })} />
         </div>
 
         <div className="flex flex-col gap-1.5">
-          <label className="text-[10px] text-zinc-500 uppercase font-semibold">Màu viền</label>
+          <label className="text-[10px] text-[#7A6A5C]/70 uppercase font-semibold">Màu viền</label>
           <ColorPickerRow
             value={el.stroke || "transparent"}
             onChange={(v) => update({ stroke: v })}
@@ -153,7 +153,7 @@ export default function ShapePanelContent({
                   max={Math.min(el.width, el.height) / 2}
                   className="flex-1"
                 />
-                <span className="text-xs text-zinc-400 w-8 text-right font-mono">
+                <span className="text-xs text-[#7A6A5C] w-8 text-right font-mono">
                   {el.borderRadiusTopLeft ?? 0}
                 </span>
               </div>
@@ -167,9 +167,9 @@ export default function ShapePanelContent({
                 ].map((corner) => (
                   <div
                     key={corner.id}
-                    className="flex flex-col gap-1.5 bg-zinc-900/50 p-2 rounded-lg border border-zinc-800/50"
+                    className="flex flex-col gap-1.5 bg-[#F3EDE3]/50 p-2 rounded-lg border border-[#D9CDBE]/50"
                   >
-                    <label className="text-[10px] text-zinc-500 truncate">{corner.label}</label>
+                    <label className="text-[10px] text-[#7A6A5C]/70 truncate">{corner.label}</label>
                     <div className="flex items-center gap-2">
                       <Slider
                         value={(el as any)[corner.id] ?? 0}
@@ -178,7 +178,7 @@ export default function ShapePanelContent({
                         max={Math.min(el.width, el.height) / 2}
                         className="flex-1"
                       />
-                      <span className="text-xs text-zinc-400 w-6 text-right font-mono">
+                      <span className="text-xs text-[#7A6A5C] w-6 text-right font-mono">
                         {(el as any)[corner.id] ?? 0}
                       </span>
                     </div>
@@ -192,7 +192,7 @@ export default function ShapePanelContent({
         <Section label="Đổ bóng">
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <span className="text-xs text-zinc-400">Bật bóng đổ</span>
+              <span className="text-xs text-[#7A6A5C]">Bật bóng đổ</span>
               <Switch
                 checked={el.shadowBlur > 0}
                 onChange={(val) => {
@@ -213,7 +213,7 @@ export default function ShapePanelContent({
             {el.shadowBlur > 0 && (
               <>
                 <div className="flex flex-col gap-1.5 mb-3">
-                  <label className="text-[10px] text-zinc-500 uppercase font-semibold">
+                  <label className="text-[10px] text-[#7A6A5C]/70 uppercase font-semibold">
                     Màu bóng
                   </label>
                   <ColorPickerRow
@@ -223,8 +223,8 @@ export default function ShapePanelContent({
                 </div>
                 <div>
                   <div className="flex items-center justify-between mb-1.5">
-                    <label className="text-xs text-zinc-500">Độ mờ bóng (Blur)</label>
-                    <span className="text-xs text-zinc-400 font-mono">{el.shadowBlur}</span>
+                    <label className="text-xs text-[#7A6A5C]/70">Độ mờ bóng (Blur)</label>
+                    <span className="text-xs text-[#7A6A5C] font-mono">{el.shadowBlur}</span>
                   </div>
                   <Slider
                     value={el.shadowBlur}
@@ -235,7 +235,7 @@ export default function ShapePanelContent({
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="text-[10px] text-zinc-500 uppercase font-semibold mb-1 block">
+                    <label className="text-[10px] text-[#7A6A5C]/70 uppercase font-semibold mb-1 block">
                       Khoảng cách X
                     </label>
                     <InputNumber
@@ -243,11 +243,11 @@ export default function ShapePanelContent({
                       onValueChange={(v) => update({ shadowOffsetX: v ?? 0 })}
                       min={-50}
                       max={50}
-                      className="w-full h-8 bg-zinc-900 border-zinc-800 text-xs text-center"
+                      className="w-full h-8 bg-[#F3EDE3] border-[#D9CDBE] text-xs text-center"
                     />
                   </div>
                   <div>
-                    <label className="text-[10px] text-zinc-500 uppercase font-semibold mb-1 block">
+                    <label className="text-[10px] text-[#7A6A5C]/70 uppercase font-semibold mb-1 block">
                       Khoảng cách Y
                     </label>
                     <InputNumber
@@ -255,7 +255,7 @@ export default function ShapePanelContent({
                       onValueChange={(v) => update({ shadowOffsetY: v ?? 0 })}
                       min={-50}
                       max={50}
-                      className="w-full h-8 bg-zinc-900 border-zinc-800 text-xs text-center"
+                      className="w-full h-8 bg-[#F3EDE3] border-[#D9CDBE] text-xs text-center"
                     />
                   </div>
                 </div>
@@ -264,7 +264,7 @@ export default function ShapePanelContent({
           </div>
         </Section>
 
-        <div className="h-px bg-zinc-800 mt-4" />
+        <div className="h-px bg-[#EDE4D5] mt-4" />
 
         <button
           onClick={() => {
@@ -281,19 +281,19 @@ export default function ShapePanelContent({
   }
 
   return (
-    <div className="w-full font-sans text-zinc-100">
+    <div className="w-full font-sans text-[#2D231F]">
       <Section label="Thêm hình">
         <div className="grid grid-cols-4 gap-2">
           {WEDDING_SHAPES.map((shape) => (
             <button
               key={shape.type}
               onClick={() => onAddShape(shape.type)}
-              className="flex flex-col items-center justify-center gap-1.5 p-3 bg-zinc-900/60 rounded-xl border border-zinc-800 hover:border-amber-500/50 hover:bg-zinc-800 transition-all duration-200 group"
+              className="flex flex-col items-center justify-center gap-1.5 p-3 bg-[#F3EDE3]/60 rounded-xl border border-[#D9CDBE] hover:border-amber-500/50 hover:bg-[#EDE4D5] transition-all duration-200 group"
             >
-              <span className="text-2xl text-zinc-400 group-hover:text-amber-400 group-hover:scale-110 transition-all">
+              <span className="text-2xl text-[#7A6A5C] group-hover:text-amber-400 group-hover:scale-110 transition-all">
                 {SHAPE_LABELS[shape.type]}
               </span>
-              <span className="text-[9px] text-zinc-500 group-hover:text-zinc-300 font-medium">
+              <span className="text-[9px] text-[#7A6A5C]/70 group-hover:text-zinc-300 font-medium">
                 {shape.name}
               </span>
             </button>
@@ -302,7 +302,7 @@ export default function ShapePanelContent({
       </Section>
 
       {shapes.length > 0 && (
-        <div className="mt-6 border-t border-zinc-800 pt-5">
+        <div className="mt-6 border-t border-[#D9CDBE] pt-5">
           <h3 className="text-xs font-bold text-zinc-300 tracking-wide mb-3 uppercase">
             Danh sách hình trên Canvas
           </h3>
@@ -311,10 +311,10 @@ export default function ShapePanelContent({
               <div
                 key={s.id}
                 onClick={() => onSelect?.(s.id)}
-                className="flex items-center justify-between p-2.5 bg-zinc-900/40 border border-zinc-800/80 rounded-lg hover:border-amber-500/30 hover:bg-zinc-800/60 transition-colors cursor-pointer group"
+                className="flex items-center justify-between p-2.5 bg-[#F3EDE3]/40 border border-[#D9CDBE]/80 rounded-lg hover:border-amber-500/30 hover:bg-[#EDE4D5]/60 transition-colors cursor-pointer group"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-md bg-zinc-800 flex items-center justify-center border border-zinc-700/50">
+                  <div className="w-8 h-8 rounded-md bg-[#EDE4D5] flex items-center justify-center border border-zinc-700/50">
                     <span className="text-lg text-zinc-300">{SHAPE_LABELS[s.shapeType]}</span>
                   </div>
                   <div>
@@ -322,7 +322,7 @@ export default function ShapePanelContent({
                       Hình {index + 1} ({WEDDING_SHAPES.find((ws) => ws.type === s.shapeType)?.name}
                       )
                     </p>
-                    <p className="text-[10px] text-zinc-500 mt-0.5">
+                    <p className="text-[10px] text-[#7A6A5C]/70 mt-0.5">
                       {Math.round(s.width)} x {Math.round(s.height)} px
                     </p>
                   </div>
@@ -333,7 +333,7 @@ export default function ShapePanelContent({
                     e.stopPropagation();
                     onDelete(s.id);
                   }}
-                  className="w-7 h-7 rounded-md flex items-center justify-center text-zinc-500 hover:bg-red-500/10 hover:text-red-400 transition-colors"
+                  className="w-7 h-7 rounded-md flex items-center justify-center text-[#7A6A5C]/70 hover:bg-red-500/10 hover:text-red-400 transition-colors"
                 >
                   <Trash2 size={13} />
                 </button>

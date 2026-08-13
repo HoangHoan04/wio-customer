@@ -27,16 +27,16 @@ export interface ButtonProps {
 }
 const variantBase: Record<ButtonVariant, string> = {
   primary:
-    "bg-linear-to-r from-[#d4af37] to-[#f5c842] text-[#1a0a0f] hover:opacity-90 shadow-lg shadow-[#d4af37]/30",
+    "bg-[#2D231F] text-[#F3EDE3] hover:opacity-90 shadow-lg shadow-[rgba(45,35,31,0.18)]",
   secondary:
-    "bg-[#d4af37]/15 text-[#f5c842] border border-[#d4af37]/40 hover:bg-[#d4af37]/25",
+    "bg-[#2D231F]/10 text-[#2D231F] border border-[#2D231F]/25 hover:bg-[#2D231F]/15",
   outline:
-    "bg-transparent text-[#d4af37] border border-[#d4af37] hover:bg-[#d4af37]/10",
+    "bg-transparent text-[#2D231F] border border-[#2D231F] hover:bg-[#2D231F]/8",
   success: "bg-green-500 text-white hover:bg-green-600",
   error: "bg-red-500 text-white hover:bg-red-600",
-  warning: "bg-yellow-500 text-[#1a0a0f] hover:bg-yellow-600",
+  warning: "bg-yellow-500 text-[#2D231F] hover:bg-yellow-600",
   info: "bg-blue-500 text-white hover:bg-blue-600",
-  gold: "bg-[#d4af37] text-[#1a0a0f] hover:bg-[#f5c842] shadow-md",
+  gold: "bg-[#2D231F] text-[#F3EDE3] hover:opacity-90 shadow-md",
 };
 
 const sizeMap: Record<ButtonSize, string> = {
@@ -66,7 +66,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   ) => {
     const baseButton = [
       "inline-flex items-center justify-center gap-2 rounded-md cursor-pointer",
-      "transition-all duration-300 outline-none focus:ring-2 focus:ring-[#d4af37]/50 focus:ring-offset-2 focus:ring-offset-[#1a0a0f]",
+      "transition-all duration-300 outline-none focus:ring-2 focus:ring-[#2D231F]/30 focus:ring-offset-2 focus:ring-offset-[#F3EDE3]",
       "disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none",
       variantBase[variant],
       sizeMap[buttonSize],

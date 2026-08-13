@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "concurrently \"next start -p 2504\" \"wait-on http://localhost:2504 && node scripts/open-browser.js http://localhost:2504\"",
     "lint": "eslint",
-    "lint:fix": "eslint --fix"
+    "lint:fix": "eslint --fix",
+    "mirror-stickers": "node scripts/mirror-stickers.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.6.0",
@@ -22,6 +23,7 @@
     "cmdk": "^1.1.1",
     "date-fns": "^4.4.0",
     "embla-carousel-react": "^8.6.0",
+    "framer-motion": "^13.1.0",
     "input-otp": "^1.4.2",
     "konva": "^10.3.0",
     "lucide-react": "^1.23.0",

@@ -82,6 +82,9 @@ export interface WidgetConfig {
   youtubeUrl?: string;
   color?: string;
   fontFamily?: string;
+  qrTitle?: string;
+  groomLabel?: string;
+  brideLabel?: string;
 }
 
 export interface EditorElement {
@@ -165,6 +168,28 @@ export interface EditorElement {
   groupId?: string;
 }
 
+export type TextPreset = Partial<
+  Pick<
+    EditorElement,
+    | "content"
+    | "fontSize"
+    | "fontFamily"
+    | "fontStyle"
+    | "fontWeight"
+    | "textAlign"
+    | "verticalAlign"
+    | "color"
+    | "fill"
+    | "letterSpacing"
+    | "lineHeight"
+    | "textTransform"
+    | "width"
+    | "height"
+    | "x"
+    | "y"
+  >
+>;
+
 export interface EditorState {
   elements: EditorElement[];
   selectedElementId: string | null;
@@ -187,3 +212,38 @@ export type EditorAction =
   | { type: "SELECT_ELEMENT"; payload: string | null }
   | { type: "SET_BACKGROUND"; payload: string }
   | { type: "SET_ZOOM"; payload: number };
+
+export type IntroEffectType =
+  | "none"
+  | "fade"
+  | "zoom"
+  | "envelope"
+  | "curtain"
+  | "slide-up"
+  | "blur"
+  | "hearts";
+
+export type ParticleEffectType =
+  | "none"
+  | "petals"
+  | "hearts"
+  | "snow"
+  | "confetti"
+  | "sparkles"
+  | "leaves"
+  | "bubbles"
+  | "stars";
+
+export type IntroTrigger = "auto" | "tap";
+
+export interface InvitationEffects {
+  intro: {
+    type: IntroEffectType;
+    duration: number;
+    trigger: IntroTrigger;
+  };
+  particles: {
+    type: ParticleEffectType;
+    density: number;
+  };
+}

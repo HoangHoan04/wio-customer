@@ -1,6 +1,6 @@
 import { Check, ChevronDown, X } from "lucide-react";
-import type { ReactNode } from "react";
-import { forwardRef, useCallback, useEffect, useRef, useState } from "react";
+import type { CSSProperties, ReactNode } from "react";
+import { forwardRef, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
 export interface SelectOption {
@@ -9,6 +9,8 @@ export interface SelectOption {
   icon?: ReactNode;
   description?: string;
   disabled?: boolean;
+  labelStyle?: CSSProperties;
+  group?: string;
 }
 
 export interface SelectProps {
@@ -75,6 +77,19 @@ const Select = forwardRef<HTMLDivElement, SelectProps>(
     const filteredOptions = searchable
       ? options.filter((opt) => opt.label.toLowerCase().includes(searchQuery.toLowerCase()))
       : options;
+
+    const groupedOptions = useMemo(() => {
+      const hasGroups = filteredOptions.some((opt) => opt.group);
+      if (!hasGroups) return null;
+      const groups: { name: string; options: SelectOption[] }[] = [];
+      for (const option of filteredOptions) {
+        const name = option.group || "";
+        const last = groups[groups.length - 1];
+        if (last && last.name === name) last.options.push(option);
+        else groups.push({ name, options: [option] });
+      }
+      return groups;
+    }, [filteredOptions]);
 
     const updatePopupPos = useCallback(() => {
       if (triggerRef.current) {
@@ -144,10 +159,55 @@ const Select = forwardRef<HTMLDivElement, SelectProps>(
       }
     };
 
+    const renderOption = (option: SelectOption) => {
+      const isSelected = String(option.value) === String(currentValue);
+      const isDisabled = option.disabled;
+
+      return (
+        <button
+          key={option.value}
+          type="button"
+          onClick={() => !isDisabled && handleSelect(option.value)}
+          disabled={isDisabled}
+          className={`
+            w-full px-4 py-2 text-left
+            flex items-center justify-between gap-2
+            transition-colors duration-150
+            ${menuTextSizeMap[size]}
+            ${
+              isSelected
+                ? "bg-[#2D231F]/8 text-[#2D231F]"
+                : "text-[#2D231F]"
+            }
+            ${
+              isDisabled
+                ? "opacity-50 cursor-not-allowed"
+                : "hover:bg-[#EDE4D5] cursor-pointer"
+            }
+          `}
+        >
+          <div className="flex items-center gap-2 flex-1 min-w-0">
+            {option.icon && <span className="shrink-0">{option.icon}</span>}
+            <div className="flex-1 min-w-0">
+              <div className="truncate" style={option.labelStyle}>
+                {option.label}
+              </div>
+              {option.description && (
+                <div className="text-[10px] text-[#7A6A5C] truncate mt-0.5">
+                  {option.description}
+                </div>
+              )}
+            </div>
+          </div>
+          {isSelected && <Check size={16} className="shrink-0 text-[#2D231F]" />}
+        </button>
+      );
+    };
+
     return (
       <div ref={ref} className={`flex flex-col gap-1.5 ${wrapperClassName}`}>
         {label && (
-          <label className="text-sm font-medium text-gray-700 dark:text-gray-300">{label}</label>
+          <label className="text-sm font-medium text-[#2D231F]">{label}</label>
         )}
 
         <div ref={containerRef} className="relative">
@@ -156,18 +216,18 @@ const Select = forwardRef<HTMLDivElement, SelectProps>(
             className={`
               ${sizeMap[size]} w-full px-4 rounded-lg border transition-all duration-200
               flex items-center justify-between gap-2
-              bg-white dark:bg-[#191919]
+              bg-[#F3EDE3]
               ${
                 error
                   ? "border-red-400"
                   : isOpen
-                    ? "border-[#d4af37] ring-2 ring-[rgba(212,175,55,0.2)]"
-                    : "border-gray-300 dark:border-gray-600"
+                    ? "border-[#2D231F] ring-2 ring-[rgba(45,35,31,0.1)]"
+                    : "border-[#D9CDBE]"
               }
               ${
                 disabled
-                  ? "bg-gray-100 dark:bg-gray-700 cursor-not-allowed opacity-60"
-                  : "cursor-pointer hover:border-[#d4af37]"
+                  ? "bg-[#EDE4D5] cursor-not-allowed opacity-60"
+                  : "cursor-pointer hover:border-[#2D231F]/50"
               }
               ${className}
             `}
@@ -176,8 +236,9 @@ const Select = forwardRef<HTMLDivElement, SelectProps>(
               {selectedOption?.icon && <span className="shrink-0">{selectedOption.icon}</span>}
               <span
                 className={`truncate ${
-                  selectedOption ? "text-gray-900 dark:text-gray-100" : "text-gray-400"
+                  selectedOption ? "text-[#2D231F]" : "text-[#7A6A5C]/50"
                 }`}
+                style={selectedOption?.labelStyle}
               >
                 {selectedOption ? selectedOption.label : placeholder}
               </span>
@@ -188,14 +249,14 @@ const Select = forwardRef<HTMLDivElement, SelectProps>(
                 <button
                   type="button"
                   onClick={handleClear}
-                  className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors"
+                  className="p-1 hover:bg-[#EDE4D5] rounded transition-colors"
                 >
-                  <X size={14} className="text-gray-500" />
+                  <X size={14} className="text-[#7A6A5C]" />
                 </button>
               )}
               <ChevronDown
                 size={18}
-                className={`text-gray-500 transition-transform duration-200 ${
+                className={`text-[#7A6A5C] transition-transform duration-200 ${
                   isOpen ? "rotate-180" : ""
                 }`}
               />
@@ -211,10 +272,10 @@ const Select = forwardRef<HTMLDivElement, SelectProps>(
                 width: popupPos.width,
                 zIndex: 9999,
               }}
-              className="py-1 bg-white dark:bg-[#191919] border border-[#d4af37] rounded-lg shadow-lg max-h-60 overflow-auto animate-dropdown-in"
+              className={`py-1 bg-[#F3EDE3] border border-[#D9CDBE] rounded-lg shadow-lg max-h-80 overflow-auto animate-dropdown-in ${popupClassName}`}
             >
               {searchable && (
-                <div className="px-2 pb-2">
+                <div className="sticky top-0 z-20 bg-[#F3EDE3] px-2 pb-2 pt-1">
                   <input
                     ref={inputRef}
                     type="text"
@@ -223,11 +284,10 @@ const Select = forwardRef<HTMLDivElement, SelectProps>(
                     placeholder="Tìm kiếm..."
                     className={`
                       w-full px-3 py-2 ${menuTextSizeMap[size]}
-                      border border-gray-300 dark:border-gray-600 rounded
-                      bg-white dark:bg-[#191919]
-                      text-gray-900 dark:text-gray-100
-                      placeholder:text-gray-400
-                      focus:outline-none focus:border-[#d4af37] focus:ring-1 focus:ring-[rgba(212,175,55,0.2)]
+                      border border-[#D9CDBE] rounded
+                      bg-[#F3EDE3] text-[#2D231F]
+                      placeholder:text-[#7A6A5C]/50
+                      focus:outline-none focus:border-[#2D231F] focus:ring-1 focus:ring-[rgba(45,35,31,0.1)]
                     `}
                     onClick={(e) => e.stopPropagation()}
                   />
@@ -236,52 +296,22 @@ const Select = forwardRef<HTMLDivElement, SelectProps>(
 
               <div>
                 {filteredOptions.length === 0 ? (
-                  <div className={`px-4 py-3 ${menuTextSizeMap[size]} text-gray-500 text-center`}>
+                  <div className={`px-4 py-3 ${menuTextSizeMap[size]} text-[#7A6A5C] text-center`}>
                     Không tìm thấy kết quả
                   </div>
-                ) : (
-                  filteredOptions.map((option) => {
-                    const isSelected = String(option.value) === String(currentValue);
-                    const isDisabled = option.disabled;
-
-                    return (
-                      <button
-                        key={option.value}
-                        type="button"
-                        onClick={() => !isDisabled && handleSelect(option.value)}
-                        disabled={isDisabled}
-                        className={`
-                          w-full px-4 py-2.5 text-left
-                          flex items-center justify-between gap-2
-                          transition-colors duration-150
-                          ${menuTextSizeMap[size]}
-                          ${
-                            isSelected
-                              ? "bg-[rgba(212,175,55,0.1)] text-[#d4af37]"
-                              : "text-gray-900 dark:text-gray-100"
-                          }
-                          ${
-                            isDisabled
-                              ? "opacity-50 cursor-not-allowed"
-                              : "hover:bg-[rgba(212,175,55,0.08)] cursor-pointer"
-                          }
-                        `}
-                      >
-                        <div className="flex items-center gap-2 flex-1 min-w-0">
-                          {option.icon && <span className="shrink-0">{option.icon}</span>}
-                          <div className="flex-1 min-w-0">
-                            <div className="truncate font-medium">{option.label}</div>
-                            {option.description && (
-                              <div className="text-[10px] text-gray-500 dark:text-gray-400 truncate mt-0.5">
-                                {option.description}
-                              </div>
-                            )}
-                          </div>
+                ) : groupedOptions ? (
+                  groupedOptions.map((group) => (
+                    <div key={group.name || "all"}>
+                      {group.name ? (
+                        <div className="sticky top-10 z-10 bg-[#EDE4D5] px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-[#7A6A5C]">
+                          {group.name}
                         </div>
-                        {isSelected && <Check size={16} className="shrink-0 text-[#d4af37]" />}
-                      </button>
-                    );
-                  })
+                      ) : null}
+                      {group.options.map(renderOption)}
+                    </div>
+                  ))
+                ) : (
+                  filteredOptions.map(renderOption)
                 )}
               </div>
             </div>,

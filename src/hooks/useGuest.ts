@@ -15,7 +15,7 @@ export function useGuest() {
   const [error, setError] = useState("");
 
   const getGuests = async (
-    weddingId: string,
+    invitationId: string,
     pagination: PaginationReq<FilterGuestDto> = { skip: 0, take: 50 },
   ) => {
     setLoading(true);
@@ -23,7 +23,7 @@ export function useGuest() {
     try {
       const res = await guestService.getGuests({
         ...pagination,
-        where: { ...pagination.where, weddingId },
+        where: { ...pagination.where, invitationId },
       });
       return res;
     } catch (err: any) {
@@ -104,11 +104,11 @@ export function useGuest() {
     }
   };
 
-  const importExcel = async (weddingId: string, file: File) => {
+  const importExcel = async (invitationId: string, file: File) => {
     setLoading(true);
     setError("");
     try {
-      const res = await guestService.importExcel(weddingId, file);
+      const res = await guestService.importExcel(invitationId, file);
       return res;
     } catch (err: any) {
       setError(
@@ -120,11 +120,11 @@ export function useGuest() {
     }
   };
 
-  const createMany = async (weddingId: string, guests: CreateGuestReq[]) => {
+  const createMany = async (invitationId: string, guests: CreateGuestReq[]) => {
     setLoading(true);
     setError("");
     try {
-      const res = await guestService.createMany(weddingId, guests);
+      const res = await guestService.createMany(invitationId, guests);
       return res;
     } catch (err: any) {
       setError(

@@ -69,7 +69,7 @@ export default function ColorPickerRow({
             if (!showPicker) updatePosition();
             setShowPicker(!showPicker);
           }}
-          className="w-11! h-11! rounded-lg border border-[#444] cursor-pointer shrink-0 hover:border-[#d4af37] transition-colors"
+          className="w-11! h-11! rounded-lg border border-[#D9CDBE] cursor-pointer shrink-0 hover:border-[#2D231F] transition-colors"
           style={{ backgroundColor: value || "transparent" }}
           variant="outline"
         />
@@ -77,21 +77,21 @@ export default function ColorPickerRow({
           type="text"
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="flex-1 w-full! bg-[#333] text-white text-xs border border-[#444] rounded py-1.5 outline-none focus:border-[#d4af37] font-mono!"
+          className="flex-1 w-full! bg-[#F3EDE3]! text-[#2D231F]! text-xs border border-[#D9CDBE] rounded py-1.5 outline-none focus:border-[#2D231F] font-mono!"
         />
       </div>
       {showPicker &&
         createPortal(
           <div
             ref={popupRef}
-            className="fixed z-40 bg-[#2a2a2a] border border-[#444] rounded-xl p-3 shadow-xl w-57"
+            className="fixed z-40 bg-[#F3EDE3] border border-[#D9CDBE] rounded-xl p-3 shadow-xl w-57"
             style={{ top: popupPos.top, left: popupPos.left }}
           >
             <input
               type="color"
               value={value}
               onChange={(e) => onChange(e.target.value)}
-              className="w-full h-10 rounded cursor-pointer border border-[#444] mb-3"
+              className="w-full h-10 rounded cursor-pointer border border-[#D9CDBE] mb-3"
             />
             <div className="grid grid-cols-8 gap-1.5">
               {PRESET_COLORS.map((c) => (

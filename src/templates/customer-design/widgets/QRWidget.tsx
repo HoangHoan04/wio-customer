@@ -12,6 +12,9 @@ interface Props {
   qrTarget?: "groom" | "bride" | "both";
   groom?: BankInfo;
   bride?: BankInfo;
+  qrTitle?: string;
+  groomLabel?: string;
+  brideLabel?: string;
   color?: string;
   fontFamily?: string;
   width: number;
@@ -23,7 +26,10 @@ export default function QRWidget({
   qrTarget = "both",
   groom,
   bride,
-  color = "#d4af37",
+  qrTitle = "Gửi quà",
+  groomLabel = "Tài khoản 1",
+  brideLabel = "Tài khoản 2",
+  color = "#b6cc61",
   fontFamily = "Quicksand",
   width,
   height,
@@ -78,7 +84,7 @@ export default function QRWidget({
             <Gift size={20 * scale} color={color} />
           </div>
           <span style={{ fontSize: 8 * scale, color: "#f5e6d3", opacity: 0.7 }}>
-            Mừng cưới
+            {qrTitle}
           </span>
         </div>
       </div>
@@ -135,14 +141,14 @@ export default function QRWidget({
                 fontFamily,
               }}
             >
-              Thông tin mừng cưới
+              {qrTitle}
             </h3>
             <div style={{ display: "flex", flexDirection: "column", gap: 10 * scale }}>
               {showGroom && groom?.accountName && (
-                <BankCard data={groom} label="Chú rể" color={color} scale={scale} fontFamily={fontFamily} />
+                <BankCard data={groom} label={groomLabel} color={color} scale={scale} fontFamily={fontFamily} />
               )}
               {showBride && bride?.accountName && (
-                <BankCard data={bride} label="Cô dâu" color={color} scale={scale} fontFamily={fontFamily} />
+                <BankCard data={bride} label={brideLabel} color={color} scale={scale} fontFamily={fontFamily} />
               )}
             </div>
           </div>

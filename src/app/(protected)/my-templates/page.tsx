@@ -3,7 +3,8 @@
 import { enumData, formatDateTime } from "@/common";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/useToast";
-import { weddingService } from "@/services/wedding.service";
+import { invitationService } from "@/services/invitation.service";
+import { invitationLabel, publicInvitationPath } from "@/utils/invitation-mapper";
 import {
   Calendar,
   Copy,
@@ -20,25 +21,21 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 const C = {
-  bg: "#0b0507",
-  bgCard: "#140a0d",
-  gold: "#c5a059",
-  goldLight: "#e5c483",
-  cream: "#f9f6f0",
-  muted: "#a38a75",
-  border: "rgba(197, 160, 89, 0.15)",
+  bg: "#F3EDE3",
+  bgCard: "#EDE4D5",
+  gold: "#2D231F",
+  goldLight: "#7A6A5C",
+  cream: "#2D231F",
+  muted: "#7A6A5C",
+  border: "rgba(232, 226, 216, 1)",
 };
 
-interface IWedding {
+interface IInvitation {
   id: string;
   slug: string;
-  groomName: string;
-  groomShortName: string;
-  brideName: string;
-  brideShortName: string;
+  title?: string;
   status: string;
-  ceremonyAt?: string;
-  ceremonyVenue?: string;
+  primaryEventAt?: string;
   templateId?: string;
   template?: {
     name: string;
@@ -52,20 +49,20 @@ type TabType = "all" | "draft" | "published";
 export default function MyTemplatesPage() {
   const router = useRouter();
   const { showToast } = useToast();
-  const [weddings, setWeddings] = useState<IWedding[]>([]);
+  const [invitations, setInvitations] = useState<IInvitation[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<TabType>("all");
 
   useEffect(() => {
-    weddingService
-      .getWeddings({ skip: 0, take: 50, where: {} })
+    invitationService
+      .pagination({ skip: 0, take: 50, where: {} })
       .then((res) => {
-        setWeddings(res.data ?? []);
+        setInvitations(res.data ?? []);
       })
       .catch((err) => {
         console.error(err);
         showToast({
-          message: "Không thể tải danh sách thiệp cưới",
+          message: "Không thể tải danh sách thiệp",
           type: "error",
         });
       })
@@ -73,41 +70,41 @@ export default function MyTemplatesPage() {
   }, []);
 
   const handleCopyLink = (slug: string) => {
-    const link = `${window.location.origin}/thiep/${slug}`;
+    const link = `${window.location.origin}${publicInvitationPath(slug)}`;
     navigator.clipboard.writeText(link);
-    showToast({ message: "Đã sao chép liên kết thiệp cưới!", type: "success" });
+    showToast({ message: "Đã sao chép liên kết thiệp!", type: "success" });
   };
 
   const handleUnpublish = async (id: string) => {
     try {
-      await weddingService.unpublishWedding(id);
+      await invitationService.unpublish(id);
       showToast({
-        message: "Đã mở khóa chỉnh sửa thiệp cưới!",
+        message: "Đã mở khóa chỉnh sửa thiệp!",
         type: "success",
       });
-      const res = await weddingService.getWeddings({
+      const res = await invitationService.pagination({
         skip: 0,
         take: 50,
         where: {},
       });
-      setWeddings(res.data ?? []);
+      setInvitations(res.data ?? []);
     } catch (err: any) {
       console.error(err);
       showToast({
         message:
           err.response?.data?.message ||
-          "Không thể mở khóa chỉnh sửa thiệp cưới",
+          "Không thể mở khóa chỉnh sửa thiệp",
         type: "error",
       });
     }
   };
 
-  const filteredWeddings = weddings.filter((w) => {
+  const filteredInvitations = invitations.filter((w) => {
     if (activeTab === "all") return true;
     if (activeTab === "draft")
-      return w.status !== enumData.WEDDING_STATUS.PUBLISHED.code;
+      return w.status !== enumData.INVITATION_STATUS.PUBLISHED.code;
     if (activeTab === "published")
-      return w.status === enumData.WEDDING_STATUS.PUBLISHED.code;
+      return w.status === enumData.INVITATION_STATUS.PUBLISHED.code;
     return true;
   });
 
@@ -126,7 +123,7 @@ export default function MyTemplatesPage() {
         }
         .wedding-card:hover {
           transform: translateY(-5px);
-          box-shadow: 0 15px 35px rgba(0,0,0,0.5), 0 0 20px rgba(197, 160, 89, 0.1);
+          box-shadow: 0 15px 35px rgba(0,0,0,0.5), 0 0 20px rgba(45, 35, 31, 0.1);
           border-color: ${C.gold};
         }
       `}</style>
@@ -135,12 +132,9 @@ export default function MyTemplatesPage() {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
           <div>
             <h1
-              className="text-3xl md:text-4xl font-bold uppercase tracking-wider mb-3"
+              className="text-3xl md:text-4xl font-bold uppercase tracking-wider mb-3 text-[#2D231F]"
               style={{
                 fontFamily: "'Cinzel', serif",
-                background: `linear-gradient(135deg, ${C.goldLight} 0%, ${C.gold} 50%, ${C.goldLight} 100%)`,
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
               }}
             >
               Thiệp cưới của tôi
@@ -155,8 +149,8 @@ export default function MyTemplatesPage() {
               className="px-6 py-5.5 rounded-xl font-bold uppercase tracking-wider text-xs flex items-center gap-2 animate-pulse"
               style={{
                 background: `linear-gradient(135deg, ${C.goldLight} 0%, ${C.gold} 100%)`,
-                color: C.bg,
-                boxShadow: "0 4px 15px rgba(197,160,89,0.3)",
+                color: "#1a1a1a",
+                boxShadow: "0 4px 15px rgba(45, 35, 31,0.3)",
               }}
             >
               <Plus size={16} strokeWidth={2.5} />
@@ -165,7 +159,7 @@ export default function MyTemplatesPage() {
           </Link>
         </div>
 
-        <div className="flex justify-center gap-3 mb-10 border-b border-[#d4af37]/10 pb-6">
+        <div className="flex justify-center gap-3 mb-10 border-b border-[#2D231F]/10 pb-6">
           {(
             [
               { id: "all", label: "Tất cả" },
@@ -178,14 +172,14 @@ export default function MyTemplatesPage() {
               onClick={() => setActiveTab(tab.id)}
               className={`px-6 py-2.5 text-xs font-semibold uppercase tracking-wider rounded-lg transition-all duration-300 cursor-pointer ${
                 activeTab === tab.id
-                  ? "text-[#0b0507]"
-                  : "text-[#a38a75] border border-[rgba(197,160,89,0.15)] hover:border-[#c5a059] bg-transparent"
+                  ? "text-[#1a1a1a]"
+                  : "text-[#7A6A5C] border border-[rgba(45, 35, 31,0.15)] hover:border-[#2D231F] bg-transparent"
               }`}
               style={
                 activeTab === tab.id
                   ? {
                       background: `linear-gradient(135deg, ${C.goldLight}, ${C.gold})`,
-                      boxShadow: "0 4px 12px rgba(197,160,89,0.25)",
+                      boxShadow: "0 4px 12px rgba(45, 35, 31,0.25)",
                     }
                   : {}
               }
@@ -197,14 +191,14 @@ export default function MyTemplatesPage() {
 
         {loading ? (
           <div className="flex justify-center py-24">
-            <div className="w-12 h-12 border-4 border-[#d4af37]/20 border-t-[#d4af37] rounded-full animate-spin" />
+            <div className="w-12 h-12 border-4 border-[#2D231F]/20 border-t-[#2D231F] rounded-full animate-spin" />
           </div>
-        ) : filteredWeddings.length === 0 ? (
+        ) : filteredInvitations.length === 0 ? (
           <div
             className="text-center py-20 px-6 rounded-2xl border border-dashed flex flex-col items-center justify-center gap-6"
-            style={{ borderColor: C.border, background: "rgba(20,10,13,0.3)" }}
+            style={{ borderColor: C.border, background: "#EDE4D5" }}
           >
-            <div className="p-4 bg-[#d4af37]/5 rounded-full text-[#d4af37]">
+            <div className="p-4 bg-[#2D231F]/5 rounded-full text-[#2D231F]">
               <Heart size={40} strokeWidth={1.5} />
             </div>
             <div className="max-w-md">
@@ -222,7 +216,7 @@ export default function MyTemplatesPage() {
                 chọn mẫu và thiết kế thiệp của bạn.
               </p>
               <Link href="/templates">
-                <Button className="px-6 py-5 bg-transparent border text-[#e5c483] border-[#c5a059] hover:bg-[#d4af37]/10">
+                <Button className="px-6 py-5 bg-transparent border text-[#7A6A5C] border-[#2D231F] hover:bg-[#2D231F]/10">
                   Khám phá mẫu thiệp
                 </Button>
               </Link>
@@ -230,9 +224,9 @@ export default function MyTemplatesPage() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 animate-fadeIn">
-            {filteredWeddings.map((w) => {
+            {filteredInvitations.map((w) => {
               const formattedDate =
-                formatDateTime(w.ceremonyAt) || "Chưa thiết lập";
+                formatDateTime(w.primaryEventAt) || "Chưa thiết lập";
 
               return (
                 <div
@@ -243,18 +237,18 @@ export default function MyTemplatesPage() {
                     <div className="flex justify-between items-start gap-4 mb-4">
                       <span
                         className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
-                          w.status === enumData.WEDDING_STATUS.PUBLISHED.code
+                          w.status === enumData.INVITATION_STATUS.PUBLISHED.code
                             ? "bg-green-500/10 text-green-400 border border-green-500/25"
-                            : "bg-[#d4af37]/10 text-[#f5c842] border border-[#d4af37]/25"
+                            : "bg-[#2D231F]/10 text-[#7A6A5C] border border-[#2D231F]/25"
                         }`}
                       >
-                        {w.status === enumData.WEDDING_STATUS.PUBLISHED.code
+                        {w.status === enumData.INVITATION_STATUS.PUBLISHED.code
                           ? "Đã xuất bản"
                           : "Bản nháp"}
                       </span>
                       {w.template && (
-                        <span className="text-[10px] flex items-center gap-1 text-[#f5e6d3]/60">
-                          <Sparkles size={11} className="text-[#d4af37]" />
+                        <span className="text-[10px] flex items-center gap-1 text-[#2D231F]/60">
+                          <Sparkles size={11} className="text-[#2D231F]" />
                           {w.template.name}
                         </span>
                       )}
@@ -264,26 +258,25 @@ export default function MyTemplatesPage() {
                       className="text-xl font-bold mb-3 tracking-wide truncate"
                       style={{ fontFamily: "'Cinzel', serif", color: C.cream }}
                     >
-                      {w.groomShortName || "Chú rể"} &{" "}
-                      {w.brideShortName || "Cô dâu"}
+                      {invitationLabel(w)}
                     </h3>
 
-                    <div className="space-y-2 mb-6 text-xs text-[#f5e6d3]/70 font-light">
+                    <div className="space-y-2 mb-6 text-xs text-[#2D231F]/70 font-light">
                       <div className="flex items-center gap-2">
-                        <Calendar size={13} className="text-[#c5a059]" />
-                        <span>Ngày cưới: {formattedDate}</span>
+                        <Calendar size={13} className="text-[#2D231F]" />
+                        <span>Ngày sự kiện: {formattedDate}</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <MapPin size={13} className="text-[#c5a059]" />
+                        <MapPin size={13} className="text-[#2D231F]" />
                         <span className="truncate">
-                          Nơi diễn ra: {w.ceremonyVenue || "Chưa thiết lập"}
+                          {publicInvitationPath(w.slug)}
                         </span>
                       </div>
                     </div>
                   </div>
 
                   <div className="flex gap-2 pt-4 border-t border-white/5">
-                    {w.status !== enumData.WEDDING_STATUS.PUBLISHED.code ? (
+                    {w.status !== enumData.INVITATION_STATUS.PUBLISHED.code ? (
                       <Button
                         variant="outline"
                         onClick={() => {
@@ -293,7 +286,7 @@ export default function MyTemplatesPage() {
                             router.push(`/edit/${w.id}`);
                           }
                         }}
-                        className="flex-1 py-4 bg-white/3! border-[#d4af37]/20! hover:border-[#d4af37]/40! text-[#f5e6d3]! flex items-center justify-center gap-1.5 rounded-lg text-xs font-semibold"
+                        className="flex-1 py-4 bg-[#2D231F]/8! border-[#2D231F]/20! hover:border-[#2D231F]/40! text-[#2D231F]! flex items-center justify-center gap-1.5 rounded-lg text-xs font-semibold"
                       >
                         <Edit2 size={13} />
                         Chỉnh sửa
@@ -311,13 +304,13 @@ export default function MyTemplatesPage() {
                     {w.slug && (
                       <>
                         <Link
-                          href={`/thiep/${w.slug}`}
+                          href={publicInvitationPath(w.slug)}
                           target="_blank"
                           className="flex-1"
                         >
                           <Button
                             variant="outline"
-                            className="w-full py-4 bg-white/3! border-[#d4af37]/20! hover:border-[#d4af37]/40! text-[#f5e6d3]! flex items-center justify-center gap-1.5 rounded-lg text-xs font-semibold"
+                            className="w-full py-4 bg-[#2D231F]/8! border-[#2D231F]/20! hover:border-[#2D231F]/40! text-[#2D231F]! flex items-center justify-center gap-1.5 rounded-lg text-xs font-semibold"
                           >
                             <Eye size={13} />
                             Xem
@@ -326,7 +319,7 @@ export default function MyTemplatesPage() {
                         <Button
                           variant="outline"
                           onClick={() => handleCopyLink(w.slug)}
-                          className="px-3 py-4 bg-white/3! border-[#d4af37]/20! hover:border-[#d4af37]/40! text-[#f5e6d3]! flex items-center justify-center rounded-lg text-xs"
+                          className="px-3 py-4 bg-[#2D231F]/8! border-[#2D231F]/20! hover:border-[#2D231F]/40! text-[#2D231F]! flex items-center justify-center rounded-lg text-xs"
                           title="Sao chép liên kết"
                         >
                           <Copy size={13} />

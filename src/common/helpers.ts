@@ -137,7 +137,7 @@ export const sortAndMapTimeline = (items: any[]): any[] => {
     .sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0))
     .map((t) => ({
       id: t.id || Date.now().toString(),
-      time: t.time || "",
+      time: t.time || t.timeLabel || "",
       title: t.title || "",
     }));
 };
@@ -148,10 +148,10 @@ export const sortAndMapEvents = (items: any[]): any[] => {
     .sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0))
     .map((e) => ({
       id: e.id || Date.now().toString(),
-      date: e.date || "",
-      time: e.time || "",
+      date: e.date || formatDate(e.startsAt) || "",
+      time: e.time || formatTime(e.startsAt) || "",
       title: e.title || "",
-      address: e.address || "",
+      address: e.address || e.venue || "",
     }));
 };
 

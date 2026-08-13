@@ -3,7 +3,7 @@ import { API_ENDPOINTS } from "./endpoint";
 
 export interface Wish {
   id: string;
-  weddingId: string;
+  invitationId: string;
   guestId?: string;
   guestName: string;
   content: string;
@@ -14,7 +14,7 @@ export interface Wish {
 }
 
 export interface CreateWishPayload {
-  weddingId: string;
+  invitationId: string;
   guestId?: string;
   guestName: string;
   content: string;
@@ -26,13 +26,13 @@ export interface PaginationRes<T> {
 }
 
 export const wishService = {
-  getByWedding: async (
-    weddingId: string,
+  getByInvitation: async (
+    invitationId: string,
     options?: { take?: number; isApproved?: boolean },
   ): Promise<PaginationRes<Wish>> => {
     const res = await apiService.post(API_ENDPOINTS.WISH.PAGINATION, {
       where: {
-        weddingId,
+        invitationId,
         isApproved: options?.isApproved ?? undefined,
       },
       skip: 0,
@@ -42,7 +42,10 @@ export const wishService = {
   },
 
   create: async (payload: CreateWishPayload): Promise<{ data: Wish }> => {
-    const res = await apiService.post(API_ENDPOINTS.WISH.CREATE, payload);
+    const res = await apiService.post(
+      API_ENDPOINTS.WISH.PUBLIC_CREATE,
+      payload,
+    );
     return res.data;
   },
 

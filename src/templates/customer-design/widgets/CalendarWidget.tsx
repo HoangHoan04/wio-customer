@@ -44,7 +44,7 @@ export default function CalendarWidget({
   targetDate,
   displayMode = "full",
   calendarStyle = "classic",
-  color = "#d4af37",
+  color = "#b6cc61",
   fontFamily,
   width,
   height,
@@ -77,7 +77,7 @@ export default function CalendarWidget({
   if (!dateObj) {
     return (
       <div style={{ width: width * s, height: height * s, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(0,0,0,0.05)", borderRadius: 8 * s }}>
-        <span style={{ fontSize: 12 * s, color: "#999" }}>Chưa chọn ngày cưới</span>
+        <span style={{ fontSize: 12 * s, color: "#999" }}>Chưa chọn ngày</span>
       </div>
     );
   }

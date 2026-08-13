@@ -47,7 +47,7 @@ const FAQS = [
   {
     id: 3,
     q: "Tôi gặp lỗi khi thanh toán nâng cấp gói, tôi cần liên hệ ai?",
-    a: "Nếu tài khoản ngân hàng của bạn đã bị trừ tiền nhưng gói dịch vụ vẫn chưa được kích hoạt, vui lòng chụp lại màn hình giao dịch chuyển khoản thành công và gửi qua Fanpage Facebook của tiệm. Đội ngũ kỹ thuật hỗ trợ sẽ kích hoạt thủ công cho bạn trong vòng tối đa 15 phút.",
+    a: "Nếu tài khoản ngân hàng của bạn đã bị trừ tiền nhưng gói dịch vụ vẫn chưa được kích hoạt, vui lòng chụp lại màn hình giao dịch chuyển khoản thành công và gửi qua Fanpage Facebook của InviGo. Đội ngũ kỹ thuật hỗ trợ sẽ kích hoạt thủ công cho bạn trong vòng tối đa 15 phút.",
   },
   {
     id: 4,
@@ -56,7 +56,7 @@ const FAQS = [
   },
   {
     id: 5,
-    q: "Tiệm cưới tân thời có nhận thiết kế riêng theo yêu cầu không?",
+    q: "InviGo có nhận thiết kế riêng theo yêu cầu không?",
     a: "Hiện tại chúng tôi tập trung phát triển kho mẫu có sẵn đa dạng để các cặp đôi tự do cá nhân hóa. Tuy nhiên, nếu bạn có nhu cầu thiết kế một template độc quyền hoàn toàn theo ý muốn, vui lòng gửi tin nhắn yêu cầu chi tiết cho chúng tôi qua Form bên cạnh.",
   },
 ];
@@ -102,25 +102,25 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="min-h-screen pt-35 bg-[#0f0608] text-[#f5e6d3] overflow-x-hidden relative">
-      <div className="absolute top-[10%] left-1/4 w-150 h-150 bg-[radial-gradient(circle,rgba(212,175,55,0.03)_0%,transparent_70%)] pointer-events-none" />
-      <div className="absolute bottom-[20%] right-1/4 w-125 h-125 bg-[radial-gradient(circle,rgba(180,20,50,0.02)_0%,transparent_70%)] pointer-events-none" />
+    <div className="min-h-screen pt-35 bg-[#F3EDE3] text-[#2D231F] overflow-x-hidden relative">
+      <div className="absolute top-[10%] left-1/4 w-150 h-150 bg-[radial-gradient(circle,rgba(45, 35, 31,0.03)_0%,transparent_70%)] pointer-events-none" />
+      <div className="absolute bottom-[20%] right-1/4 w-125 h-125 bg-[radial-gradient(circle,rgba(45, 35, 31,0.02)_0%,transparent_70%)] pointer-events-none" />
 
       <main className="max-w-6xl mx-auto px-6 py-12 relative z-10">
         <div className="text-center mb-16">
-          <p className="text-xs tracking-[6px] uppercase text-[#d4af37] mb-4 font-semibold font-cormorant">
+          <p className="text-xs tracking-[6px] uppercase text-[#7A6A5C] mb-4 font-semibold font-cormorant">
             Hỗ trợ & Đồng hành
           </p>
-          <h1 className="text-[clamp(2rem,5vw,3.2rem)] font-light font-cormorant mb-4 leading-tight text-[#d4af37] ">
+          <h1 className="text-[clamp(2rem,5vw,3.2rem)] font-light font-cormorant mb-4 leading-tight text-[#2D231F] ">
             <span className="tct-shimmer-text italic block">
               Kết nối cùng chúng tôi
             </span>
           </h1>
-          <p className="text-xs text-[#c9a98a]/70 max-w-137.5 mx-auto leading-relaxed uppercase tracking-widest">
-            Tiệm cưới tân thời luôn sẵn sàng lắng nghe câu chuyện tình yêu của
+          <p className="text-xs text-[#7A6A5C]/70 max-w-137.5 mx-auto leading-relaxed uppercase tracking-widest">
+            InviGo luôn sẵn sàng lắng nghe câu chuyện tình yêu của
             hai bạn
           </p>
-          <div className="w-12 h-px bg-[#d4af37]/40 mx-auto mt-6" />
+          <div className="w-12 h-px bg-[#2D231F]/40 mx-auto mt-6" />
         </div>
 
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-20">
@@ -131,26 +131,26 @@ export default function ContactPage() {
                 href={ch.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group relative flex flex-col items-center justify-center rounded-2xl p-6 text-center border transition-all duration-500 hover:-translate-y-1 bg-linear-to-b from-[#160a0f] to-[#0d0407]"
-                style={{ borderColor: "rgba(212, 175, 55, 0.12)" }}
+                className="group relative flex flex-col items-center justify-center rounded-2xl p-6 text-center border transition-all duration-500 hover:-translate-y-1 bg-linear-to-b from-white to-[#EDE4D5]"
+                style={{ borderColor: "rgba(45, 35, 31, 0.12)" }}
               >
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(212,175,55,0.04)_0%,transparent_60%)] opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(45, 35, 31,0.04)_0%,transparent_60%)] opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
 
-                <div className="w-11 h-11 rounded-xl bg-[#221019] border border-[#d4af37]/20 flex items-center justify-center text-[#d4af37] mb-4 transition-all duration-500 group-hover:bg-[#d4af37] group-hover:text-black group-hover:shadow-[0_0_15px_rgba(212,175,55,0.3)]">
+                <div className="w-11 h-11 rounded-xl bg-[#EDE4D5] border border-[#2D231F]/20 flex items-center justify-center text-[#2D231F] mb-4 transition-all duration-500 group-hover:bg-[#2D231F] group-hover:text-[#F3EDE3] group-hover:shadow-[0_0_15px_rgba(45, 35, 31,0.3)]">
                   <img className="w-11 h-11" src={ch.icon} alt={ch.name} />
                 </div>
 
                 <span
-                  className="font-medium text-sm mb-1 text-white transition-colors duration-300 group-hover:text-[#d4af37]"
+                  className="font-medium text-sm mb-1 text-[#2D231F] transition-colors duration-300 group-hover:text-[#2D231F]"
                   style={{ fontFamily: "'Playfair Display', serif" }}
                 >
                   {ch.name}
                 </span>
-                <span className="text-[11px] text-[#c9a98a]/60 font-light tracking-wide truncate max-w-full">
+                <span className="text-[11px] text-[#7A6A5C]/60 font-light tracking-wide truncate max-w-full">
                   {ch.actionText}
                 </span>
 
-                <div className="absolute inset-0 border border-[#d4af37]/0 rounded-2xl transition-all duration-500 group-hover:border-[#d4af37]/25 pointer-events-none" />
+                <div className="absolute inset-0 border border-[#2D231F]/0 rounded-2xl transition-all duration-500 group-hover:border-[#2D231F]/25 pointer-events-none" />
               </a>
             );
           })}
@@ -159,17 +159,17 @@ export default function ContactPage() {
         <div className="grid grid-cols-1 lg:grid-cols-[1.2fr_1fr] gap-12 items-start mt-12">
           <div className="space-y-4">
             <div className="text-left mb-8 flex items-center gap-3">
-              <div className="w-9 h-9 rounded-lg bg-[#221019] border border-[#d4af37]/15 flex items-center justify-center text-[#d4af37]">
+              <div className="w-9 h-9 rounded-lg bg-[#EDE4D5] border border-[#2D231F]/15 flex items-center justify-center text-[#2D231F]">
                 <Sparkles size={16} />
               </div>
               <div>
                 <h2
-                  className="text-xl font-medium text-white"
+                  className="text-xl font-medium text-[#2D231F]"
                   style={{ fontFamily: "'Playfair Display', serif" }}
                 >
                   Câu hỏi thường gặp
                 </h2>
-                <p className="text-[11px] text-[#c9a98a]/50 uppercase tracking-widest mt-0.5 font-cormorant font-bold">
+                <p className="text-[11px] text-[#7A6A5C]/50 uppercase tracking-widest mt-0.5 font-cormorant font-bold">
                   Hỗ trợ trực tuyến nhanh chóng
                 </p>
               </div>
@@ -183,8 +183,8 @@ export default function ContactPage() {
                     key={faq.id}
                     className={`group rounded-xl border transition-all duration-300 ${
                       isOpen
-                        ? "bg-[#221019]/40 border-[#d4af37] shadow-[0_8px_25px_rgba(34,16,25,0.3)]"
-                        : "bg-[#140a0d]/40 border-[#d4af37]/10 hover:border-[#d4af37]/25"
+                        ? "bg-[#EDE4D5]/40 border-[#2D231F] shadow-[0_8px_25px_rgba(45, 35, 31,0.3)]"
+                        : "bg-[#EDE4D5]/40 border-[#2D231F]/10 hover:border-[#2D231F]/25"
                     }`}
                   >
                     <button
@@ -192,15 +192,15 @@ export default function ContactPage() {
                       className="w-full flex items-center justify-between p-5 text-left cursor-pointer transition-colors"
                     >
                       <span
-                        className={`text-[14px] font-medium pr-6 leading-snug tracking-wide transition-colors duration-300 ${isOpen ? "text-[#f5c842]" : "text-[#f5e6d3]/90 group-hover:text-[#d4af37]"}`}
+                        className={`text-[14px] font-medium pr-6 leading-snug tracking-wide transition-colors duration-300 ${isOpen ? "text-[#7A6A5C]" : "text-[#2D231F]/90 group-hover:text-[#2D231F]"}`}
                         style={{ fontFamily: "'Playfair Display', serif" }}
                       >
                         {faq.q}
                       </span>
                       <ChevronDown
                         size={16}
-                        className={`text-[#d4af37]/60 shrink-0 transition-transform duration-500 ${
-                          isOpen ? "rotate-180 text-[#f5c842]" : ""
+                        className={`text-[#2D231F]/60 shrink-0 transition-transform duration-500 ${
+                          isOpen ? "rotate-180 text-[#7A6A5C]" : ""
                         }`}
                       />
                     </button>
@@ -208,11 +208,11 @@ export default function ContactPage() {
                     <div
                       className={`overflow-hidden transition-all duration-500 ease-in-out ${
                         isOpen
-                          ? "max-h-75 opacity-100 border-t border-[#d4af37]/10"
+                          ? "max-h-75 opacity-100 border-t border-[#2D231F]/10"
                           : "max-h-0 opacity-0"
                       }`}
                     >
-                      <div className="p-5 text-xs text-[#c9a98a]/80 leading-relaxed font-light">
+                      <div className="p-5 text-xs text-[#7A6A5C]/80 leading-relaxed font-light">
                         {faq.a}
                       </div>
                     </div>
@@ -225,24 +225,24 @@ export default function ContactPage() {
           <div
             className="rounded-2xl p-8 border text-left relative overflow-hidden"
             style={{
-              background: "linear-gradient(180deg, #160a0f 0%, #0d0407 100%)",
-              borderColor: "rgba(212, 175, 55, 0.15)",
+              background: "linear-gradient(180deg, #F3EDE3 0%, #EDE4D5 100%)",
+              borderColor: "rgba(45, 35, 31, 0.15)",
             }}
           >
-            <div className="absolute inset-x-0 top-0 h-16 bg-[radial-gradient(circle_at_center,rgba(212,175,55,0.03)_0%,transparent_70%)] pointer-events-none" />
+            <div className="absolute inset-x-0 top-0 h-16 bg-[radial-gradient(circle_at_center,rgba(45, 35, 31,0.03)_0%,transparent_70%)] pointer-events-none" />
 
             <div className="mb-6 flex items-center gap-3 relative z-10">
-              <div className="w-9 h-9 rounded-lg bg-[#221019] border border-[#d4af37]/15 flex items-center justify-center text-[#d4af37]">
+              <div className="w-9 h-9 rounded-lg bg-[#EDE4D5] border border-[#2D231F]/15 flex items-center justify-center text-[#2D231F]">
                 <MessageSquare size={16} />
               </div>
               <div>
                 <h2
-                  className="text-xl font-medium text-white"
+                  className="text-xl font-medium text-[#2D231F]"
                   style={{ fontFamily: "'Playfair Display', serif" }}
                 >
                   Gửi lời nhắn riêng
                 </h2>
-                <p className="text-[11px] text-[#c9a98a]/50 uppercase tracking-widest mt-0.5 font-cormorant font-bold">
+                <p className="text-[11px] text-[#7A6A5C]/50 uppercase tracking-widest mt-0.5 font-cormorant font-bold">
                   Bespoke inquiry message
                 </p>
               </div>
@@ -253,7 +253,7 @@ export default function ContactPage() {
               className="space-y-4 relative z-10"
             >
               <div className="space-y-1">
-                <label className="text-[10px] text-[#c9a98a]/50 uppercase tracking-widest font-semibold block">
+                <label className="text-[10px] text-[#7A6A5C]/50 uppercase tracking-widest font-semibold block">
                   Họ và tên
                 </label>
                 <Input
@@ -263,12 +263,12 @@ export default function ContactPage() {
                   onChange={handleInputChange}
                   required
                   placeholder="Nhập họ và tên..."
-                  className="w-full bg-[#13060a] border border-[#d4af37]/15 rounded-lg h-10 px-4 text-xs text-[#e8d5c0] outline-none transition-all focus:border-[#d4af37]/60"
+                  className="w-full bg-[#EDE4D5] border border-[#2D231F]/15 rounded-lg h-10 px-4 text-xs text-[#2D231F] outline-none transition-all focus:border-[#2D231F]/60"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="text-[10px] text-[#c9a98a]/50 uppercase tracking-widest font-semibold block">
+                <label className="text-[10px] text-[#7A6A5C]/50 uppercase tracking-widest font-semibold block">
                   Địa chỉ email
                 </label>
                 <Input
@@ -278,12 +278,12 @@ export default function ContactPage() {
                   onChange={handleInputChange}
                   required
                   placeholder="vi-du@gmail.com"
-                  className="w-full bg-[#13060a] border border-[#d4af37]/15 rounded-lg h-10 px-4 text-xs text-[#e8d5c0] outline-none transition-all focus:border-[#d4af37]/60"
+                  className="w-full bg-[#EDE4D5] border border-[#2D231F]/15 rounded-lg h-10 px-4 text-xs text-[#2D231F] outline-none transition-all focus:border-[#2D231F]/60"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="text-[10px] text-[#c9a98a]/50 uppercase tracking-widest font-semibold block">
+                <label className="text-[10px] text-[#7A6A5C]/50 uppercase tracking-widest font-semibold block">
                   Nội dung câu hỏi
                 </label>
                 <textarea
@@ -292,18 +292,18 @@ export default function ContactPage() {
                   value={formState.message}
                   onChange={handleInputChange}
                   required
-                  placeholder="Gửi gắm nỗi băn khoăn của bạn cho tiệm nhé..."
-                  className="w-full bg-[#13060a] border border-[#d4af37]/15 rounded-lg p-4 text-xs text-[#e8d5c0] outline-none transition-all focus:border-[#d4af37]/60 resize-none leading-relaxed"
+                  placeholder="Gửi gắm nỗi băn khoăn của bạn cho InviGo nhé..."
+                  className="w-full bg-[#EDE4D5] border border-[#2D231F]/15 rounded-lg p-4 text-xs text-[#2D231F] outline-none transition-all focus:border-[#2D231F]/60 resize-none leading-relaxed"
                 />
               </div>
 
               <Button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full h-11 bg-linear-to-r from-[#d4af37] to-[#f5c842] hover:opacity-95 text-[#0a0508] font-bold text-xs tracking-widest uppercase rounded-lg flex items-center justify-center gap-2 transition-all transform active:scale-98 shadow-md"
+                className="w-full h-11 bg-[#2D231F] hover:opacity-95 text-[#F3EDE3] font-bold text-xs tracking-widest uppercase rounded-lg flex items-center justify-center gap-2 transition-all transform active:scale-98 shadow-md"
               >
                 {isSubmitting ? (
-                  <span className="w-4 h-4 border-2 border-[#0a0508] border-t-transparent rounded-full animate-spin" />
+                  <span className="w-4 h-4 border-2 border-[#F3EDE3] border-t-transparent rounded-full animate-spin" />
                 ) : success ? (
                   "Đã gửi thư thành công"
                 ) : (

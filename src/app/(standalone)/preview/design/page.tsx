@@ -2,7 +2,8 @@
 
 import { Suspense, useEffect, useState } from "react";
 import Canvas from "@/templates/customer-design/Canvas";
-import type { EditorElement } from "@/templates/customer-design/types";
+import type { EditorElement, InvitationEffects } from "@/templates/customer-design/types";
+import { DEFAULT_INVITATION_EFFECTS, normalizeEffects } from "@/templates/customer-design/utils/invitation-effects";
 import { ArrowLeftIcon } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 
@@ -17,6 +18,7 @@ function DesignPreviewContent() {
   const [scale, setScale] = useState(1);
   const [fontsLoaded, setFontsLoaded] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [effects, setEffects] = useState<InvitationEffects>(DEFAULT_INVITATION_EFFECTS);
 
   useEffect(() => {
     try {
@@ -27,6 +29,7 @@ function DesignPreviewContent() {
         if (parsed.canvasBackground) setCanvasBackground(parsed.canvasBackground);
         if (parsed.backgroundOpacity !== undefined) setBackgroundOpacity(parsed.backgroundOpacity);
         if (parsed.canvasHeight) setCanvasHeight(parsed.canvasHeight);
+        if (parsed.effects) setEffects(normalizeEffects(parsed.effects));
       }
     } catch (e) {
       console.error("Failed to load draft for preview", e);
@@ -69,8 +72,8 @@ function DesignPreviewContent() {
     <div 
       className={
         isMobile 
-          ? "h-screen bg-[#0a0508] flex flex-col select-none overflow-hidden p-0" 
-          : "h-screen bg-[#0a0508] flex flex-col items-center justify-center select-none overflow-hidden p-4"
+          ? "h-screen bg-[#ffffff] flex flex-col select-none overflow-hidden p-0" 
+          : "h-screen bg-[#ffffff] flex flex-col items-center justify-center select-none overflow-hidden p-4"
       }
     >
       <style>{`
@@ -97,7 +100,7 @@ function DesignPreviewContent() {
       >
         <button
           onClick={() => window.close()}
-          className="flex items-center gap-1.5 px-3 py-1.5 bg-white/10 hover:bg-white/20 text-white text-xs font-semibold rounded-full transition-colors cursor-pointer border border-white/10"
+          className="flex items-center gap-1.5 px-3 py-1.5 bg-white/10 hover:bg-[#2D231F]/80 text-white text-xs font-semibold rounded-full transition-colors cursor-pointer border border-white/10"
         >
           <ArrowLeftIcon size={14} />
           Đóng
@@ -137,6 +140,7 @@ function DesignPreviewContent() {
             onDragEnd={() => {}}
             onTransformEnd={() => {}}
             readOnly={true}
+            effects={effects}
           />
         )}
       </div>
@@ -146,7 +150,7 @@ function DesignPreviewContent() {
 
 export default function DesignPreviewPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-[#0a0508] flex items-center justify-center text-[#f5e6d3] font-sans">Đang tải bản xem trước...</div>}>
+    <Suspense fallback={<div className="min-h-screen bg-[#ffffff] flex items-center justify-center text-[#2D231F] font-sans">Đang tải bản xem trước...</div>}>
       <DesignPreviewContent />
     </Suspense>
   );

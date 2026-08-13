@@ -11,9 +11,9 @@ export const IntroSection = ({
   handleChange,
 }: IntroSectionProps) => {
   return (
-    <div className="bg-white/2 border border-white/5 p-5 rounded-xl shadow-lg flex flex-col gap-5">
-      <div className="flex justify-between items-center border-b border-[#d4af37]/10 pb-2">
-        <h3 className="text-md font-bold text-[#d4af37]">
+    <div className="bg-[#2D231F]/8 border border-white/5 p-5 rounded-xl shadow-lg flex flex-col gap-5">
+      <div className="flex justify-between items-center border-b border-[#2D231F]/10 pb-2">
+        <h3 className="text-md font-bold text-[#2D231F]">
           4. Lời mở đầu thiệp
         </h3>
         <Switch
@@ -28,7 +28,7 @@ export const IntroSection = ({
           onChange={(e) => handleChange("introText", e.target.value)}
           rows={4}
           placeholder="Nhập lời mở đầu..."
-          className="w-full bg-[#1f1f1f] border-[#333] text-white placeholder:text-gray-500 focus:border-[#d4af37] resize-none"
+          className="w-full bg-[#EDE4D5] border-[#2D231F]/20 text-[#2D231F] placeholder:text-[#7A6A5C] focus:border-[#2D231F] resize-none"
         />
       )}
     </div>

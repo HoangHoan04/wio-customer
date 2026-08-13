@@ -1,9 +1,19 @@
-import { Presentation, Sparkles } from "lucide-react";
+import { Sparkles } from "lucide-react";
 import ComingSoon from "../components/ComingSoon";
-import type { EditorElement, EditorTool, WidgetConfig, WidgetType } from "../types";
+import type {
+  EditorElement,
+  EditorTool,
+  InvitationEffects,
+  TextPreset,
+  WidgetConfig,
+  WidgetType,
+} from "../types";
+import { DEFAULT_INVITATION_EFFECTS } from "../utils/invitation-effects";
 import BackgroundPanelContent from "./BackgroundPanelContent";
+import EffectPanelContent from "./EffectPanelContent";
 import ImageUploadContent from "./ImageUploadContent";
 import MusicPanelContent from "./MusicPanelContent";
+import PropertyPanelContent from "./PropertyPanelContent";
 import ShapePanelContent from "./ShapePanelContent";
 import StockPanelContent from "./StockPanelContent";
 import TextPanelContent from "./TextPanelContent";
@@ -32,6 +42,11 @@ export default function PanelContent({
   selectedAudio,
   onSelectAudio,
   onAddElements,
+  onUngroupElements,
+  onUpdateElements,
+  effects,
+  onUpdateEffects,
+  onReplayIntro,
 }: {
   tool: EditorTool;
   elements: EditorElement[];
@@ -49,7 +64,7 @@ export default function PanelContent({
   onSelect?: (id: string | null) => void;
   onSetBackground: (color: string) => void;
   onSetBackgroundOpacity?: (opacity: number) => void;
-  onAddText: () => void;
+  onAddText: (preset?: TextPreset) => void;
   onAddShape: (type: string) => void;
   onAlignElement?: (
     id: string,
@@ -71,6 +86,13 @@ export default function PanelContent({
   selectedAudio?: { id: string; name: string; url?: string; duration: string; source?: "admin" | "user" } | null;
   onSelectAudio?: (audio: { id: string; name: string; url?: string; duration: string; source?: "admin" | "user" } | null) => void;
   onAddElements?: (els: Omit<EditorElement, "id" | "zIndex">[], grouped: boolean) => void;
+  onUngroupElements?: (groupId: string) => void;
+  onUpdateElements?: (
+    updater: EditorElement[] | ((prev: EditorElement[]) => EditorElement[]),
+  ) => void;
+  effects?: InvitationEffects;
+  onUpdateEffects?: (effects: InvitationEffects) => void;
+  onReplayIntro?: () => void;
 }) {
   switch (tool) {
     case "text":
@@ -143,7 +165,12 @@ export default function PanelContent({
       );
     case "utility":
       return (
-        <UtilityPanelContent elements={elements} onUpdateWidgetConfig={onUpdateWidgetConfig} />
+        <UtilityPanelContent
+          elements={elements}
+          selectedElement={selectedElement}
+          onUpdateWidgetConfig={onUpdateWidgetConfig}
+          onSelect={onSelect}
+        />
       );
     case "preset":
       return (
@@ -154,9 +181,23 @@ export default function PanelContent({
     case "template":
       return <ComingSoon icon={Sparkles} text="Hiệu ứng động cho thiệp" />;
     case "effect":
-      return <ComingSoon icon={Sparkles} text="Hiệu ứng động cho thiệp" />;
+      return (
+        <EffectPanelContent
+          effects={effects ?? DEFAULT_INVITATION_EFFECTS}
+          onChange={onUpdateEffects ?? (() => {})}
+          onReplayIntro={onReplayIntro ?? (() => {})}
+        />
+      );
     case "property":
-      return <ComingSoon icon={Sparkles} text="Hiệu ứng động cho thiệp" />;
+      return (
+        <PropertyPanelContent
+          elements={elements}
+          selectedElementId={selectedElement?.id ?? null}
+          onSelectElement={onSelect ?? (() => {})}
+          onUpdateElements={onUpdateElements ?? (() => {})}
+          onUngroupElements={onUngroupElements}
+        />
+      );
     default:
       return null;
   }

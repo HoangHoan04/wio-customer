@@ -50,7 +50,7 @@ interface Props {
 export default function GalleryWidget({
   images = [],
   layout = "grid",
-  color = "#d4af37",
+  color = "#b6cc61",
   fontFamily = "Quicksand",
   width,
   height,

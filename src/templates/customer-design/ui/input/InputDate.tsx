@@ -158,7 +158,7 @@ export default function InputDate({
       className={`flex flex-col gap-1.5 relative w-full text-left ${className}`}
     >
       {label && (
-        <label className="text-xs font-semibold text-[#f5e6d3]/85">
+        <label className="text-xs font-semibold text-[#2D231F]/85">
           {label} {required && <span className="text-red-500">*</span>}
         </label>
       )}
@@ -166,37 +166,37 @@ export default function InputDate({
       <div
         ref={triggerRef}
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full h-12 bg-white/3 border border-[#d4af37]/20 hover:border-[#d4af37]/45 text-[#f5e6d3] px-3.5 flex items-center justify-between rounded-lg text-sm cursor-pointer select-none transition-colors"
+        className="w-full h-12 bg-[#F3EDE3] border border-[#D9CDBE] hover:border-[#2D231F]/45 text-[#2D231F] px-3.5 flex items-center justify-between rounded-lg text-sm cursor-pointer select-none transition-colors"
       >
-        <span className={value ? "text-[#f5e6d3]" : "text-[#f5e6d3]/40"}>
+        <span className={value ? "text-[#2D231F]" : "text-[#2D231F]/40"}>
           {value ? formatDateLabel(value) : "Chọn ngày..."}
         </span>
-        <CalendarIcon size={16} className="text-[#d4af37]/65" />
+        <CalendarIcon size={16} className="text-[#2D231F]/65" />
       </div>
 
       {isOpen && (
-        <div className="absolute top-18.5 left-0 z-50 w-full  bg-[#0f0608]/95 border border-[#d4af37]/35 rounded-xl p-4 shadow-2xl backdrop-blur-md flex flex-col gap-3">
-          <div className="flex items-center justify-between border-b border-[#d4af37]/15 pb-2">
+        <div className="absolute top-18.5 left-0 z-50 w-full  bg-[#F3EDE3]/95 border border-[#2D231F]/35 rounded-xl p-4 shadow-2xl backdrop-blur-md flex flex-col gap-3">
+          <div className="flex items-center justify-between border-b border-[#2D231F]/15 pb-2">
             <button
               type="button"
               onClick={handlePrevMonth}
-              className="p-1 text-[#f5e6d3]/60 hover:text-[#d4af37] hover:bg-white/5 rounded-md cursor-pointer border-none bg-transparent transition-all"
+              className="p-1 text-[#2D231F]/60 hover:text-[#2D231F] hover:bg-white/5 rounded-md cursor-pointer border-none bg-transparent transition-all"
             >
               <ChevronLeft size={16} />
             </button>
-            <span className="text-xs font-bold text-[#d4af37]">
+            <span className="text-xs font-bold text-[#2D231F]">
               {monthNames[currentMonth]} {currentYear}
             </span>
             <button
               type="button"
               onClick={handleNextMonth}
-              className="p-1 text-[#f5e6d3]/60 hover:text-[#d4af37] hover:bg-white/5 rounded-md cursor-pointer border-none bg-transparent transition-all"
+              className="p-1 text-[#2D231F]/60 hover:text-[#2D231F] hover:bg-white/5 rounded-md cursor-pointer border-none bg-transparent transition-all"
             >
               <ChevronRight size={16} />
             </button>
           </div>
 
-          <div className="grid grid-cols-7 text-center text-[10px] font-bold text-[#f5e6d3]/40">
+          <div className="grid grid-cols-7 text-center text-[10px] font-bold text-[#2D231F]/40">
             {weekdays.map((d, i) => (
               <div key={i}>{d}</div>
             ))}
@@ -222,8 +222,8 @@ export default function InputDate({
                   className={`h-7 w-7 rounded-full flex items-center justify-center cursor-pointer transition-all border-none font-medium
                     ${
                       isSelected
-                        ? "bg-linear-to-r from-[#d4af37] to-[#f5c842] text-[#0a0508]"
-                        : "bg-transparent text-[#f5e6d3] hover:bg-[#d4af37]/15"
+                        ? "bg-linear-to-r from-[#2D231F] to-[#C4B09A] text-[#F3EDE3]"
+                        : "bg-transparent text-[#2D231F] hover:bg-[#2D231F]/15"
                     }`}
                 >
                   {day}

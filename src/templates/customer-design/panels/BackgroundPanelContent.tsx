@@ -1,15 +1,22 @@
 import { uploadService } from "@/services/upload.service";
 import Slider from "@/templates/customer-design/ui/Slider";
-import Button from "@/templates/customer-design/ui/button/Button";
 import tokenCache from "@/utils/token-cache";
-import { ImagePlus, Loader2, Trash2, UploadCloud } from "lucide-react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  Check,
+  Droplet,
+  ImagePlus,
+  Loader2,
+  Palette,
+  Trash2,
+  UploadCloud,
+} from "lucide-react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import ColorPickerRow from "../components/ColorPickerRow";
 import {
   SYSTEM_WALLPAPERS,
   WEDDING_BG_COLORS,
   WEDDING_GRADIENT_COLORS,
 } from "../utils/constants";
-import ColorPickerRow from "../components/ColorPickerRow";
 
 interface BackgroundPanelContentProps {
   canvasBackground: string;
@@ -25,19 +32,86 @@ interface UploadedItem {
   url: string;
 }
 
+type Tab = "color" | "gradient" | "image";
+
+const CHECKER = {
+  backgroundImage:
+    "linear-gradient(45deg, #D9CDBE 25%, transparent 25%), linear-gradient(-45deg, #D9CDBE 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #D9CDBE 75%), linear-gradient(-45deg, transparent 75%, #D9CDBE 75%)",
+  backgroundSize: "10px 10px",
+  backgroundPosition: "0 0, 0 5px, 5px -5px, -5px 0",
+  backgroundColor: "#F3EDE3",
+};
+
+function isImageBg(value: string) {
+  return (
+    value.startsWith("http") ||
+    value.startsWith("blob:") ||
+    value.startsWith("data:") ||
+    value.startsWith("/")
+  );
+}
+
+function isGradientBg(value: string) {
+  return value.includes("gradient");
+}
+
+function tabFromBackground(value: string): Tab {
+  if (isImageBg(value)) return "image";
+  if (isGradientBg(value)) return "gradient";
+  return "color";
+}
+
+function kindLabel(value: string) {
+  if (value === "transparent") return "Trong suốt";
+  if (isImageBg(value)) return "Hình nền";
+  if (isGradientBg(value)) return "Gradient";
+  return "Màu đơn";
+}
+
+function pickerHex(value: string) {
+  if (value.startsWith("#") && value.length <= 9) return value;
+  const match = value.match(/#[0-9A-Fa-f]{3,8}/);
+  return match?.[0] ?? "#F3EDE3";
+}
+
+function PreviewFill({ value }: { value: string }) {
+  if (value === "transparent") {
+    return <div className="absolute inset-0" style={CHECKER} />;
+  }
+  if (isImageBg(value)) {
+    return (
+      <img
+        src={value}
+        alt=""
+        className="absolute inset-0 h-full w-full object-contain"
+      />
+    );
+  }
+  return <div className="absolute inset-0" style={{ background: value }} />;
+}
+
+function SelectedMark({ show }: { show: boolean }) {
+  if (!show) return null;
+  return (
+    <span className="absolute right-1 top-1 flex h-4 w-4 items-center justify-center rounded-full bg-[#2D231F] text-[#F3EDE3] shadow-sm">
+      <Check size={10} strokeWidth={3} />
+    </span>
+  );
+}
+
 export default function BackgroundPanelContent({
   canvasBackground,
   backgroundOpacity,
-  bgType,
   onSetBackground,
   onSetBackgroundOpacity,
 }: BackgroundPanelContentProps) {
-  const [activeTab, setActiveTab] = useState<"color" | "image">(
-    bgType || "color",
+  const [activeTab, setActiveTab] = useState<Tab>(() =>
+    tabFromBackground(canvasBackground),
   );
   const [uploadedImages, setUploadedImages] = useState<UploadedItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
+  const [uploadHint, setUploadHint] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -45,7 +119,7 @@ export default function BackgroundPanelContent({
       const saved = localStorage.getItem("bg_uploaded_images");
       if (saved) setUploadedImages(JSON.parse(saved));
     } catch {
-      //! ignore parse error
+      //! ignore */
     }
   }, []);
 
@@ -54,22 +128,24 @@ export default function BackgroundPanelContent({
     try {
       localStorage.setItem("bg_uploaded_images", JSON.stringify(imgs));
     } catch {
-      //! ignore storage error
+      //! ignore */
     }
   }, []);
 
   const processFiles = useCallback(
     async (rawFiles: File[]) => {
-      if (!tokenCache.isAuthenticated()) return;
-
+      if (!tokenCache.isAuthenticated()) {
+        setUploadHint("Đăng nhập để tải ảnh nền của bạn.");
+        return;
+      }
+      setUploadHint("");
       const imageFiles = rawFiles.filter((f) => f.type.startsWith("image/"));
       if (imageFiles.length === 0) return;
 
-      const filesToUpload = imageFiles.slice(0, 5);
       setLoading(true);
       try {
         const results: UploadedItem[] = [];
-        for (const file of filesToUpload) {
+        for (const file of imageFiles.slice(0, 5)) {
           const res = await uploadService.uploadImage(file);
           const url = res?.fileUrl;
           if (url) {
@@ -82,209 +158,118 @@ export default function BackgroundPanelContent({
         }
         if (results.length > 0) {
           persistImages([...results, ...uploadedImages]);
+          onSetBackground(results[0].url, "image");
+          setActiveTab("image");
         }
       } catch {
-        //! ignore upload errors
+        setUploadHint("Không tải được ảnh. Thử lại sau.");
       } finally {
         setLoading(false);
       }
     },
-    [uploadedImages, persistImages],
+    [uploadedImages, persistImages, onSetBackground],
   );
 
   const handleFilePick = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       if (e.target.files && e.target.files.length > 0) {
-        processFiles(Array.from(e.target.files));
+        void processFiles(Array.from(e.target.files));
       }
       e.target.value = "";
     },
     [processFiles],
   );
 
-  const handleDrop = useCallback(
-    (e: React.DragEvent) => {
-      e.preventDefault();
-      setIsDragging(false);
-      if (e.dataTransfer.files.length > 0) {
-        processFiles(Array.from(e.dataTransfer.files));
-      }
-    },
-    [processFiles],
-  );
+  const tabs: { id: Tab; label: string; icon: typeof Palette }[] = [
+    { id: "color", label: "Màu", icon: Palette },
+    { id: "gradient", label: "Gradient", icon: Droplet },
+    { id: "image", label: "Ảnh", icon: ImagePlus },
+  ];
 
-  const handleDragOver = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(true);
-  }, []);
+  const opacityPct = Math.round(backgroundOpacity * 100);
 
-  const handleDragLeave = useCallback(() => {
-    setIsDragging(false);
-  }, []);
-
-  const removeImage = useCallback(
-    (id: string) => {
-      persistImages(uploadedImages.filter((img) => img.id !== id));
-    },
-    [uploadedImages, persistImages],
+  const previewCaption = useMemo(
+    () => kindLabel(canvasBackground),
+    [canvasBackground],
   );
 
   return (
-    <div className="w-full max-w-sm text-[#f5e6d3] font-sans antialiased select-none overflow-hidden">
-      <div className="flex border-b border-[#d4af37]/15 px-4">
-        <button
-          onClick={() => setActiveTab("color")}
-          className={`flex-1 py-3 text-center font-bold text-sm transition-colors cursor-pointer ${
-            activeTab === "color"
-              ? "text-[#f5c842] border-b-2 border-[#d4af37]"
-              : "text-[#f5e6d3]/60 hover:text-[#f5e6d3]"
-          }`}
-        >
-          Màu nền
-        </button>
-        <button
-          onClick={() => setActiveTab("image")}
-          className={`flex-1 py-3 text-center font-bold text-sm transition-colors cursor-pointer ${
-            activeTab === "image"
-              ? "text-[#f5c842] border-b-2 border-[#d4af37]"
-              : "text-[#f5e6d3]/60 hover:text-[#f5e6d3]"
-          }`}
-        >
-          Hình nền
-        </button>
+    <div className="w-full font-sans text-[#2D231F] select-none">
+      <div className="mb-3 overflow-hidden rounded-2xl border border-[#D9CDBE] bg-[#EDE4D5]">
+        <div className="relative mx-auto my-3 h-28 w-[72px] overflow-hidden rounded-md border border-[#D9CDBE] shadow-[0_8px_20px_rgba(45,35,31,0.12)]">
+          <PreviewFill value={canvasBackground} />
+          <div
+            className="absolute inset-0 bg-[#F3EDE3]"
+            style={{ opacity: 1 - backgroundOpacity }}
+          />
+        </div>
+        <div className="border-t border-[#D9CDBE] bg-[#F3EDE3] px-3 py-2">
+          <p className="text-[10px] font-semibold uppercase tracking-wider text-[#7A6A5C]">
+            Nền hiện tại
+          </p>
+          <p className="truncate text-xs font-medium text-[#2D231F]">
+            {previewCaption}
+            {canvasBackground.startsWith("#")
+              ? ` · ${canvasBackground.toUpperCase()}`
+              : ""}
+          </p>
+        </div>
       </div>
 
-      <div className="p-4 space-y-6 overflow-y-auto max-h-[calc(100vh-120px)] custom-scrollbar">
+      <div className="mb-3 grid grid-cols-3 rounded-lg bg-[#EDE4D5] p-0.5">
+        {tabs.map((tab) => (
+          <button
+            key={tab.id}
+            type="button"
+            onClick={() => setActiveTab(tab.id)}
+            className={`flex items-center justify-center gap-1 rounded-md py-2 text-[11px] font-semibold transition-all ${
+              activeTab === tab.id
+                ? "bg-[#F3EDE3] text-[#2D231F] shadow-sm"
+                : "text-[#7A6A5C] hover:text-[#2D231F]"
+            }`}
+          >
+            <tab.icon size={13} />
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+      <div className="space-y-4">
         {activeTab === "color" && (
           <>
             <div className="space-y-2">
-              <span className="text-xs font-bold text-[#d4af37] uppercase tracking-wider block">
-                Màu nền hiện tại
-              </span>
-              <div className="flex items-center gap-4 bg-black/30 p-2.5 rounded-xl border border-white/5">
-                <div
-                  className="w-12 h-12 rounded-lg border-2 border-[#d4af37]/40 shadow-[0_0_10px_rgba(212,175,55,0.15)] shrink-0 relative overflow-hidden"
-                  style={{
-                    backgroundImage:
-                      canvasBackground === "transparent"
-                        ? "linear-gradient(45deg, #e0e0e0 25%, transparent 25%), linear-gradient(-45deg, #e0e0e0 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #e0e0e0 75%), linear-gradient(-45deg, transparent 75%, #e0e0e0 75%)"
-                        : undefined,
-                    backgroundSize:
-                      canvasBackground === "transparent"
-                        ? "8px 8px"
-                        : undefined,
-                    backgroundPosition:
-                      canvasBackground === "transparent"
-                        ? "0 0, 0 4px, 4px -4px, -4px 0"
-                        : undefined,
-                    backgroundColor:
-                      canvasBackground === "transparent"
-                        ? "#ffffff"
-                        : undefined,
-                    background:
-                      canvasBackground !== "transparent"
-                        ? canvasBackground
-                        : undefined,
-                  }}
-                />
-
-                <div className="flex flex-col min-w-0 flex-1">
-                  <span className="text-[11px] text-[#f5e6d3]/40 font-medium uppercase tracking-wide">
-                    {canvasBackground.startsWith("linear-gradient")
-                      ? "Gradient Color"
-                      : canvasBackground.startsWith("http") ||
-                          canvasBackground.startsWith("blob:")
-                        ? "Wallpaper Image"
-                        : "Solid Color"}
-                  </span>
-                  <span
-                    className="text-xs font-mono font-bold text-[#f5c842] uppercase truncate select-all mt-0.5"
-                    title={canvasBackground}
-                  >
-                    {canvasBackground === "transparent"
-                      ? "TRANSPARENT (Trong suốt)"
-                      : canvasBackground}
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            <div className="space-y-3">
-              <div>
-                <span className="text-sm font-bold text-[#f5e6d3] block">
-                  Tùy chỉnh màu nền
-                </span>
-                <span className="text-xs text-[#f5e6d3]/40 block mt-0.5">
-                  Chọn màu nền tự do từ bảng màu
-                </span>
-              </div>
+              <p className="text-[10px] font-semibold uppercase tracking-wider text-[#7A6A5C]">
+                Tùy chỉnh
+              </p>
               <ColorPickerRow
-                value={canvasBackground}
+                value={pickerHex(canvasBackground)}
                 onChange={(color) => onSetBackground(color, "color")}
               />
             </div>
 
-            <div className="space-y-3">
-              <div>
-                <span className="text-sm font-bold text-[#f5e6d3] block">
-                  Màu nền mặc định
-                </span>
-                <span className="text-xs text-[#f5e6d3]/40 block mt-0.5">
-                  Màu đơn sắc
-                </span>
-              </div>
-              <div className="grid grid-cols-6 gap-2.5">
+            <div className="space-y-2">
+              <p className="text-[10px] font-semibold uppercase tracking-wider text-[#7A6A5C]">
+                Màu có sẵn
+              </p>
+              <div className="grid grid-cols-7 gap-2">
                 {WEDDING_BG_COLORS.map((color) => {
-                  const isSelected = canvasBackground === color;
-                  const isTransparent = color === "transparent";
-
+                  const selected = canvasBackground === color;
+                  const transparent = color === "transparent";
                   return (
                     <button
                       key={color}
+                      type="button"
+                      title={transparent ? "Trong suốt" : color}
                       onClick={() => onSetBackground(color, "color")}
-                      className={`w-full aspect-square rounded-lg border transition-all cursor-pointer relative overflow-hidden ${
-                        isSelected
-                          ? "border-[#d4af37] ring-2 ring-[#d4af37]/30 scale-105 shadow-[0_0_8px_#d4af37]"
-                          : "border-white/10 hover:border-[#d4af37]/40 hover:scale-105"
+                      className={`relative aspect-square rounded-full border transition-transform hover:scale-110 ${
+                        selected
+                          ? "border-[#2D231F] ring-2 ring-[#2D231F]/20"
+                          : "border-[#D9CDBE] hover:border-[#2D231F]"
                       }`}
-                      style={{
-                        backgroundImage: isTransparent
-                          ? "linear-gradient(45deg, #ccc 25%, transparent 25%), linear-gradient(-45deg, #ccc 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #ccc 75%), linear-gradient(-45deg, transparent 75%, #ccc 75%)"
-                          : undefined,
-                        backgroundSize: isTransparent ? "8px 8px" : undefined,
-                        backgroundPosition: isTransparent
-                          ? "0 0, 0 4px, 4px -4px, -4px 0"
-                          : undefined,
-                        backgroundColor: isTransparent ? "#ffffff" : color,
-                      }}
+                      style={transparent ? CHECKER : { backgroundColor: color }}
                     >
-                      {isTransparent && (
-                        <span className="absolute inset-0 flex items-center justify-center text-[9px] font-bold text-gray-500 bg-white/60"></span>
-                      )}
+                      <SelectedMark show={selected} />
                     </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            <div className="space-y-3">
-              <span className="text-xs font-bold text-[#f5e6d3]/40 uppercase tracking-wider block">
-                Màu nền gradient
-              </span>
-              <div className="grid grid-cols-6 gap-2.5">
-                {WEDDING_GRADIENT_COLORS.map((gradient) => {
-                  const isSelected = canvasBackground === gradient;
-                  return (
-                    <button
-                      key={gradient}
-                      onClick={() => onSetBackground(gradient, "color")}
-                      className={`w-full aspect-square rounded-lg border transition-all cursor-pointer ${
-                        isSelected
-                          ? "border-[#d4af37] ring-2 ring-[#d4af37]/30 scale-105 shadow-[0_0_8px_#d4af37]"
-                          : "border-white/10 hover:border-[#d4af37]/40 hover:scale-105"
-                      }`}
-                      style={{ background: gradient }}
-                    />
                   );
                 })}
               </div>
@@ -292,36 +277,67 @@ export default function BackgroundPanelContent({
           </>
         )}
 
+        {activeTab === "gradient" && (
+          <div className="space-y-2">
+            <p className="text-[10px] font-semibold uppercase tracking-wider text-[#7A6A5C]">
+              Kiểu chuyển màu
+            </p>
+            <div className="grid grid-cols-3 gap-2">
+              {WEDDING_GRADIENT_COLORS.map((gradient) => {
+                const selected = canvasBackground === gradient;
+                return (
+                  <button
+                    key={gradient}
+                    type="button"
+                    onClick={() => onSetBackground(gradient, "color")}
+                    className={`relative aspect-[3/4] overflow-hidden rounded-xl border transition-transform hover:scale-[1.03] ${
+                      selected
+                        ? "border-[#2D231F] ring-2 ring-[#2D231F]/15"
+                        : "border-[#D9CDBE] hover:border-[#2D231F]"
+                    }`}
+                    style={{ background: gradient }}
+                  >
+                    <SelectedMark show={selected} />
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
         {activeTab === "image" && (
           <>
-            <div
-              onDrop={handleDrop}
-              onDragOver={handleDragOver}
-              onDragLeave={handleDragLeave}
+            <button
+              type="button"
+              onDrop={(e) => {
+                e.preventDefault();
+                setIsDragging(false);
+                if (e.dataTransfer.files.length > 0) {
+                  void processFiles(Array.from(e.dataTransfer.files));
+                }
+              }}
+              onDragOver={(e) => {
+                e.preventDefault();
+                setIsDragging(true);
+              }}
+              onDragLeave={() => setIsDragging(false)}
               onClick={() => fileInputRef.current?.click()}
-              className={`relative flex flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed p-6 transition-all cursor-pointer ${
+              className={`flex w-full flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed px-4 py-6 transition-colors ${
                 isDragging
-                  ? "border-[#d4af37] bg-[#d4af37]/10"
-                  : "border-white/10 hover:border-[#d4af37]/40 hover:bg-white/5"
+                  ? "border-[#2D231F] bg-[#EDE4D5]"
+                  : "border-[#D9CDBE] bg-[#F3EDE3] hover:border-[#2D231F] hover:bg-[#EDE4D5]"
               }`}
             >
               {loading ? (
-                <Loader2 size={28} className="text-amber-400 animate-spin" />
+                <Loader2 size={22} className="animate-spin text-[#7A6A5C]" />
               ) : (
-                <>
-                  <UploadCloud size={28} className="text-[#d4af37]/60" />
-                  <span className="text-xs text-[#f5e6d3]/60 text-center">
-                    Kéo thả ảnh vào đây hoặc click để chọn
-                  </span>
-                  <Button
-                    variant="outline"
-                    className="w-full! py-1.5! bg-[#d4af37]/20! text-[#d4af37]! text-xs! rounded-lg hover:bg-[#d4af37]/30 transition-colors font-medium"
-                  >
-                    <ImagePlus size={14} />
-                    Chọn ảnh
-                  </Button>
-                </>
+                <UploadCloud size={22} className="text-[#7A6A5C]" />
               )}
+              <span className="text-center text-[11px] leading-relaxed text-[#7A6A5C]">
+                {loading
+                  ? "Đang tải ảnh..."
+                  : "Kéo thả hoặc bấm để tải ảnh nền"}
+              </span>
               <input
                 ref={fileInputRef}
                 type="file"
@@ -330,38 +346,48 @@ export default function BackgroundPanelContent({
                 onChange={handleFilePick}
                 className="hidden"
               />
-            </div>
+            </button>
+            {uploadHint && (
+              <p className="text-[11px] text-[#7A6A5C]">{uploadHint}</p>
+            )}
 
             {uploadedImages.length > 0 && (
               <div className="space-y-2">
-                <span className="text-xs font-bold text-[#d4af37] uppercase tracking-wider block">
-                  Ảnh đã tải lên
-                </span>
-                <div className="grid grid-cols-3 gap-2">
+                <p className="text-[10px] font-semibold uppercase tracking-wider text-[#7A6A5C]">
+                  Đã tải lên
+                </p>
+                <div className="grid grid-cols-3 gap-1.5">
                   {uploadedImages.map((img) => {
-                    const isSelected = canvasBackground === img.url;
+                    const selected = canvasBackground === img.url;
                     return (
                       <div
                         key={img.id}
-                        className="relative group aspect-square"
+                        className="group relative aspect-square"
                       >
                         <button
+                          type="button"
                           onClick={() => onSetBackground(img.url, "image")}
-                          className={`w-full h-full rounded-lg overflow-hidden border bg-black/30 bg-cover bg-center transition-all cursor-pointer ${
-                            isSelected
-                              ? "border-[#d4af37] ring-2 ring-[#d4af37]/30"
-                              : "border-white/5 hover:border-[#d4af37]/40"
+                          className={`h-full w-full overflow-hidden rounded-xl border bg-cover bg-center transition-transform hover:scale-[1.03] ${
+                            selected
+                              ? "border-[#2D231F] ring-2 ring-[#2D231F]/15"
+                              : "border-[#D9CDBE] hover:border-[#2D231F]"
                           }`}
                           style={{ backgroundImage: `url(${img.url})` }}
-                        />
+                        >
+                          <SelectedMark show={selected} />
+                        </button>
                         <button
+                          type="button"
+                          title="Xóa ảnh"
                           onClick={(e) => {
                             e.stopPropagation();
-                            removeImage(img.id);
+                            persistImages(
+                              uploadedImages.filter((row) => row.id !== img.id),
+                            );
                           }}
-                          className="absolute top-1 right-1 p-1 bg-black/60 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500/80"
+                          className="absolute bottom-1 right-1 flex h-6 w-6 items-center justify-center rounded-full bg-[#2D231F]/80 text-[#F3EDE3] opacity-0 transition-opacity group-hover:opacity-100 hover:bg-red-700"
                         >
-                          <Trash2 size={12} />
+                          <Trash2 size={11} />
                         </button>
                       </div>
                     );
@@ -371,23 +397,30 @@ export default function BackgroundPanelContent({
             )}
 
             <div className="space-y-2">
-              <span className="text-xs font-bold text-[#d4af37] uppercase tracking-wider block">
-                Hình nền có sẵn
-              </span>
-              <div className="grid grid-cols-3 gap-2">
-                {SYSTEM_WALLPAPERS.map((imgUrl, index) => {
-                  const isSelected = canvasBackground === imgUrl;
+              <p className="text-[10px] font-semibold uppercase tracking-wider text-[#7A6A5C]">
+                Mẫu có sẵn
+              </p>
+              <div className="grid grid-cols-2 gap-2">
+                {SYSTEM_WALLPAPERS.map((imgUrl) => {
+                  const selected = canvasBackground === imgUrl;
                   return (
                     <button
-                      key={index}
+                      key={imgUrl}
+                      type="button"
                       onClick={() => onSetBackground(imgUrl, "image")}
-                      className={`w-full aspect-square rounded-lg overflow-hidden border bg-black/30 bg-cover bg-center transition-all cursor-pointer ${
-                        isSelected
-                          ? "border-[#d4af37] ring-2 ring-[#d4af37]/20"
-                          : "border-white/5 hover:border-[#d4af37]/40 hover:scale-105"
+                      className={`relative flex aspect-[3/4] items-center justify-center overflow-hidden rounded-xl border bg-[#EDE4D5] p-1.5 ${
+                        selected
+                          ? "border-[#2D231F] ring-2 ring-[#2D231F]/15"
+                          : "border-[#D9CDBE] hover:border-[#2D231F]"
                       }`}
-                      style={{ backgroundImage: `url(${imgUrl})` }}
-                    />
+                    >
+                      <img
+                        src={imgUrl}
+                        alt=""
+                        className="h-full w-full object-contain"
+                      />
+                      <SelectedMark show={selected} />
+                    </button>
                   );
                 })}
               </div>
@@ -396,19 +429,22 @@ export default function BackgroundPanelContent({
         )}
       </div>
 
-      <div className="px-4 pb-4 space-y-1 border-t border-[#d4af37]/15 pt-4">
+      <div className="mt-4 space-y-2 border-t border-[#D9CDBE] pt-3">
         <div className="flex items-center justify-between">
-          <span className="text-[10px] text-gray-500 uppercase tracking-wider font-medium">
-            Độ mờ nền
+          <span className="text-[10px] font-semibold uppercase tracking-wider text-[#7A6A5C]">
+            Độ trong suốt
           </span>
-          <span className="text-xs text-[#f5c842] font-mono">
-            {Math.round(backgroundOpacity * 100)}%
+          <span className="text-xs tabular-nums text-[#2D231F]">
+            {opacityPct}%
           </span>
         </div>
         <Slider
-          value={Math.round(backgroundOpacity * 100)}
+          value={opacityPct}
           onValueChange={(v) => onSetBackgroundOpacity(v / 100)}
         />
+        <p className="text-[10px] leading-relaxed text-[#7A6A5C]/80">
+          100% là nền đậm nhất. Giảm để nền nhạt hơn trên canvas.
+        </p>
       </div>
     </div>
   );

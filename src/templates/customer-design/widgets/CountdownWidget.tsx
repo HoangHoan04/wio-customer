@@ -15,7 +15,7 @@ interface Props {
 export default function CountdownWidget({
   targetDate,
   countdownType = "days-hours-min-sec",
-  color = "#d4af37",
+  color = "#b6cc61",
   fontFamily,
   width,
   height,
@@ -102,7 +102,7 @@ export default function CountdownWidget({
         borderRadius: 8 * s,
         border: "1px dashed rgba(0,0,0,0.15)"
       }}>
-        <span style={{ fontSize: 12 * s, color: "#999" }}>Chưa chọn ngày cưới để đếm ngược</span>
+        <span style={{ fontSize: 12 * s, color: "#999" }}>Chưa chọn thời gian</span>
       </div>
     );
   }

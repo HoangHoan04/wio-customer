@@ -1,20 +1,16 @@
-
-import Button from "@/templates/customer-design/ui/button/Button";
+import FileUpload from "@/components/common/FileUpload";
+import { invitationService } from "@/services/invitation.service";
 import InputDate from "@/templates/customer-design/ui/input/InputDate";
 import InputDateTime from "@/templates/customer-design/ui/input/InputDateTime";
 import InputSwitch from "@/templates/customer-design/ui/input/InputSwitch";
 import InputText from "@/templates/customer-design/ui/input/InputText";
-import Select, {
-  type SelectOption,
-} from "@/templates/customer-design/ui/Select";
-import { weddingService } from "@/services/wedding.service";
-import { Loader2, Plus, Trash2, Check, CalendarIcon, MapIcon, PhoneIcon } from "lucide-react";
+import Select, { type SelectOption } from "@/templates/customer-design/ui/Select";
+import { MessengerIcon, PhoneIcon, ZaloIcon } from "@/assets/icons";
+import { Check, Loader2, Trash2 } from "lucide-react";
 import { useState } from "react";
 import ColorPickerRow from "../components/ColorPickerRow";
-import Section from "../components/Section";
 import type { EditorElement, WidgetConfig, WidgetType } from "../types";
-import { CountdownIcon, GiftQrIcon, MessengerIcon, RSVPIcon, StackPhotoIcon, ViberIcon, VideoYoutubeIcon, ZaloIcon } from "@/assets/icons";
-import FileUpload from "@/components/common/FileUpload";
+import { UTILITY_FONTS } from "../utils/constants";
 
 const BANK_OPTIONS: SelectOption[] = [
   { label: "Vietcombank", value: "Vietcombank" },
@@ -33,13 +29,246 @@ const BANK_OPTIONS: SelectOption[] = [
   { label: "Ngân hàng khác", value: "OTHER" },
 ];
 
-interface UtilityPanelContentProps {
-  elements: EditorElement[];
-  onUpdateWidgetConfig: (
-    widgetType: WidgetType,
-    enabled: boolean,
-    updates?: Partial<WidgetConfig>,
-  ) => void;
+const INK = "#2D231F";
+
+type CatalogItem = {
+  type: WidgetType;
+  title: string;
+  description: string;
+  defaults: Partial<WidgetConfig>;
+};
+
+type CatalogGroup = {
+  label: string;
+  items: CatalogItem[];
+};
+
+const CATALOG: CatalogGroup[] = [
+  {
+    label: "Sự kiện",
+    items: [
+      {
+        type: "calendar",
+        title: "Lịch",
+        description: "Đánh dấu ngày trên lịch tháng",
+        defaults: {
+          calendarEnabled: true,
+          calendarStyle: "classic",
+          calendarDisplayMode: "full",
+          color: INK,
+          fontFamily: "Playfair Display",
+          targetDate: new Date().toISOString().split("T")[0],
+        },
+      },
+      {
+        type: "countdown",
+        title: "Đếm ngược",
+        description: "Đếm ngày giờ tới sự kiện",
+        defaults: {
+          countdownEnabled: true,
+          countdownType: "days-hours-min-sec",
+          countdownOrientation: "horizontal",
+          countdownStyle: "classic",
+          color: INK,
+          fontFamily: "Playfair Display",
+        },
+      },
+    ],
+  },
+  {
+    label: "Địa điểm",
+    items: [
+      {
+        type: "map",
+        title: "Bản đồ",
+        description: "Dẫn đường tới nơi tổ chức",
+        defaults: { mapEnabled: true, color: INK },
+      },
+    ],
+  },
+  {
+    label: "Liên hệ",
+    items: [
+      {
+        type: "call",
+        title: "Liên hệ",
+        description: "Gọi điện, Zalo, Messenger",
+        defaults: {
+          contactEnabled: true,
+          phoneEnabled: true,
+          contactActiveTab: "phone",
+          phoneLabel: "Gọi điện",
+        },
+      },
+      {
+        type: "rsvp",
+        title: "Xác nhận tham dự",
+        description: "Form RSVP cho khách mời",
+        defaults: { rsvpEnabled: true, rsvpType: "button", color: INK },
+      },
+    ],
+  },
+  {
+    label: "Quà tặng",
+    items: [
+      {
+        type: "qr",
+        title: "Mã QR nhận quà",
+        description: "VietQR cho một hoặc hai tài khoản",
+        defaults: {
+          qrEnabled: true,
+          qrTarget: "both",
+          qrTitle: "Gửi quà",
+          groomLabel: "Tài khoản 1",
+          brideLabel: "Tài khoản 2",
+          color: INK,
+        },
+      },
+    ],
+  },
+  {
+    label: "Hình ảnh & video",
+    items: [
+      {
+        type: "gallery",
+        title: "Thư viện ảnh",
+        description: "Lưới ảnh đều nhau",
+        defaults: { galleryEnabled: true, galleryLayout: "grid", images: [] },
+      },
+      {
+        type: "album",
+        title: "Album ghép",
+        description: "Collage nghệ thuật",
+        defaults: { galleryEnabled: true, galleryLayout: "collage", images: [] },
+      },
+      {
+        type: "carousel",
+        title: "Carousel 3D",
+        description: "Trượt ảnh không gian",
+        defaults: { galleryEnabled: true, galleryLayout: "3d", images: [] },
+      },
+      {
+        type: "youtube",
+        title: "Video YouTube",
+        description: "Nhúng video vào thiệp",
+        defaults: { youtubeEnabled: true, color: INK },
+      },
+    ],
+  },
+];
+
+const WIDGET_TITLE: Partial<Record<WidgetType, string>> = Object.fromEntries(
+  CATALOG.flatMap((g) => g.items.map((i) => [i.type, i.title]))
+);
+
+function WidgetPreview({ type }: { type: WidgetType }) {
+  if (type === "calendar") {
+    return (
+      <div className="flex h-full flex-col rounded-md bg-[#EDE4D5] p-1.5">
+        <div className="mb-1 text-center text-[8px] font-bold tracking-wide text-[#2D231F]">
+          THÁNG 8
+        </div>
+        <div className="grid flex-1 grid-cols-7 gap-0.5">
+          {Array.from({ length: 14 }).map((_, i) => (
+            <div
+              key={i}
+              className={`rounded-[2px] ${i === 10 ? "bg-[#2D231F]" : "bg-[#F3EDE3]"}`}
+            />
+          ))}
+        </div>
+      </div>
+    );
+  }
+  if (type === "countdown") {
+    return (
+      <div className="flex h-full items-center justify-center gap-1">
+        {["12", "08", "30"].map((n) => (
+          <div
+            key={n}
+            className="flex h-8 w-7 flex-col items-center justify-center rounded-md bg-[#2D231F] text-[#F3EDE3]"
+          >
+            <span className="text-[10px] font-bold leading-none">{n}</span>
+            <span className="mt-0.5 text-[6px] opacity-70">ngày</span>
+          </div>
+        ))}
+      </div>
+    );
+  }
+  if (type === "map") {
+    return (
+      <div className="relative h-full overflow-hidden rounded-md bg-[#D9CDBE]">
+        <div className="absolute inset-x-3 top-3 h-px bg-[#C4B09A]" />
+        <div className="absolute inset-y-2 left-1/3 w-px bg-[#C4B09A]" />
+        <div className="absolute left-1/2 top-1/2 h-3 w-3 -translate-x-1/2 -translate-y-full rounded-full border-2 border-[#2D231F] bg-[#C4B09A]" />
+        <div className="absolute bottom-1.5 left-1/2 h-1.5 w-8 -translate-x-1/2 rounded-full bg-[#2D231F]/20" />
+      </div>
+    );
+  }
+  if (type === "call") {
+    return (
+      <div className="flex h-full items-center justify-center gap-1.5">
+        {["#2D231F", "#7A6A5C", "#C4B09A"].map((c) => (
+          <div key={c} className="h-6 w-6 rounded-full" style={{ backgroundColor: c }} />
+        ))}
+      </div>
+    );
+  }
+  if (type === "rsvp") {
+    return (
+      <div className="flex h-full flex-col items-center justify-center gap-1.5">
+        <div className="h-5 w-10 rounded-sm border border-[#2D231F]/30 bg-[#F3EDE3]" />
+        <div className="h-3 w-14 rounded-full bg-[#2D231F]" />
+      </div>
+    );
+  }
+  if (type === "qr") {
+    return (
+      <div className="flex h-full items-center justify-center">
+        <div className="grid grid-cols-4 gap-px rounded-sm bg-[#2D231F] p-1">
+          {Array.from({ length: 16 }).map((_, i) => (
+            <div
+              key={i}
+              className={`h-1.5 w-1.5 ${[0, 1, 2, 4, 8, 12, 13, 14].includes(i) ? "bg-[#F3EDE3]" : "bg-[#2D231F]"}`}
+            />
+          ))}
+        </div>
+      </div>
+    );
+  }
+  if (type === "gallery") {
+    return (
+      <div className="grid h-full grid-cols-2 grid-rows-2 gap-0.5">
+        {["#EDE4D5", "#D9CDBE", "#C4B09A", "#EDE4D5"].map((c, i) => (
+          <div key={i} className="rounded-[3px]" style={{ backgroundColor: c }} />
+        ))}
+      </div>
+    );
+  }
+  if (type === "album") {
+    return (
+      <div className="relative h-full">
+        <div className="absolute left-1 top-2 h-8 w-10 rotate-[-8deg] rounded-sm bg-[#D9CDBE]" />
+        <div className="absolute right-1 top-1 h-9 w-10 rotate-[6deg] rounded-sm bg-[#C4B09A]" />
+        <div className="absolute bottom-1 left-1/2 h-8 w-10 -translate-x-1/2 rounded-sm bg-[#EDE4D5]" />
+      </div>
+    );
+  }
+  if (type === "carousel") {
+    return (
+      <div className="flex h-full items-center justify-center">
+        <div className="h-8 w-5 -rotate-12 rounded-sm bg-[#D9CDBE]" />
+        <div className="z-10 -mx-1 h-10 w-7 rounded-sm bg-[#2D231F]" />
+        <div className="h-8 w-5 rotate-12 rounded-sm bg-[#C4B09A]" />
+      </div>
+    );
+  }
+  return (
+    <div className="flex h-full items-center justify-center rounded-md bg-[#2D231F]">
+      <div className="flex h-6 w-6 items-center justify-center rounded-full border-2 border-[#F3EDE3]">
+        <div className="ml-0.5 h-0 w-0 border-y-[4px] border-l-[7px] border-y-transparent border-l-[#F3EDE3]" />
+      </div>
+    </div>
+  );
 }
 
 const extractAddressFromMapUrl = (url: string): string => {
@@ -55,949 +284,662 @@ const extractAddressFromMapUrl = (url: string): string => {
     const q = urlObj.searchParams.get("q");
     if (q) return decodeURIComponent(q).replace(/\+/g, " ");
     const placeMatch = urlObj.pathname.match(/\/place\/([^/]+)/);
-    if (placeMatch)
-      return decodeURIComponent(placeMatch[1]).replace(/\+/g, " ");
+    if (placeMatch) return decodeURIComponent(placeMatch[1]).replace(/\+/g, " ");
   } catch {
     //! ignore parse error
   }
   return "";
 };
 
+const fontOptions: SelectOption[] = UTILITY_FONTS.map((f) => ({
+  label: f,
+  value: f,
+  labelStyle: { fontFamily: f },
+}));
+
 export default function UtilityPanelContent({
   elements,
+  selectedElement,
   onUpdateWidgetConfig,
-}: UtilityPanelContentProps) {
+  onSelect,
+}: {
+  elements: EditorElement[];
+  selectedElement: EditorElement | null;
+  onUpdateWidgetConfig: (
+    widgetType: WidgetType,
+    enabled: boolean,
+    updates?: Partial<WidgetConfig>
+  ) => void;
+  onSelect?: (id: string | null) => void;
+}) {
   const [resolving, setResolving] = useState(false);
 
-  const getWidgetState = (widgetType: WidgetType) => {
-    const found = elements.find(
-      (el) => el.type === "widget" && el.widgetType === widgetType,
-    );
-    return {
-      isEnabled: !!found,
-      config: found?.widgetConfig || {},
-    };
+  const selectedWidget =
+    selectedElement?.type === "widget" && selectedElement.widgetType && selectedElement.widgetType !== "music"
+      ? selectedElement
+      : null;
+
+  const existingTypes = new Set(
+    elements.filter((el) => el.type === "widget" && el.widgetType).map((el) => el.widgetType as WidgetType)
+  );
+
+  const handleInsert = (item: CatalogItem) => {
+    const existing = elements.find((el) => el.type === "widget" && el.widgetType === item.type);
+    if (existing) {
+      onSelect?.(existing.id);
+      return;
+    }
+    onUpdateWidgetConfig(item.type, true, item.defaults);
   };
 
-  const fontOptions: SelectOption[] = [
-    { label: "Quicksand", value: "Quicksand" },
-    { label: "Playfair Display", value: "Playfair Display" },
-    { label: "Dancing Script", value: "Dancing Script" },
-    { label: "Montserrat", value: "Montserrat" },
-    { label: "Alex Brush", value: "Alex Brush" },
-  ];
+  if (selectedWidget?.widgetType) {
+    const type = selectedWidget.widgetType;
+    const config = selectedWidget.widgetConfig || {};
+    const update = (updates: Partial<WidgetConfig>) => onUpdateWidgetConfig(type, true, updates);
 
-  const calendar = getWidgetState("calendar");
-  const countdown = getWidgetState("countdown");
-  const map = getWidgetState("map");
-  const call = getWidgetState("call");
-  const rsvp = getWidgetState("rsvp");
-  const qr = getWidgetState("qr");
-  const gallery = getWidgetState("gallery");
-  const youtube = getWidgetState("youtube");
-
-  const renderWidgetHeader = (
-    label: string,
-    icon: React.ReactNode,
-    isEnabled: boolean,
-    onToggle: () => void,
-  ) => {
     return (
-      <div
-        className={`flex items-center justify-between py-2.5 px-3 bg-[#1e1e22] border-b border-zinc-800 transition-colors ${isEnabled ? "rounded-t-lg" : "rounded-lg border-b-transparent"}`}
-      >
-        <div className="flex items-center gap-2.5 select-none">
-          <div
-            className={`transition-colors ${isEnabled ? "text-[#d4af37]" : "text-zinc-500"}`}
-          >
-            {icon}
-          </div>
-          <span
-            className={`font-medium text-[11px] ${isEnabled ? "text-gray-100" : "text-zinc-400"}`}
-          >
-            {label}
-          </span>
-          {isEnabled && (
-            <div className="flex items-center gap-1.5 ml-1 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-1.5 py-0.5 rounded text-[9px] font-bold">
-              <span className="relative flex h-1.5 w-1.5">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
-              </span>
-              <Check size={10} strokeWidth={3} />
-            </div>
-          )}
+      <div onKeyDown={(e) => e.stopPropagation()} className="space-y-4 pb-10 text-xs">
+        <button
+          type="button"
+          onClick={() => onSelect?.(null)}
+          className="text-left text-xs text-[#7A6A5C] transition-colors hover:text-[#2D231F]"
+        >
+          ← Thêm tiện ích khác
+        </button>
+        <div>
+          <h3 className="text-sm font-semibold text-[#2D231F]">{WIDGET_TITLE[type] || "Tiện ích"}</h3>
+          <p className="mt-0.5 text-[11px] text-[#7A6A5C]">Chỉnh nội dung trên canvas</p>
         </div>
-        <div className="flex items-center">
-          <InputSwitch
-            switchSize="sm"
-            checked={isEnabled}
-            onCheckedChange={onToggle}
-          />
-        </div>
+
+        {type === "calendar" && <CalendarConfig config={config} update={update} />}
+        {type === "countdown" && <CountdownConfig config={config} update={update} />}
+        {type === "map" && (
+          <MapConfig config={config} update={update} resolving={resolving} setResolving={setResolving} />
+        )}
+        {type === "call" && <CallConfig config={config} update={update} />}
+        {type === "rsvp" && <RsvpConfig config={config} update={update} />}
+        {type === "qr" && <QrConfig config={config} update={update} />}
+        {(type === "gallery" || type === "album" || type === "carousel") && (
+          <GalleryConfig config={config} update={update} type={type} />
+        )}
+        {type === "youtube" && <YoutubeConfig config={config} update={update} />}
+
+        <button
+          type="button"
+          onClick={() => onUpdateWidgetConfig(type, false)}
+          className="flex w-full items-center justify-center gap-1.5 rounded-lg border border-red-400/30 py-2 text-xs text-red-500 transition-colors hover:bg-red-400/10"
+        >
+          <Trash2 size={12} />
+          Gỡ khỏi thiệp
+        </button>
       </div>
     );
-  };
+  }
 
   return (
-    <div
-      onKeyDown={(e) => e.stopPropagation()}
-      className="space-y-4 text-gray-300 text-xs pb-40 select-none max-w-md mx-auto relative z-0"
-    >
-      <Section label={""}>
-        <div className="space-y-3.5">
-          <div
-            className={`rounded-lg border border-zinc-800/60 bg-[#16161a] transition-all ${calendar.isEnabled ? "relative z-30" : ""}`}
-          >
-            {renderWidgetHeader(
-              "Lịch đám cưới",
-              <CalendarIcon width={16} height={16} />,
-              calendar.isEnabled,
-              () => {
-                const nextEnabled = !calendar.isEnabled;
-                onUpdateWidgetConfig("calendar", nextEnabled, {
-                  calendarEnabled: nextEnabled,
-                  targetDate:
-                    calendar.config.targetDate ||
-                    new Date().toISOString().split("T")[0],
-                });
-              },
-            )}
-
-            {calendar.isEnabled && (
-              <div className="p-3 space-y-3.5 bg-[#121214] rounded-b-lg animate-fadeIn relative">
-                <InputDate
-                  label="Ngày nổi bật (Highlighted):"
-                  value={
-                    calendar.config.targetDate ||
-                    new Date().toISOString().split("T")[0]
-                  }
-                  onChange={(val) =>
-                    onUpdateWidgetConfig("calendar", true, { targetDate: val })
-                  }
-                />
-
-                <div className="relative z-20">
-                  <Select
-                    label="Kiểu hiển thị đầu mục:"
-                    size="sm"
-                    value={calendar.config.calendarDisplayMode || "full"}
-                    options={[
-                      { label: "Hiển thị đầy đủ (Tháng / Năm)", value: "full" },
-                      { label: "Tối giản (Chỉ ngày)", value: "date-only" },
-                    ]}
-                    onValueChange={(val) =>
-                      onUpdateWidgetConfig("calendar", true, {
-                        calendarDisplayMode: val as any,
-                      })
-                    }
-                  />
-                </div>
-
-                <div className="space-y-1.5">
-                  <label className="text-[10px] font-semibold tracking-wider text-zinc-400 uppercase">
-                    Giao diện hiển thị lịch
-                  </label>
-                  <div className="grid grid-cols-2 gap-2">
-                    {[
-                      {
-                        value: "classic",
-                        label: "Cổ điển",
-                        desc: "Khung viền truyền thống",
-                      },
-                      {
-                        value: "modern",
-                        label: "Hiện đại",
-                        desc: "Góc bo mượt mà",
-                      },
-                      {
-                        value: "romantic",
-                        label: "Lãng mạn",
-                        desc: "Tone màu mềm mại",
-                      },
-                      {
-                        value: "minimal",
-                        label: "Tối giản",
-                        desc: "Focus vào ngày cưới",
-                      },
-                    ].map((item) => (
-                      <button
-                        key={item.value}
-                        type="button"
-                        onClick={() =>
-                          onUpdateWidgetConfig("calendar", true, {
-                            calendarStyle: item.value as any,
-                          })
-                        }
-                        className={`flex flex-col items-start p-2.5 rounded-lg border text-left transition-all ${
-                          (calendar.config.calendarStyle || "classic") ===
-                          item.value
-                            ? "bg-[#d4af37]/10 border-[#d4af37] text-white"
-                            : "bg-[#1c1c1e] border-zinc-800 text-zinc-400 hover:border-zinc-700"
-                        }`}
-                      >
-                        <span
-                          className={`text-[11px] font-bold ${(calendar.config.calendarStyle || "classic") === item.value ? "text-[#d4af37]" : "text-zinc-200"}`}
-                        >
-                          {item.label}
-                        </span>
-                        <span className="text-[9px] opacity-60 mt-0.5">
-                          {item.desc}
-                        </span>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 gap-3 pt-1">
-                  <div className="space-y-1">
-                    <label className="text-[10px] font-semibold tracking-wider text-zinc-400 uppercase">
-                      Màu sắc chủ đạo
-                    </label>
-                    <ColorPickerRow
-                      value={calendar.config.color || "#d4af37"}
-                      onChange={(val) =>
-                        onUpdateWidgetConfig("calendar", true, { color: val })
-                      }
-                    />
-                  </div>
-                  <div className="relative z-10">
-                    <Select
-                      label="Font chữ:"
-                      size="sm"
-                      value={calendar.config.fontFamily || "Quicksand"}
-                      options={fontOptions}
-                      onValueChange={(val) =>
-                        onUpdateWidgetConfig("calendar", true, {
-                          fontFamily: val as string,
-                        })
-                      }
-                    />
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-
-          <div
-            className={`rounded-lg border border-zinc-800/60 bg-[#16161a] transition-all ${countdown.isEnabled ? "relative z-25" : ""}`}
-          >
-            {renderWidgetHeader(
-              "Đếm ngược sự kiện",
-              <CountdownIcon width={16} height={16} />,
-              countdown.isEnabled,
-              () =>
-                onUpdateWidgetConfig("countdown", !countdown.isEnabled, {
-                  countdownEnabled: !countdown.isEnabled,
-                }),
-            )}
-
-            {countdown.isEnabled && (
-              <div className="p-3 space-y-3 bg-[#121214] rounded-b-lg animate-fadeIn">
-                <InputDateTime
-                  label="Thời gian chính xác đám cưới:"
-                  value={countdown.config.countdownTarget || ""}
-                  onChange={(val) =>
-                    onUpdateWidgetConfig("countdown", true, {
-                      countdownTarget: val,
-                    })
-                  }
-                />
-
-                <div className="grid grid-cols-1 gap-2">
-                  <div className="relative">
-                    <Select
-                      label="Đơn vị hiển thị:"
-                      size="sm"
-                      value={
-                        countdown.config.countdownType || "days-hours-min-sec"
-                      }
-                      options={[
-                        {
-                          label: "Ngày - Giờ - Phút - Giây",
-                          value: "days-hours-min-sec",
-                        },
-                        { label: "Giờ - Phút - Giây", value: "hours-min-sec" },
-                      ]}
-                      onValueChange={(val) =>
-                        onUpdateWidgetConfig("countdown", true, {
-                          countdownType: val as any,
-                        })
-                      }
-                    />
-                  </div>
-                  <div className="relative">
-                    <Select
-                      label="Bố cục khối:"
-                      size="sm"
-                      value={
-                        countdown.config.countdownOrientation || "horizontal"
-                      }
-                      options={[
-                        { label: "Hàng ngang (Mặc định)", value: "horizontal" },
-                        { label: "Hàng dọc", value: "vertical" },
-                      ]}
-                      onValueChange={(val) =>
-                        onUpdateWidgetConfig("countdown", true, {
-                          countdownOrientation: val as any,
-                        })
-                      }
-                    />
-                  </div>
-                </div>
-
-                <div className="relative">
-                  <Select
-                    label="Style thiết kế:"
-                    size="sm"
-                    value={countdown.config.countdownStyle || "classic"}
-                    options={[
-                      { label: "Cổ điển (Classic Burgundy)", value: "classic" },
-                      {
-                        label: "Kính mờ (Modern Glassmorphism)",
-                        value: "modern",
-                      },
-                      {
-                        label: "Giấy thô lãng mạn (Romantic Kraft)",
-                        value: "romantic",
-                      },
-                      {
-                        label: "Hoàng gia sang trọng (Luxury Navy)",
-                        value: "luxury-navy",
-                      },
-                    ]}
-                    onValueChange={(val) =>
-                      onUpdateWidgetConfig("countdown", true, {
-                        countdownStyle: val as any,
-                      })
-                    }
-                  />
-                </div>
-
-                <div className="grid grid-cols-1 gap-3 pt-1">
-                  <div className="space-y-1">
-                    <label className="text-[10px] font-semibold tracking-wider text-zinc-400 uppercase">
-                      Màu chữ số
-                    </label>
-                    <ColorPickerRow
-                      value={countdown.config.color || "#ffffff"}
-                      onChange={(val) =>
-                        onUpdateWidgetConfig("countdown", true, { color: val })
-                      }
-                    />
-                  </div>
-                  <div>
-                    <Select
-                      label="Font chữ số:"
-                      size="sm"
-                      value={countdown.config.fontFamily || "Quicksand"}
-                      options={fontOptions}
-                      onValueChange={(val) =>
-                        onUpdateWidgetConfig("countdown", true, {
-                          fontFamily: val as string,
-                        })
-                      }
-                    />
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-
-          <div
-            className={`rounded-lg border border-zinc-800/60 bg-[#16161a] transition-all ${map.isEnabled ? "relative z-20" : ""}`}
-          >
-            {renderWidgetHeader(
-              "Bản đồ dẫn đường",
-              <MapIcon width={16} height={16} />,
-              map.isEnabled,
-              () =>
-                onUpdateWidgetConfig("map", !map.isEnabled, {
-                  mapEnabled: !map.isEnabled,
-                }),
-            )}
-
-            {map.isEnabled && (
-              <div className="p-3 space-y-3 bg-[#121214] rounded-b-lg animate-fadeIn">
-                <InputText
-                  type="text"
-                  label="Tên / Địa chỉ trung tâm tiệc cưới:"
-                  placeholder="Ví dụ: Trung tâm hội nghị Gem Center..."
-                  value={map.config.locationAddress || ""}
-                  onChange={(e) =>
-                    onUpdateWidgetConfig("map", true, {
-                      locationAddress: e.target.value,
-                    })
-                  }
-                />
-
-                <div className="space-y-1">
-                  <label className="block text-zinc-400 text-[11px] font-medium mb-1">
-                    Nhúng Link Google Maps:
-                  </label>
-                  <div className="flex flex-col gap-2">
-                    <InputText
-                      type="text"
-                      placeholder="Dán mã nhúng iframe hoặc link map..."
-                      value={map.config.mapEmbedUrl || ""}
-                      onChange={(e) =>
-                        onUpdateWidgetConfig("map", true, {
-                          mapEmbedUrl: e.target.value,
-                        })
-                      }
-                      className="flex-1 bg-[#1c1c1e] border border-zinc-800 rounded px-2.5 py-1.5 text-xs text-gray-200 placeholder-zinc-600 outline-none focus:border-[#d4af37]/50 transition-colors"
-                    />
-                    <button
-                      type="button"
-                      disabled={resolving || !map.config.mapEmbedUrl?.trim()}
-                      onClick={async () => {
-                        const inputUrl = map.config.mapEmbedUrl?.trim();
-                        if (!inputUrl) return;
-                        setResolving(true);
-                        try {
-                          const res =
-                            await weddingService.resolveMapUrl(inputUrl);
-                          const resolvedUrl = res?.data?.url || inputUrl;
-                          const address =
-                            extractAddressFromMapUrl(resolvedUrl) ||
-                            map.config.locationAddress ||
-                            "";
-                          onUpdateWidgetConfig("map", true, {
-                            mapEmbedUrl: resolvedUrl,
-                            locationAddress:
-                              address || map.config.locationAddress,
-                          });
-                        } catch {
-                          //! error fallback
-                        }
-                        setResolving(false);
-                      }}
-                      className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-semibold bg-[#d4af37] text-black hover:bg-[#b08d20] disabled:opacity-40 disabled:hover:bg-[#d4af37] transition-colors"
-                    >
-                      {resolving ? (
-                        <Loader2 size={12} className="animate-spin" />
-                      ) : null}
-                      <span>Tải dữ liệu</span>
-                    </button>
-                  </div>
-                </div>
-
-                <div className="relative">
-                  <Select
-                    label="Chế độ hiển thị bản đồ:"
-                    size="sm"
-                    value={map.config.mapType || "normal"}
-                    options={[
-                      { label: "Bản đồ đường bộ (Mặc định)", value: "normal" },
-                      { label: "Vệ tinh thực tế", value: "satellite" },
-                      { label: "Bản đồ địa hình", value: "terrain" },
-                      { label: "Chế độ kết hợp", value: "hybrid" },
-                    ]}
-                    onValueChange={(val) =>
-                      onUpdateWidgetConfig("map", true, { mapType: val as any })
-                    }
-                  />
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-
-        <div className="space-y-3.5">
-          <div
-            className={`rounded-xl border border-zinc-800/80 bg-[#16161a] shadow-lg transition-all duration-300 ${call.isEnabled ? "relative z-30 ring-1 ring-zinc-800" : ""}`}
-          >
-            {renderWidgetHeader(
-              "Thông tin liên hệ",
-              <PhoneIcon
-                width={16}
-                height={16}
-                className={call.isEnabled ? "text-[#d4af37]" : "text-zinc-400"}
-              />,
-              call.isEnabled,
-              () =>
-                onUpdateWidgetConfig("call", !call.isEnabled, {
-                  contactEnabled: !call.isEnabled,
-                }),
-            )}
-
-            {call.isEnabled && (
-              <div className="p-4 space-y-4 bg-[#111112] border-t border-zinc-900 rounded-b-xl animate-fadeIn">
-                <div className="flex gap-1.5 bg-[#18181b] rounded-lg p-1 border border-zinc-800/60">
-                  {[
-                    {
-                      key: "phone",
-                      icon: <PhoneIcon width={20} height={20} />,
-                    },
-                    {
-                      key: "messenger",
-                      icon: <MessengerIcon width={20} height={20} />,
-                    },
-                    {
-                      key: "zalo",
-                      icon: <ZaloIcon width={20} height={20} />,
-                    },
-                  ].map((tab) => {
-                    const isActive =
-                      (call.config.contactActiveTab || "phone") === tab.key;
-                    return (
-                      <button
-                        key={tab.key}
-                        type="button"
-                        onClick={() =>
-                          onUpdateWidgetConfig("call", true, {
-                            contactActiveTab: tab.key as any,
-                          })
-                        }
-                        className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-1 rounded-md text-[11px] font-semibold tracking-wide transition-all duration-200 ${
-                          isActive
-                            ? "bg-[#d4af37] text-black shadow-sm font-bold"
-                            : "text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/30"
-                        }`}
-                      >
-                        {tab.icon}
-                      </button>
-                    );
-                  })}
-                </div>
-
-                <div className="bg-[#141416] p-3.5 rounded-xl border border-zinc-800/50 space-y-4 shadow-inner">
-                  {(call.config.contactActiveTab || "phone") === "phone" && (
-                    <div className="space-y-3.5">
-                      <InputSwitch
-                        label="Kích hoạt nút gọi"
-                        switchSize="sm"
-                        checked={!!call.config.phoneEnabled}
-                        onCheckedChange={(checked) =>
-                          onUpdateWidgetConfig("call", true, {
-                            phoneEnabled: checked,
-                          })
-                        }
-                      />
-                      {call.config.phoneEnabled && (
-                        <div className="space-y-3 animate-slideDown">
-                          <InputText
-                            type="text"
-                            label="Nhãn hiển thị"
-                            value={call.config.phoneLabel || "Gọi điện"}
-                            onChange={(e) =>
-                              onUpdateWidgetConfig("call", true, {
-                                phoneLabel: e.target.value,
-                              })
-                            }
-                          />
-                          <InputText
-                            type="tel"
-                            label="Số hotline chính"
-                            placeholder="Nhập số điện thoại..."
-                            value={call.config.phoneNumber || ""}
-                            onChange={(e) =>
-                              onUpdateWidgetConfig("call", true, {
-                                phoneNumber: e.target.value,
-                              })
-                            }
-                          />
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  {(call.config.contactActiveTab || "phone") ===
-                    "messenger" && (
-                    <div className="space-y-3.5">
-                      <InputSwitch
-                        label="Kích hoạt messenger"
-                        switchSize="sm"
-                        checked={!!call.config.messengerEnabled}
-                        onCheckedChange={(checked) =>
-                          onUpdateWidgetConfig("call", true, {
-                            messengerEnabled: checked,
-                          })
-                        }
-                      />
-                      {call.config.messengerEnabled && (
-                        <div className="space-y-3 animate-slideDown">
-                          <InputText
-                            type="text"
-                            label="Nhãn hiển thị"
-                            value={call.config.messengerLabel || "Messenger"}
-                            onChange={(e) =>
-                              onUpdateWidgetConfig("call", true, {
-                                messengerLabel: e.target.value,
-                              })
-                            }
-                          />
-                          <InputText
-                            type="url"
-                            label="Đường dẫn trang cá nhân (URL)"
-                            placeholder="https://facebook.com/username"
-                            value={call.config.messengerUrl || ""}
-                            onChange={(e) =>
-                              onUpdateWidgetConfig("call", true, {
-                                messengerUrl: e.target.value,
-                              })
-                            }
-                          />
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  {(call.config.contactActiveTab || "phone") === "zalo" && (
-                    <div className="space-y-3.5">
-                      <InputSwitch
-                        label="Kích hoạt Chat Zalo"
-                        switchSize="sm"
-                        checked={!!call.config.zaloEnabled}
-                        onCheckedChange={(checked) =>
-                          onUpdateWidgetConfig("call", true, {
-                            zaloEnabled: checked,
-                          })
-                        }
-                      />
-                      {call.config.zaloEnabled && (
-                        <div className="space-y-3 animate-slideDown">
-                          <InputText
-                            type="text"
-                            label="Nhãn hiển thị"
-                            value={call.config.zaloLabel || "Zalo"}
-                            onChange={(e) =>
-                              onUpdateWidgetConfig("call", true, {
-                                zaloLabel: e.target.value,
-                              })
-                            }
-                          />
-                          <InputText
-                            type="tel"
-                            label="Số điện thoại Zalo"
-                            placeholder="090xxxxxxx"
-                            value={call.config.zaloPhone || ""}
-                            onChange={(e) =>
-                              onUpdateWidgetConfig("call", true, {
-                                zaloPhone: e.target.value,
-                              })
-                            }
-                          />
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
-          </div>
-
-          <div
-            className={`rounded-lg border border-zinc-800/60 bg-[#16161a] transition-all ${rsvp.isEnabled ? "relative z-25" : ""}`}
-          >
-            {renderWidgetHeader(
-              "Xác nhận tham dự (RSVP)",
-              <RSVPIcon width={16} height={16} />,
-              rsvp.isEnabled,
-              () =>
-                onUpdateWidgetConfig("rsvp", !rsvp.isEnabled, {
-                  rsvpEnabled: !rsvp.isEnabled,
-                }),
-            )}
-
-            {rsvp.isEnabled && (
-              <div className="p-3 space-y-3 bg-[#121214] rounded-b-lg animate-fadeIn">
-                <div className="relative z-10">
-                  <Select
-                    label="Cơ chế mở Form:"
-                    size="sm"
-                    value={rsvp.config.rsvpType || "full-form"}
-                    options={[
-                      { label: "Nút bấm bật Popup Modal", value: "button" },
-                      {
-                        label: "Hiển thị Form trực tiếp trên trang",
-                        value: "full-form",
-                      },
-                    ]}
-                    onValueChange={(val) =>
-                      onUpdateWidgetConfig("rsvp", true, {
-                        rsvpType: val as any,
-                      })
-                    }
-                  />
-                </div>
-
-                <InputText
-                  type="email"
-                  label="Email nhận thông báo danh sách khách mời:"
-                  placeholder="nhanrsvp@wedding.com"
-                  value={rsvp.config.rsvpTargetEmail || ""}
-                  onChange={(e) =>
-                    onUpdateWidgetConfig("rsvp", true, {
-                      rsvpTargetEmail: e.target.value,
-                    })
-                  }
-                />
-
-                <div className="py-1">
-                  <InputSwitch
-                    label="Gửi email phản hồi tự động cho khách"
-                    switchSize="sm"
-                    checked={!!rsvp.config.rsvpAutoConfirmEmail}
-                    onCheckedChange={(checked) =>
-                      onUpdateWidgetConfig("rsvp", true, {
-                        rsvpAutoConfirmEmail: checked,
-                      })
-                    }
-                  />
-                </div>
-
-                <Button
-                  variant="gold"
-                  buttonSize="sm"
-                  className="w-full font-bold text-center justify-center bg-[#d4af37] text-black hover:bg-[#b08d20] shadow-md py-2"
-                  onClick={() =>
-                    alert("Xuất danh sách khách mời thành công file CSV.")
-                  }
+    <div onKeyDown={(e) => e.stopPropagation()} className="space-y-5 pb-10">
+      <p className="text-[11px] leading-relaxed text-[#7A6A5C]">
+        Chọn một tiện ích để chèn vào thiệp. Bấm lần nữa để chỉnh nội dung.
+      </p>
+      {CATALOG.map((group) => (
+        <div key={group.label} className="space-y-2">
+          <p className="text-[10px] font-semibold uppercase tracking-wider text-[#7A6A5C]">{group.label}</p>
+          <div className="grid grid-cols-2 gap-2">
+            {group.items.map((item) => {
+              const onCanvas = existingTypes.has(item.type);
+              return (
+                <button
+                  key={item.type}
+                  type="button"
+                  onClick={() => handleInsert(item)}
+                  className={`group relative flex flex-col overflow-hidden rounded-xl border text-left transition-colors ${
+                    onCanvas
+                      ? "border-[#2D231F] bg-[#EDE4D5]"
+                      : "border-[#D9CDBE] bg-[#F3EDE3] hover:border-[#2D231F] hover:bg-[#EDE4D5]"
+                  }`}
                 >
-                  Quản lý & Xuất file báo cáo (.CSV)
-                </Button>
-              </div>
-            )}
-          </div>
-
-          <div
-            className={`rounded-lg border border-zinc-800/60 bg-[#16161a] transition-all ${qr.isEnabled ? "relative z-20" : ""}`}
-          >
-            {renderWidgetHeader(
-              "Mừng cưới qua VietQR",
-              <GiftQrIcon width={16} height={16} />,
-              qr.isEnabled,
-              () =>
-                onUpdateWidgetConfig("qr", !qr.isEnabled, {
-                  qrEnabled: !qr.isEnabled,
-                }),
-            )}
-
-            {qr.isEnabled && (
-              <div className="p-3 space-y-3 bg-[#121214] rounded-b-lg animate-fadeIn">
-                <div className="relative z-20">
-                  <Select
-                    label="Tài khoản thụ hưởng:"
-                    size="sm"
-                    value={qr.config.qrTarget || "both"}
-                    options={[
-                      {
-                        label: "Chỉ hiển thị tài khoản Chú rể",
-                        value: "groom",
-                      },
-                      {
-                        label: "Chỉ hiển thị tài khoản Cô dâu",
-                        value: "bride",
-                      },
-                      { label: "Hiển thị cả hai tài khoản", value: "both" },
-                    ]}
-                    onValueChange={(val) =>
-                      onUpdateWidgetConfig("qr", true, { qrTarget: val as any })
-                    }
-                  />
-                </div>
-
-                <div className="space-y-3 relative z-10">
-                  {(qr.config.qrTarget === "groom" ||
-                    qr.config.qrTarget === "both") && (
-                    <div className="space-y-2 p-3 bg-[#18181b] border border-zinc-850 rounded-lg">
-                      <div className="flex items-center justify-between">
-                        <span className="text-[10px] text-[#d4af37] uppercase tracking-wider font-bold">
-                          Tài khoản Chú rể
-                        </span>
-                      </div>
-                      <div className="grid grid-cols-1 gap-2">
-                        <InputText
-                          type="text"
-                          label="Tên chủ thẻ:"
-                          value={qr.config.groomAccountName || ""}
-                          onChange={(e) =>
-                            onUpdateWidgetConfig("qr", true, {
-                              groomAccountName: e.target.value,
-                            })
-                          }
-                        />
-                        <InputText
-                          type="text"
-                          label="Số tài khoản:"
-                          value={qr.config.groomAccountNumber || ""}
-                          onChange={(e) =>
-                            onUpdateWidgetConfig("qr", true, {
-                              groomAccountNumber: e.target.value,
-                            })
-                          }
-                        />
-                      </div>
-                      <Select
-                        label="Ngân hàng đối tác:"
-                        size="sm"
-                        value={qr.config.groomBankName || ""}
-                        options={BANK_OPTIONS}
-                        onValueChange={(val) =>
-                          onUpdateWidgetConfig("qr", true, {
-                            groomBankName: val as string,
-                          })
-                        }
-                      />
-                      {qr.config.groomAccountName &&
-                        qr.config.groomAccountNumber &&
-                        qr.config.groomBankName && (
-                          <div className="text-[9px] text-emerald-400 bg-emerald-500/5 px-2 py-1.5 rounded border border-emerald-500/20 text-center font-medium">
-                            ✓ Hệ thống đã kích hoạt cổng VietQR tự động cho Chú
-                            rể
-                          </div>
-                        )}
-                    </div>
-                  )}
-
-                  {(qr.config.qrTarget === "bride" ||
-                    qr.config.qrTarget === "both") && (
-                    <div className="space-y-2 p-3 bg-[#18181b] border border-zinc-850 rounded-lg">
-                      <div className="flex items-center justify-between">
-                        <span className="text-[10px] text-pink-400 uppercase tracking-wider font-bold">
-                          Tài khoản Cô dâu
-                        </span>
-                      </div>
-                      <div className="grid grid-cols-1 gap-2">
-                        <InputText
-                          type="text"
-                          label="Tên chủ thẻ:"
-                          value={qr.config.brideAccountName || ""}
-                          onChange={(e) =>
-                            onUpdateWidgetConfig("qr", true, {
-                              brideAccountName: e.target.value,
-                            })
-                          }
-                        />
-                        <InputText
-                          type="text"
-                          label="Số tài khoản:"
-                          value={qr.config.brideAccountNumber || ""}
-                          onChange={(e) =>
-                            onUpdateWidgetConfig("qr", true, {
-                              brideAccountNumber: e.target.value,
-                            })
-                          }
-                        />
-                      </div>
-                      <Select
-                        label="Ngân hàng đối tác:"
-                        size="sm"
-                        value={qr.config.brideBankName || ""}
-                        options={BANK_OPTIONS}
-                        onValueChange={(val) =>
-                          onUpdateWidgetConfig("qr", true, {
-                            brideBankName: val as string,
-                          })
-                        }
-                      />
-                      {qr.config.brideAccountName &&
-                        qr.config.brideAccountNumber &&
-                        qr.config.brideBankName && (
-                          <div className="text-[9px] text-emerald-400 bg-emerald-500/5 px-2 py-1.5 rounded border border-emerald-500/20 text-center font-medium">
-                            ✓ Hệ thống đã kích hoạt cổng VietQR tự động cho Cô
-                            dâu
-                          </div>
-                        )}
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
-          </div>
-
-          <div
-            className={`rounded-lg border border-zinc-800/60 bg-[#16161a] transition-all ${gallery.isEnabled ? "relative z-15" : ""}`}
-          >
-            {renderWidgetHeader(
-              "Album / Thư viện ảnh",
-              <StackPhotoIcon width={16} height={16} />,
-              gallery.isEnabled,
-              () =>
-                onUpdateWidgetConfig("gallery", !gallery.isEnabled, {
-                  galleryEnabled: !gallery.isEnabled,
-                }),
-            )}
-
-            {gallery.isEnabled && (
-              <div className="p-3 space-y-3 bg-[#121214] rounded-b-lg animate-fadeIn">
-                <div className="relative z-10">
-                  <Select
-                    label="Bố cục hiển thị Album:"
-                    size="sm"
-                    value={gallery.config.galleryLayout || "grid"}
-                    options={[
-                      {
-                        label: "Dạng lưới tiêu chuẩn (Grid Layout)",
-                        value: "grid",
-                      },
-                      {
-                        label: "Dạng ghép nghệ thuật (Collage)",
-                        value: "collage",
-                      },
-                      {
-                        label: "Băng chuyền không gian (3D Carousel)",
-                        value: "3d",
-                      },
-                    ]}
-                    onValueChange={(val) =>
-                      onUpdateWidgetConfig("gallery", true, {
-                        galleryLayout: val as any,
-                      })
-                    }
-                  />
-                </div>
-
-                <FileUpload
-                  label="Hình ảnh album:"
-                  mode="multi"
-                  value={gallery.config.images || []}
-                  onChange={(urls) =>
-                    onUpdateWidgetConfig("gallery", true, {
-                      images: urls,
-                    })
-                  }
-                />
-              </div>
-            )}
-          </div>
-
-          <div className="rounded-lg border border-zinc-800/60 bg-[#16161a]">
-            {renderWidgetHeader(
-              "Nhúng Video Youtube",
-              <VideoYoutubeIcon width={16} height={16} />,
-              youtube.isEnabled,
-              () =>
-                onUpdateWidgetConfig("youtube", !youtube.isEnabled, {
-                  youtubeEnabled: !youtube.isEnabled,
-                }),
-            )}
-
-            {youtube.isEnabled && (
-              <div className="p-3 space-y-3 bg-[#121214] rounded-b-lg animate-fadeIn">
-                <InputText
-                  type="text"
-                  label="Đường dẫn Video đám cưới (Youtube URL):"
-                  placeholder="https://www.youtube.com/watch?v=..."
-                  value={youtube.config.youtubeUrl || ""}
-                  onChange={(e) =>
-                    onUpdateWidgetConfig("youtube", true, {
-                      youtubeUrl: e.target.value,
-                    })
-                  }
-                />
-
-                {youtube.config.youtubeUrl && (
-                  <div className="text-[10px] text-emerald-400 bg-emerald-500/5 rounded-lg px-2.5 py-1.5 border border-emerald-500/10 text-center font-medium">
-                    ✓ Liên kết thành công. Video sẽ hiển thị trực quan trên
-                    trình xem Canvas.
+                  <div className="relative h-20 border-b border-[#D9CDBE]/80 bg-[#EDE4D5] p-2">
+                    <WidgetPreview type={item.type} />
+                    {onCanvas && (
+                      <span className="absolute right-1.5 top-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-[#2D231F] text-[#F3EDE3]">
+                        <Check size={10} strokeWidth={3} />
+                      </span>
+                    )}
                   </div>
-                )}
-              </div>
-            )}
+                  <div className="px-2.5 py-2">
+                    <div className="text-[11px] font-semibold text-[#2D231F]">{item.title}</div>
+                    <div className="mt-0.5 line-clamp-2 text-[10px] leading-snug text-[#7A6A5C]">
+                      {item.description}
+                    </div>
+                  </div>
+                </button>
+              );
+            })}
           </div>
         </div>
-      </Section>
+      ))}
+    </div>
+  );
+}
+
+function CalendarConfig({
+  config,
+  update,
+}: {
+  config: WidgetConfig;
+  update: (u: Partial<WidgetConfig>) => void;
+}) {
+  return (
+    <div className="space-y-3.5">
+      <InputDate
+        label="Ngày sự kiện"
+        value={config.targetDate || new Date().toISOString().split("T")[0]}
+        onChange={(val) => update({ targetDate: val })}
+      />
+      <Select
+        label="Kiểu hiển thị"
+        size="sm"
+        value={config.calendarDisplayMode || "full"}
+        options={[
+          { label: "Lịch tháng đầy đủ", value: "full" },
+          { label: "Chỉ ngày (tối giản)", value: "date-only" },
+        ]}
+        onValueChange={(val) => update({ calendarDisplayMode: val as WidgetConfig["calendarDisplayMode"] })}
+      />
+      <div className="space-y-1.5">
+        <label className="text-[10px] font-semibold uppercase tracking-wider text-[#7A6A5C]">
+          Giao diện
+        </label>
+        <div className="grid grid-cols-2 gap-2">
+          {[
+            { value: "classic", label: "Cổ điển", desc: "Khung truyền thống" },
+            { value: "modern", label: "Hiện đại", desc: "Góc bo mượt" },
+            { value: "romantic", label: "Lãng mạn", desc: "Tone mềm" },
+            { value: "luxury-navy", label: "Sang trọng", desc: "Navy & vàng" },
+          ].map((item) => (
+            <button
+              key={item.value}
+              type="button"
+              onClick={() => update({ calendarStyle: item.value as WidgetConfig["calendarStyle"] })}
+              className={`flex flex-col items-start rounded-lg border p-2.5 text-left transition-all ${
+                (config.calendarStyle || "classic") === item.value
+                  ? "border-[#2D231F] bg-[#2D231F]/10 text-[#2D231F]"
+                  : "border-[#D9CDBE] bg-[#EDE4D5] text-[#7A6A5C] hover:border-[#2D231F]/30"
+              }`}
+            >
+              <span className="text-[11px] font-bold text-[#2D231F]">{item.label}</span>
+              <span className="mt-0.5 text-[9px] opacity-60">{item.desc}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+      <div className="space-y-1">
+        <label className="text-[10px] font-semibold uppercase tracking-wider text-[#7A6A5C]">
+          Màu chủ đạo
+        </label>
+        <ColorPickerRow value={config.color || INK} onChange={(val) => update({ color: val })} />
+      </div>
+      <Select
+        label="Font chữ"
+        size="sm"
+        searchable
+        value={config.fontFamily || "Playfair Display"}
+        options={fontOptions}
+        onValueChange={(val) => update({ fontFamily: String(val) })}
+      />
+    </div>
+  );
+}
+
+function CountdownConfig({
+  config,
+  update,
+}: {
+  config: WidgetConfig;
+  update: (u: Partial<WidgetConfig>) => void;
+}) {
+  return (
+    <div className="space-y-3">
+      <InputDateTime
+        label="Thời điểm sự kiện"
+        value={config.countdownTarget || ""}
+        onChange={(val) => update({ countdownTarget: val })}
+      />
+      <Select
+        label="Đơn vị hiển thị"
+        size="sm"
+        value={config.countdownType || "days-hours-min-sec"}
+        options={[
+          { label: "Ngày · Giờ · Phút · Giây", value: "days-hours-min-sec" },
+          { label: "Giờ · Phút · Giây", value: "hours-min-sec" },
+        ]}
+        onValueChange={(val) => update({ countdownType: val as WidgetConfig["countdownType"] })}
+      />
+      <Select
+        label="Bố cục"
+        size="sm"
+        value={config.countdownOrientation || "horizontal"}
+        options={[
+          { label: "Hàng ngang", value: "horizontal" },
+          { label: "Hàng dọc", value: "vertical" },
+        ]}
+        onValueChange={(val) =>
+          update({ countdownOrientation: val as WidgetConfig["countdownOrientation"] })
+        }
+      />
+      <Select
+        label="Phong cách"
+        size="sm"
+        value={config.countdownStyle || "classic"}
+        options={[
+          { label: "Cổ điển", value: "classic" },
+          { label: "Kính mờ", value: "modern" },
+          { label: "Lãng mạn", value: "romantic" },
+          { label: "Sang trọng", value: "luxury-navy" },
+        ]}
+        onValueChange={(val) => update({ countdownStyle: val as WidgetConfig["countdownStyle"] })}
+      />
+      <div className="space-y-1">
+        <label className="text-[10px] font-semibold uppercase tracking-wider text-[#7A6A5C]">
+          Màu chữ số
+        </label>
+        <ColorPickerRow value={config.color || INK} onChange={(val) => update({ color: val })} />
+      </div>
+      <Select
+        label="Font chữ số"
+        size="sm"
+        searchable
+        value={config.fontFamily || "Playfair Display"}
+        options={fontOptions}
+        onValueChange={(val) => update({ fontFamily: String(val) })}
+      />
+    </div>
+  );
+}
+
+function MapConfig({
+  config,
+  update,
+  resolving,
+  setResolving,
+}: {
+  config: WidgetConfig;
+  update: (u: Partial<WidgetConfig>) => void;
+  resolving: boolean;
+  setResolving: (v: boolean) => void;
+}) {
+  return (
+    <div className="space-y-3">
+      <InputText
+        type="text"
+        label="Tên / địa chỉ địa điểm"
+        placeholder="Ví dụ: Nhà hàng ABC, 12 Nguyễn Huệ..."
+        value={config.locationAddress || ""}
+        onChange={(e) => update({ locationAddress: e.target.value })}
+      />
+      <div className="space-y-1">
+        <label className="mb-1 block text-[11px] font-medium text-[#7A6A5C]">
+          Link Google Maps hoặc mã nhúng
+        </label>
+        <InputText
+          type="text"
+          placeholder="Dán link hoặc iframe..."
+          value={config.mapEmbedUrl || ""}
+          onChange={(e) => update({ mapEmbedUrl: e.target.value })}
+        />
+        <button
+          type="button"
+          disabled={resolving || !config.mapEmbedUrl?.trim()}
+          onClick={async () => {
+            const inputUrl = config.mapEmbedUrl?.trim();
+            if (!inputUrl) return;
+            setResolving(true);
+            try {
+              const res = await invitationService.resolveMapUrl(inputUrl);
+              const resolvedUrl = res?.data?.url || inputUrl;
+              const address = extractAddressFromMapUrl(resolvedUrl) || config.locationAddress || "";
+              update({
+                mapEmbedUrl: resolvedUrl,
+                locationAddress: address || config.locationAddress,
+              });
+            } catch {
+              //! error fallback
+            }
+            setResolving(false);
+          }}
+          className="mt-2 flex w-full items-center justify-center gap-1.5 rounded-lg bg-[#2D231F] px-3 py-1.5 text-xs font-semibold text-[#F3EDE3] transition-opacity hover:opacity-90 disabled:opacity-40"
+        >
+          {resolving ? <Loader2 size={12} className="animate-spin" /> : null}
+          Tải dữ liệu bản đồ
+        </button>
+      </div>
+      <Select
+        label="Chế độ bản đồ"
+        size="sm"
+        value={config.mapType || "normal"}
+        options={[
+          { label: "Đường bộ", value: "normal" },
+          { label: "Vệ tinh", value: "satellite" },
+          { label: "Địa hình", value: "terrain" },
+          { label: "Kết hợp", value: "hybrid" },
+        ]}
+        onValueChange={(val) => update({ mapType: val as WidgetConfig["mapType"] })}
+      />
+    </div>
+  );
+}
+
+function CallConfig({
+  config,
+  update,
+}: {
+  config: WidgetConfig;
+  update: (u: Partial<WidgetConfig>) => void;
+}) {
+  const tab = config.contactActiveTab || "phone";
+  return (
+    <div className="space-y-4">
+      <div className="flex gap-1.5 rounded-lg border border-[#D9CDBE]/60 bg-[#EDE4D5] p-1">
+        {[
+          { key: "phone" as const, icon: <PhoneIcon width={18} height={18} /> },
+          { key: "messenger" as const, icon: <MessengerIcon width={18} height={18} /> },
+          { key: "zalo" as const, icon: <ZaloIcon width={18} height={18} /> },
+        ].map((item) => (
+          <button
+            key={item.key}
+            type="button"
+            onClick={() => update({ contactActiveTab: item.key })}
+            className={`flex flex-1 items-center justify-center rounded-md py-2 transition-all ${
+              tab === item.key
+                ? "bg-[#2D231F] text-[#F3EDE3] shadow-sm"
+                : "text-[#7A6A5C] hover:bg-[#2D231F]/8 hover:text-[#2D231F]"
+            }`}
+          >
+            {item.icon}
+          </button>
+        ))}
+      </div>
+
+      {tab === "phone" && (
+        <div className="space-y-3 rounded-xl border border-[#D9CDBE] bg-[#EDE4D5] p-3.5">
+          <InputSwitch
+            label="Hiện nút gọi điện"
+            switchSize="sm"
+            checked={!!config.phoneEnabled}
+            onCheckedChange={(checked) => update({ phoneEnabled: checked })}
+          />
+          {config.phoneEnabled && (
+            <>
+              <InputText
+                type="text"
+                label="Nhãn hiển thị"
+                value={config.phoneLabel || "Gọi điện"}
+                onChange={(e) => update({ phoneLabel: e.target.value })}
+              />
+              <InputText
+                type="tel"
+                label="Số điện thoại"
+                placeholder="Nhập số điện thoại..."
+                value={config.phoneNumber || ""}
+                onChange={(e) => update({ phoneNumber: e.target.value })}
+              />
+            </>
+          )}
+        </div>
+      )}
+
+      {tab === "messenger" && (
+        <div className="space-y-3 rounded-xl border border-[#D9CDBE] bg-[#EDE4D5] p-3.5">
+          <InputSwitch
+            label="Hiện Messenger"
+            switchSize="sm"
+            checked={!!config.messengerEnabled}
+            onCheckedChange={(checked) => update({ messengerEnabled: checked })}
+          />
+          {config.messengerEnabled && (
+            <>
+              <InputText
+                type="text"
+                label="Nhãn hiển thị"
+                value={config.messengerLabel || "Messenger"}
+                onChange={(e) => update({ messengerLabel: e.target.value })}
+              />
+              <InputText
+                type="text"
+                label="Link Messenger / Facebook"
+                placeholder="https://m.me/..."
+                value={config.messengerUrl || ""}
+                onChange={(e) => update({ messengerUrl: e.target.value })}
+              />
+            </>
+          )}
+        </div>
+      )}
+
+      {tab === "zalo" && (
+        <div className="space-y-3 rounded-xl border border-[#D9CDBE] bg-[#EDE4D5] p-3.5">
+          <InputSwitch
+            label="Hiện Zalo"
+            switchSize="sm"
+            checked={!!config.zaloEnabled}
+            onCheckedChange={(checked) => update({ zaloEnabled: checked })}
+          />
+          {config.zaloEnabled && (
+            <>
+              <InputText
+                type="text"
+                label="Nhãn hiển thị"
+                value={config.zaloLabel || "Zalo"}
+                onChange={(e) => update({ zaloLabel: e.target.value })}
+              />
+              <InputText
+                type="tel"
+                label="Số Zalo"
+                placeholder="Nhập số điện thoại Zalo..."
+                value={config.zaloPhone || ""}
+                onChange={(e) => update({ zaloPhone: e.target.value })}
+              />
+            </>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function RsvpConfig({
+  config,
+  update,
+}: {
+  config: WidgetConfig;
+  update: (u: Partial<WidgetConfig>) => void;
+}) {
+  return (
+    <div className="space-y-3">
+      <Select
+        label="Cách hiển thị"
+        size="sm"
+        value={config.rsvpType || "full-form"}
+        options={[
+          { label: "Nút mở form", value: "button" },
+          { label: "Form ngay trên thiệp", value: "full-form" },
+        ]}
+        onValueChange={(val) => update({ rsvpType: val as WidgetConfig["rsvpType"] })}
+      />
+      <InputText
+        type="email"
+        label="Email nhận xác nhận"
+        placeholder="ban@email.com"
+        value={config.rsvpTargetEmail || ""}
+        onChange={(e) => update({ rsvpTargetEmail: e.target.value })}
+      />
+      <InputSwitch
+        label="Gửi email phản hồi tự động cho khách"
+        switchSize="sm"
+        checked={!!config.rsvpAutoConfirmEmail}
+        onCheckedChange={(checked) => update({ rsvpAutoConfirmEmail: checked })}
+      />
+    </div>
+  );
+}
+
+function QrConfig({
+  config,
+  update,
+}: {
+  config: WidgetConfig;
+  update: (u: Partial<WidgetConfig>) => void;
+}) {
+  const target = config.qrTarget || "both";
+  const label1 = config.groomLabel || "Tài khoản 1";
+  const label2 = config.brideLabel || "Tài khoản 2";
+  return (
+    <div className="space-y-3">
+      <InputText
+        type="text"
+        label="Tiêu đề nút"
+        value={config.qrTitle || "Gửi quà"}
+        onChange={(e) => update({ qrTitle: e.target.value })}
+      />
+      <Select
+        label="Tài khoản hiển thị"
+        size="sm"
+        value={target}
+        options={[
+          { label: label1, value: "groom" },
+          { label: label2, value: "bride" },
+          { label: "Cả hai tài khoản", value: "both" },
+        ]}
+        onValueChange={(val) => update({ qrTarget: val as WidgetConfig["qrTarget"] })}
+      />
+      {(target === "groom" || target === "both") && (
+        <div className="space-y-2 rounded-lg border border-[#D9CDBE] bg-[#EDE4D5] p-3">
+          <InputText
+            type="text"
+            label="Nhãn tài khoản"
+            value={label1}
+            onChange={(e) => update({ groomLabel: e.target.value })}
+          />
+          <InputText
+            type="text"
+            label="Tên chủ thẻ"
+            value={config.groomAccountName || ""}
+            onChange={(e) => update({ groomAccountName: e.target.value })}
+          />
+          <InputText
+            type="text"
+            label="Số tài khoản"
+            value={config.groomAccountNumber || ""}
+            onChange={(e) => update({ groomAccountNumber: e.target.value })}
+          />
+          <Select
+            label="Ngân hàng"
+            size="sm"
+            value={config.groomBankName || ""}
+            options={BANK_OPTIONS}
+            onValueChange={(val) => update({ groomBankName: String(val) })}
+          />
+        </div>
+      )}
+      {(target === "bride" || target === "both") && (
+        <div className="space-y-2 rounded-lg border border-[#D9CDBE] bg-[#EDE4D5] p-3">
+          <InputText
+            type="text"
+            label="Nhãn tài khoản"
+            value={label2}
+            onChange={(e) => update({ brideLabel: e.target.value })}
+          />
+          <InputText
+            type="text"
+            label="Tên chủ thẻ"
+            value={config.brideAccountName || ""}
+            onChange={(e) => update({ brideAccountName: e.target.value })}
+          />
+          <InputText
+            type="text"
+            label="Số tài khoản"
+            value={config.brideAccountNumber || ""}
+            onChange={(e) => update({ brideAccountNumber: e.target.value })}
+          />
+          <Select
+            label="Ngân hàng"
+            size="sm"
+            value={config.brideBankName || ""}
+            options={BANK_OPTIONS}
+            onValueChange={(val) => update({ brideBankName: String(val) })}
+          />
+        </div>
+      )}
+      <div className="space-y-1">
+        <label className="text-[10px] font-semibold uppercase tracking-wider text-[#7A6A5C]">
+          Màu chủ đạo
+        </label>
+        <ColorPickerRow value={config.color || INK} onChange={(val) => update({ color: val })} />
+      </div>
+    </div>
+  );
+}
+
+function GalleryConfig({
+  config,
+  update,
+  type,
+}: {
+  config: WidgetConfig;
+  update: (u: Partial<WidgetConfig>) => void;
+  type: WidgetType;
+}) {
+  return (
+    <div className="space-y-3">
+      <Select
+        label="Bố cục"
+        size="sm"
+        value={
+          config.galleryLayout ||
+          (type === "album" ? "collage" : type === "carousel" ? "3d" : "grid")
+        }
+        options={[
+          { label: "Lưới", value: "grid" },
+          { label: "Ghép ảnh (collage)", value: "collage" },
+          { label: "Carousel 3D", value: "3d" },
+        ]}
+        onValueChange={(val) => update({ galleryLayout: val as WidgetConfig["galleryLayout"] })}
+      />
+      <FileUpload
+        label="Hình ảnh"
+        mode="multi"
+        value={config.images || []}
+        onChange={(urls) =>
+          update({
+            images: Array.isArray(urls) ? urls : urls ? [urls] : [],
+          })
+        }
+      />
+    </div>
+  );
+}
+
+function YoutubeConfig({
+  config,
+  update,
+}: {
+  config: WidgetConfig;
+  update: (u: Partial<WidgetConfig>) => void;
+}) {
+  return (
+    <div className="space-y-3">
+      <InputText
+        type="text"
+        label="Link YouTube"
+        placeholder="https://www.youtube.com/watch?v=..."
+        value={config.youtubeUrl || ""}
+        onChange={(e) => update({ youtubeUrl: e.target.value })}
+      />
+      {config.youtubeUrl && (
+        <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/5 px-2.5 py-1.5 text-center text-[10px] font-medium text-emerald-700">
+          Video sẽ phát trên thiệp khi khách mở.
+        </div>
+      )}
     </div>
   );
 }

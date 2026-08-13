@@ -565,9 +565,9 @@ export default function AudioTrimmerModal({
         isPlaying && barTime >= trimStart && barTime <= currentPlayTime;
 
       if (isPlayed) {
-        ctx.fillStyle = "#f5c842";
+        ctx.fillStyle = "#c8dc7a";
       } else if (isSelected) {
-        ctx.fillStyle = "#d4af37";
+        ctx.fillStyle = "#b6cc61";
       } else {
         ctx.fillStyle = "rgba(255, 255, 255, 0.15)";
       }

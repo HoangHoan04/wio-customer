@@ -127,7 +127,7 @@ export default function FileUpload({
   return (
     <div className={`flex flex-col gap-2 text-left ${className}`}>
       {label && (
-        <label className="text-xs font-semibold text-[#f5e6d3]/85">
+        <label className="text-xs font-semibold text-[#2D231F]/85">
           {label} {required && <span className="text-red-500">*</span>}
         </label>
       )}
@@ -136,9 +136,9 @@ export default function FileUpload({
         {files.map((fileUrl, idx) => (
           <div
             key={idx}
-            className={`${boxSizeClass} group relative overflow-hidden rounded-lg border border-[#d4af37]/35 bg-white/2 shadow-sm`}
+            className={`${boxSizeClass} group relative overflow-hidden rounded-lg border border-[#2D231F]/35 bg-[#2D231F]/8 shadow-sm`}
           >
-            <div className="flex h-full w-full items-center justify-center bg-[#0f0608]">
+            <div className="flex h-full w-full items-center justify-center bg-[#ffffff]">
               <img
                 src={fileUrl}
                 alt="uploaded preview"
@@ -151,7 +151,7 @@ export default function FileUpload({
                 <Button
                   type="button"
                   onClick={() => setPreviewUrl(fileUrl)}
-                  className="bg-transparent border-none text-[#f5c842] hover:scale-110 transition-transform cursor-pointer p-1 rounded hover:bg-white/10"
+                  className="bg-transparent border-none text-[#7A6A5C] hover:scale-110 transition-transform cursor-pointer p-1 rounded hover:bg-white/10"
                 >
                   <Eye size={18} />
                 </Button>
@@ -192,9 +192,9 @@ export default function FileUpload({
               className="absolute inset-0 z-10 h-full w-full cursor-pointer opacity-0"
             />
 
-            <div className="absolute inset-0 z-0 flex flex-col items-center justify-center gap-1.5 rounded-lg border border-dashed border-[#d4af37]/30 bg-white/3 text-[#f5e6d3]/60 transition-all duration-200 group-hover:border-[#f5c842] group-hover:text-[#f5c842]">
+            <div className="absolute inset-0 z-0 flex flex-col items-center justify-center gap-1.5 rounded-lg border border-dashed border-[#2D231F]/30 bg-[#2D231F]/8 text-[#2D231F]/60 transition-all duration-200 group-hover:border-[#C4B09A] group-hover:text-[#7A6A5C]">
               {loading ? (
-                <Loader2 className="animate-spin text-[#f5c842]" size={20} />
+                <Loader2 className="animate-spin text-[#7A6A5C]" size={20} />
               ) : (
                 <>
                   <Plus size={20} />
@@ -209,7 +209,7 @@ export default function FileUpload({
       </div>
 
       {!disabled && showUploadBtn && (
-        <span className="text-[10px] text-[#f5e6d3]/50">
+        <span className="text-[10px] text-[#2D231F]/50">
           Chỉ chấp nhận hình ảnh • Tối đa {maxSize}MB
         </span>
       )}
@@ -225,7 +225,7 @@ export default function FileUpload({
             <img
               src={previewUrl}
               alt="Full Preview"
-              className="max-h-[70vh] max-w-full rounded-lg object-contain shadow-2xl border border-[#d4af37]/25"
+              className="max-h-[70vh] max-w-full rounded-lg object-contain shadow-2xl border border-[#2D231F]/25"
             />
           </div>
         )}

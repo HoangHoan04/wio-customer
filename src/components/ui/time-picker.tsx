@@ -89,17 +89,17 @@ export function TimePicker({
           value={inputValue}
           onChange={handleInputChange}
           placeholder="12:00"
-          className="w-full bg-white/5! border-[#d4af37]/10! text-[#f5e6d3] pr-10"
+          className="w-full bg-[#2D231F]/10! border-[#2D231F]/10! text-[#2D231F] pr-10"
           onFocus={() => setIsOpen(true)}
         />
-        <Clock className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#d4af37] pointer-events-none" />
+        <Clock className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#2D231F] pointer-events-none" />
       </PopoverTrigger>
       <PopoverContent
-        className="w-(--anchor-width)! min-w-44 p-2 bg-[#0f0608] border border-[#d4af37]/20 flex-row! gap-2"
+        className="w-(--anchor-width)! min-w-44 p-2 bg-[#ffffff] border border-[#2D231F]/20 flex-row! gap-2"
         align="start"
       >
         <div className="flex-1 flex flex-col overflow-y-auto max-h-48 custom-scrollbar">
-          <div className="text-[10px] text-center font-bold text-[#d4af37] mb-1 select-none border-b border-[#d4af37]/10 pb-1">
+          <div className="text-[10px] text-center font-bold text-[#2D231F] mb-1 select-none border-b border-[#2D231F]/10 pb-1">
             Giờ
           </div>
           {hours.map((h) => {
@@ -112,10 +112,10 @@ export function TimePicker({
                 }}
                 onClick={() => handleHourSelect(h)}
                 className={cn(
-                  "py-1 text-xs text-[#f5e6d3] rounded-md transition-all select-none cursor-pointer",
+                  "py-1 text-xs text-[#2D231F] rounded-md transition-all select-none cursor-pointer",
                   isSelected
-                    ? "bg-[#d4af37] text-black font-bold"
-                    : "hover:bg-white/5",
+                    ? "bg-[#2D231F] text-[#F3EDE3] font-bold"
+                    : "hover:bg-[#2D231F]/10",
                 )}
               >
                 {h}
@@ -124,10 +124,10 @@ export function TimePicker({
           })}
         </div>
 
-        <div className="w-px bg-[#d4af37]/20 self-stretch" />
+        <div className="w-px bg-[#2D231F]/20 self-stretch" />
 
         <div className="flex-1 flex flex-col overflow-y-auto max-h-48 custom-scrollbar">
-          <div className="text-[10px] text-center font-bold text-[#d4af37] mb-1 select-none border-b border-[#d4af37]/10 pb-1">
+          <div className="text-[10px] text-center font-bold text-[#2D231F] mb-1 select-none border-b border-[#2D231F]/10 pb-1">
             Phút
           </div>
           {minutes.map((m) => {
@@ -140,10 +140,10 @@ export function TimePicker({
                 }}
                 onClick={() => handleMinuteSelect(m)}
                 className={cn(
-                  "py-1 text-xs text-[#f5e6d3] rounded-md transition-all select-none cursor-pointer",
+                  "py-1 text-xs text-[#2D231F] rounded-md transition-all select-none cursor-pointer",
                   isSelected
-                    ? "bg-[#d4af37] text-black font-bold"
-                    : "hover:bg-white/5",
+                    ? "bg-[#2D231F] text-[#F3EDE3] font-bold"
+                    : "hover:bg-[#2D231F]/10",
                 )}
               >
                 {m}

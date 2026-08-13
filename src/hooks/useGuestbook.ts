@@ -2,7 +2,7 @@ import { wishService, type Wish } from "@/services/wish.service";
 import { useCallback, useEffect, useState } from "react";
 
 export interface UseGuestbookData {
-  weddingId?: string;
+  invitationId?: string;
   guestId?: string;
   guestName?: string;
 }
@@ -14,7 +14,7 @@ export function useGuestbook(data?: UseGuestbookData) {
   const [guestName, setGuestName] = useState("");
   const [content, setContent] = useState("");
 
-  const weddingId = data?.weddingId;
+  const invitationId = data?.invitationId;
   const guestId = data?.guestId;
   const defaultGuestName = data?.guestName;
 
@@ -25,17 +25,17 @@ export function useGuestbook(data?: UseGuestbookData) {
   }, [defaultGuestName]);
 
   const fetchMessages = useCallback(async () => {
-    if (!weddingId) return;
+    if (!invitationId) return;
     setLoading(true);
     try {
-      const res = await wishService.getByWedding(weddingId);
+      const res = await wishService.getByInvitation(invitationId);
       setMessages(res?.data || []);
     } catch (err) {
       console.error("Failed to load wishes:", err);
     } finally {
       setLoading(false);
     }
-  }, [weddingId]);
+  }, [invitationId]);
 
   useEffect(() => {
     fetchMessages();
@@ -44,12 +44,12 @@ export function useGuestbook(data?: UseGuestbookData) {
   const submit = useCallback(async () => {
     const trimmedName = guestName.trim();
     const trimmedContent = content.trim();
-    if (!weddingId || !trimmedName || !trimmedContent) return false;
+    if (!invitationId || !trimmedName || !trimmedContent) return false;
 
     setSubmitting(true);
     try {
       await wishService.create({
-        weddingId,
+        invitationId,
         guestId,
         guestName: trimmedName,
         content: trimmedContent,
@@ -63,7 +63,7 @@ export function useGuestbook(data?: UseGuestbookData) {
     } finally {
       setSubmitting(false);
     }
-  }, [weddingId, guestId, guestName, content, fetchMessages]);
+  }, [invitationId, guestId, guestName, content, fetchMessages]);
 
   return {
     messages,

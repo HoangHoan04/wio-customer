@@ -2,7 +2,13 @@
 
 import Modal from "@/components/ui/Modal";
 import { useToast } from "@/hooks/useToast";
-import { weddingService } from "@/services/wedding.service";
+import {
+  cardTypeService,
+  FALLBACK_CARD_TYPES,
+  type ICardType,
+} from "@/services/card-type.service";
+import { invitationService } from "@/services/invitation.service";
+import { templateService } from "@/services/template.service";
 import BottomToolbar from "@/templates/customer-design/BottomToolbar";
 import Canvas from "@/templates/customer-design/Canvas";
 import { useEditorHistory } from "@/templates/customer-design/hooks/useEditorHistory";
@@ -12,6 +18,8 @@ import TopBar from "@/templates/customer-design/TopBar";
 import type {
   EditorElement,
   EditorTool,
+  InvitationEffects,
+  TextPreset,
   WidgetConfig,
   WidgetType,
 } from "@/templates/customer-design/types";
@@ -21,12 +29,26 @@ import {
   createDefaultImage,
   createDefaultShape,
   createDefaultText,
+  WIDGET_DEFAULT_SIZE,
 } from "@/templates/customer-design/utils/constants";
 import {
   fitImageToCanvas,
   loadImageSize,
 } from "@/templates/customer-design/utils/image-fit";
-import tokenCache from "@/utils/token-cache";
+import {
+  DEFAULT_INVITATION_EFFECTS,
+  normalizeEffects,
+} from "@/templates/customer-design/utils/invitation-effects";
+import {
+  ensureEditorFonts,
+  measureTextBox,
+  shouldRefitTextHeight,
+} from "@/templates/customer-design/utils/text-fit";
+import {
+  buildCanvasInvitationPayload,
+  invitationLabel,
+  publicInvitationPath,
+} from "@/utils/invitation-mapper";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   Suspense,
@@ -52,9 +74,59 @@ const slugify = (text: string) => {
     .replace(/-+/g, "-");
 };
 
+function matchCardType(
+  raw: string | null | undefined,
+  types: ICardType[],
+): string {
+  if (!raw) return "CUSTOM";
+  const found = types.find(
+    (item) =>
+      item.code.toLowerCase() === raw.toLowerCase() ||
+      item.slug.toLowerCase() === raw.toLowerCase(),
+  );
+  return found?.code || "CUSTOM";
+}
+
+function toValidSlug(text: string): string {
+  let slug = slugify(text) || "thiep";
+  if (slug.length < 5) slug = `${slug}-thiep`;
+  if (!/^[a-z0-9]/.test(slug)) slug = `t${slug}`;
+  if (!/[a-z0-9]$/.test(slug)) slug = `${slug}0`;
+  return slug.slice(0, 60);
+}
+
+async function ensureAvailableSlug(base: string): Promise<string> {
+  const root = toValidSlug(base);
+  const trySlug = async (slug: string) => {
+    const res = await invitationService.checkSlug(slug);
+    return res?.data?.available !== false;
+  };
+  if (await trySlug(root)) return root;
+  for (let i = 2; i <= 20; i++) {
+    const candidate = toValidSlug(`${root}-${i}`);
+    if (await trySlug(candidate)) return candidate;
+  }
+  return toValidSlug(`${root}-${Date.now().toString(36)}`);
+}
+
+async function resolveCustomDesignTemplateId(): Promise<string | undefined> {
+  try {
+    const res = await templateService.getTemplates({
+      skip: 0,
+      take: 1,
+      where: { themeCode: "CUSTOM_DESIGN" },
+    });
+    return res.data?.[0]?.id;
+  } catch {
+    return undefined;
+  }
+}
+
 function DesignEditorContent() {
   const { showToast } = useToast();
   const [elements, setElements] = useState<EditorElement[]>([]);
+  const elementsRef = useRef(elements);
+  elementsRef.current = elements;
   const [selectedElementId, setSelectedElementId] = useState<string | null>(
     null,
   );
@@ -83,6 +155,11 @@ function DesignEditorContent() {
   const [gridType, setGridType] = useState<"lines" | "dots">("lines");
   const [gridSize, setGridSize] = useState<number>(40);
   const [projectName, setProjectName] = useState("Thiết kế của tôi");
+  const [effects, setEffects] = useState<InvitationEffects>(
+    DEFAULT_INVITATION_EFFECTS,
+  );
+  const [introReplayKey, setIntroReplayKey] = useState(0);
+  const [autoEditTextId, setAutoEditTextId] = useState<string | null>(null);
 
   const dragStartPositions = useRef<Record<string, { x: number; y: number }>>(
     {},
@@ -90,26 +167,39 @@ function DesignEditorContent() {
 
   const router = useRouter();
   const searchParams = useSearchParams();
-  const weddingId = searchParams.get("weddingId") || searchParams.get("id");
-  const [wedding, setWedding] = useState<any>(null);
+  const invitationId =
+    searchParams.get("invitationId") || searchParams.get("id");
+  const [invitation, setInvitation] = useState<any>(null);
   const [showInitModal, setShowInitModal] = useState(false);
   const [showPublishConfirmModal, setShowPublishConfirmModal] = useState(false);
+  const [cardTypes, setCardTypes] = useState<ICardType[]>(FALLBACK_CARD_TYPES);
   const [initForm, setInitForm] = useState({
-    groomShortName: "",
-    brideShortName: "",
+    title: "",
     slug: "",
+    cardType: "CUSTOM",
   });
 
+  const urlCardType = searchParams.get("cardType") || searchParams.get("type");
+
   useEffect(() => {
-    if (initForm.groomShortName || initForm.brideShortName) {
-      const suggested = slugify(
-        initForm.groomShortName + "-" + initForm.brideShortName,
-      );
-      setInitForm((f) => ({ ...f, slug: suggested }));
-    } else if (projectName && projectName !== "Thiết kế của tôi") {
-      setInitForm((f) => ({ ...f, slug: slugify(projectName) }));
+    cardTypeService
+      .listActive()
+      .then(setCardTypes)
+      .catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    setInitForm((f) => ({
+      ...f,
+      cardType: matchCardType(urlCardType, cardTypes),
+    }));
+  }, [urlCardType, cardTypes]);
+
+  useEffect(() => {
+    if (initForm.title) {
+      setInitForm((f) => ({ ...f, slug: toValidSlug(initForm.title) }));
     }
-  }, [initForm.groomShortName, initForm.brideShortName, projectName]);
+  }, [initForm.title]);
   const [saving, setSaving] = useState(false);
 
   const { present, pushHistory, canUndo, canRedo, undo, redo, replacePresent } =
@@ -120,6 +210,10 @@ function DesignEditorContent() {
       setElements(present);
     }
   }, [present]);
+
+  useEffect(() => {
+    ensureEditorFonts();
+  }, []);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -157,17 +251,27 @@ function DesignEditorContent() {
     (
       updater: EditorElement[] | ((prev: EditorElement[]) => EditorElement[]),
     ) => {
-      const next = typeof updater === "function" ? updater(elements) : updater;
+      const prev = elementsRef.current;
+      const next = typeof updater === "function" ? updater(prev) : updater;
+      elementsRef.current = next;
       setElements(next);
       pushHistory(next);
     },
-    [elements, pushHistory],
+    [pushHistory],
   );
 
   const handleUpdateElement = useCallback(
     (id: string, updates: Partial<EditorElement>) => {
       updateElements((prev) =>
-        prev.map((el) => (el.id === id ? { ...el, ...updates } : el)),
+        prev.map((el) => {
+          if (el.id !== id) return el;
+          const next = { ...el, ...updates };
+          if (next.type === "text" && shouldRefitTextHeight(updates)) {
+            const { height } = measureTextBox(next, "wrap");
+            return { ...next, height };
+          }
+          return next;
+        }),
       );
     },
     [updateElements],
@@ -190,15 +294,28 @@ function DesignEditorContent() {
     [updateElements, selectedElementId],
   );
 
-  const handleAddText = useCallback(() => {
-    const newEl = createDefaultText(crypto.randomUUID());
-    updateElements((prev) => [
-      ...prev,
-      { ...newEl, zIndex: Math.max(0, ...prev.map((e) => e.zIndex || 0)) + 1 },
-    ]);
-    setSelectedElementId(newEl.id);
-    setSelectedTool("text");
-  }, [updateElements]);
+  const handleAddText = useCallback(
+    (preset?: TextPreset) => {
+      const newEl = createDefaultText(crypto.randomUUID(), preset);
+      const maxWidth = CANVAS_WIDTH - 24;
+      const fitted = measureTextBox(newEl, "hug", maxWidth);
+      newEl.width = fitted.width;
+      newEl.height = fitted.height;
+      newEl.x = Math.round(Math.max(12, (CANVAS_WIDTH - newEl.width) / 2));
+      newEl.y = Math.round(Math.max(12, canvasHeight * 0.2 - newEl.height / 2));
+      updateElements((prev) => [
+        ...prev,
+        {
+          ...newEl,
+          zIndex: Math.max(0, ...prev.map((e) => e.zIndex || 0)) + 1,
+        },
+      ]);
+      setSelectedElementId(newEl.id);
+      setSelectedTool("text");
+      setAutoEditTextId(newEl.id);
+    },
+    [updateElements, canvasHeight],
+  );
 
   const handleAddShape = useCallback(
     (type: string) => {
@@ -264,7 +381,6 @@ function DesignEditorContent() {
       updateElements((prev) => [...prev, configured]);
       setSelectedElementId(configured.id);
       setSelectedCanvasImageUrl(url);
-      setSelectedTool("uploads");
     },
     [updateElements, elements, canvasHeight],
   );
@@ -357,6 +473,7 @@ function DesignEditorContent() {
         width: number;
         height: number;
         rotation: number;
+        fontSize?: number;
       },
     ) => {
       handleUpdateElement(id, {
@@ -504,6 +621,10 @@ function DesignEditorContent() {
             widgetConfig: { ...existing.widgetConfig, ...updates },
           });
         } else {
+          const size = WIDGET_DEFAULT_SIZE[widgetType] || {
+            width: 280,
+            height: 120,
+          };
           const newEl: EditorElement = {
             ...createDefaultText(crypto.randomUUID()),
             type: "widget",
@@ -516,31 +637,15 @@ function DesignEditorContent() {
                     songTitle: selectedAudio.name,
                     audioSource: selectedAudio.source,
                     iconId: "music-1",
-                    color: "#d4af37",
+                    color: "#2D231F",
                   }
                 : {}),
               ...updates,
             },
-            x: 20,
-            y: 20,
-            width:
-              widgetType === "calendar" || widgetType === "youtube"
-                ? 380
-                : widgetType === "call"
-                  ? 60
-                  : 280,
-            height:
-              widgetType === "music"
-                ? 60
-                : widgetType === "calendar"
-                  ? 240
-                  : widgetType === "call"
-                    ? 180
-                    : widgetType === "map" ||
-                        widgetType === "youtube" ||
-                        widgetType === "gallery"
-                      ? 280
-                      : 120,
+            width: size.width,
+            height: size.height,
+            x: Math.round(Math.max(12, (CANVAS_WIDTH - size.width) / 2)),
+            y: Math.round(Math.max(12, canvasHeight * 0.18)),
             zIndex: Math.max(0, ...elements.map((e) => e.zIndex || 0)) + 1,
           };
           updateElements((prev) => [...prev, newEl]);
@@ -556,66 +661,110 @@ function DesignEditorContent() {
       handleDeleteElement,
       updateElements,
       selectedAudio,
+      canvasHeight,
     ],
   );
 
-  const handleInitWedding = async (action: "draft" | "publish") => {
-    if (
-      !initForm.groomShortName ||
-      !initForm.brideShortName ||
-      !initForm.slug
-    ) {
-      showToast({ message: "Vui lòng nhập đầy đủ thông tin", type: "warning" });
+  const buildDesignSnapshot = useCallback(
+    () => ({
+      elements,
+      canvasBackground,
+      backgroundOpacity,
+      canvasHeight,
+      projectName,
+      effects,
+    }),
+    [
+      elements,
+      canvasBackground,
+      backgroundOpacity,
+      canvasHeight,
+      projectName,
+      effects,
+    ],
+  );
+
+  const musicFromDesign = useCallback(() => {
+    if (selectedAudio?.url) {
+      return {
+        url: selectedAudio.url,
+        name: selectedAudio.name || "",
+        type: "UPLOAD",
+        autoplay: true,
+      };
+    }
+    const musicEl = elements.find(
+      (el) => el.type === "widget" && el.widgetType === "music",
+    );
+    const url = musicEl?.widgetConfig?.audioUrl;
+    if (!url) return undefined;
+    return {
+      url,
+      name: musicEl?.widgetConfig?.songTitle || "",
+      type: "UPLOAD",
+      autoplay: true,
+    };
+  }, [selectedAudio, elements]);
+
+  const openInitModal = useCallback(() => {
+    const title = projectName.trim() || "Thiệp của tôi";
+    setInitForm({
+      title,
+      slug: toValidSlug(title),
+      cardType: matchCardType(urlCardType, cardTypes),
+    });
+    setShowInitModal(true);
+  }, [projectName, urlCardType, cardTypes]);
+
+  const handleCreateInvitation = async (action: "draft" | "publish") => {
+    const title = initForm.title.trim();
+    if (!title || !initForm.slug.trim() || !initForm.cardType) {
+      showToast({
+        message: "Vui lòng nhập tên thiệp, đường dẫn và chọn loại thiệp",
+        type: "warning",
+      });
       return;
     }
 
     setSaving(true);
     try {
-      const user = tokenCache.getUser();
-      const payload = {
-        userId: user?.id || "",
-        groomName: initForm.groomShortName,
-        groomShortName: initForm.groomShortName,
-        brideName: initForm.brideShortName,
-        brideShortName: initForm.brideShortName,
-        slug: initForm.slug,
-        ceremonyVenue: "Chưa thiết lập",
-        ceremonyAddress: "Chưa thiết lập",
-        ceremonyAt: new Date(
-          Date.now() + 30 * 24 * 60 * 60 * 1000,
-        ).toISOString(),
-        musicAutoplay: true,
-        status: "DRAFT",
-        customDesign: {
-          elements,
-          canvasBackground,
-          backgroundOpacity,
-          canvasHeight,
-          projectName,
-        },
-      };
+      const slug = await ensureAvailableSlug(initForm.slug);
+      const templateId = await resolveCustomDesignTemplateId();
+      const payload = buildCanvasInvitationPayload({
+        cardType: initForm.cardType,
+        title,
+        slug,
+        templateId,
+        customDesign: buildDesignSnapshot(),
+        music: musicFromDesign(),
+      });
 
-      const res = await weddingService.createWedding(payload);
-      const newWedding = res?.data || res;
-      const newId = newWedding?.id;
-      if (newId) {
-        if (action === "publish") {
-          await weddingService.publishWedding(newId);
-          showToast({
-            message: "Xuất bản thiệp cưới thành công",
-            type: "success",
-          });
-          window.open(`/thiep/${initForm.slug}`, "_blank");
-        } else {
-          showToast({ message: "Đã lưu bản nháp thành công", type: "success" });
-        }
-        setShowInitModal(false);
-        router.replace(`/design?id=${newId}`);
+      const res = await invitationService.create(payload);
+      const created = res?.data || res;
+      const newId = created?.id;
+      const publishedSlug = created?.slug || slug;
+      if (!newId) {
+        throw new Error("Không nhận được mã thiệp từ máy chủ");
       }
+
+      if (action === "publish") {
+        await invitationService.publish(newId);
+        showToast({
+          message: "Xuất bản thiệp thành công",
+          type: "success",
+        });
+        window.open(publicInvitationPath(publishedSlug), "_blank");
+      } else {
+        showToast({ message: "Đã lưu bản nháp thành công", type: "success" });
+      }
+      setProjectName(title);
+      setShowInitModal(false);
+      localStorage.removeItem("wio_design_draft");
+      router.replace(`/design?id=${newId}`);
     } catch (err: any) {
       console.error(err);
       showToast({
-        message: err?.response?.data?.message || "Không thể tạo thiệp cưới",
+        message: err?.response?.data?.message || "Không thể lưu thiệp",
         type: "error",
       });
     } finally {
@@ -624,91 +773,75 @@ function DesignEditorContent() {
   };
 
   const handleSave = useCallback(async () => {
-    const payload = {
-      elements,
-      canvasBackground,
-      backgroundOpacity,
-      canvasHeight,
-      projectName,
-    };
+    const snapshot = buildDesignSnapshot();
+    localStorage.setItem("wio_design_draft", JSON.stringify(snapshot));
 
-    localStorage.setItem("wio_design_draft", JSON.stringify(payload));
+    if (!invitationId) {
+      openInitModal();
+      return;
+    }
 
-    if (weddingId) {
-      setSaving(true);
-      try {
-        await weddingService.updateWedding(weddingId, {
-          customDesign: payload,
-        });
-        showToast({
-          title: "Đã lưu",
-          message: "Thiết kế đã được lưu thành công lên máy chủ",
-          type: "success",
-          timeout: 1500,
-        });
-      } catch (err: any) {
-        console.error(err);
-        showToast({
-          title: "Lỗi",
-          message: err?.response?.data?.message || "Không thể lưu lên máy chủ",
-          type: "error",
-        });
-      } finally {
-        setSaving(false);
-      }
-    } else {
-      showToast({
-        title: "Đã lưu nháp",
-        message:
-          "Đã lưu nháp trên thiết bị của bạn. Vui lòng thiết lập thông tin thiệp để lưu trực tuyến.",
-        type: "info",
-        timeout: 2500,
+    setSaving(true);
+    try {
+      await invitationService.update(invitationId, {
+        title: projectName.trim() || invitation?.title,
+        customDesign: snapshot,
+        music: musicFromDesign(),
       });
+      showToast({
+        title: "Đã lưu",
+        message: "Thiết kế đã được lưu thành công lên máy chủ",
+        type: "success",
+        timeout: 1500,
+      });
+    } catch (err: any) {
+      console.error(err);
+      showToast({
+        title: "Lỗi",
+        message: err?.response?.data?.message || "Không thể lưu lên máy chủ",
+        type: "error",
+      });
+    } finally {
+      setSaving(false);
     }
   }, [
-    elements,
-    canvasBackground,
-    backgroundOpacity,
-    canvasHeight,
+    buildDesignSnapshot,
+    invitationId,
+    openInitModal,
     projectName,
-    weddingId,
+    invitation,
+    musicFromDesign,
     showToast,
   ]);
 
   const executePublishOrSave = async (action: "draft" | "publish") => {
-    if (!weddingId) return;
+    if (!invitationId) return;
     setSaving(true);
     try {
-      const payload = {
-        elements,
-        canvasBackground,
-        backgroundOpacity,
-        canvasHeight,
-        projectName,
-      };
-
-      await weddingService.updateWedding(weddingId, {
-        customDesign: payload,
+      const snapshot = buildDesignSnapshot();
+      await invitationService.update(invitationId, {
+        title: projectName.trim() || invitation?.title,
+        customDesign: snapshot,
+        music: musicFromDesign(),
       });
 
       if (action === "publish") {
-        await weddingService.publishWedding(weddingId);
-        const currentWedding =
-          wedding || (await weddingService.getWeddingById(weddingId));
-        const slug = currentWedding?.slug || currentWedding?.data?.slug;
+        await invitationService.publish(invitationId);
+        const current =
+          invitation || (await invitationService.findById(invitationId));
+        const slug = current?.slug || current?.data?.slug;
         showToast({
           title: "Xuất bản thành công",
-          message: "Thiệp cưới của bạn đã được xuất bản!",
+          message: "Thiệp của bạn đã được xuất bản!",
           type: "success",
         });
         if (slug) {
-          window.open(`/thiep/${slug}`, "_blank");
+          window.open(publicInvitationPath(slug), "_blank");
         }
       } else {
-        await weddingService.unpublishWedding(weddingId);
         showToast({
           title: "Đã lưu nháp",
-          message: "Thiệp cưới đã được lưu ở trạng thái bản nháp!",
+          message: "Thiệp đã được lưu ở trạng thái bản nháp!",
           type: "success",
         });
       }
@@ -726,19 +859,13 @@ function DesignEditorContent() {
   };
 
   const handlePublish = useCallback(async () => {
-    if (!weddingId) {
-      if (!initForm.slug) {
-        setInitForm((f) => ({
-          ...f,
-          slug: slugify(projectName) || "thiep-cuoi",
-        }));
-      }
-      setShowInitModal(true);
+    if (!invitationId) {
+      openInitModal();
       return;
     }
 
     setShowPublishConfirmModal(true);
-  }, [weddingId, projectName, initForm.slug]);
+  }, [invitationId, openInitModal]);
 
   const handleZoomToFit = useCallback(() => {
     setZoom(100);
@@ -749,19 +876,28 @@ function DesignEditorContent() {
   }, []);
 
   useEffect(() => {
-    if (weddingId) {
-      weddingService
-        .getWeddingById(weddingId)
+    if (invitationId) {
+      invitationService
+        .findById(invitationId)
         .then((res) => {
-          const wData = res?.data || res;
-          if (wData) {
-            setWedding(wData);
-            setProjectName(wData.groomShortName + " & " + wData.brideShortName);
-            if (wData.customDesign) {
+          const data = res?.data || res;
+          if (data) {
+            setInvitation(data);
+            setProjectName(invitationLabel(data));
+            if (data.music?.url) {
+              setSelectedAudio({
+                id: data.music.url,
+                name: data.music.name || "",
+                url: data.music.url,
+                duration: "",
+                source: "admin",
+              });
+            }
+            if (data.customDesign) {
               const parsed =
-                typeof wData.customDesign === "string"
-                  ? JSON.parse(wData.customDesign)
-                  : wData.customDesign;
+                typeof data.customDesign === "string"
+                  ? JSON.parse(data.customDesign)
+                  : data.customDesign;
               if (parsed.elements) {
                 replacePresent(parsed.elements);
                 setElements(parsed.elements);
@@ -771,13 +907,14 @@ function DesignEditorContent() {
               if (parsed.backgroundOpacity !== undefined)
                 setBackgroundOpacity(parsed.backgroundOpacity);
               if (parsed.canvasHeight) setCanvasHeight(parsed.canvasHeight);
+              if (parsed.effects) setEffects(normalizeEffects(parsed.effects));
             }
           }
         })
         .catch((err) => {
           console.error(err);
           showToast({
-            message: "Không thể tải thông tin thiệp cưới",
+            message: "Không thể tải thiệp",
             type: "error",
           });
         });
@@ -796,15 +933,16 @@ function DesignEditorContent() {
             setBackgroundOpacity(parsed.backgroundOpacity);
           if (parsed.canvasHeight) setCanvasHeight(parsed.canvasHeight);
           if (parsed.projectName) setProjectName(parsed.projectName);
+          if (parsed.effects) setEffects(normalizeEffects(parsed.effects));
         }
       } catch (err) {
         console.error(err);
       }
     }
-  }, [weddingId, replacePresent]);
+  }, [invitationId, replacePresent]);
 
   return (
-    <div className="flex flex-col h-screen w-full bg-[#0a0508] overflow-hidden">
+    <div className="flex flex-col h-screen w-full bg-[#F3EDE3] overflow-hidden">
       <TopBar
         zoom={zoom}
         onZoomChange={setZoom}
@@ -835,6 +973,7 @@ function DesignEditorContent() {
             backgroundOpacity,
             canvasHeight,
             projectName,
+            effects,
           };
           localStorage.setItem("wio_design_draft", JSON.stringify(data));
           const titleParam = encodeURIComponent(projectName);
@@ -885,6 +1024,9 @@ function DesignEditorContent() {
             onSelectAudio={setSelectedAudio}
             onAddElements={handleAddElements}
             onUngroupElements={handleUngroupElements}
+            effects={effects}
+            onUpdateEffects={setEffects}
+            onReplayIntro={() => setIntroReplayKey((k) => k + 1)}
           />
         )}
 
@@ -901,10 +1043,14 @@ function DesignEditorContent() {
           onDragEnd={handleDragEnd}
           onDragMove={handleDragMove}
           onTransformEnd={handleTransformEnd}
+          autoEditTextId={autoEditTextId}
+          onAutoEditConsumed={() => setAutoEditTextId(null)}
           onHeightChange={setCanvasHeight}
           showGrid={showGrid}
           gridType={gridType}
           gridSize={gridSize}
+          effects={effects}
+          introReplayKey={introReplayKey}
         />
 
         {showRightBar && (
@@ -923,7 +1069,7 @@ function DesignEditorContent() {
       <Modal
         isOpen={showInitModal}
         onClose={() => {
-          if (weddingId) {
+          if (invitationId) {
             setShowInitModal(false);
           } else {
             router.push("/my-templates");
@@ -931,47 +1077,53 @@ function DesignEditorContent() {
         }}
         maxWidth="max-w-md"
       >
-        <div className="flex flex-col gap-4 py-4 text-[#f5e6d3] font-sans">
-          <h2 className="text-lg font-bold text-[#d4af37]">
-            Thiết lập thiệp cưới tự thiết kế
+        <div className="flex flex-col gap-4 py-4 text-[#2D231F] font-sans">
+          <h2 className="text-lg font-bold text-[#2D231F]">
+            Lưu thiệp lên hệ thống
           </h2>
-          <p className="text-xs text-[#f5e6d3]/60">
-            Vui lòng nhập các thông tin cơ bản sau để khởi tạo thiệp cưới của
-            bạn trong hệ thống.
+          <p className="text-xs text-[#2D231F]/60">
+            Chọn loại thiệp, đặt tên và đường dẫn công khai. Tên cô dâu chú rể
+            không bắt buộc — nội dung đã nằm trên bản thiết kế.
           </p>
 
           <div className="flex flex-col gap-1.5">
-            <Input
-              type="text"
-              label="Tên chú rể (viết tắt)"
-              value={initForm.groomShortName}
-              onChange={(e) =>
-                setInitForm((f) => ({ ...f, groomShortName: e.target.value }))
-              }
-              placeholder="Ví dụ: Hoàng Anh"
-              className="bg-[#1a0a0f] border-[#d4af37]/35 text-[#f5e6d3]"
-            />
-          </div>
-
-          <div className="flex flex-col gap-1.5">
-            <Input
-              type="text"
-              label="Tên cô dâu (viết tắt)"
-              value={initForm.brideShortName}
-              onChange={(e) =>
-                setInitForm((f) => ({ ...f, brideShortName: e.target.value }))
-              }
-              placeholder="Ví dụ: Mai Chi"
-              className="bg-[#1a0a0f] border-[#d4af37]/35 text-[#f5e6d3]"
-            />
-          </div>
-
-          <div className="flex flex-col gap-1.5">
-            <label className="text-[11px] font-semibold tracking-[2px] uppercase text-[#d4af37] select-none">
-              Đường dẫn thiệp (Slug)
+            <label className="text-[11px] font-semibold tracking-[2px] uppercase text-[#2D231F] select-none">
+              Loại thiệp
             </label>
-            <div className="flex items-center gap-1 bg-[#1a0a0f] border border-[#d4af37]/35 rounded-md px-3">
-              <span className="text-xs text-[#f5e6d3]/40 select-none">
+            <select
+              value={initForm.cardType}
+              onChange={(e) =>
+                setInitForm((f) => ({ ...f, cardType: e.target.value }))
+              }
+              className="h-11 px-3 rounded-md bg-[#F3EDE3] border border-[#2D231F]/35 text-[#2D231F] text-sm outline-none"
+            >
+              {cardTypes.map((type) => (
+                <option key={type.code} value={type.code}>
+                  {type.nameVi}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <Input
+              type="text"
+              label="Tên thiệp"
+              value={initForm.title}
+              onChange={(e) =>
+                setInitForm((f) => ({ ...f, title: e.target.value }))
+              }
+              placeholder="Ví dụ: Thiệp mời An & Minh"
+              className="bg-[#F3EDE3] border-[#2D231F]/35 text-[#2D231F]"
+            />
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <label className="text-[11px] font-semibold tracking-[2px] uppercase text-[#2D231F] select-none">
+              Đường dẫn thiệp
+            </label>
+            <div className="flex items-center gap-1 bg-[#F3EDE3] border border-[#2D231F]/35 rounded-md px-3">
+              <span className="text-xs text-[#2D231F]/40 select-none">
                 /thiep/
               </span>
               <input
@@ -985,8 +1137,8 @@ function DesignEditorContent() {
                       .replace(/[^a-z0-9-]/g, ""),
                   }))
                 }
-                placeholder="hoanganh-maichi"
-                className="bg-transparent border-none text-[#f5e6d3] text-sm outline-none flex-1 py-2.5 placeholder:text-[#6b5743]"
+                placeholder="thiep-cua-toi"
+                className="bg-transparent border-none text-[#2D231F] text-sm outline-none flex-1 py-2.5 placeholder:text-[#6b5743]"
               />
             </div>
           </div>
@@ -995,7 +1147,7 @@ function DesignEditorContent() {
             <Button
               variant="outline"
               onClick={() => {
-                if (weddingId) {
+                if (invitationId) {
                   setShowInitModal(false);
                 } else {
                   router.push("/my-templates");
@@ -1007,15 +1159,15 @@ function DesignEditorContent() {
             </Button>
             <Button
               variant="outline"
-              onClick={() => handleInitWedding("draft")}
+              onClick={() => handleCreateInvitation("draft")}
               disabled={saving}
-              className="px-4 py-2 text-xs border-[#d4af37]/40 text-[#d4af37]"
+              className="px-4 py-2 text-xs border-[#2D231F]/40 text-[#2D231F]"
             >
               Lưu bản nháp
             </Button>
             <Button
               variant="primary"
-              onClick={() => handleInitWedding("publish")}
+              onClick={() => handleCreateInvitation("publish")}
               disabled={saving}
               className="px-4 py-2 text-xs font-semibold"
             >
@@ -1030,11 +1182,11 @@ function DesignEditorContent() {
         onClose={() => setShowPublishConfirmModal(false)}
         maxWidth="max-w-md"
       >
-        <div className="flex flex-col gap-4 py-4 text-[#f5e6d3] font-sans">
-          <h2 className="text-lg font-bold text-[#d4af37]">
+        <div className="flex flex-col gap-4 py-4 text-[#2D231F] font-sans">
+          <h2 className="text-lg font-bold text-[#2D231F]">
             Lưu và Xuất bản thiệp
           </h2>
-          <p className="text-sm text-[#f5e6d3]/80">
+          <p className="text-sm text-[#2D231F]/80">
             Bạn muốn lưu thiết kế này dưới dạng bản nháp trực tuyến hay xuất bản
             chính thức luôn?
           </p>
@@ -1050,7 +1202,7 @@ function DesignEditorContent() {
               variant="outline"
               onClick={() => executePublishOrSave("draft")}
               disabled={saving}
-              className="px-4 py-2 text-xs border-[#d4af37]/40 text-[#d4af37]"
+              className="px-4 py-2 text-xs border-[#2D231F]/40 text-[#2D231F]"
             >
               Lưu bản nháp
             </Button>
@@ -1073,7 +1225,7 @@ export default function DesignEditorPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-[#0a0508] flex items-center justify-center text-[#f5e6d3] font-sans">
+        <div className="min-h-screen bg-[#F3EDE3] flex items-center justify-center text-[#2D231F] font-sans">
           Đang tải thiết kế...
         </div>
       }

@@ -3,10 +3,10 @@
 import { type ReactNode, useEffect, useState } from "react";
 
 const C = {
-  bg: "#0f0608",
-  bgCard: "#1a0a0f",
-  gold: "#d4af37",
-  goldLight: "#f5c842",
+  bg: "#2A211C",
+  bgCard: "#3A2E28",
+  gold: "#C4B09A",
+  goldLight: "#EDE4D5",
 };
 
 interface IPhoneMockupProps {

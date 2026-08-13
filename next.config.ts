@@ -24,6 +24,14 @@ const nextConfig: NextConfig = {
   experimental: {
     optimizePackageImports: ["lucide-react", "@base-ui/react"],
   },
+  async rewrites() {
+    return [
+      {
+        source: "/thiep/:slug",
+        destination: "/invitation/:slug",
+      },
+    ];
+  },
   images: {
     formats: ["image/avif", "image/webp"],
     minimumCacheTTL: 86400,

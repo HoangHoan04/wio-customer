@@ -181,14 +181,23 @@ export default function RightPanel({
           label = "Âm nhạc";
           icon = <Music size={14} className="text-[#f59e0b]" />;
         } else if (el.widgetType === "youtube") {
-          label = "Video Youtube";
+          label = "Video YouTube";
           icon = <Play size={14} className="text-[#f59e0b]" />;
+        } else if (el.widgetType === "gallery") {
+          label = "Thư viện ảnh";
+          icon = <Layers size={14} className="text-[#f59e0b]" />;
+        } else if (el.widgetType === "album") {
+          label = "Album ghép";
+          icon = <Layers size={14} className="text-[#f59e0b]" />;
+        } else if (el.widgetType === "carousel") {
+          label = "Carousel 3D";
+          icon = <Layers size={14} className="text-[#f59e0b]" />;
         }
         return { icon, label, typeLabel: "Tiện ích" };
       }
       default:
         return {
-          icon: <Layers size={14} className="text-gray-400" />,
+          icon: <Layers size={14} className="text-[#7A6A5C]" />,
           label: "Đối tượng",
           typeLabel: "Đối tượng",
         };
@@ -196,13 +205,13 @@ export default function RightPanel({
   };
 
   return (
-    <aside className="w-80 bg-[#141215] border-l border-[#2a252c] flex flex-col overflow-y-auto shrink-0 select-none">
-      <div className="flex border-b border-[#2a252c] shrink-0 bg-[#1c181e]">
+    <aside className="w-80 bg-[#F3EDE3] border-l border-[#D9CDBE] flex flex-col overflow-y-auto shrink-0 select-none">
+      <div className="flex border-b border-[#D9CDBE] shrink-0 bg-[#EDE4D5]">
         <button
           onClick={() => setActiveTab("layers")}
           className={`flex-1 py-3 px-4 text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 border-b-2 transition-all ${activeTab === "layers"
-            ? "text-[#d4af37] border-[#d4af37] bg-[#141215]/50"
-            : "text-gray-400 border-transparent hover:text-gray-200 hover:bg-[#141215]/20"
+            ? "text-[#2D231F] border-[#2D231F] bg-[#F3EDE3]/50"
+            : "text-[#7A6A5C] border-transparent hover:text-[#2D231F] hover:bg-[#F3EDE3]/20"
             }`}
         >
           <Layers size={14} />
@@ -211,8 +220,8 @@ export default function RightPanel({
         <button
           onClick={() => setActiveTab("settings")}
           className={`flex-1 py-3 px-4 text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 border-b-2 transition-all ${activeTab === "settings"
-            ? "text-[#d4af37] border-[#d4af37] bg-[#141215]/50"
-            : "text-gray-400 border-transparent hover:text-gray-200 hover:bg-[#141215]/20"
+            ? "text-[#2D231F] border-[#2D231F] bg-[#F3EDE3]/50"
+            : "text-[#7A6A5C] border-transparent hover:text-[#2D231F] hover:bg-[#F3EDE3]/20"
             }`}
         >
           <Settings size={14} />
@@ -223,15 +232,15 @@ export default function RightPanel({
       <div className="flex-1 overflow-y-auto p-4">
         {activeTab === "layers" ? (
           <div className="space-y-3 h-full flex flex-col">
-            <div className="flex justify-between items-center text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">
+            <div className="flex justify-between items-center text-[10px] font-bold text-[#7A6A5C]/70 uppercase tracking-wider mb-1">
               <span>Danh sách đối tượng (Mới ở trên)</span>
             </div>
 
             {sortedElements.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-12 text-center border border-dashed border-[#2a252c] rounded-xl bg-[#1c181e]/30">
-                <Layers size={28} className="text-gray-600 mb-2" />
-                <p className="text-gray-400 text-xs font-medium">Chưa có đối tượng nào</p>
-                <p className="text-gray-600 text-[10px] mt-1 px-4">
+              <div className="flex flex-col items-center justify-center py-12 text-center border border-dashed border-[#D9CDBE] rounded-xl bg-[#EDE4D5]/30">
+                <Layers size={28} className="text-[#7A6A5C]/60 mb-2" />
+                <p className="text-[#7A6A5C] text-xs font-medium">Chưa có đối tượng nào</p>
+                <p className="text-[#7A6A5C]/60 text-[10px] mt-1 px-4">
                   Thêm văn bản, hình ảnh, hình vẽ hoặc các tiện ích từ thanh công cụ bên trái.
                 </p>
               </div>
@@ -245,15 +254,15 @@ export default function RightPanel({
                       <div key={item.groupId} className="space-y-1">
                         <div
                           className={`group flex items-center gap-3 px-3 py-2.5 rounded-lg border cursor-pointer transition-all duration-200 ${isGroupSelected
-                            ? "bg-[#251f28] border-[#d4af37]/60 shadow-[0_0_12px_rgba(212,175,55,0.15)]"
-                            : "bg-[#1c181e] border-[#2a252c] hover:bg-[#251f28]/40 hover:border-[#3a333d]"
+                            ? "bg-[#EDE4D5] border-[#2D231F]/60 shadow-[0_0_12px_rgba(45,35,31,0.08)]"
+                            : "bg-[#EDE4D5] border-[#D9CDBE] hover:bg-[#EDE4D5]/40 hover:border-[#D9CDBE]"
                             }`}
                           onClick={() => {
                             onSelectElement(item.members[0]?.id ?? null);
                           }}
                         >
                           <button
-                            className="text-gray-500 hover:text-gray-200 shrink-0"
+                            className="text-[#7A6A5C]/70 hover:text-[#2D231F] shrink-0"
                             onClick={(e) => {
                               e.stopPropagation();
                               setExpandedGroups((prev) => ({
@@ -265,15 +274,15 @@ export default function RightPanel({
                             {isExpanded ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
                           </button>
 
-                          <div className="w-8 h-8 rounded bg-[#141215] border border-[#2a252c] flex items-center justify-center shrink-0">
-                            <Layers size={14} className="text-[#d4af37]" />
+                          <div className="w-8 h-8 rounded bg-[#F3EDE3] border border-[#D9CDBE] flex items-center justify-center shrink-0">
+                            <Layers size={14} className="text-[#2D231F]" />
                           </div>
 
                           <div className="flex-1 min-w-0">
-                            <p className={`text-xs font-medium truncate ${isGroupSelected ? "text-white" : "text-gray-300"}`}>
+                            <p className={`text-xs font-medium truncate ${isGroupSelected ? "text-[#2D231F]" : "text-[#7A6A5C]"}`}>
                               Nhóm Preset
                             </p>
-                            <p className="text-[9px] text-gray-500 font-medium tracking-wide mt-0.5">
+                            <p className="text-[9px] text-[#7A6A5C]/70 font-medium tracking-wide mt-0.5">
                               {item.members.length} đối tượng
                             </p>
                           </div>
@@ -284,14 +293,14 @@ export default function RightPanel({
                               onUngroupElements?.(item.groupId);
                             }}
                             title="Bỏ nhóm"
-                            className="p-1.5 rounded text-[#d4af37]/70 hover:text-[#d4af37] hover:bg-[#d4af37]/10 opacity-0 group-hover:opacity-100 transition-all shrink-0"
+                            className="p-1.5 rounded text-[#2D231F]/70 hover:text-[#2D231F] hover:bg-[#2D231F]/10 opacity-0 group-hover:opacity-100 transition-all shrink-0"
                           >
                             <Unlink size={13} />
                           </button>
                         </div>
 
                         {isExpanded && (
-                          <div className="ml-6 space-y-1 border-l border-[#2a252c] pl-3">
+                          <div className="ml-6 space-y-1 border-l border-[#D9CDBE] pl-3">
                             {item.members.map((el) => {
                               const info = getElementInfo(el);
                               const isSel = selectedElementId === el.id;
@@ -299,7 +308,7 @@ export default function RightPanel({
                                 <div
                                   key={el.id}
                                   onClick={() => onSelectElement(el.id)}
-                                  className={`flex items-center gap-2 px-2 py-1.5 rounded cursor-pointer text-[10px] transition-all ${isSel ? "bg-[#251f28] text-white" : "text-gray-400 hover:text-gray-200 hover:bg-[#251f28]/30"
+                                  className={`flex items-center gap-2 px-2 py-1.5 rounded cursor-pointer text-[10px] transition-all ${isSel ? "bg-[#EDE4D5] text-[#2D231F]" : "text-[#7A6A5C] hover:text-[#2D231F] hover:bg-[#EDE4D5]/30"
                                     }`}
                                 >
                                   <span className="shrink-0">{info.icon}</span>
@@ -321,15 +330,15 @@ export default function RightPanel({
                       key={el.id}
                       onClick={() => onSelectElement(el.id)}
                       className={`group flex items-center gap-3 px-3 py-2.5 rounded-lg border cursor-pointer transition-all duration-200 ${isSelected
-                        ? "bg-[#251f28] border-[#d4af37]/60 shadow-[0_0_12px_rgba(212,175,55,0.15)]"
-                        : "bg-[#1c181e] border-[#2a252c] hover:bg-[#251f28]/40 hover:border-[#3a333d]"
+                        ? "bg-[#EDE4D5] border-[#2D231F]/60 shadow-[0_0_12px_rgba(45,35,31,0.08)]"
+                        : "bg-[#EDE4D5] border-[#D9CDBE] hover:bg-[#EDE4D5]/40 hover:border-[#D9CDBE]"
                         }`}
                     >
-                      <span className="text-[10px] text-gray-600 font-mono w-4 text-center shrink-0">
+                      <span className="text-[10px] text-[#7A6A5C]/60 font-mono w-4 text-center shrink-0">
                         {layerItems.length - visualIndex}
                       </span>
 
-                      <div className="w-8 h-8 rounded bg-[#141215] border border-[#2a252c] flex items-center justify-center shrink-0 overflow-hidden relative">
+                      <div className="w-8 h-8 rounded bg-[#F3EDE3] border border-[#D9CDBE] flex items-center justify-center shrink-0 overflow-hidden relative">
                         {info.src ? (
                           <img
                             src={info.src}
@@ -346,12 +355,12 @@ export default function RightPanel({
 
                       <div className="flex-1 min-w-0">
                         <p
-                          className={`text-xs font-medium truncate ${isSelected ? "text-white" : "text-gray-300"
+                          className={`text-xs font-medium truncate ${isSelected ? "text-[#2D231F]" : "text-[#7A6A5C]"
                             }`}
                         >
                           {info.label}
                         </p>
-                        <p className="text-[9px] text-gray-500 font-medium tracking-wide mt-0.5">
+                        <p className="text-[9px] text-[#7A6A5C]/70 font-medium tracking-wide mt-0.5">
                           {info.typeLabel}
                         </p>
                       </div>
@@ -364,7 +373,7 @@ export default function RightPanel({
                           }}
                           disabled={visualIndex === 0}
                           title="Đưa lên trên"
-                          className="p-1 rounded text-gray-400 hover:text-white hover:bg-[#342b39] disabled:opacity-20 disabled:hover:bg-transparent"
+                          className="p-1 rounded text-[#7A6A5C] hover:text-[#2D231F] hover:bg-[#F3EDE3] disabled:opacity-20 disabled:hover:bg-transparent"
                         >
                           <ArrowUp size={13} />
                         </button>
@@ -375,7 +384,7 @@ export default function RightPanel({
                           }}
                           disabled={visualIndex === layerItems.length - 1}
                           title="Đưa xuống dưới"
-                          className="p-1 rounded text-gray-400 hover:text-white hover:bg-[#342b39] disabled:opacity-20 disabled:hover:bg-transparent"
+                          className="p-1 rounded text-[#7A6A5C] hover:text-[#2D231F] hover:bg-[#F3EDE3] disabled:opacity-20 disabled:hover:bg-transparent"
                         >
                           <ArrowDown size={13} />
                         </button>
@@ -387,8 +396,8 @@ export default function RightPanel({
                           }}
                           title={el.visible !== false ? "Ẩn lớp" : "Hiện lớp"}
                           className={`p-1 rounded ${el.visible !== false
-                            ? "text-gray-400 hover:text-white hover:bg-[#342b39]"
-                            : "text-red-400 hover:text-red-300 hover:bg-[#3d2025]"
+                            ? "text-[#7A6A5C] hover:text-[#2D231F] hover:bg-[#F3EDE3]"
+                            : "text-red-400 hover:text-red-300 hover:bg-[#F3EDE3]"
                             }`}
                         >
                           {el.visible !== false ? <Eye size={13} /> : <EyeOff size={13} />}
@@ -401,8 +410,8 @@ export default function RightPanel({
                           }}
                           title={el.locked ? "Mở khóa" : "Khóa vị trí"}
                           className={`p-1 rounded ${el.locked
-                            ? "text-yellow-500 hover:text-yellow-400 hover:bg-[#3d3820]"
-                            : "text-gray-400 hover:text-white hover:bg-[#342b39]"
+                            ? "text-yellow-500 hover:text-yellow-400 hover:bg-[#F3EDE3]"
+                            : "text-[#7A6A5C] hover:text-[#2D231F] hover:bg-[#F3EDE3]"
                             }`}
                         >
                           {el.locked ? <Lock size={13} /> : <Unlock size={13} />}
@@ -414,7 +423,7 @@ export default function RightPanel({
                             handleDelete(el.id);
                           }}
                           title="Xóa đối tượng"
-                          className="p-1 rounded text-gray-400 hover:text-red-400 hover:bg-[#3d2025]"
+                          className="p-1 rounded text-[#7A6A5C] hover:text-red-400 hover:bg-[#F3EDE3]"
                         >
                           <Trash2 size={13} />
                         </button>
@@ -428,20 +437,20 @@ export default function RightPanel({
         ) : (
           <div className="space-y-5">
             <Section label="Chia sẻ">
-              <div className="bg-[#1c181e] rounded-lg p-4 space-y-3 border border-[#2a252c]">
+              <div className="bg-[#EDE4D5] rounded-lg p-4 space-y-3 border border-[#D9CDBE]">
                 <div className="flex items-start gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-[#d4af37]/10 flex items-center justify-center shrink-0 mt-0.5 border border-[#d4af37]/20">
-                    <Share2 size={16} className="text-[#d4af37]" />
+                  <div className="w-8 h-8 rounded-lg bg-[#2D231F]/10 flex items-center justify-center shrink-0 mt-0.5 border border-[#2D231F]/20">
+                    <Share2 size={16} className="text-[#2D231F]" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-white text-sm font-medium">Chia sẻ cho cộng đồng</p>
-                    <p className="text-gray-500 text-xs mt-1 leading-relaxed">
+                    <p className="text-[#2D231F] text-sm font-medium">Chia sẻ cho cộng đồng</p>
+                    <p className="text-[#7A6A5C]/70 text-xs mt-1 leading-relaxed">
                       Cho phép cộng đồng xem và sử dụng thiệp của bạn làm mẫu tham khảo.
                     </p>
                   </div>
                 </div>
                 <div className="flex items-center justify-between pt-1">
-                  <span className="text-gray-400 text-xs">
+                  <span className="text-[#7A6A5C] text-xs">
                     {sharedToCommunity ? "Đã chia sẻ" : "Chưa chia sẻ"}
                   </span>
                   <Switch checked={sharedToCommunity} onChange={onToggleShareToCommunity} />
@@ -458,7 +467,7 @@ export default function RightPanel({
 function Section({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="space-y-2">
-      <label className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">
+      <label className="text-[10px] font-bold text-[#7A6A5C]/70 uppercase tracking-wider">
         {label}
       </label>
       {children}

@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import Canvas from "@/templates/customer-design/Canvas";
-import type { EditorElement } from "@/templates/customer-design/types";
+import type { EditorElement, InvitationEffects } from "@/templates/customer-design/types";
+import { DEFAULT_INVITATION_EFFECTS, normalizeEffects } from "@/templates/customer-design/utils/invitation-effects";
 
 export default function CustomDesignTemplate({ data }: { data: any }) {
   const customDesign = data?.customDesign;
@@ -12,6 +13,7 @@ export default function CustomDesignTemplate({ data }: { data: any }) {
   const [canvasHeight, setCanvasHeight] = useState(956);
   const [scale, setScale] = useState(1);
   const [isMobile, setIsMobile] = useState(false);
+  const [effects, setEffects] = useState<InvitationEffects>(DEFAULT_INVITATION_EFFECTS);
 
   useEffect(() => {
     const link = document.createElement("link");
@@ -27,6 +29,7 @@ export default function CustomDesignTemplate({ data }: { data: any }) {
         if (parsed.canvasBackground) setCanvasBackground(parsed.canvasBackground);
         if (parsed.backgroundOpacity !== undefined) setBackgroundOpacity(parsed.backgroundOpacity);
         if (parsed.canvasHeight) setCanvasHeight(parsed.canvasHeight);
+        if (parsed.effects) setEffects(normalizeEffects(parsed.effects));
       } catch (e) {
         console.error("Failed to parse customDesign data", e);
       }
@@ -59,7 +62,7 @@ export default function CustomDesignTemplate({ data }: { data: any }) {
   if (!customDesign) {
     return (
       <div className="flex h-screen items-center justify-center bg-[#fdfbf7] text-[#666] font-sans">
-        <p className="text-sm font-semibold">Thiệp cưới này chưa được hoàn tất thiết kế.</p>
+        <p className="text-sm font-semibold">Thiệp này chưa được hoàn tất thiết kế.</p>
       </div>
     );
   }
@@ -95,6 +98,7 @@ export default function CustomDesignTemplate({ data }: { data: any }) {
           onDragEnd={() => {}}
           onTransformEnd={() => {}}
           readOnly={true}
+          effects={effects}
         />
       </div>
     </div>

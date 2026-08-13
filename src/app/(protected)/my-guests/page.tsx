@@ -26,7 +26,8 @@ import { Textarea } from "@/components/ui/textarea";
 import type { CreateGuestReq } from "@/dto";
 import { useGuest } from "@/hooks/useGuest";
 import { useToast } from "@/hooks/useToast";
-import { weddingService } from "@/services/wedding.service";
+import { invitationService } from "@/services/invitation.service";
+import { invitationLabel, publicInvitationPath } from "@/utils/invitation-mapper";
 import {
   Copy,
   Download,
@@ -41,19 +42,18 @@ import {
 import { useEffect, useMemo, useState } from "react";
 
 const C = {
-  bg: "#0b0507",
-  bgCard: "#140a0d",
-  gold: "#c5a059",
-  goldLight: "#e5c483",
-  cream: "#f9f6f0",
-  muted: "#a38a75",
-  border: "rgba(197, 160, 89, 0.15)",
+  bg: "#F3EDE3",
+  bgCard: "#EDE4D5",
+  gold: "#2D231F",
+  goldLight: "#7A6A5C",
+  cream: "#2D231F",
+  muted: "#7A6A5C",
+  border: "rgba(232, 226, 216, 1)",
 };
 
-interface WeddingOption {
+interface InvitationOption {
   id: string;
-  groomShortName: string;
-  brideShortName: string;
+  title?: string;
   slug: string;
 }
 
@@ -90,8 +90,8 @@ export default function MyGuestsPage() {
     downloadSampleExcel,
   } = useGuest();
 
-  const [weddings, setWeddings] = useState<WeddingOption[]>([]);
-  const [selectedWeddingId, setSelectedWeddingId] = useState<string>("");
+  const [invitations, setInvitations] = useState<InvitationOption[]>([]);
+  const [selectedInvitationId, setSelectedInvitationId] = useState<string>("");
   const [guests, setGuests] = useState<any[]>([]);
   const [search, setSearch] = useState("");
   const [isLoading, setIsLoading] = useState(true);
@@ -108,33 +108,33 @@ export default function MyGuestsPage() {
   const [bulkSide, setBulkSide] = useState("BOTH");
 
   useEffect(() => {
-    weddingService
-      .getWeddings({ skip: 0, take: 50, where: {} })
+    invitationService
+      .pagination({ skip: 0, take: 50, where: {} })
       .then((res) => {
         const list = res.data ?? [];
-        setWeddings(list);
-        if (list[0]) setSelectedWeddingId(list[0].id);
+        setInvitations(list);
+        if (list[0]) setSelectedInvitationId(list[0].id);
       })
       .catch((err) => {
         console.error(err);
         showToast({
-          message: "Không thể tải danh sách đám cưới",
+          message: "Không thể tải danh sách thiệp",
           type: "error",
         });
       });
   }, []);
 
   useEffect(() => {
-    if (!selectedWeddingId) return;
+    if (!selectedInvitationId) return;
     setIsLoading(true);
-    getGuests(selectedWeddingId)
+    getGuests(selectedInvitationId)
       .then((res) => setGuests(res.data ?? []))
       .catch((err) => {
         console.error(err);
         showToast({ message: "Không thể tải khách mời", type: "error" });
       })
       .finally(() => setIsLoading(false));
-  }, [selectedWeddingId]);
+  }, [selectedInvitationId]);
 
   const filteredGuests = useMemo(() => {
     if (!search.trim()) return guests;
@@ -158,7 +158,7 @@ export default function MyGuestsPage() {
     setForm({
       fullName: guest.fullName || "",
       salutation: guest.salutation || "Kính mời",
-      side: guest.side || "BOTH",
+      side: guest.groupCode || guest.side || "BOTH",
       isVip: guest.isVip || false,
       needsTransport: guest.needsTransport || false,
       rsvpNote: guest.rsvpNote || "",
@@ -175,14 +175,24 @@ export default function MyGuestsPage() {
       if (editingGuest) {
         await updateGuest({
           id: editingGuest.id,
-          ...form,
-          weddingId: selectedWeddingId,
+          invitationId: selectedInvitationId,
+          fullName: form.fullName,
+          salutation: form.salutation,
+          groupCode: form.side,
+          isVip: form.isVip,
+          needsTransport: form.needsTransport,
+          rsvpNote: form.rsvpNote,
         });
         showToast({ message: "Cập nhật thành công", type: "success" });
       } else {
         await createGuest({
-          ...form,
-          weddingId: selectedWeddingId,
+          invitationId: selectedInvitationId,
+          fullName: form.fullName,
+          salutation: form.salutation,
+          groupCode: form.side,
+          isVip: form.isVip,
+          needsTransport: form.needsTransport,
+          rsvpNote: form.rsvpNote,
         });
         showToast({ message: "Thêm khách mời thành công", type: "success" });
       }
@@ -211,9 +221,9 @@ export default function MyGuestsPage() {
   };
 
   const refreshGuests = () => {
-    if (!selectedWeddingId) return;
+    if (!selectedInvitationId) return;
     setIsLoading(true);
-    getGuests(selectedWeddingId)
+    getGuests(selectedInvitationId)
       .then((res) => setGuests(res.data ?? []))
       .finally(() => setIsLoading(false));
   };
@@ -237,9 +247,9 @@ export default function MyGuestsPage() {
   };
 
   const getGuestLink = (guest: any) => {
-    const activeWedding = weddings.find((w) => w.id === selectedWeddingId);
-    if (!activeWedding || !activeWedding.slug) return "";
-    return `${window.location.origin}/thiep/${activeWedding.slug}?code=${guest.invitationCode}`;
+    const active = invitations.find((w) => w.id === selectedInvitationId);
+    if (!active?.slug) return "";
+    return `${window.location.origin}${publicInvitationPath(active.slug)}?code=${guest.invitationCode}`;
   };
 
   const handleCopyLink = (guest: any) => {
@@ -305,16 +315,13 @@ export default function MyGuestsPage() {
         const fullName = parts[0];
         if (!fullName) return null;
         return {
-          weddingId: selectedWeddingId,
+          invitationId: selectedInvitationId,
           fullName,
-          phone: undefined,
-          email: undefined,
           salutation: salutation || "Kính mời",
-          side: side || "BOTH",
+          groupCode: side || "BOTH",
           isVip: false,
           attendingCount: 1,
           needsTransport: false,
-          rsvpNote: undefined,
         };
       })
       .filter((g): g is NonNullable<typeof g> => g !== null);
@@ -354,14 +361,14 @@ export default function MyGuestsPage() {
   };
 
   const handleBulkSubmit = async () => {
-    if (!selectedWeddingId) return;
+    if (!selectedInvitationId) return;
     if (bulkTab === "text") {
       if (bulkPreview.length === 0) {
         showToast({ message: "Danh sách trống", type: "error" });
         return;
       }
       try {
-        const res = await createMany(selectedWeddingId, bulkPreview);
+        const res = await createMany(selectedInvitationId, bulkPreview);
         showToast({
           message: res.message || "Thêm danh sách thành công",
           type: "success",
@@ -382,7 +389,7 @@ export default function MyGuestsPage() {
         return;
       }
       try {
-        const res = await importExcel(selectedWeddingId, bulkFile);
+        const res = await importExcel(selectedInvitationId, bulkFile);
         showToast({
           message: res.message || "Import Excel thành công",
           type: "success",
@@ -412,12 +419,9 @@ export default function MyGuestsPage() {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
           <div>
             <h1
-              className="text-3xl md:text-4xl font-bold uppercase tracking-wider mb-3"
+              className="text-3xl md:text-4xl font-bold uppercase tracking-wider mb-3 text-[#2D231F]"
               style={{
                 fontFamily: "'Cinzel', serif",
-                background: `linear-gradient(135deg, ${C.goldLight} 0%, ${C.gold} 50%, ${C.goldLight} 100%)`,
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
               }}
             >
               Quản lý khách mời
@@ -428,22 +432,22 @@ export default function MyGuestsPage() {
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
-            {weddings.length > 0 && (
+            {invitations.length > 0 && (
               <Select
-                value={selectedWeddingId}
-                onValueChange={(v) => setSelectedWeddingId(v ?? "")}
-                items={weddings.map((w) => ({
+                value={selectedInvitationId}
+                onValueChange={(v) => setSelectedInvitationId(v ?? "")}
+                items={invitations.map((w) => ({
                   value: w.id,
-                  label: `${w.groomShortName} & ${w.brideShortName}`,
+                  label: invitationLabel(w),
                 }))}
               >
-                <SelectTrigger className="min-w-80 bg-transparent border-[#d4af37]/30 text-[#f5e6d3] placeholder:text-[#a38a75]/50">
+                <SelectTrigger className="min-w-80 bg-transparent border-[#2D231F]/30 text-[#2D231F] placeholder:text-[#7A6A5C]/50">
                   <SelectValue placeholder="Chọn đám cưới" />
                 </SelectTrigger>
-                <SelectContent className="bg-[#13070b] border-[#d4af37]/30 text-[#f5e6d3]">
-                  {weddings.map((w) => (
+                <SelectContent className="bg-[#ffffff] border-[#2D231F]/30 text-[#2D231F]">
+                  {invitations.map((w) => (
                     <SelectItem key={w.id} value={w.id}>
-                      {w.groomShortName} & {w.brideShortName}
+                      {invitationLabel(w)}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -456,13 +460,13 @@ export default function MyGuestsPage() {
           <div className="relative flex-1 max-w-sm">
             <Search
               size={16}
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-[#a38a75]"
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-[#7A6A5C]"
             />
             <Input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Tìm theo tên, SĐT, email, mã mời..."
-              className="pl-9 bg-transparent border-[#d4af37]/30 text-[#f5e6d3] placeholder:text-[#a38a75]/50"
+              className="pl-9 bg-transparent border-[#2D231F]/30 text-[#2D231F] placeholder:text-[#7A6A5C]/50"
             />
           </div>
           <div className="flex gap-3">
@@ -471,7 +475,7 @@ export default function MyGuestsPage() {
                 render={
                   <Button
                     variant="outline"
-                    className="border-[#d4af37]/30 text-[#f5e6d3] hover:bg-[#d4af37]/10"
+                    className="border-[#2D231F]/30 text-[#2D231F] hover:bg-[#2D231F]/10"
                     onClick={() => {
                       setBulkTab("text");
                       setBulkText("");
@@ -487,7 +491,7 @@ export default function MyGuestsPage() {
                 }
               />
               <DialogContent
-                className="border border-[#d4af37]/20 bg-[#13070b] text-[#f5e6d3] max-w-3xl"
+                className="border border-[#2D231F]/20 bg-[#ffffff] text-[#2D231F] max-w-3xl"
                 showCloseButton
               >
                 <DialogHeader>
@@ -499,7 +503,7 @@ export default function MyGuestsPage() {
                   >
                     Thêm nhiều khách mời
                   </DialogTitle>
-                  <DialogDescription className="text-[#a38a75]">
+                  <DialogDescription className="text-[#7A6A5C]">
                     Chọn cách nhập danh sách khách mời bên dưới.
                   </DialogDescription>
                 </DialogHeader>
@@ -509,7 +513,7 @@ export default function MyGuestsPage() {
                   onValueChange={(v) => setBulkTab(v as "text" | "excel")}
                   className="w-full"
                 >
-                  <TabsList className="bg-[#1a0a0f] border border-[#d4af37]/20 mb-4">
+                  <TabsList className="bg-[#ffffff] border border-[#2D231F]/20 mb-4">
                     <TabsTrigger value="text">Nhập từ danh sách</TabsTrigger>
                     <TabsTrigger value="excel">Nhập từ Excel</TabsTrigger>
                   </TabsList>
@@ -523,7 +527,7 @@ export default function MyGuestsPage() {
                           handleBulkSalutationChange(e.target.value)
                         }
                         placeholder="Ví dụ: Kính mời, Thân mời..."
-                        className="bg-transparent border-[#d4af37]/30 text-[#f5e6d3] placeholder:text-[#a38a75]/50"
+                        className="bg-transparent border-[#2D231F]/30 text-[#2D231F] placeholder:text-[#7A6A5C]/50"
                       />
                     </div>
                     <div className="space-y-2">
@@ -566,10 +570,10 @@ export default function MyGuestsPage() {
                       <Label>
                         Danh sách tên khách mời (mỗi dòng một khách)
                       </Label>
-                      <p className="text-xs text-[#a38a75]">
+                      <p className="text-xs text-[#7A6A5C]">
                         Mỗi dòng nhập một tên khách mời kèm danh xưng.
                       </p>
-                      <p className="text-xs text-[#a38a75] leading-relaxed">
+                      <p className="text-xs text-[#7A6A5C] leading-relaxed">
                         (Ví dụ: <br />
                         - Anh Hoàng Hùng <br />- Gia đình Anh Nam)
                       </p>
@@ -577,7 +581,7 @@ export default function MyGuestsPage() {
                         value={bulkText}
                         onChange={(e) => handleBulkTextChange(e.target.value)}
                         placeholder={`Anh Hoàng Hùng\nGia đình Anh Nam\nBạn Nguyễn Văn A`}
-                        className="min-h-40 bg-transparent border-[#d4af37]/30 text-[#f5e6d3] placeholder:text-[#a38a75]/50"
+                        className="min-h-40 bg-transparent border-[#2D231F]/30 text-[#2D231F] placeholder:text-[#7A6A5C]/50"
                       />
                     </div>
                   </TabsContent>
@@ -586,7 +590,7 @@ export default function MyGuestsPage() {
                     <div className="flex flex-wrap gap-3">
                       <Button
                         variant="outline"
-                        className="border-[#d4af37]/30 text-[#f5e6d3] hover:bg-[#d4af37]/10"
+                        className="border-[#2D231F]/30 text-[#2D231F] hover:bg-[#2D231F]/10"
                         onClick={handleDownloadSample}
                       >
                         <Download size={16} className="mr-2" />
@@ -601,7 +605,7 @@ export default function MyGuestsPage() {
                       />
                       <Button
                         variant="outline"
-                        className="border-[#d4af37]/30 text-[#f5e6d3] hover:bg-[#d4af37]/10"
+                        className="border-[#2D231F]/30 text-[#2D231F] hover:bg-[#2D231F]/10"
                         onClick={() =>
                           document.getElementById("bulk-excel-input")?.click()
                         }
@@ -611,16 +615,16 @@ export default function MyGuestsPage() {
                       </Button>
                     </div>
                     {bulkFile && (
-                      <div className="text-sm text-[#f5e6d3]">
+                      <div className="text-sm text-[#2D231F]">
                         File đã chọn:{" "}
-                        <span className="text-[#f5c842]">{bulkFile.name}</span>
+                        <span className="text-[#7A6A5C]">{bulkFile.name}</span>
                       </div>
                     )}
                   </TabsContent>
                 </Tabs>
 
                 {(bulkTab === "text" ? bulkPreview.length > 0 : bulkFile) && (
-                  <div className="border border-[#d4af37]/20 rounded-xl p-4 bg-[#0b0507]/50">
+                  <div className="border border-[#2D231F]/20 rounded-xl p-4 bg-[#ffffff]/50">
                     <div className="flex items-center justify-between mb-3">
                       <h4
                         className="font-semibold text-sm"
@@ -631,19 +635,19 @@ export default function MyGuestsPage() {
                       >
                         Xem trước
                       </h4>
-                      <div className="flex gap-4 text-xs text-[#a38a75]">
+                      <div className="flex gap-4 text-xs text-[#7A6A5C]">
                         <span>
                           Tổng số dòng:{" "}
-                          <strong className="text-[#f5e6d3]">
+                          <strong className="text-[#2D231F]">
                             {bulkTab === "text" ? bulkPreview.length : 1}
                           </strong>
                         </span>
                       </div>
                     </div>
                     {bulkTab === "text" && bulkPreview.length > 0 && (
-                      <div className="max-h-60 overflow-auto rounded-lg border border-[#d4af37]/10">
+                      <div className="max-h-60 overflow-auto rounded-lg border border-[#2D231F]/10">
                         <table className="w-full text-sm text-left">
-                          <thead className="bg-[#1a0a0f] text-[#d4af37]">
+                          <thead className="bg-[#ffffff] text-[#2D231F]">
                             <tr>
                               <th className="px-3 py-2">Họ tên</th>
                               <th className="px-3 py-2">Bên</th>
@@ -653,13 +657,13 @@ export default function MyGuestsPage() {
                             {bulkPreview.map((g, idx) => (
                               <tr
                                 key={idx}
-                                className="border-t border-[#d4af37]/10"
+                                className="border-t border-[#2D231F]/10"
                               >
                                 <td className="px-3 py-2">{g.fullName}</td>
                                 <td className="px-3 py-2">
-                                  {g.side
-                                    ? enumData.SIDE_OPTIONS[g.side]?.name ||
-                                      g.side
+                                  {g.groupCode
+                                    ? enumData.SIDE_OPTIONS[g.groupCode]?.name ||
+                                      g.groupCode
                                     : "—"}
                                 </td>
                               </tr>
@@ -675,7 +679,7 @@ export default function MyGuestsPage() {
                   <Button
                     variant="outline"
                     onClick={() => setOpenBulkDialog(false)}
-                    className="border-[#d4af37]/30 text-[#f5e6d3] hover:bg-[#d4af37]/10"
+                    className="border-[#2D231F]/30 text-[#2D231F] hover:bg-[#2D231F]/10"
                   >
                     Hủy
                   </Button>
@@ -685,7 +689,7 @@ export default function MyGuestsPage() {
                     className="font-bold uppercase tracking-wider text-xs"
                     style={{
                       background: `linear-gradient(135deg, ${C.goldLight} 0%, ${C.gold} 100%)`,
-                      color: C.bg,
+                      color: "#1a1a1a",
                     }}
                   >
                     {loading ? "Đang xử lý..." : "Xác nhận thêm"}
@@ -701,7 +705,7 @@ export default function MyGuestsPage() {
                     onClick={handleOpenCreate}
                     style={{
                       background: `linear-gradient(135deg, ${C.goldLight} 0%, ${C.gold} 100%)`,
-                      color: C.bg,
+                      color: "#1a1a1a",
                     }}
                   >
                     <Plus size={16} strokeWidth={2.5} />
@@ -710,7 +714,7 @@ export default function MyGuestsPage() {
                 }
               />
               <DialogContent
-                className="border border-[#d4af37]/20 bg-[#13070b] text-[#f5e6d3] max-w-lg"
+                className="border border-[#2D231F]/20 bg-[#ffffff] text-[#2D231F] max-w-lg"
                 showCloseButton
               >
                 <DialogHeader>
@@ -722,7 +726,7 @@ export default function MyGuestsPage() {
                   >
                     {editingGuest ? "Chỉnh sửa khách mời" : "Thêm khách mời"}
                   </DialogTitle>
-                  <DialogDescription className="text-[#a38a75]">
+                  <DialogDescription className="text-[#7A6A5C]">
                     Nhập thông tin khách mời bên dưới.
                   </DialogDescription>
                 </DialogHeader>
@@ -736,7 +740,7 @@ export default function MyGuestsPage() {
                         setForm({ ...form, fullName: e.target.value })
                       }
                       placeholder="Nguyễn Văn A"
-                      className="bg-transparent border-[#d4af37]/30 text-[#f5e6d3] placeholder:text-[#a38a75]/50"
+                      className="bg-transparent border-[#2D231F]/30 text-[#2D231F] placeholder:text-[#7A6A5C]/50"
                     />
                   </div>
                   <div className="space-y-2">
@@ -747,7 +751,7 @@ export default function MyGuestsPage() {
                         setForm({ ...form, salutation: e.target.value })
                       }
                       placeholder="Kính mời / Thân mời..."
-                      className="bg-transparent border-[#d4af37]/30 text-[#f5e6d3] placeholder:text-[#a38a75]/50"
+                      className="bg-transparent border-[#2D231F]/30 text-[#2D231F] placeholder:text-[#7A6A5C]/50"
                     />
                   </div>
                   <div className="space-y-2">
@@ -764,14 +768,14 @@ export default function MyGuestsPage() {
                           : []
                       }
                     >
-                      <SelectTrigger className="bg-transparent border-[#d4af37]/30 text-[#f5e6d3]">
+                      <SelectTrigger className="bg-transparent border-[#2D231F]/30 text-[#2D231F]">
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent className="bg-[#13070b] border-[#d4af37]/30 text-[#f5e6d3]">
+                      <SelectContent className="bg-[#ffffff] border-[#2D231F]/30 text-[#2D231F]">
                         {enumData.SIDE_OPTIONS &&
                           Object.values(enumData.SIDE_OPTIONS).map((opt) => (
                             <SelectItem
-                              className="w-full bg-[#13070b] text-[#f5e6d3]"
+                              className="w-full bg-[#ffffff] text-[#2D231F]"
                               key={opt.code}
                               value={opt.code}
                             >
@@ -790,7 +794,7 @@ export default function MyGuestsPage() {
                       onChange={(e) =>
                         setForm({ ...form, isVip: e.target.checked })
                       }
-                      className="accent-[#d4af37]"
+                      className="accent-[#2D231F]"
                     />
                     <Label htmlFor="isVip" className="cursor-pointer">
                       Khách VIP
@@ -804,7 +808,7 @@ export default function MyGuestsPage() {
                       onChange={(e) =>
                         setForm({ ...form, needsTransport: e.target.checked })
                       }
-                      className="accent-[#d4af37]"
+                      className="accent-[#2D231F]"
                     />
                     <Label htmlFor="needsTransport" className="cursor-pointer">
                       Cần đưa đón
@@ -816,7 +820,7 @@ export default function MyGuestsPage() {
                   <Button
                     variant="outline"
                     onClick={() => setOpenDialog(false)}
-                    className="border-[#d4af37]/30 text-[#f5e6d3] hover:bg-[#d4af37]/10"
+                    className="border-[#2D231F]/30 text-[#2D231F] hover:bg-[#2D231F]/10"
                   >
                     Hủy
                   </Button>
@@ -826,7 +830,7 @@ export default function MyGuestsPage() {
                     className="font-bold uppercase tracking-wider text-xs"
                     style={{
                       background: `linear-gradient(135deg, ${C.goldLight} 0%, ${C.gold} 100%)`,
-                      color: C.bg,
+                      color: "#1a1a1a",
                     }}
                   >
                     {loading ? "Đang lưu..." : "Lưu"}
@@ -839,14 +843,14 @@ export default function MyGuestsPage() {
 
         {isLoading ? (
           <div className="flex justify-center py-24">
-            <div className="w-12 h-12 border-4 border-[#d4af37]/20 border-t-[#d4af37] rounded-full animate-spin" />
+            <div className="w-12 h-12 border-4 border-[#2D231F]/20 border-t-[#2D231F] rounded-full animate-spin" />
           </div>
         ) : filteredGuests.length === 0 ? (
           <div
             className="text-center py-20 px-6 rounded-2xl border border-dashed flex flex-col items-center justify-center gap-6"
-            style={{ borderColor: C.border, background: "rgba(20,10,13,0.3)" }}
+            style={{ borderColor: C.border, background: "#EDE4D5" }}
           >
-            <div className="p-4 bg-[#d4af37]/5 rounded-full text-[#d4af37]">
+            <div className="p-4 bg-[#2D231F]/5 rounded-full text-[#2D231F]">
               <Download size={40} strokeWidth={1.5} />
             </div>
             <div className="max-w-md">
@@ -872,7 +876,7 @@ export default function MyGuestsPage() {
           >
             <div className="overflow-x-auto">
               <table className="w-full text-left text-sm">
-                <thead className="bg-[#1a0a0f] text-[#d4af37]">
+                <thead className="bg-[#ffffff] text-[#2D231F]">
                   <tr>
                     <th className="px-4 py-3 font-semibold">Họ tên</th>
                     <th className="px-4 py-3 font-semibold">Mã mời</th>
@@ -887,20 +891,20 @@ export default function MyGuestsPage() {
                   {filteredGuests.map((guest) => (
                     <tr
                       key={guest.id}
-                      className="border-t border-[#d4af37]/10 hover:bg-[#d4af37]/5 transition-colors"
+                      className="border-t border-[#2D231F]/10 hover:bg-[#2D231F]/5 transition-colors"
                     >
                       <td className="px-4 py-3">
                         <div className="font-medium">{guest.fullName}</div>
-                        <div className="text-xs text-[#a38a75]">
+                        <div className="text-xs text-[#7A6A5C]">
                           {guest.salutation} •{" "}
-                          {guest.side
-                            ? enumData.SIDE_OPTIONS[guest.side]?.name ||
-                              guest.side
+                          {guest.groupCode
+                            ? enumData.SIDE_OPTIONS[guest.groupCode]?.name ||
+                              guest.groupCode
                             : "—"}
                         </div>
                       </td>
 
-                      <td className="px-4 py-3 font-mono text-[#f5c842]">
+                      <td className="px-4 py-3 font-mono text-[#7A6A5C]">
                         {guest.invitationCode}
                       </td>
                       <td className="px-4 py-3">
@@ -910,7 +914,7 @@ export default function MyGuestsPage() {
                               ? "bg-green-500/10 text-green-400 border-green-500/25"
                               : guest.rsvpStatus === "DECLINED"
                                 ? "bg-red-500/10 text-red-400 border-red-500/25"
-                                : "bg-[#d4af37]/10 text-[#f5c842] border-[#d4af37]/25"
+                                : "bg-[#2D231F]/10 text-[#7A6A5C] border-[#2D231F]/25"
                           }`}
                         >
                           {guest.rsvpStatus === "ATTENDING"
@@ -930,7 +934,7 @@ export default function MyGuestsPage() {
                             size="icon-sm"
                             onClick={() => handleCopyLink(guest)}
                             title="Copy link thiệp"
-                            className="border-[#d4af37]/30 text-[#f5e6d3] hover:bg-[#d4af37]/10"
+                            className="border-[#2D231F]/30 text-[#2D231F] hover:bg-[#2D231F]/10"
                           >
                             <Copy size={14} />
                           </Button>
@@ -939,7 +943,7 @@ export default function MyGuestsPage() {
                             size="icon-sm"
                             onClick={() => handleShareLink(guest)}
                             title="Chia sẻ thiệp"
-                            className="border-[#d4af37]/30 text-[#f5e6d3] hover:bg-[#d4af37]/10"
+                            className="border-[#2D231F]/30 text-[#2D231F] hover:bg-[#2D231F]/10"
                           >
                             <Share2 size={14} />
                           </Button>
@@ -948,7 +952,7 @@ export default function MyGuestsPage() {
                             size="icon-sm"
                             onClick={() => handleGenerateQr(guest.id)}
                             title="Tải mã QR"
-                            className="border-[#d4af37]/30 text-[#f5e6d3] hover:bg-[#d4af37]/10"
+                            className="border-[#2D231F]/30 text-[#2D231F] hover:bg-[#2D231F]/10"
                           >
                             <QrCode size={14} />
                           </Button>
@@ -956,7 +960,7 @@ export default function MyGuestsPage() {
                             variant="outline"
                             size="sm"
                             onClick={() => handleOpenEdit(guest)}
-                            className="border-[#d4af37]/30 text-[#f5e6d3] hover:bg-[#d4af37]/10"
+                            className="border-[#2D231F]/30 text-[#2D231F] hover:bg-[#2D231F]/10"
                           >
                             Sửa
                           </Button>

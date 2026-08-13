@@ -12,10 +12,10 @@ const VIRTUAL_MOBILE_WIDTH = 375;
 const SCROLL_SPEED = 4;
 
 function TemplateCard({ template }: { template: ITemplate }) {
-  const cardBg = "#140a0d";
-  const titleColor = "#f5e6d3";
-  const descColor = "#c9a98a";
-  const divider = "rgba(212,175,55,0.15)";
+  const cardBg = "#F3EDE3";
+  const titleColor = "#2D231F";
+  const descColor = "#7A6A5C";
+  const divider = "#D9CDBE";
 
   const [isHovered, setIsHovered] = useState(false);
   const [iframeLoaded, setIframeLoaded] = useState(false);
@@ -78,13 +78,13 @@ function TemplateCard({ template }: { template: ITemplate }) {
       onMouseLeave={() => setIsHovered(false)}
       style={{
         background: cardBg,
-        border: `1px solid  rgba(212,175,55,0.22)`,
-        boxShadow: "0 10px 30px rgba(0,0,0,0.5)",
+        border: `1px solid  rgba(45, 35, 31,0.22)`,
+        boxShadow: "0 10px 30px rgba(45,35,31,0.12)",
       }}
     >
       <div
         ref={containerRef}
-        className="relative shrink-0 overflow-hidden bg-[#0d0407] w-full"
+        className="relative shrink-0 overflow-hidden bg-[#EDE4D5] w-full"
         style={{ height: "320px" }}
       >
         <img
@@ -134,8 +134,8 @@ function TemplateCard({ template }: { template: ITemplate }) {
             <span
               className="inline-flex items-center gap-1 rounded-md px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider shadow-md"
               style={{
-                background: "linear-gradient(135deg, #d4af37, #f5c842)",
-                color: "#1a0a0f",
+                background: "#C4A574",
+                color: "#2D231F",
               }}
             >
               <Crown size={10} fill="currentColor" />
@@ -155,7 +155,7 @@ function TemplateCard({ template }: { template: ITemplate }) {
 
       <div className="flex flex-1 flex-col gap-2.5 px-5 pb-5 pt-3 relative">
         <h3
-          className="text-lg font-bold leading-snug tracking-wide transition-colors duration-300 group-hover/card:text-[#d4af37]"
+          className="text-lg font-bold leading-snug tracking-wide transition-colors duration-300 group-hover/card:text-[#2D231F]"
           style={{ color: titleColor }}
         >
           {template.name}
@@ -176,10 +176,10 @@ function TemplateCard({ template }: { template: ITemplate }) {
             {template.tags?.slice(0, 2).map((tag) => (
               <span
                 key={tag}
-                className="rounded-md px-2 py-0.5 text-[10px] font-semibold tracking-wider transition-all duration-300 group-hover/card:bg-[#d4af37]/20"
+                className="rounded-md px-2 py-0.5 text-[10px] font-semibold tracking-wider transition-all duration-300 group-hover/card:bg-[#2D231F]/20"
                 style={{
-                  background: "rgba(212,175,55,0.12)",
-                  color: "#f5c842",
+                  background: "rgba(45, 35, 31,0.12)",
+                  color: "#C4B09A",
                 }}
               >
                 #{tag}
@@ -223,7 +223,7 @@ export default function TemplateSection() {
     return (
       <section className="py-20 px-6">
         <div className="max-w-275 mx-auto text-center">
-          <p className="text-[#c9a98a] animate-pulse">
+          <p className="text-[#7A6A5C] animate-pulse">
             Đang tải những mẫu thiệp cưới tinh tế nhất...
           </p>
         </div>
@@ -235,12 +235,12 @@ export default function TemplateSection() {
 
   return (
     <section className="py-24 px-6 overflow-hidden relative">
-      <div className="absolute inset-x-0 top-0 h-64 bg-linear-to-b from-[#1a0a0f]/20 to-transparent pointer-events-none" />
+      <div className="absolute inset-x-0 top-0 h-64 bg-linear-to-b from-[#F3EDE3]/20 to-transparent pointer-events-none" />
 
       <div className="max-w-300 mx-auto relative z-10">
         <ScrollReveal>
           <div className="text-center mb-16">
-            <p className="text-xs tracking-[6px] uppercase text-[#d4af37] mb-4 font-semibold font-cormorant">
+            <p className="text-xs tracking-[6px] uppercase text-[#7A6A5C] mb-4 font-semibold font-cormorant">
               Tuyệt tác nghệ thuật số
             </p>
             <h2 className="text-[clamp(1.8rem,4vw,2.6rem)] font-light font-cormorant ">
@@ -248,7 +248,7 @@ export default function TemplateSection() {
                 Chọn Mẫu Thiệp Bạn Yêu Thích
               </span>
             </h2>
-            <p className="text-xs text-[#c9a98a]/80 max-w-137.5 mx-auto leading-relaxed mt-4 uppercase tracking-widest font-cormorant">
+            <p className="text-xs text-[#7A6A5C]/80 max-w-137.5 mx-auto leading-relaxed mt-4 uppercase tracking-widest font-cormorant">
               Sáng tạo thiệp cưới mang dấu ấn riêng với các tính năng tương tác
               tối tân
             </p>
@@ -257,10 +257,10 @@ export default function TemplateSection() {
 
         <Carousel
           colors={{
-            accent: "#d4af37",
-            buttonBg: "rgba(26, 10, 15, 0.95)",
-            buttonHoverBg: "rgba(212, 175, 55, 0.25)",
-            dotInactive: "rgba(212, 175, 55, 0.2)",
+            accent: "#2D231F",
+            buttonBg: "rgba(45, 35, 31, 0.95)",
+            buttonHoverBg: "rgba(45, 35, 31, 0.25)",
+            dotInactive: "rgba(45, 35, 31, 0.2)",
           }}
           sizes={{ itemWidth: "330px", itemHeight: "500px" }}
         >
@@ -270,10 +270,10 @@ export default function TemplateSection() {
               gradient="transparent"
               hoverEffect={false}
               colors={{
-                accent: "#d4af37",
-                borderInactive: "rgba(212,175,55,0.15)",
+                accent: "#2D231F",
+                borderInactive: "rgba(45, 35, 31,0.15)",
                 shadowActive:
-                  "0 20px 50px rgba(0,0,0,0.6), 0 0 30px rgba(212,175,55,0.15)",
+                  "0 20px 50px rgba(0,0,0,0.6), 0 0 30px rgba(45, 35, 31,0.15)",
               }}
               onItemClick={() => handleTemplateClick(template.slug)}
             >
@@ -286,7 +286,7 @@ export default function TemplateSection() {
           <div className="text-center mt-16">
             <a
               href="/templates"
-              className="inline-flex items-center gap-3 px-10 py-4 border border-[#d4af37] text-[#d4af37] text-xs font-bold tracking-widest uppercase rounded-lg hover:bg-[rgba(212,175,55,0.08)] transition-all duration-300 hover:scale-[1.02] shadow-lg"
+              className="inline-flex items-center gap-3 px-10 py-4 border border-[#2D231F] text-[#2D231F] text-xs font-bold tracking-widest uppercase rounded-lg hover:bg-[#2D231F] hover:text-[#F3EDE3] transition-all duration-300 hover:scale-[1.02]"
             >
               <Sparkles size={14} />
               Khám phá toàn bộ {templates.length}+ mẫu

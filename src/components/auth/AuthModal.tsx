@@ -271,29 +271,29 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && handleClose()}>
-      <DialogContent className="sm:max-w-110 p-0 bg-[#1a0a0f] border-[#d4af37]/30 overflow-hidden">
-        <div className="absolute top-0 left-0 w-full h-1 bg-linear-to-r from-transparent via-[#d4af37] to-transparent opacity-80" />
-        <div className="absolute -top-32 -right-32 w-64 h-64 bg-[#d4af37] rounded-full blur-[100px] opacity-15 pointer-events-none" />
-        <div className="absolute -bottom-32 -left-32 w-64 h-64 bg-[#d4af37] rounded-full blur-[100px] opacity-15 pointer-events-none" />
+      <DialogContent className="sm:max-w-110 p-0 bg-[#F3EDE3] border-[#2D231F]/30 overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-1 bg-linear-to-r from-transparent via-[#2D231F] to-transparent opacity-80" />
+        <div className="absolute -top-32 -right-32 w-64 h-64 bg-[#2D231F] rounded-full blur-[100px] opacity-15 pointer-events-none" />
+        <div className="absolute -bottom-32 -left-32 w-64 h-64 bg-[#2D231F] rounded-full blur-[100px] opacity-15 pointer-events-none" />
 
         <div className="relative z-10 flex flex-col items-center text-center w-full gap-6 p-8 mt-2">
           <div className="flex flex-col gap-2 relative w-full">
-            <h2 className="text-3xl font-bold text-transparent bg-clip-text bg-linear-to-r from-[#d4af37] to-[#f5c842]">
-              Tiệm cưới tân thời
+            <h2 className="text-3xl font-bold text-[#2D231F]">
+              InviGo
             </h2>
-            <p className="text-[#f5e6d3] text-[14px] opacity-80 font-medium">
+            <p className="text-[#2D231F] text-[14px] opacity-80 font-medium">
               Hệ thống quản lý thiệp cưới thông minh
             </p>
           </div>
 
           {activeTab !== "forgot-password" && (
-            <div className="flex w-full bg-white/5 p-1 rounded-xl border border-[#d4af37]/10">
+            <div className="flex w-full bg-[#EDE4D5] p-1 rounded-xl border border-[#D9CDBE]">
               <button
                 onClick={() => switchToTab("login")}
                 className={`flex-1 py-2.5 text-sm font-semibold rounded-lg transition-all ${
                   activeTab === "login"
-                    ? "bg-linear-to-r from-[#d4af37] to-[#f5c842] text-[#1a0a0f] shadow-md"
-                    : "text-[#f5e6d3]/60 hover:text-[#f5e6d3] hover:bg-white/3"
+                    ? "bg-[#2D231F] text-[#F3EDE3] shadow-md"
+                    : "text-[#2D231F]/60 hover:text-[#2D231F] hover:bg-[#2D231F]/8"
                 }`}
               >
                 Đăng nhập
@@ -302,8 +302,8 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
                 onClick={() => switchToTab("register")}
                 className={`flex-1 py-2.5 text-sm font-semibold rounded-lg transition-all ${
                   activeTab === "register"
-                    ? "bg-linear-to-r from-[#d4af37] to-[#f5c842] text-[#1a0a0f] shadow-md"
-                    : "text-[#f5e6d3]/60 hover:text-[#f5e6d3] hover:bg-white/3"
+                    ? "bg-[#2D231F] text-[#F3EDE3] shadow-md"
+                    : "text-[#2D231F]/60 hover:text-[#2D231F] hover:bg-[#2D231F]/8"
                 }`}
               >
                 Đăng ký
@@ -325,33 +325,33 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
               <div className="relative">
                 <Mail
                   size={18}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-[#d4af37]/60"
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-[#7A6A5C]"
                 />
                 <Input
                   type="email"
                   placeholder="Email đăng nhập"
                   value={loginEmail}
                   onChange={(e) => setLoginEmail(e.target.value)}
-                  className="w-full rounded-xl h-12 bg-white/3 border border-[#d4af37]/15 focus:border-[#d4af37]/30 focus:bg-[#d4af37]/5 text-[#f5e6d3] pl-10 pr-4 text-sm outline-none transition-all font-medium"
+                  className="w-full rounded-xl h-12 bg-[#2D231F]/8 border border-[#2D231F]/15 focus:border-[#2D231F]/30 focus:bg-[#2D231F]/5 text-[#2D231F] pl-10 pr-4 text-sm outline-none transition-all font-medium"
                 />
               </div>
 
               <div className="relative">
                 <Lock
                   size={18}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-[#d4af37]/60"
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-[#7A6A5C]"
                 />
                 <Input
                   type={showLoginPassword ? "text" : "password"}
                   placeholder="Mật khẩu"
                   value={loginPassword}
                   onChange={(e) => setLoginPassword(e.target.value)}
-                  className="w-full rounded-xl h-12 bg-white/3 border border-[#d4af37]/15 focus:border-[#d4af37]/30 focus:bg-[#d4af37]/5 text-[#f5e6d3] pl-10 pr-10 text-sm outline-none transition-all font-medium"
+                  className="w-full rounded-xl h-12 bg-[#2D231F]/8 border border-[#2D231F]/15 focus:border-[#2D231F]/30 focus:bg-[#2D231F]/5 text-[#2D231F] pl-10 pr-10 text-sm outline-none transition-all font-medium"
                 />
                 <button
                   type="button"
                   onClick={() => setShowLoginPassword(!showLoginPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#f5e6d3]/50 hover:text-[#f5e6d3] focus:outline-none"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#2D231F]/50 hover:text-[#2D231F] focus:outline-none"
                 >
                   {showLoginPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
@@ -361,7 +361,7 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
                 <button
                   type="button"
                   onClick={() => switchToTab("forgot-password")}
-                  className="text-xs text-[#d4af37] hover:text-[#f5c842] transition-colors font-medium hover:underline"
+                  className="text-xs text-[#2D231F] hover:text-[#2D231F]/70 transition-colors font-medium hover:underline"
                 >
                   Quên mật khẩu?
                 </button>
@@ -370,18 +370,18 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
               <Button
                 type="submit"
                 disabled={loading}
-                className="w-full rounded-xl font-bold h-11 bg-linear-to-r from-[#d4af37] to-[#f5c842] text-[#1a0a0f] hover:from-[#f5c842] hover:to-[#d4af37] mt-2"
+                className="w-full rounded-xl font-bold h-11 bg-[#2D231F] text-[#F3EDE3] hover:from-[#3A2E28] hover:to-[#2D231F] mt-2"
               >
                 {loading ? "Đang đăng nhập..." : "Đăng nhập"}
               </Button>
 
               <div className="w-full flex flex-col gap-5 mt-2">
                 <div className="w-full flex items-center justify-center gap-4">
-                  <div className="h-px bg-linear-to-r from-transparent to-[#d4af37]/30 flex-1" />
-                  <span className="text-[11px] text-[#f5e6d3]/50 whitespace-nowrap font-semibold tracking-wider">
+                  <div className="h-px bg-linear-to-r from-transparent to-[#2D231F]/30 flex-1" />
+                  <span className="text-[11px] text-[#2D231F]/50 whitespace-nowrap font-semibold tracking-wider">
                     HOẶC ĐĂNG NHẬP VỚI
                   </span>
-                  <div className="h-px bg-linear-to-l from-transparent to-[#d4af37]/30 flex-1" />
+                  <div className="h-px bg-linear-to-l from-transparent to-[#2D231F]/30 flex-1" />
                 </div>
 
                 <div className="w-full flex gap-3">
@@ -389,7 +389,7 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
                     type="button"
                     variant="outline"
                     onClick={() => handleGoogleLogin()}
-                    className="flex-1 flex items-center justify-center gap-2 bg-white/3 border-[#d4af37]/15 rounded-xl hover:bg-white/8 hover:border-[#d4af37]/30"
+                    className="flex-1 flex items-center justify-center gap-2 bg-[#2D231F]/8 border-[#2D231F]/15 rounded-xl hover:bg-[#2D231F]/12 hover:border-[#2D231F]/30"
                   >
                     <GoogleIcon className="w-5 h-5" />
                     <span className="text-sm font-medium">Google</span>
@@ -398,7 +398,7 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
                     type="button"
                     variant="outline"
                     onClick={handleFacebookLogin}
-                    className="flex-1 flex items-center justify-center gap-2 bg-white/3 border-[#d4af37]/15 rounded-xl hover:bg-white/8 hover:border-[#d4af37]/30"
+                    className="flex-1 flex items-center justify-center gap-2 bg-[#2D231F]/8 border-[#2D231F]/15 rounded-xl hover:bg-[#2D231F]/12 hover:border-[#2D231F]/30"
                   >
                     <FacebookIcon className="w-5 h-5" />
                     <span className="text-sm font-medium">Facebook</span>
@@ -418,63 +418,63 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
                   <div className="relative">
                     <User
                       size={18}
-                      className="absolute left-3 top-1/2 -translate-y-1/2 text-[#d4af37]/60"
+                      className="absolute left-3 top-1/2 -translate-y-1/2 text-[#7A6A5C]"
                     />
                     <Input
                       type="text"
                       placeholder="Họ và tên của bạn"
                       value={registerName}
                       onChange={(e) => setRegisterName(e.target.value)}
-                      className="w-full rounded-xl h-12 bg-white/3 border border-[#d4af37]/15 focus:border-[#d4af37]/30 focus:bg-[#d4af37]/5 text-[#f5e6d3] pl-10 pr-4 text-sm outline-none transition-all font-medium"
+                      className="w-full rounded-xl h-12 bg-[#2D231F]/8 border border-[#2D231F]/15 focus:border-[#2D231F]/30 focus:bg-[#2D231F]/5 text-[#2D231F] pl-10 pr-4 text-sm outline-none transition-all font-medium"
                     />
                   </div>
 
                   <div className="relative">
                     <Mail
                       size={18}
-                      className="absolute left-3 top-1/2 -translate-y-1/2 text-[#d4af37]/60"
+                      className="absolute left-3 top-1/2 -translate-y-1/2 text-[#7A6A5C]"
                     />
                     <Input
                       type="email"
                       placeholder="Địa chỉ Email"
                       value={registerEmail}
                       onChange={(e) => setRegisterEmail(e.target.value)}
-                      className="w-full rounded-xl h-12 bg-white/3 border border-[#d4af37]/15 focus:border-[#d4af37]/30 focus:bg-[#d4af37]/5 text-[#f5e6d3] pl-10 pr-4 text-sm outline-none transition-all font-medium"
+                      className="w-full rounded-xl h-12 bg-[#2D231F]/8 border border-[#2D231F]/15 focus:border-[#2D231F]/30 focus:bg-[#2D231F]/5 text-[#2D231F] pl-10 pr-4 text-sm outline-none transition-all font-medium"
                     />
                   </div>
 
                   <div className="relative">
                     <Phone
                       size={18}
-                      className="absolute left-3 top-1/2 -translate-y-1/2 text-[#d4af37]/60"
+                      className="absolute left-3 top-1/2 -translate-y-1/2 text-[#7A6A5C]"
                     />
                     <Input
                       type="tel"
                       placeholder="Số điện thoại"
                       value={registerPhone}
                       onChange={(e) => setRegisterPhone(e.target.value)}
-                      className="w-full rounded-xl h-12 bg-white/3 border border-[#d4af37]/15 focus:border-[#d4af37]/30 focus:bg-[#d4af37]/5 text-[#f5e6d3] pl-10 pr-4 text-sm outline-none transition-all font-medium"
+                      className="w-full rounded-xl h-12 bg-[#2D231F]/8 border border-[#2D231F]/15 focus:border-[#2D231F]/30 focus:bg-[#2D231F]/5 text-[#2D231F] pl-10 pr-4 text-sm outline-none transition-all font-medium"
                     />
                   </div>
 
                   <div className="relative">
                     <Lock
                       size={18}
-                      className="absolute left-3 top-1/2 -translate-y-1/2 text-[#d4af37]/60"
+                      className="absolute left-3 top-1/2 -translate-y-1/2 text-[#7A6A5C]"
                     />
                     <Input
                       type={showRegisterPassword ? "text" : "password"}
                       placeholder="Mật khẩu (tối thiểu 6 ký tự)"
                       value={registerPassword}
                       onChange={(e) => setRegisterPassword(e.target.value)}
-                      className="w-full rounded-xl h-12 bg-white/3 border border-[#d4af37]/15 focus:border-[#d4af37]/30 focus:bg-[#d4af37]/5 text-[#f5e6d3] pl-10 pr-10 text-sm outline-none transition-all font-medium"
+                      className="w-full rounded-xl h-12 bg-[#2D231F]/8 border border-[#2D231F]/15 focus:border-[#2D231F]/30 focus:bg-[#2D231F]/5 text-[#2D231F] pl-10 pr-10 text-sm outline-none transition-all font-medium"
                     />
                     <button
                       type="button"
                       onClick={() =>
                         setShowRegisterPassword(!showRegisterPassword)
                       }
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-[#f5e6d3]/50 hover:text-[#f5e6d3] focus:outline-none"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-[#2D231F]/50 hover:text-[#2D231F] focus:outline-none"
                     >
                       {showRegisterPassword ? (
                         <EyeOff size={18} />
@@ -487,7 +487,7 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
                   <div className="relative">
                     <Lock
                       size={18}
-                      className="absolute left-3 top-1/2 -translate-y-1/2 text-[#d4af37]/60"
+                      className="absolute left-3 top-1/2 -translate-y-1/2 text-[#7A6A5C]"
                     />
                     <Input
                       type={showRegisterPassword ? "text" : "password"}
@@ -496,25 +496,25 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
                       onChange={(e) =>
                         setRegisterConfirmPassword(e.target.value)
                       }
-                      className="w-full rounded-xl h-12 bg-white/3 border border-[#d4af37]/15 focus:border-[#d4af37]/30 focus:bg-[#d4af37]/5 text-[#f5e6d3] pl-10 pr-10 text-sm outline-none transition-all font-medium"
+                      className="w-full rounded-xl h-12 bg-[#2D231F]/8 border border-[#2D231F]/15 focus:border-[#2D231F]/30 focus:bg-[#2D231F]/5 text-[#2D231F] pl-10 pr-10 text-sm outline-none transition-all font-medium"
                     />
                   </div>
 
                   <Button
                     type="submit"
                     disabled={loading}
-                    className="w-full rounded-xl font-bold h-11 bg-linear-to-r from-[#d4af37] to-[#f5c842] text-[#1a0a0f] hover:from-[#f5c842] hover:to-[#d4af37] mt-2"
+                    className="w-full rounded-xl font-bold h-11 bg-[#2D231F] text-[#F3EDE3] hover:from-[#3A2E28] hover:to-[#2D231F] mt-2"
                   >
                     {loading ? "Đang gửi OTP..." : "Gửi mã xác thực"}
                   </Button>
 
                   <div className="w-full flex flex-col gap-5 mt-2">
                     <div className="w-full flex items-center justify-center gap-4">
-                      <div className="h-px bg-linear-to-r from-transparent to-[#d4af37]/30 flex-1" />
-                      <span className="text-[11px] text-[#f5e6d3]/50 whitespace-nowrap font-semibold tracking-wider">
+                      <div className="h-px bg-linear-to-r from-transparent to-[#2D231F]/30 flex-1" />
+                      <span className="text-[11px] text-[#2D231F]/50 whitespace-nowrap font-semibold tracking-wider">
                         HOẶC ĐĂNG KÝ VỚI
                       </span>
-                      <div className="h-px bg-linear-to-l from-transparent to-[#d4af37]/30 flex-1" />
+                      <div className="h-px bg-linear-to-l from-transparent to-[#2D231F]/30 flex-1" />
                     </div>
 
                     <div className="w-full flex gap-3">
@@ -522,7 +522,7 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
                         type="button"
                         variant="outline"
                         onClick={() => handleGoogleLogin()}
-                        className="flex-1 flex items-center justify-center gap-2 bg-white/3 border-[#d4af37]/15 rounded-xl hover:bg-white/8 hover:border-[#d4af37]/30"
+                        className="flex-1 flex items-center justify-center gap-2 bg-[#2D231F]/8 border-[#2D231F]/15 rounded-xl hover:bg-[#2D231F]/12 hover:border-[#2D231F]/30"
                       >
                         <GoogleIcon className="w-5 h-5" />
                         <span className="text-sm font-medium">Google</span>
@@ -531,7 +531,7 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
                         type="button"
                         variant="outline"
                         onClick={handleFacebookLogin}
-                        className="flex-1 flex items-center justify-center gap-2 bg-white/3 border-[#d4af37]/15 rounded-xl hover:bg-white/8 hover:border-[#d4af37]/30"
+                        className="flex-1 flex items-center justify-center gap-2 bg-[#2D231F]/8 border-[#2D231F]/15 rounded-xl hover:bg-[#2D231F]/12 hover:border-[#2D231F]/30"
                       >
                         <FacebookIcon className="w-5 h-5" />
                         <span className="text-sm font-medium">Facebook</span>
@@ -545,11 +545,11 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
                     <button
                       type="button"
                       onClick={() => setRegisterStep("form")}
-                      className="text-[#d4af37] hover:text-[#f5c842] transition-colors"
+                      className="text-[#2D231F] hover:text-[#2D231F]/70 transition-colors"
                     >
                       <ArrowLeft size={20} />
                     </button>
-                    <p className="text-[#f5e6d3] text-sm font-medium">
+                    <p className="text-[#2D231F] text-sm font-medium">
                       Nhập mã OTP đã gửi đến email của bạn
                     </p>
                   </div>
@@ -557,7 +557,7 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
                   <div className="relative">
                     <Lock
                       size={18}
-                      className="absolute left-3 top-1/2 -translate-y-1/2 text-[#d4af37]/60"
+                      className="absolute left-3 top-1/2 -translate-y-1/2 text-[#7A6A5C]"
                     />
                     <Input
                       type="text"
@@ -565,7 +565,7 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
                       value={registerOtp}
                       onChange={(e) => setRegisterOtp(e.target.value)}
                       maxLength={6}
-                      className="w-full rounded-xl h-12 bg-white/3 border border-[#d4af37]/15 focus:border-[#d4af37]/30 focus:bg-[#d4af37]/5 text-[#f5e6d3] pl-10 pr-4 text-sm outline-none transition-all font-medium text-center tracking-widest"
+                      className="w-full rounded-xl h-12 bg-[#2D231F]/8 border border-[#2D231F]/15 focus:border-[#2D231F]/30 focus:bg-[#2D231F]/5 text-[#2D231F] pl-10 pr-4 text-sm outline-none transition-all font-medium text-center tracking-widest"
                     />
                   </div>
 
@@ -573,7 +573,7 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
                     <button
                       type="button"
                       onClick={handleSendRegisterOtp}
-                      className="text-xs text-[#d4af37] hover:text-[#f5c842] transition-colors font-medium hover:underline"
+                      className="text-xs text-[#2D231F] hover:text-[#2D231F]/70 transition-colors font-medium hover:underline"
                     >
                       Gửi lại mã OTP
                     </button>
@@ -582,7 +582,7 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
                   <Button
                     type="submit"
                     disabled={loading}
-                    className="w-full rounded-xl font-bold h-11 bg-linear-to-r from-[#d4af37] to-[#f5c842] text-[#1a0a0f] hover:from-[#f5c842] hover:to-[#d4af37] mt-2"
+                    className="w-full rounded-xl font-bold h-11 bg-[#2D231F] text-[#F3EDE3] hover:from-[#3A2E28] hover:to-[#2D231F] mt-2"
                   >
                     {loading ? "Đang đăng ký..." : "Hoàn tất đăng ký"}
                   </Button>
@@ -600,11 +600,11 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
                 <button
                   type="button"
                   onClick={() => switchToTab("login")}
-                  className="text-[#d4af37] hover:text-[#f5c842] transition-colors"
+                  className="text-[#2D231F] hover:text-[#2D231F]/70 transition-colors"
                 >
                   <ArrowLeft size={20} />
                 </button>
-                <p className="text-[#f5e6d3] text-sm font-medium">
+                <p className="text-[#2D231F] text-sm font-medium">
                   {forgotStep === "email"
                     ? "Khôi phục mật khẩu"
                     : "Nhập mã OTP"}
@@ -613,27 +613,27 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
 
               {forgotStep === "email" ? (
                 <>
-                  <p className="text-[#f5e6d3]/60 text-xs text-left">
+                  <p className="text-[#2D231F]/60 text-xs text-left">
                     Nhập email của bạn để nhận mã xác thực
                   </p>
                   <div className="relative">
                     <Mail
                       size={18}
-                      className="absolute left-3 top-1/2 -translate-y-1/2 text-[#d4af37]/60"
+                      className="absolute left-3 top-1/2 -translate-y-1/2 text-[#7A6A5C]"
                     />
                     <Input
                       type="email"
                       placeholder="Email của bạn"
                       value={forgotEmail}
                       onChange={(e) => setForgotEmail(e.target.value)}
-                      className="w-full rounded-xl h-12 bg-white/3 border border-[#d4af37]/15 focus:border-[#d4af37]/30 focus:bg-[#d4af37]/5 text-[#f5e6d3] pl-10 pr-4 text-sm outline-none transition-all font-medium"
+                      className="w-full rounded-xl h-12 bg-[#2D231F]/8 border border-[#2D231F]/15 focus:border-[#2D231F]/30 focus:bg-[#2D231F]/5 text-[#2D231F] pl-10 pr-4 text-sm outline-none transition-all font-medium"
                     />
                   </div>
 
                   <Button
                     type="submit"
                     disabled={loading}
-                    className="w-full rounded-xl font-bold h-11 bg-linear-to-r from-[#d4af37] to-[#f5c842] text-[#1a0a0f] hover:from-[#f5c842] hover:to-[#d4af37] mt-2"
+                    className="w-full rounded-xl font-bold h-11 bg-[#2D231F] text-[#F3EDE3] hover:from-[#3A2E28] hover:to-[#2D231F] mt-2"
                   >
                     {loading ? "Đang gửi OTP..." : "Gửi mã xác thực"}
                   </Button>
@@ -643,7 +643,7 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
                   <div className="relative">
                     <Lock
                       size={18}
-                      className="absolute left-3 top-1/2 -translate-y-1/2 text-[#d4af37]/60"
+                      className="absolute left-3 top-1/2 -translate-y-1/2 text-[#7A6A5C]"
                     />
                     <Input
                       type="text"
@@ -651,26 +651,26 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
                       value={forgotOtp}
                       onChange={(e) => setForgotOtp(e.target.value)}
                       maxLength={6}
-                      className="w-full rounded-xl h-12 bg-white/3 border border-[#d4af37]/15 focus:border-[#d4af37]/30 focus:bg-[#d4af37]/5 text-[#f5e6d3] pl-10 pr-4 text-sm outline-none transition-all font-medium text-center tracking-widest"
+                      className="w-full rounded-xl h-12 bg-[#2D231F]/8 border border-[#2D231F]/15 focus:border-[#2D231F]/30 focus:bg-[#2D231F]/5 text-[#2D231F] pl-10 pr-4 text-sm outline-none transition-all font-medium text-center tracking-widest"
                     />
                   </div>
 
                   <div className="relative">
                     <Lock
                       size={18}
-                      className="absolute left-3 top-1/2 -translate-y-1/2 text-[#d4af37]/60"
+                      className="absolute left-3 top-1/2 -translate-y-1/2 text-[#7A6A5C]"
                     />
                     <Input
                       type={showForgotPassword ? "text" : "password"}
                       placeholder="Mật khẩu mới (tối thiểu 6 ký tự)"
                       value={forgotNewPassword}
                       onChange={(e) => setForgotNewPassword(e.target.value)}
-                      className="w-full rounded-xl h-12 bg-white/3 border border-[#d4af37]/15 focus:border-[#d4af37]/30 focus:bg-[#d4af37]/5 text-[#f5e6d3] pl-10 pr-10 text-sm outline-none transition-all font-medium"
+                      className="w-full rounded-xl h-12 bg-[#2D231F]/8 border border-[#2D231F]/15 focus:border-[#2D231F]/30 focus:bg-[#2D231F]/5 text-[#2D231F] pl-10 pr-10 text-sm outline-none transition-all font-medium"
                     />
                     <button
                       type="button"
                       onClick={() => setShowForgotPassword(!showForgotPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-[#f5e6d3]/50 hover:text-[#f5e6d3] focus:outline-none"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-[#2D231F]/50 hover:text-[#2D231F] focus:outline-none"
                     >
                       {showForgotPassword ? (
                         <EyeOff size={18} />
@@ -683,14 +683,14 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
                   <div className="relative">
                     <Lock
                       size={18}
-                      className="absolute left-3 top-1/2 -translate-y-1/2 text-[#d4af37]/60"
+                      className="absolute left-3 top-1/2 -translate-y-1/2 text-[#7A6A5C]"
                     />
                     <Input
                       type={showForgotPassword ? "text" : "password"}
                       placeholder="Xác nhận mật khẩu mới"
                       value={forgotConfirmPassword}
                       onChange={(e) => setForgotConfirmPassword(e.target.value)}
-                      className="w-full rounded-xl h-12 bg-white/3 border border-[#d4af37]/15 focus:border-[#d4af37]/30 focus:bg-[#d4af37]/5 text-[#f5e6d3] pl-10 pr-10 text-sm outline-none transition-all font-medium"
+                      className="w-full rounded-xl h-12 bg-[#2D231F]/8 border border-[#2D231F]/15 focus:border-[#2D231F]/30 focus:bg-[#2D231F]/5 text-[#2D231F] pl-10 pr-10 text-sm outline-none transition-all font-medium"
                     />
                   </div>
 
@@ -698,7 +698,7 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
                     <button
                       type="button"
                       onClick={handleSendForgotOtp}
-                      className="text-xs text-[#d4af37] hover:text-[#f5c842] transition-colors font-medium hover:underline"
+                      className="text-xs text-[#2D231F] hover:text-[#2D231F]/70 transition-colors font-medium hover:underline"
                     >
                       Gửi lại mã OTP
                     </button>
@@ -707,7 +707,7 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
                   <Button
                     type="submit"
                     disabled={loading}
-                    className="w-full rounded-xl font-bold h-11 bg-linear-to-r from-[#d4af37] to-[#f5c842] text-[#1a0a0f] hover:from-[#f5c842] hover:to-[#d4af37] mt-2"
+                    className="w-full rounded-xl font-bold h-11 bg-[#2D231F] text-[#F3EDE3] hover:from-[#3A2E28] hover:to-[#2D231F] mt-2"
                   >
                     {loading ? "Đang xử lý..." : "Khôi phục mật khẩu"}
                   </Button>

@@ -1,3 +1,6 @@
+"use client";
+
+import { statsService } from "@/services/stats.service";
 import { useEffect, useRef, useState } from "react";
 import ScrollReveal from "./ScrollReveal";
 
@@ -5,33 +8,23 @@ interface StatItem {
   number: number;
   suffix: string;
   label: string;
-  isFloat?: boolean;
 }
 
 interface CounterProps {
   target: number;
   duration?: number;
-  isFloat?: boolean;
   suffix?: string;
 }
 
-export const STATS: StatItem[] = [
-  { number: 2400, suffix: "+", label: "Cặp đôi hạnh phúc" },
-  { number: 14, suffix: "", label: "Mẫu thiệp cưới độc bản" },
-  { number: 4.9, suffix: "★", label: "Đánh giá trung bình", isFloat: true },
-];
-
-function Counter({
-  target,
-  duration = 1500,
-  isFloat = false,
-  suffix = "",
-}: CounterProps) {
-  const [count, setCount] = useState<number | string>(0);
+function Counter({ target, duration = 1500, suffix = "" }: CounterProps) {
+  const [count, setCount] = useState(0);
   const elementRef = useRef<HTMLSpanElement>(null);
-  const hasAnimated = useRef<boolean>(false);
+  const hasAnimated = useRef(false);
 
   useEffect(() => {
+    hasAnimated.current = false;
+    setCount(0);
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting && !hasAnimated.current) {
@@ -45,12 +38,7 @@ function Counter({
             const progress = Math.min(elapsed / duration, 1);
             const easeProgress = progress * (2 - progress);
             const currentVal = start + easeProgress * (end - start);
-
-            if (isFloat) {
-              setCount(currentVal.toFixed(1));
-            } else {
-              setCount(Math.floor(currentVal));
-            }
+            setCount(Math.floor(currentVal));
 
             if (progress < 1) {
               requestAnimationFrame(animate);
@@ -76,52 +64,102 @@ function Counter({
       }
       observer.disconnect();
     };
-  }, [target, duration, isFloat]);
+  }, [target, duration]);
 
-  const formatNumber = (val: number | string): string => {
-    if (isFloat) return val.toString();
+  const formatNumber = (val: number): string => {
     return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
   };
 
   return (
     <span ref={elementRef}>
       {formatNumber(count)}
-      <span className="text-[#d4af37] ml-0.5 font-normal select-none">
-        {suffix}
-      </span>
+      {suffix ? (
+        <span className="text-[#2D231F] ml-0.5 font-normal select-none">
+          {suffix}
+        </span>
+      ) : null}
     </span>
   );
 }
 
 export default function StatsSection() {
+  const [stats, setStats] = useState<StatItem[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    statsService
+      .getPublicOverview()
+      .then((data) => {
+        if (cancelled) return;
+        setStats([
+          {
+            number: data.publishedInvitations,
+            suffix: "",
+            label: "Thiệp đã xuất bản",
+          },
+          {
+            number: data.templates,
+            suffix: "",
+            label: "Mẫu thiệp",
+          },
+          {
+            number: data.guests,
+            suffix: "",
+            label: "Khách mời",
+          },
+        ]);
+      })
+      .catch(() => {
+        if (cancelled) return;
+        setStats([]);
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  if (!loading && stats.length === 0) return null;
+
   return (
     <div
-      className="relative overflow-hidden border-y border-[#d4af37]/15 py-12 px-6"
+      className="relative overflow-hidden border-y border-[#2D231F]/15 py-12 px-6"
       style={{
-        background: `radial-gradient(circle at center, #2a1420 0%, #0f0608 100%)`,
+        background: `radial-gradient(circle at center, #EDE4D5 0%, #F3EDE3 100%)`,
       }}
     >
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(212,175,55,0.03)_0%,transparent_70%)] pointer-events-none" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(45, 35, 31,0.03)_0%,transparent_70%)] pointer-events-none" />
 
       <ScrollReveal>
         <div className="max-w-275 mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-0 relative z-10">
-          {STATS.map((s, i) => (
+          {(loading
+            ? [
+                { number: 0, suffix: "", label: "Thiệp đã xuất bản" },
+                { number: 0, suffix: "", label: "Mẫu thiệp" },
+                { number: 0, suffix: "", label: "Khách mời" },
+              ]
+            : stats
+          ).map((s, i) => (
             <div
-              key={i}
+              key={s.label}
               className={`group text-center py-6 px-4 transition-all duration-500 hover:transform hover:-translate-y-1 ${
-                i < STATS.length - 1
-                  ? "md:border-r border-b md:border-b-0 border-[#d4af37]/10"
+                i < 2
+                  ? "md:border-r border-b md:border-b-0 border-[#2D231F]/10"
                   : ""
               }`}
             >
               <div className="tct-shimmer-text text-[clamp(2.5rem,5vw,3.5rem)] font-light block mb-2   tracking-tight leading-none">
-                <Counter
-                  target={s.number}
-                  isFloat={s.isFloat}
-                  suffix={s.suffix}
-                />
+                {loading ? (
+                  <span className="inline-block h-[0.9em] w-16 animate-pulse rounded bg-[#2D231F]/10" />
+                ) : (
+                  <Counter target={s.number} suffix={s.suffix} />
+                )}
               </div>
-              <div className="text-[11px] text-[#c9a98a]/80 tracking-[0.2em] uppercase font-medium transition-colors duration-300 group-hover:text-[#d4af37]">
+              <div className="text-[11px] text-[#7A6A5C]/80 tracking-[0.2em] uppercase font-medium transition-colors duration-300 group-hover:text-[#7A6A5C]">
                 {s.label}
               </div>
             </div>

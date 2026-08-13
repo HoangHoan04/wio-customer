@@ -22,9 +22,9 @@ export const PartySection = ({
   onSaveMap,
 }: PartySectionProps) => {
   return (
-    <div className="bg-white/2 border border-white/5 p-5 rounded-xl shadow-lg flex flex-col gap-5">
-      <div className="flex justify-between items-center border-b border-[#d4af37]/10 pb-2">
-        <h3 className="text-md font-bold text-[#d4af37]">7. Tiệc</h3>
+    <div className="bg-[#2D231F]/8 border border-white/5 p-5 rounded-xl shadow-lg flex flex-col gap-5">
+      <div className="flex justify-between items-center border-b border-[#2D231F]/10 pb-2">
+        <h3 className="text-md font-bold text-[#2D231F]">7. Tiệc</h3>
         <Switch
           checked={formData.showParty}
           onChange={(val) => handleChange("showParty", val)}
@@ -42,7 +42,7 @@ export const PartySection = ({
               <RadioGroupItem value="wedding" id="party-wedding" />
               <Label
                 htmlFor="party-wedding"
-                className="text-sm text-[#f5e6d3] cursor-pointer"
+                className="text-sm text-[#2D231F] cursor-pointer"
               >
                 Tiệc Cưới
               </Label>
@@ -51,14 +51,14 @@ export const PartySection = ({
               <RadioGroupItem value="engagement" id="party-engagement" />
               <Label
                 htmlFor="party-engagement"
-                className="text-sm text-[#f5e6d3] cursor-pointer"
+                className="text-sm text-[#2D231F] cursor-pointer"
               >
                 Tiệc Báo Hỷ
               </Label>
             </div>
           </RadioGroup>
           <div className="flex flex-col gap-1.5">
-            <Label className="text-xs font-semibold text-[#f5e6d3]/80">
+            <Label className="text-xs font-semibold text-[#2D231F]/80">
               Ngày tổ chức
             </Label>
             <DatePicker
@@ -68,7 +68,7 @@ export const PartySection = ({
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div className="flex flex-col gap-1.5">
-              <Label className="text-xs font-semibold text-[#f5e6d3]/80">
+              <Label className="text-xs font-semibold text-[#2D231F]/80">
                 Đón khách lúc
               </Label>
               <TimePicker
@@ -77,7 +77,7 @@ export const PartySection = ({
               />
             </div>
             <div className="flex flex-col gap-1.5">
-              <Label className="text-xs font-semibold text-[#f5e6d3]/80">
+              <Label className="text-xs font-semibold text-[#2D231F]/80">
                 Khai tiệc lúc
               </Label>
               <TimePicker
@@ -86,7 +86,7 @@ export const PartySection = ({
               />
             </div>
           </div>
-          <div className="flex items-center justify-between bg-white/5 p-3 rounded-lg">
+          <div className="flex items-center justify-between bg-[#2D231F]/10 p-3 rounded-lg">
             <span className="text-sm">Hiển thị đồng hồ đếm ngược</span>
             <Switch
               checked={formData.showCountdown}
@@ -94,7 +94,7 @@ export const PartySection = ({
             />
           </div>
           <div className="flex flex-col gap-1.5">
-            <Label className="text-xs font-semibold text-[#f5e6d3]/80">
+            <Label className="text-xs font-semibold text-[#2D231F]/80">
               Địa chỉ tổ chức tiệc
             </Label>
             <Input
@@ -102,13 +102,13 @@ export const PartySection = ({
               onChange={(e) =>
                 handleChange("partyAddress", e.target.value)
               }
-              className="bg-white/5! border-[#d4af37]/10!"
+              className="bg-[#2D231F]/10! border-[#2D231F]/10!"
               placeholder="Nhập địa chỉ để tự động hiện bản đồ..."
             />
           </div>
           {formData.partyAddress && formData.showMap && (
-            <div className="rounded-lg overflow-hidden border border-[#d4af37]/20 shadow-inner">
-              <div className="text-[10px] text-[#f5e6d3]/40 px-2 py-1 bg-white/5">
+            <div className="rounded-lg overflow-hidden border border-[#2D231F]/20 shadow-inner">
+              <div className="text-[10px] text-[#2D231F]/40 px-2 py-1 bg-[#2D231F]/10">
                 Xem trước bản đồ theo địa chỉ
               </div>
               <iframe
@@ -120,9 +120,9 @@ export const PartySection = ({
               />
             </div>
           )}
-          <div className="flex flex-col gap-2 p-3 border border-[#d4af37]/20 rounded-lg bg-white/3">
+          <div className="flex flex-col gap-2 p-3 border border-[#2D231F]/20 rounded-lg bg-[#2D231F]/8">
             <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-[#d4af37]">
+              <span className="text-sm font-medium text-[#2D231F]">
                 Hiển thị Bản Đồ
               </span>
               <Switch
@@ -132,7 +132,7 @@ export const PartySection = ({
             </div>
             {formData.showMap && (
               <div className="mt-2 flex flex-col gap-2">
-                <Label className="text-xs font-medium text-[#f5e6d3]/60 mb-1">
+                <Label className="text-xs font-medium text-[#2D231F]/60 mb-1">
                   URL Google Maps
                 </Label>
                 <div className="flex items-center gap-2">
@@ -140,13 +140,13 @@ export const PartySection = ({
                     <Input
                       value={tempMapUrl}
                       onChange={(e) => setTempMapUrl(e.target.value)}
-                      className="bg-white/5! border-[#d4af37]/10!"
+                      className="bg-[#2D231F]/10! border-[#2D231F]/10!"
                       placeholder="Dán link hoặc iframe..."
                     />
                   </div>
                   <Button
                     onClick={onSaveMap}
-                    className="bg-[#d4af37] text-black hover:bg-[#b08d20] px-4 py-2 rounded-md font-semibold shrink-0"
+                    className="bg-[#2D231F] text-[#F3EDE3] hover:bg-[#9db356] px-4 py-2 rounded-md font-semibold shrink-0"
                   >
                     Lưu
                   </Button>

@@ -11,9 +11,9 @@ export default function TemplatePanelContent() {
       {templates.map((t) => (
         <div
           key={t.name}
-          className="bg-[#333] rounded-lg p-4 hover:bg-[#3a3a3a] cursor-pointer transition-colors border border-[#444] hover:border-[#d4af37]/30"
+          className="bg-[#EDE4D5] rounded-lg p-4 hover:bg-[#F3EDE3] cursor-pointer transition-colors border border-[#D9CDBE] hover:border-[#2D231F]/30"
         >
-          <p className="text-white text-sm font-medium">{t.name}</p>
+          <p className="text-[#2D231F] text-sm font-medium">{t.name}</p>
           <p className="text-gray-500 text-xs mt-1">{t.desc}</p>
         </div>
       ))}

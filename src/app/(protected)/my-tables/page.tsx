@@ -24,7 +24,8 @@ import type { GuestDto, TableDto } from "@/dto";
 import { useToast } from "@/hooks/useToast";
 import { guestService } from "@/services/guest.service";
 import { tableService } from "@/services/table.service";
-import { weddingService } from "@/services/wedding.service";
+import { invitationService } from "@/services/invitation.service";
+import { invitationLabel } from "@/utils/invitation-mapper";
 import {
   Armchair,
   Edit2,
@@ -38,26 +39,25 @@ import {
 import { useEffect, useMemo, useState } from "react";
 
 const C = {
-  bg: "#13070b",
-  bgCard: "rgba(26, 10, 15, 0.4)",
-  gold: "#c5a059",
-  goldLight: "#f5e6d3",
-  cream: "#f5e6d3",
-  muted: "#a38a75",
-  border: "rgba(197, 160, 89, 0.15)",
+  bg: "#F3EDE3",
+  bgCard: "#EDE4D5",
+  gold: "#2D231F",
+  goldLight: "#7A6A5C",
+  cream: "#2D231F",
+  muted: "#7A6A5C",
+  border: "rgba(232, 226, 216, 1)",
 };
 
-interface WeddingOption {
+interface InvitationOption {
   id: string;
-  groomShortName: string;
-  brideShortName: string;
+  title?: string;
   slug: string;
 }
 
 export default function MyTablesPage() {
   const { showToast } = useToast();
-  const [weddings, setWeddings] = useState<WeddingOption[]>([]);
-  const [selectedWeddingId, setSelectedWeddingId] = useState<string>("");
+  const [invitations, setInvitations] = useState<InvitationOption[]>([]);
+  const [selectedInvitationId, setSelectedInvitationId] = useState<string>("");
   const [tables, setTables] = useState<TableDto[]>([]);
   const [guests, setGuests] = useState<GuestDto[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -71,12 +71,12 @@ export default function MyTablesPage() {
   const [guestSearchQuery, setGuestSearchQuery] = useState("");
 
   useEffect(() => {
-    weddingService
-      .getWeddings({ skip: 0, take: 50, where: {} })
+    invitationService
+      .pagination({ skip: 0, take: 50, where: {} })
       .then((res) => {
         const list = res.data ?? [];
-        setWeddings(list);
-        if (list[0]) setSelectedWeddingId(list[0].id);
+        setInvitations(list);
+        if (list[0]) setSelectedInvitationId(list[0].id);
       })
       .catch((err) => {
         console.error(err);
@@ -88,18 +88,18 @@ export default function MyTablesPage() {
   }, []);
 
   const refreshData = () => {
-    if (!selectedWeddingId) return;
+    if (!selectedInvitationId) return;
     setIsLoading(true);
     Promise.all([
       tableService.getTables({
         skip: 0,
         take: 100,
-        where: { weddingId: selectedWeddingId },
+        where: { invitationId: selectedInvitationId },
       }),
       guestService.getGuests({
         skip: 0,
         take: 1000,
-        where: { weddingId: selectedWeddingId },
+        where: { invitationId: selectedInvitationId },
       }),
     ])
       .then(([resTables, resGuests]) => {
@@ -118,7 +118,7 @@ export default function MyTablesPage() {
 
   useEffect(() => {
     refreshData();
-  }, [selectedWeddingId]);
+  }, [selectedInvitationId]);
 
   const handleOpenCreate = () => {
     setEditingTable(null);
@@ -152,7 +152,7 @@ export default function MyTablesPage() {
         showToast({ message: "Cập nhật bàn thành công", type: "success" });
       } else {
         await tableService.createTable({
-          weddingId: selectedWeddingId,
+          invitationId: selectedInvitationId,
           name: tableName,
           maxSeats: tableSeats,
           description: tableDesc,
@@ -251,12 +251,9 @@ export default function MyTablesPage() {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
           <div>
             <h1
-              className="text-3xl md:text-4xl font-bold uppercase tracking-wider mb-3"
+              className="text-3xl md:text-4xl font-bold uppercase tracking-wider mb-3 text-[#2D231F]"
               style={{
                 fontFamily: "'Cinzel', serif",
-                background: `linear-gradient(135deg, ${C.goldLight} 0%, ${C.gold} 50%, ${C.goldLight} 100%)`,
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
               }}
             >
               Sơ đồ bàn tiệc
@@ -268,22 +265,22 @@ export default function MyTablesPage() {
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
-            {weddings.length > 0 && (
+            {invitations.length > 0 && (
               <Select
-                value={selectedWeddingId}
-                onValueChange={(v) => setSelectedWeddingId(v ?? "")}
-                items={weddings.map((w) => ({
+                value={selectedInvitationId}
+                onValueChange={(v) => setSelectedInvitationId(v ?? "")}
+                items={invitations.map((w) => ({
                   value: w.id,
-                  label: `${w.groomShortName} & ${w.brideShortName}`,
+                  label: invitationLabel(w),
                 }))}
               >
-                <SelectTrigger className="min-w-80 bg-transparent border-[#d4af37]/30 text-[#f5e6d3] placeholder:text-[#a38a75]/50">
+                <SelectTrigger className="min-w-80 bg-transparent border-[#2D231F]/30 text-[#2D231F] placeholder:text-[#7A6A5C]/50">
                   <SelectValue placeholder="Chọn đám cưới" />
                 </SelectTrigger>
-                <SelectContent className="bg-[#13070b] border-[#d4af37]/30 text-[#f5e6d3]">
-                  {weddings.map((w) => (
+                <SelectContent className="bg-[#ffffff] border-[#2D231F]/30 text-[#2D231F]">
+                  {invitations.map((w) => (
                     <SelectItem key={w.id} value={w.id}>
-                      {w.groomShortName} & {w.brideShortName}
+                      {invitationLabel(w)}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -297,14 +294,14 @@ export default function MyTablesPage() {
             className="p-6 rounded-2xl border flex items-center gap-4"
             style={{ borderColor: C.border, background: C.bgCard }}
           >
-            <div className="p-3 bg-[#c5a059]/10 rounded-xl text-[#c5a059]">
+            <div className="p-3 bg-[#2D231F]/10 rounded-xl text-[#2D231F]">
               <Armchair size={24} />
             </div>
             <div>
               <p className="text-xs" style={{ color: C.muted }}>
                 Tổng số bàn
               </p>
-              <h3 className="text-2xl font-bold font-serif text-[#f5e6d3]">
+              <h3 className="text-2xl font-bold font-serif text-[#2D231F]">
                 {stats.totalTables}
               </h3>
             </div>
@@ -313,14 +310,14 @@ export default function MyTablesPage() {
             className="p-6 rounded-2xl border flex items-center gap-4"
             style={{ borderColor: C.border, background: C.bgCard }}
           >
-            <div className="p-3 bg-[#c5a059]/10 rounded-xl text-[#c5a059]">
+            <div className="p-3 bg-[#2D231F]/10 rounded-xl text-[#2D231F]">
               <Users size={24} />
             </div>
             <div>
               <p className="text-xs" style={{ color: C.muted }}>
                 Tổng số chỗ ngồi khả dụng
               </p>
-              <h3 className="text-2xl font-bold font-serif text-[#f5e6d3]">
+              <h3 className="text-2xl font-bold font-serif text-[#2D231F]">
                 {stats.totalMaxSeats} ghế
               </h3>
             </div>
@@ -345,7 +342,7 @@ export default function MyTablesPage() {
 
         <div className="mb-6 flex justify-between items-center">
           <h2
-            className="text-lg font-semibold text-[#c5a059]"
+            className="text-lg font-semibold text-[#2D231F]"
             style={{ fontFamily: "'Cinzel', serif" }}
           >
             Danh sách bàn tiệc
@@ -354,7 +351,7 @@ export default function MyTablesPage() {
             onClick={handleOpenCreate}
             style={{
               background: `linear-gradient(135deg, ${C.goldLight} 0%, ${C.gold} 100%)`,
-              color: C.bg,
+              color: "#1a1a1a",
             }}
             className="font-bold uppercase tracking-wider text-xs"
           >
@@ -365,7 +362,7 @@ export default function MyTablesPage() {
 
         {isLoading ? (
           <div className="flex justify-center py-24">
-            <div className="w-12 h-12 border-4 border-[#d4af37]/20 border-t-[#d4af37] rounded-full animate-spin" />
+            <div className="w-12 h-12 border-4 border-[#2D231F]/20 border-t-[#2D231F] rounded-full animate-spin" />
           </div>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -375,10 +372,10 @@ export default function MyTablesPage() {
                   className="text-center py-20 px-6 rounded-2xl border border-dashed flex flex-col items-center justify-center gap-6"
                   style={{
                     borderColor: C.border,
-                    background: "rgba(20,10,13,0.3)",
+                    background: "#EDE4D5",
                   }}
                 >
-                  <Armchair size={40} className="text-[#a38a75]" />
+                  <Armchair size={40} className="text-[#7A6A5C]" />
                   <div>
                     <h3
                       className="text-lg font-semibold mb-2"
@@ -408,16 +405,16 @@ export default function MyTablesPage() {
                     return (
                       <div
                         key={table.id}
-                        className="rounded-2xl border p-5 flex flex-col justify-between transition-all hover:border-[#c5a059]/40 bg-[#160a0d]/30"
+                        className="rounded-2xl border p-5 flex flex-col justify-between transition-all hover:border-[#2D231F]/40 bg-[#EDE4D5]"
                         style={{ borderColor: C.border }}
                       >
                         <div>
                           <div className="flex justify-between items-start gap-2 mb-3">
                             <div>
-                              <h3 className="font-semibold text-base text-[#f5e6d3]">
+                              <h3 className="font-semibold text-base text-[#2D231F]">
                                 {table.name}
                               </h3>
-                              <p className="text-xs text-[#a38a75] mt-0.5">
+                              <p className="text-xs text-[#7A6A5C] mt-0.5">
                                 {table.description || "Không có mô tả"}
                               </p>
                             </div>
@@ -426,7 +423,7 @@ export default function MyTablesPage() {
                                 variant="outline"
                                 size="icon-sm"
                                 onClick={() => handleOpenEdit(table)}
-                                className="border-[#d4af37]/20 text-[#f5e6d3] hover:bg-[#d4af37]/10 h-7 w-7"
+                                className="border-[#2D231F]/20 text-[#2D231F] hover:bg-[#2D231F]/10 h-7 w-7"
                               >
                                 <Edit2 size={12} />
                               </Button>
@@ -446,7 +443,7 @@ export default function MyTablesPage() {
                               <span style={{ color: C.muted }}>
                                 Đã xếp chỗ:
                               </span>
-                              <span className="text-[#f5c842]">
+                              <span className="text-[#7A6A5C]">
                                 {table.currentSeats} / {table.maxSeats} ghế
                               </span>
                             </div>
@@ -458,7 +455,7 @@ export default function MyTablesPage() {
                                   ? "bg-red-500"
                                   : filledPercent >= 80
                                     ? "bg-amber-500"
-                                    : "bg-[#c5a059]"
+                                    : "bg-[#2D231F]"
                               }
                             />
                           </div>
@@ -481,13 +478,13 @@ export default function MyTablesPage() {
                               seatedGuests.map((g) => (
                                 <div
                                   key={g.id}
-                                  className="flex justify-between items-center gap-2 p-2 rounded-lg bg-[#1a0a0f]/60 border border-[#c5a059]/5 text-xs"
+                                  className="flex justify-between items-center gap-2 p-2 rounded-lg bg-[#ffffff]/60 border border-[#2D231F]/5 text-xs"
                                 >
                                   <div>
-                                    <p className="font-medium text-[#f5e6d3]">
+                                    <p className="font-medium text-[#2D231F]">
                                       {g.fullName}
                                     </p>
-                                    <p className="text-[10px] text-[#a38a75]">
+                                    <p className="text-[10px] text-[#7A6A5C]">
                                       {g.salutation} • {g.attendingCount} người
                                       •{" "}
                                       {enumData.SIDE_OPTIONS?.[g.side]?.name ||
@@ -516,7 +513,7 @@ export default function MyTablesPage() {
                               setActiveTableForAssign(table);
                               setGuestSearchQuery("");
                             }}
-                            className="w-full text-xs font-semibold border-[#c5a059]/20 text-[#c5a059] hover:bg-[#c5a059]/10 py-1.5 h-8 mt-2"
+                            className="w-full text-xs font-semibold border-[#2D231F]/20 text-[#2D231F] hover:bg-[#2D231F]/10 py-1.5 h-8 mt-2"
                           >
                             Xếp chỗ khách
                           </Button>
@@ -530,12 +527,12 @@ export default function MyTablesPage() {
 
             <div className="space-y-6">
               <div
-                className="rounded-2xl border p-5 bg-[#160a0d]/30 space-y-4"
+                className="rounded-2xl border p-5 bg-[#EDE4D5] space-y-4"
                 style={{ borderColor: C.border }}
               >
                 <div className="flex justify-between items-center">
                   <h3
-                    className="font-semibold text-sm text-[#c5a059] uppercase tracking-wider"
+                    className="font-semibold text-sm text-[#2D231F] uppercase tracking-wider"
                     style={{ fontFamily: "'Cinzel', serif" }}
                   >
                     Khách chưa xếp bàn ({unassignedGuests.length})
@@ -545,13 +542,13 @@ export default function MyTablesPage() {
                 <div className="relative">
                   <Search
                     size={14}
-                    className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[#a38a75]"
+                    className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[#7A6A5C]"
                   />
                   <Input
                     value={guestSearchQuery}
                     onChange={(e) => setGuestSearchQuery(e.target.value)}
                     placeholder="Tìm nhanh khách..."
-                    className="pl-8 h-8 text-xs bg-transparent border-[#d4af37]/20 text-[#f5e6d3] placeholder:text-[#a38a75]/40"
+                    className="pl-8 h-8 text-xs bg-transparent border-[#2D231F]/20 text-[#2D231F] placeholder:text-[#7A6A5C]/40"
                   />
                 </div>
 
@@ -569,13 +566,13 @@ export default function MyTablesPage() {
                     searchFilteredUnassignedGuests.map((g) => (
                       <div
                         key={g.id}
-                        className="p-3 rounded-xl border border-[#c5a059]/10 bg-[#0b0507]/40 flex justify-between items-center gap-2"
+                        className="p-3 rounded-xl border border-[#2D231F]/10 bg-[#ffffff]/40 flex justify-between items-center gap-2"
                       >
                         <div>
-                          <h4 className="font-medium text-xs text-[#f5e6d3]">
+                          <h4 className="font-medium text-xs text-[#2D231F]">
                             {g.fullName}
                           </h4>
-                          <p className="text-[10px] text-[#a38a75] mt-0.5">
+                          <p className="text-[10px] text-[#7A6A5C] mt-0.5">
                             {g.salutation} • {g.attendingCount} người •{" "}
                             {enumData.SIDE_OPTIONS?.[g.side]?.name || g.side}
                           </p>
@@ -593,10 +590,10 @@ export default function MyTablesPage() {
                                 label: t.name,
                               }))}
                             >
-                              <SelectTrigger className="h-7 text-[10px] font-bold uppercase tracking-wider border-[#c5a059]/30 text-[#c5a059] bg-transparent px-2.5">
+                              <SelectTrigger className="h-7 text-[10px] font-bold uppercase tracking-wider border-[#2D231F]/30 text-[#2D231F] bg-transparent px-2.5">
                                 <SelectValue placeholder="Xếp bàn" />
                               </SelectTrigger>
-                              <SelectContent className="bg-[#13070b] border-[#d4af37]/30 text-[#f5e6d3]">
+                              <SelectContent className="bg-[#ffffff] border-[#2D231F]/30 text-[#2D231F]">
                                 {tables.map((t) => (
                                   <SelectItem key={t.id} value={t.id}>
                                     {t.name} ({t.currentSeats}/{t.maxSeats})
@@ -618,7 +615,7 @@ export default function MyTablesPage() {
 
       <Dialog open={openDialog} onOpenChange={setOpenDialog}>
         <DialogContent
-          className="border border-[#d4af37]/20 bg-[#13070b] text-[#f5e6d3] max-w-md"
+          className="border border-[#2D231F]/20 bg-[#ffffff] text-[#2D231F] max-w-md"
           showCloseButton
         >
           <DialogHeader>
@@ -627,7 +624,7 @@ export default function MyTablesPage() {
             >
               {editingTable ? "Chỉnh sửa bàn tiệc" : "Thêm bàn tiệc mới"}
             </DialogTitle>
-            <DialogDescription className="text-[#a38a75]">
+            <DialogDescription className="text-[#7A6A5C]">
               Cấu hình thông tin bàn tiệc và số lượng ghế tối đa.
             </DialogDescription>
           </DialogHeader>
@@ -639,7 +636,7 @@ export default function MyTablesPage() {
                 value={tableName}
                 onChange={(e) => setTableName(e.target.value)}
                 placeholder="Ví dụ: Bàn VIP 1, Bàn Bạn Cấp 3..."
-                className="bg-transparent border-[#d4af37]/30 text-[#f5e6d3] placeholder:text-[#a38a75]/40"
+                className="bg-transparent border-[#2D231F]/30 text-[#2D231F] placeholder:text-[#7A6A5C]/40"
               />
             </div>
             <div className="space-y-2">
@@ -649,7 +646,7 @@ export default function MyTablesPage() {
                 value={tableSeats}
                 onChange={(e) => setTableSeats(Number(e.target.value))}
                 min={1}
-                className="bg-transparent border-[#d4af37]/30 text-[#f5e6d3]"
+                className="bg-transparent border-[#2D231F]/30 text-[#2D231F]"
               />
             </div>
             <div className="space-y-2">
@@ -658,7 +655,7 @@ export default function MyTablesPage() {
                 value={tableDesc}
                 onChange={(e) => setTableDesc(e.target.value)}
                 placeholder="Ví dụ: Bàn họ hàng nhà trai..."
-                className="bg-transparent border-[#d4af37]/30 text-[#f5e6d3] placeholder:text-[#a38a75]/40"
+                className="bg-transparent border-[#2D231F]/30 text-[#2D231F] placeholder:text-[#7A6A5C]/40"
               />
             </div>
           </div>
@@ -667,7 +664,7 @@ export default function MyTablesPage() {
             <Button
               variant="outline"
               onClick={() => setOpenDialog(false)}
-              className="border-[#d4af37]/30 text-[#f5e6d3] hover:bg-[#d4af37]/10"
+              className="border-[#2D231F]/30 text-[#2D231F] hover:bg-[#2D231F]/10"
             >
               Hủy
             </Button>
@@ -675,7 +672,7 @@ export default function MyTablesPage() {
               onClick={handleSaveTable}
               style={{
                 background: `linear-gradient(135deg, ${C.goldLight} 0%, ${C.gold} 100%)`,
-                color: C.bg,
+                color: "#1a1a1a",
               }}
               className="font-bold uppercase tracking-wider text-xs"
             >
@@ -692,7 +689,7 @@ export default function MyTablesPage() {
         }}
       >
         <DialogContent
-          className="border border-[#d4af37]/20 bg-[#13070b] text-[#f5e6d3] max-w-md"
+          className="border border-[#2D231F]/20 bg-[#ffffff] text-[#2D231F] max-w-md"
           showCloseButton
         >
           <DialogHeader>
@@ -701,7 +698,7 @@ export default function MyTablesPage() {
             >
               Xếp khách vào {activeTableForAssign?.name}
             </DialogTitle>
-            <DialogDescription className="text-[#a38a75]">
+            <DialogDescription className="text-[#7A6A5C]">
               Chọn khách chưa có bàn để xếp vào bàn này (Còn{" "}
               {activeTableForAssign
                 ? activeTableForAssign.maxSeats -
@@ -715,13 +712,13 @@ export default function MyTablesPage() {
             <div className="relative">
               <Search
                 size={14}
-                className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[#a38a75]"
+                className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[#7A6A5C]"
               />
               <Input
                 value={guestSearchQuery}
                 onChange={(e) => setGuestSearchQuery(e.target.value)}
                 placeholder="Tìm khách hàng..."
-                className="pl-8 h-9 text-xs bg-transparent border-[#d4af37]/20 text-[#f5e6d3] placeholder:text-[#a38a75]/40"
+                className="pl-8 h-9 text-xs bg-transparent border-[#2D231F]/20 text-[#2D231F] placeholder:text-[#7A6A5C]/40"
               />
             </div>
 
@@ -737,13 +734,13 @@ export default function MyTablesPage() {
                 searchFilteredUnassignedGuests.map((g) => (
                   <div
                     key={g.id}
-                    className="p-3 rounded-xl border border-[#c5a059]/10 bg-[#0b0507]/40 flex justify-between items-center gap-2"
+                    className="p-3 rounded-xl border border-[#2D231F]/10 bg-[#ffffff]/40 flex justify-between items-center gap-2"
                   >
                     <div>
-                      <h4 className="font-medium text-xs text-[#f5e6d3]">
+                      <h4 className="font-medium text-xs text-[#2D231F]">
                         {g.fullName}
                       </h4>
-                      <p className="text-[10px] text-[#a38a75] mt-0.5">
+                      <p className="text-[10px] text-[#7A6A5C] mt-0.5">
                         {g.salutation} • {g.attendingCount} người •{" "}
                         {enumData.SIDE_OPTIONS?.[g.side]?.name || g.side}
                       </p>
@@ -757,7 +754,7 @@ export default function MyTablesPage() {
                       }}
                       style={{
                         background: `linear-gradient(135deg, ${C.goldLight} 0%, ${C.gold} 100%)`,
-                        color: C.bg,
+                        color: "#1a1a1a",
                       }}
                       className="text-[10px] px-3 py-1 h-7 font-bold uppercase tracking-wider"
                     >

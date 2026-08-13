@@ -4,11 +4,7 @@ import { YoutubeIcon } from "@/assets/icons";
 import { enumData } from "@/common/enum";
 import {
   formatDate,
-  formatDateISO,
   formatTime,
-  formatTime2Digit,
-  sortAndMapEvents,
-  sortAndMapTimeline,
 } from "@/common/helpers";
 import { PUBLIC_ROUTES } from "@/common/routes";
 import { getTemplateSchema } from "@/common/templateSchema";
@@ -29,9 +25,14 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/useToast";
 import { musicBackgroundService } from "@/services/music-background.service";
 import { templateService } from "@/services/template.service";
-import { weddingService } from "@/services/wedding.service";
+import { invitationService } from "@/services/invitation.service";
 import { resolveThemeKey } from "@/templates/templates-available";
 import tokenCache from "@/utils/token-cache";
+import {
+  buildInvitationPayload,
+  invitationToCreatorForm,
+  publicInvitationPath,
+} from "@/utils/invitation-mapper";
 import {
   Check,
   ExternalLink,
@@ -123,9 +124,9 @@ const DEVICES = [
 const WEDDING_COLORS = [
   "#FFFFFF",
   "#FDFBF7",
-  "#F5E6D3",
-  "#F5C842",
-  "#D4AF37",
+  "#2D231F",
+  "#C4B09A",
+  "#2D231F",
   "#E4C59E",
   "#849A80",
   "#A8BCA1",
@@ -564,7 +565,7 @@ export default function CreatorPage() {
       tempMapUrl.includes("goo.gl/maps")
     ) {
       try {
-        const res = await weddingService.resolveMapUrl(tempMapUrl);
+        const res = await invitationService.resolveMapUrl(tempMapUrl);
         if (res?.data?.url) {
           finalUrl = res.data.url;
         } else {
@@ -684,13 +685,13 @@ export default function CreatorPage() {
   useEffect(() => {
     if (id) {
       setIsLoadingData(true);
-      weddingService
-        .getWeddingById(id)
+      invitationService
+        .findById(id)
         .then((res) => {
           if (res?.data) {
-            const w = res.data;
+            const invitation = res.data;
 
-            if (w.status === enumData.WEDDING_STATUS.PUBLISHED) {
+            if (invitation.status === enumData.INVITATION_STATUS.PUBLISHED.code) {
               showToast({
                 title: "Không thể chỉnh sửa",
                 message: "Thiệp đã xuất bản không thể chỉnh sửa",
@@ -700,90 +701,26 @@ export default function CreatorPage() {
               return;
             }
 
-            setFormData({
-              slug: w.slug || "",
-              displayOrder: w.displayOrder || "",
-              showHeroImage: w.showHeroImage ?? true,
-              heroImageMain: w.heroImageMain || "",
-              showIntro: w.showIntro ?? true,
-              introText: w.invitationText || "Trân trọng kính mời...",
-              showGallery: w.showGallery ?? true,
-              galleryLayout: w.galleryLayout || "grid",
-              gallery:
-                w.photos
-                  ?.sort((a: any, b: any) => a.sortOrder - b.sortOrder)
-                  .map((p: any) => p.url) || [],
-              showParty: w.showParty ?? true,
-              partyType: w.partyType || "wedding",
-              partyDate: formatDateISO(w.ceremonyAt),
-              partyWelcomeTime: w.receptionWelcomeTime || "10:30",
-              partyStartTime: formatTime2Digit(w.ceremonyAt, "11:30"),
-              partyAddress: w.ceremonyAddress || "",
-              partyMapUrl: w.ceremonyMapsUrl || "",
-              showCountdown: w.showCountdown ?? true,
-              showMap: w.showMap ?? true,
-              showDressCode: w.showDressCode ?? true,
-              dressCodes: w.dressCodes || [],
-              showTimeline: w.showTimeline ?? true,
-              timelineTitle: w.timelineTitle || "Lịch trình ngày cưới",
-              timeline: sortAndMapTimeline(w.timelines),
-              showRsvp: w.showRsvp ?? true,
-              rsvpType: w.rsvpType || "form",
-              showGuestbook: w.showGuestbook ?? true,
-              guestbookStatic: w.guestbookStatic ?? true,
-              guestbookFloating: w.guestbookFloating ?? true,
-              showThankYou: w.showThankYou ?? true,
-              thankYouText: w.thankYouText || "Chân thành cảm ơn!",
-              showMusic: !!w.musicUrl || true,
-              musicUrl: w.musicUrl || "",
-              musicName: w.musicName || "",
-              events: sortAndMapEvents(w.events),
-              groom: {
-                name: w.groomName || "",
-                shortName: w.groomShortName || "",
-                title: w.groomTitle || "Chú rể",
-                familyTitle: w.groomFamilyTitle || "",
-                father: w.groomFatherName || "",
-                mother: w.groomMotherName || "",
-                address: w.groomAddress || "",
-                photo: w.groomPhotoUrl || "",
-                bankAccount: {
-                  bankName: w.groomBankName || "",
-                  accountNumber: w.groomBankAccount || "",
-                  accountName: w.groomBankOwner || "",
-                  qrUrl: resolveQrUrl(
-                    w.groomBankName || "",
-                    w.groomBankAccount || "",
-                    w.groomBankOwner || "",
-                    w.groomQrUrl,
-                  ),
-                },
-              },
-              bride: {
-                name: w.brideName || "",
-                shortName: w.brideShortName || "",
-                title: w.brideTitle || "Cô dâu",
-                familyTitle: w.brideFamilyTitle || "",
-                father: w.brideFatherName || "",
-                mother: w.brideMotherName || "",
-                address: w.brideAddress || "",
-                photo: w.bridePhotoUrl || "",
-                bankAccount: {
-                  bankName: w.brideBankName || "",
-                  accountNumber: w.brideBankAccount || "",
-                  accountName: w.brideBankOwner || "",
-                  qrUrl: w.brideQrUrl || "",
-                },
-              },
-            });
-            setTempMapUrl(w.ceremonyMapsUrl || "");
-            if (w.template?.themeCode) {
-              setLoadedThemeCode(w.template.themeCode);
-            } else if (w.template?.slug) {
-              setLoadedThemeCode(w.template.slug);
+            const mapped = invitationToCreatorForm(invitation);
+            const groomBank = mapped.groom.bankAccount;
+            mapped.groom.bankAccount = {
+              ...groomBank,
+              qrUrl: resolveQrUrl(
+                groomBank.bankName,
+                groomBank.accountNumber,
+                groomBank.accountName,
+                groomBank.qrUrl,
+              ),
+            };
+            setFormData((prev) => ({ ...prev, ...mapped }));
+            setTempMapUrl(mapped.partyMapUrl || "");
+            if (invitation.template?.themeCode) {
+              setLoadedThemeCode(invitation.template.themeCode);
+            } else if (invitation.template?.slug) {
+              setLoadedThemeCode(invitation.template.slug);
             }
-            if (w.templateId) {
-              setTemplateId(w.templateId);
+            if (invitation.templateId) {
+              setTemplateId(invitation.templateId);
             }
 
             setTimeout(() => {
@@ -850,110 +787,41 @@ export default function CreatorPage() {
 
     setIsPublishing(true);
     try {
-      const user = tokenCache.getUser();
-      const payload = {
-        userId: user?.id || "",
+      const payload = buildInvitationPayload(formData, {
+        keepIds: !!id,
         templateId: templateId || undefined,
-        slug: formData.slug || `${Date.now()}`,
-        displayOrder: formData.displayOrder,
-        showHeroImage: formData.showHeroImage,
-        heroImageMain: formData.heroImageMain,
-
-        groomName: formData.groom.name,
-        groomShortName: formData.groom.shortName,
-        groomTitle: formData.groom.title,
-        groomFatherName: formData.groom.father,
-        groomMotherName: formData.groom.mother,
-        groomAddress: formData.groom.address,
-        groomPhotoUrl: formData.groom.photo,
-        groomBankAccount: formData.groom.bankAccount.accountNumber,
-        groomBankName: formData.groom.bankAccount.bankName,
-        groomBankOwner: formData.groom.bankAccount.accountName,
-        groomQrUrl: formData.groom.bankAccount.qrUrl,
-
-        brideName: formData.bride.name,
-        brideShortName: formData.bride.shortName,
-        brideTitle: formData.bride.title,
-        brideFatherName: formData.bride.father,
-        brideMotherName: formData.bride.mother,
-        brideAddress: formData.bride.address,
-        bridePhotoUrl: formData.bride.photo,
-        brideBankAccount: formData.bride.bankAccount.accountNumber,
-        brideBankName: formData.bride.bankAccount.bankName,
-        brideBankOwner: formData.bride.bankAccount.accountName,
-        brideQrUrl: formData.bride.bankAccount.qrUrl,
-
-        showIntro: formData.showIntro,
-        invitationText: formData.introText,
-
-        events: id
-          ? formData.events
-          : formData.events.map(({ id: _id, ...rest }) => rest),
-
-        showGallery: formData.showGallery,
-        galleryLayout: formData.galleryLayout,
-        gallery: formData.gallery,
-
-        showParty: formData.showParty,
-        partyType: formData.partyType,
-        receptionWelcomeTime: formData.partyWelcomeTime,
-        ceremonyAt: new Date(
-          formData.partyDate + "T" + (formData.partyWelcomeTime || "00:00"),
-        ),
-        ceremonyVenue: formData.partyAddress,
-        ceremonyAddress: formData.partyAddress,
-        ceremonyMapsUrl: formData.partyMapUrl,
-        showCountdown: formData.showCountdown,
-        showMap: formData.showMap,
-
-        showDressCode: formData.showDressCode,
-        dressCodes: formData.dressCodes,
-
-        showTimeline: formData.showTimeline,
-        timelineTitle: formData.timelineTitle,
-        timelines: id
-          ? formData.timeline
-          : formData.timeline.map(({ id: _id, ...rest }) => rest),
-
-        showRsvp: formData.showRsvp,
-        rsvpType: formData.rsvpType,
-
-        showGuestbook: formData.showGuestbook,
-        guestbookStatic: formData.guestbookStatic,
-        guestbookFloating: formData.guestbookFloating,
-
-        showThankYou: formData.showThankYou,
-        thankYouText: formData.thankYouText,
-
-        musicUrl: formData.musicUrl,
-        musicName: formData.musicName,
-        musicAutoplay: true,
-
-        status: "draft" as any,
-      };
+        cardType: "WEDDING",
+      });
+      if (!payload.slug) {
+        payload.slug = `${Date.now()}`;
+      }
 
       if (id) {
-        await weddingService.updateWedding(id, payload);
-        await weddingService.publishWedding(id);
+        await invitationService.update(id, payload);
+        await invitationService.publish(id);
         const slugToUse = formData.slug || payload.slug;
-        setPublishedUrl(`${window.location.origin}/thiep/${slugToUse}`);
+        setPublishedUrl(
+          `${window.location.origin}${publicInvitationPath(slugToUse)}`,
+        );
         setShowSuccessModal(true);
         showToast({
           title: "Lưu & Xuất bản thành công",
-          message: "Thiệp cưới của bạn đã được lưu và xuất bản!",
+          message: "Thiệp của bạn đã được lưu và xuất bản!",
           type: "success",
         });
       } else {
-        const saveRes = await weddingService.createWedding(payload);
-        const weddingId = saveRes.data?.id;
+        const saveRes = await invitationService.create(payload);
+        const invitationId = saveRes.data?.id;
 
-        if (weddingId) {
-          await weddingService.publishWedding(weddingId);
-          setPublishedUrl(`${window.location.origin}/thiep/${payload.slug}`);
+        if (invitationId) {
+          await invitationService.publish(invitationId);
+          setPublishedUrl(
+            `${window.location.origin}${publicInvitationPath(payload.slug)}`,
+          );
           setShowSuccessModal(true);
           showToast({
             title: "Xuất bản thành công",
-            message: "Thiệp cưới của bạn đã được xuất bản!",
+            message: "Thiệp của bạn đã được xuất bản!",
             type: "success",
           });
         }
@@ -976,7 +844,7 @@ export default function CreatorPage() {
   if (!activeThemeCode) {
     if (id && isLoadingData) {
       return (
-        <div className="min-h-screen bg-[#0a0508] flex items-center justify-center text-[#f5e6d3]">
+        <div className="min-h-screen bg-[#F3EDE3] flex items-center justify-center text-[#2D231F]">
           Đang tải thiệp cưới...
         </div>
       );
@@ -986,16 +854,16 @@ export default function CreatorPage() {
 
   return (
     <div
-      className="flex flex-col md:flex-row h-screen w-full bg-[#0a0508] overflow-hidden"
+      className="flex flex-col md:flex-row h-screen w-full bg-[#F3EDE3] overflow-hidden"
       style={{ fontFamily: "Inter, sans-serif" }}
     >
-      <div className="md:hidden flex bg-[#0f0608] border-b border-[#d4af37]/20 p-2 shrink-0 z-30">
+      <div className="md:hidden flex bg-[#F3EDE3] border-b border-[#2D231F]/20 p-2 shrink-0 z-30">
         <button
           onClick={() => setActiveTab("edit")}
           className={`flex-1 py-2.5 text-xs font-bold rounded-lg transition-all cursor-pointer ${
             activeTab === "edit"
-              ? "bg-[#d4af37] text-black shadow-md"
-              : "text-[#f5e6d3]/60 hover:text-white"
+              ? "bg-[#2D231F] text-[#F3EDE3] shadow-md"
+              : "text-[#2D231F]/60 hover:text-[#2D231F]"
           }`}
         >
           Chỉnh sửa nội dung
@@ -1004,8 +872,8 @@ export default function CreatorPage() {
           onClick={() => setActiveTab("preview")}
           className={`flex-1 py-2.5 text-xs font-bold rounded-lg transition-all cursor-pointer ${
             activeTab === "preview"
-              ? "bg-[#d4af37] text-black shadow-md"
-              : "text-[#f5e6d3]/60 hover:text-white"
+              ? "bg-[#2D231F] text-[#F3EDE3] shadow-md"
+              : "text-[#2D231F]/60 hover:text-[#2D231F]"
           }`}
         >
           Xem trước giao diện
@@ -1013,24 +881,24 @@ export default function CreatorPage() {
       </div>
 
       <div
-        className={`w-full md:w-1/2 shrink-0 border-r border-[#d4af37]/25 flex-col h-full bg-[#0f0608] ${activeTab === "edit" ? "flex" : "hidden md:flex"}`}
+        className={`w-full md:w-1/2 shrink-0 border-r border-[#2D231F]/25 flex-col h-full bg-[#F3EDE3] ${activeTab === "edit" ? "flex" : "hidden md:flex"}`}
       >
-        <div className="p-4 border-b border-[#d4af37]/15 bg-white/2 flex justify-between items-center shrink-0">
+        <div className="p-4 border-b border-[#2D231F]/15 bg-[#2D231F]/8 flex justify-between items-center shrink-0">
           <div className="flex items-center gap-2 shrink-0">
             <div
               className="flex items-center gap-2.5 cursor-pointer"
               onClick={() => router.push(PUBLIC_ROUTES.HOME)}
             >
               <div className="flex flex-col leading-none">
-                <span className="text-[clamp(1rem,3vw,1rem)] font-bold text-[#f5c842] whitespace-nowrap logo-shimmer">
-                  Tiệm cưới tân thời
+                <span className="text-[clamp(1rem,3vw,1rem)] font-bold text-[#2D231F] whitespace-nowrap">
+                  InviGo
                 </span>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-8 text-[#f5e6d3] text-left custom-scrollbar pb-32">
+        <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-8 text-[#2D231F] text-left custom-scrollbar pb-32">
           <BasicInfoSection
             formData={formData}
             handleChange={handleChange}
@@ -1096,11 +964,11 @@ export default function CreatorPage() {
           />
         </div>
 
-        <div className="md:flex p-4 border-t border-[#d4af37]/20 bg-[#0a0508] flex gap-3 z-10 shrink-0">
+        <div className="md:flex p-4 border-t border-[#2D231F]/20 bg-[#F3EDE3] flex gap-3 z-10 shrink-0">
           <Button
             variant="outline"
             onClick={() => router.push("/templates")}
-            className="flex-1 py-3 text-xs bg-white/2! border-[#d4af37]/15! hover:bg-white/5 rounded-xl"
+            className="flex-1 py-3 text-xs bg-[#2D231F]/8! border-[#2D231F]/15! hover:bg-[#2D231F]/10 rounded-xl"
           >
             Quay Lại
           </Button>
@@ -1108,7 +976,7 @@ export default function CreatorPage() {
             variant="default"
             onClick={handlePublish}
             disabled={isPublishing}
-            className="flex-1 py-3 text-xs bg-linear-to-r from-[#d4af37] to-[#f5c842] text-[#0a0508] font-bold rounded-xl flex items-center justify-center gap-1.5 transition-transform"
+            className="flex-1 py-3 text-xs bg-[#2D231F] text-[#F3EDE3] font-bold rounded-xl flex items-center justify-center gap-1.5 transition-transform"
           >
             {isPublishing ? <Spinner /> : <Share2 size={14} />} Lưu & Xuất Bản
           </Button>
@@ -1118,7 +986,7 @@ export default function CreatorPage() {
       <div
         className={`w-full md:w-1/2 h-full flex-col bg-[#050304] overflow-hidden select-none relative ${activeTab === "preview" ? "flex" : "hidden md:flex"}`}
       >
-        <div className="hidden md:flex h-14 border-b border-[#d4af37]/20 bg-[#0f0608] px-6 items-center justify-between gap-4 z-10 shrink-0">
+        <div className="hidden md:flex h-14 border-b border-[#2D231F]/20 bg-[#F3EDE3] px-6 items-center justify-between gap-4 z-10 shrink-0">
           <Tabs
             value={deviceType}
             onValueChange={(val) => {
@@ -1130,21 +998,21 @@ export default function CreatorPage() {
             <TabsList className="bg-transparent gap-2">
               <TabsTrigger
                 value="mobile"
-                className="flex-none p-2 rounded-lg border transition-all flex items-center gap-1.5 text-xs font-medium data-active:bg-[#d4af37]/10 data-active:border-[#d4af37] data-active:text-[#f5c842] bg-white/3 border-transparent text-[#f5e6d3]/60"
+                className="flex-none p-2 rounded-lg border transition-all flex items-center gap-1.5 text-xs font-medium data-active:bg-[#2D231F]/10 data-active:border-[#2D231F] data-active:text-[#7A6A5C] bg-[#2D231F]/8 border-transparent text-[#2D231F]/60"
               >
                 <Smartphone size={14} />
                 Mobile
               </TabsTrigger>
               <TabsTrigger
                 value="tablet"
-                className="flex-none p-2 rounded-lg border transition-all flex items-center gap-1.5 text-xs font-medium data-active:bg-[#d4af37]/10 data-active:border-[#d4af37] data-active:text-[#f5c842] bg-white/3 border-transparent text-[#f5e6d3]/60"
+                className="flex-none p-2 rounded-lg border transition-all flex items-center gap-1.5 text-xs font-medium data-active:bg-[#2D231F]/10 data-active:border-[#2D231F] data-active:text-[#7A6A5C] bg-[#2D231F]/8 border-transparent text-[#2D231F]/60"
               >
                 <TabletIcon size={14} />
                 Tablet
               </TabsTrigger>
               <TabsTrigger
                 value="desktop"
-                className="flex-none p-2 rounded-lg border transition-all flex items-center gap-1.5 text-xs font-medium data-active:bg-[#d4af37]/10 data-active:border-[#d4af37] data-active:text-[#f5c842] bg-white/3 border-transparent text-[#f5e6d3]/60"
+                className="flex-none p-2 rounded-lg border transition-all flex items-center gap-1.5 text-xs font-medium data-active:bg-[#2D231F]/10 data-active:border-[#2D231F] data-active:text-[#7A6A5C] bg-[#2D231F]/8 border-transparent text-[#2D231F]/60"
               >
                 <Laptop size={14} />
                 Desktop
@@ -1156,10 +1024,10 @@ export default function CreatorPage() {
               value={selectedDeviceId}
               onValueChange={(val) => val && setSelectedDeviceId(val)}
             >
-              <SelectTrigger className="bg-[#1a1012] border-[#d4af37]/30 text-xs text-[#f5c842] px-2 py-1.5 min-w-64">
+              <SelectTrigger className="bg-[#EDE4D5] border-[#2D231F]/30 text-xs text-[#7A6A5C] px-2 py-1.5 min-w-64">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent className="bg-[#1a1012] border-[#d4af37]/30 text-[#f5c842]">
+              <SelectContent className="bg-[#EDE4D5] border-[#2D231F]/30 text-[#7A6A5C]">
                 {DEVICES.filter((d) => d.type === deviceType).map((d) => (
                   <SelectItem key={d.id} value={d.id}>
                     {d.name} ({d.width}x{d.height})
@@ -1169,7 +1037,7 @@ export default function CreatorPage() {
             </Select>
             <button
               onClick={sendDataToIframe}
-              className="p-2 rounded-lg bg-white/3 border border-transparent hover:border-[#d4af37]/35 text-[#f5e6d3]/70 hover:text-[#f5c842] transition-all"
+              className="p-2 rounded-lg bg-[#2D231F]/8 border border-transparent hover:border-[#2D231F]/35 text-[#2D231F]/70 hover:text-[#7A6A5C] transition-all"
             >
               <RefreshCw size={14} />
             </button>
@@ -1242,18 +1110,18 @@ export default function CreatorPage() {
         onClose={() => setShowBankModal(false)}
         maxWidth="max-w-md"
       >
-        <div className="flex flex-col gap-6 text-[#f5e6d3]">
-          <h2 className="text-xl font-bold text-[#d4af37] border-b border-[#d4af37]/20 pb-2">
+        <div className="flex flex-col gap-6 text-[#2D231F]">
+          <h2 className="text-xl font-bold text-[#2D231F] border-b border-[#2D231F]/20 pb-2">
             Quản lý tài khoản mừng cưới
           </h2>
 
-          <div className="flex items-center gap-2 bg-[#1a1012] p-1.5 rounded-lg w-full border border-white/5">
+          <div className="flex items-center gap-2 bg-[#EDE4D5] p-1.5 rounded-lg w-full border border-white/5">
             <button
               onClick={() => setActiveBankTab("groom")}
               className={`flex-1 py-2 text-sm rounded-md font-bold transition-all ${
                 activeBankTab === "groom"
-                  ? "bg-[#d4af37] text-[#0a0508] shadow-[0_2px_8px_rgba(212,175,55,0.3)]"
-                  : "text-[#f5e6d3]/60 hover:text-[#f5e6d3]"
+                  ? "bg-[#2D231F] text-[#F3EDE3] shadow-[0_2px_8px_rgba(45, 35, 31,0.3)]"
+                  : "text-[#2D231F]/60 hover:text-[#2D231F]"
               }`}
             >
               Chú rể
@@ -1262,8 +1130,8 @@ export default function CreatorPage() {
               onClick={() => setActiveBankTab("bride")}
               className={`flex-1 py-2 text-sm rounded-md font-bold transition-all ${
                 activeBankTab === "bride"
-                  ? "bg-[#d4af37] text-[#0a0508] shadow-[0_2px_8px_rgba(212,175,55,0.3)]"
-                  : "text-[#f5e6d3]/60 hover:text-[#f5e6d3]"
+                  ? "bg-[#2D231F] text-[#F3EDE3] shadow-[0_2px_8px_rgba(45, 35, 31,0.3)]"
+                  : "text-[#2D231F]/60 hover:text-[#2D231F]"
               }`}
             >
               Cô dâu
@@ -1272,7 +1140,7 @@ export default function CreatorPage() {
 
           <div className="flex flex-col gap-4">
             <div className="flex flex-col gap-1.5">
-              <Label className="text-xs font-semibold text-[#f5e6d3]/80">
+              <Label className="text-xs font-semibold text-[#2D231F]/80">
                 Tên chủ tài khoản
               </Label>
               <Input
@@ -1285,12 +1153,12 @@ export default function CreatorPage() {
                   )
                 }
                 placeholder="VD: NGUYEN VAN A"
-                className="bg-white/5! border-[#d4af37]/15!"
+                className="bg-[#2D231F]/10! border-[#2D231F]/15!"
               />
             </div>
 
             <div className="flex flex-col gap-1.5">
-              <Label className="text-xs font-semibold text-[#f5e6d3]/80">
+              <Label className="text-xs font-semibold text-[#2D231F]/80">
                 Ngân hàng
               </Label>
               <Select
@@ -1299,10 +1167,10 @@ export default function CreatorPage() {
                   handleBankChange(activeBankTab, "bankName", val)
                 }
               >
-                <SelectTrigger className="bg-[#1a1012] border-[#d4af37]/20 text-[#f5e6d3]">
+                <SelectTrigger className="bg-[#EDE4D5] border-[#2D231F]/20 text-[#2D231F]">
                   <SelectValue placeholder="-- Chọn ngân hàng --" />
                 </SelectTrigger>
-                <SelectContent className="bg-[#1a1012] border-[#d4af37]/20 text-[#f5e6d3]">
+                <SelectContent className="bg-[#EDE4D5] border-[#2D231F]/20 text-[#2D231F]">
                   {POPULAR_BANKS.map((bank) => (
                     <SelectItem key={bank.code} value={bank.name}>
                       {bank.name}
@@ -1313,7 +1181,7 @@ export default function CreatorPage() {
             </div>
 
             <div className="flex flex-col gap-1.5">
-              <Label className="text-xs font-semibold text-[#f5e6d3]/80">
+              <Label className="text-xs font-semibold text-[#2D231F]/80">
                 Số tài khoản
               </Label>
               <Input
@@ -1326,23 +1194,23 @@ export default function CreatorPage() {
                   )
                 }
                 placeholder="Nhập số tài khoản"
-                className="bg-white/5! border-[#d4af37]/15!"
+                className="bg-[#2D231F]/10! border-[#2D231F]/15!"
               />
             </div>
 
             {formData[activeBankTab].bankAccount.qrUrl ? (
-              <div className="flex flex-col items-center gap-2 p-4 bg-white/5 border border-white/10 rounded-xl mt-2 animate-fadeIn">
-                <span className="text-xs text-[#f5e6d3]/60 font-semibold uppercase">
+              <div className="flex flex-col items-center gap-2 p-4 bg-[#2D231F]/10 border border-white/10 rounded-xl mt-2 animate-fadeIn">
+                <span className="text-xs text-[#2D231F]/60 font-semibold uppercase">
                   Mã VietQR tự động
                 </span>
                 <img
                   src={formData[activeBankTab].bankAccount.qrUrl}
                   alt={`QR ${activeBankTab === "groom" ? "Chú rể" : "Cô dâu"}`}
-                  className="w-48 h-48 rounded-lg object-contain border border-dashed border-[#d4af37]/40 p-2 bg-white"
+                  className="w-48 h-48 rounded-lg object-contain border border-dashed border-[#2D231F]/40 p-2 bg-white"
                 />
               </div>
             ) : (
-              <div className="flex flex-col items-center justify-center p-6 border border-dashed border-white/10 rounded-xl mt-2 text-center text-[#f5e6d3]/40 text-xs">
+              <div className="flex flex-col items-center justify-center p-6 border border-dashed border-white/10 rounded-xl mt-2 text-center text-[#2D231F]/40 text-xs">
                 Vui lòng chọn ngân hàng và nhập số tài khoản để tạo mã QR.
               </div>
             )}
@@ -1352,7 +1220,7 @@ export default function CreatorPage() {
             <Button
               variant="default"
               onClick={() => setShowBankModal(false)}
-              className="w-full py-3 bg-[#d4af37] text-black hover:bg-[#f5c842] font-bold rounded-xl"
+              className="w-full py-3 bg-[#2D231F] text-[#F3EDE3] hover:bg-[#C4B09A] font-bold rounded-xl"
             >
               Lưu & Đóng
             </Button>
@@ -1373,32 +1241,32 @@ export default function CreatorPage() {
         onClose={() => setShowSuccessModal(false)}
         maxWidth="max-w-[480px]"
       >
-        <div className="absolute top-0 left-0 w-full h-1.5 bg-linear-to-r from-transparent via-[#d4af37] to-transparent" />
+        <div className="absolute top-0 left-0 w-full h-1.5 bg-linear-to-r from-transparent via-[#2D231F] to-transparent" />
         <div className="relative z-10 flex flex-col items-center text-center w-full gap-6 mt-2">
-          <div className="w-16 h-16 bg-[#d4af37]/10 text-[#f5c842] border border-[#d4af37]/45 rounded-full flex items-center justify-center">
+          <div className="w-16 h-16 bg-[#2D231F]/10 text-[#7A6A5C] border border-[#2D231F]/45 rounded-full flex items-center justify-center">
             <Check size={36} strokeWidth={2.5} />
           </div>
           <div>
-            <h2 className="text-xl font-bold text-[#d4af37]">
+            <h2 className="text-xl font-bold text-[#2D231F]">
               Xuất bản thành công!
             </h2>
-            <p className="text-sm text-[#f5e6d3]/80 mt-2">
+            <p className="text-sm text-[#2D231F]/80 mt-2">
               Thiệp cưới của bạn đã sẵn sàng chia sẻ.
             </p>
           </div>
-          <div className="w-full bg-white/5 border border-white/10 rounded-xl p-4 flex flex-col gap-2">
-            <p className="text-xs text-[#f5e6d3]/60 text-left">
+          <div className="w-full bg-[#2D231F]/10 border border-white/10 rounded-xl p-4 flex flex-col gap-2">
+            <p className="text-xs text-[#2D231F]/60 text-left">
               Link thiệp cưới:
             </p>
             <Input
               readOnly
               value={publishedUrl}
-              className="w-full bg-black/40 border-white/10 text-sm text-[#f5c842]"
+              className="w-full bg-black/40 border-white/10 text-sm text-[#7A6A5C]"
             />
             <div className="flex gap-2">
               <Button
                 variant="outline"
-                className="flex-1 px-3! bg-white/5! hover:bg-white/10!"
+                className="flex-1 px-3! bg-[#2D231F]/10! hover:bg-white/10!"
                 onClick={() => {
                   navigator.clipboard.writeText(publishedUrl);
                   showToast({ title: "Đã copy link", type: "success" });
@@ -1408,7 +1276,7 @@ export default function CreatorPage() {
               </Button>
               <Button
                 variant="outline"
-                className="flex-1 px-3! bg-white/5! hover:bg-white/10!"
+                className="flex-1 px-3! bg-[#2D231F]/10! hover:bg-white/10!"
                 onClick={() => window.open(publishedUrl, "_blank")}
               >
                 <ExternalLink size={14} className="mr-1" /> Mở thiệp
@@ -1418,7 +1286,7 @@ export default function CreatorPage() {
           <Button
             variant="default"
             onClick={() => router.push(PUBLIC_ROUTES.HOME)}
-            className="w-full mt-2 py-3 rounded-xl bg-linear-to-r from-[#d4af37] to-[#f5c842] text-[#0a0508] font-bold"
+            className="w-full mt-2 py-3 rounded-xl bg-[#2D231F] text-[#F3EDE3] font-bold"
           >
             Về trang Quản lý
           </Button>
@@ -1430,28 +1298,28 @@ export default function CreatorPage() {
         onClose={() => setShowMusicModal(false)}
         maxWidth="max-w-xl"
       >
-        <div className="flex flex-col gap-6 text-[#f5e6d3]">
-          <h2 className="text-xl font-bold text-[#d4af37]">
+        <div className="flex flex-col gap-6 text-[#2D231F]">
+          <h2 className="text-xl font-bold text-[#2D231F]">
             Thư viện nhạc nền
           </h2>
 
           <div className="relative">
             <Search
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-[#f5e6d3]/40"
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-[#2D231F]/40"
               size={18}
             />
             <Input
               placeholder="Tìm kiếm bài hát..."
               value={musicSearch}
               onChange={(e) => setMusicSearch(e.target.value)}
-              className="w-full bg-[#1a1012] border-[#d4af37]/20 rounded-xl pl-10 pr-4 py-3 h-auto text-sm focus:border-[#d4af37]"
+              className="w-full bg-[#EDE4D5] border-[#2D231F]/20 rounded-xl pl-10 pr-4 py-3 h-auto text-sm focus:border-[#2D231F]"
             />
           </div>
 
           <div className="flex items-center gap-3">
-            <div className="flex-1 h-px bg-[#d4af37]/20" />
-            <span className="text-xs text-[#f5e6d3]/40">Hoặc</span>
-            <div className="flex-1 h-px bg-[#d4af37]/20" />
+            <div className="flex-1 h-px bg-[#2D231F]/20" />
+            <span className="text-xs text-[#2D231F]/40">Hoặc</span>
+            <div className="flex-1 h-px bg-[#2D231F]/20" />
           </div>
 
           <div className="flex gap-2">
@@ -1460,7 +1328,7 @@ export default function CreatorPage() {
               placeholder="Nhập URL Youtube..."
               value={youtubeUrl}
               onChange={(e) => setYoutubeUrl(e.target.value)}
-              className="flex-1 bg-[#1a1012] border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-red-400"
+              className="flex-1 bg-[#EDE4D5] border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-red-400"
             />
             <Button
               variant="default"
@@ -1473,7 +1341,7 @@ export default function CreatorPage() {
           </div>
 
           <div className="flex flex-col gap-2 mt-4 max-h-75 overflow-y-auto custom-scrollbar pr-2">
-            <span className="text-xs font-bold uppercase text-[#d4af37] mb-2">
+            <span className="text-xs font-bold uppercase text-[#2D231F] mb-2">
               Nhạc mẫu có sẵn
             </span>
             {musics
@@ -1485,7 +1353,7 @@ export default function CreatorPage() {
               .map((music) => (
                 <div
                   key={music.id}
-                  className={`flex items-center justify-between p-3 rounded-xl border transition-all ${music.status === "PROCESSING" ? "opacity-50 cursor-not-allowed border-transparent" : "hover:bg-white/5 border-transparent hover:border-white/10 cursor-pointer"}`}
+                  className={`flex items-center justify-between p-3 rounded-xl border transition-all ${music.status === "PROCESSING" ? "opacity-50 cursor-not-allowed border-transparent" : "hover:bg-[#2D231F]/10 border-transparent hover:border-white/10 cursor-pointer"}`}
                   onClick={() => {
                     if (music.status === "PROCESSING") return;
                     handleChange(
@@ -1507,7 +1375,7 @@ export default function CreatorPage() {
                           previewMusicId === music.id ? null : music.id,
                         );
                       }}
-                      className="w-10 h-10 shrink-0 rounded-full bg-[#d4af37]/10 flex items-center justify-center text-[#f5c842] hover:bg-[#d4af37] hover:text-black transition-all"
+                      className="w-10 h-10 shrink-0 rounded-full bg-[#2D231F]/10 flex items-center justify-center text-[#7A6A5C] hover:bg-[#2D231F] hover:text-[#F3EDE3] transition-all"
                     >
                       {previewMusicId === music.id ? (
                         <Pause size={16} />
@@ -1517,14 +1385,14 @@ export default function CreatorPage() {
                     </button>
                     <div>
                       <p className="text-sm font-bold">{music.name}</p>
-                      <p className="text-xs text-[#f5e6d3]/60">
+                      <p className="text-xs text-[#2D231F]/60">
                         {music.author || "Không rõ"} • {music.usageCount || 0}{" "}
                         lượt dùng
                       </p>
                     </div>
                   </div>
                   <div className="flex flex-col items-end">
-                    <span className="text-xs font-mono text-[#f5e6d3]/40">
+                    <span className="text-xs font-mono text-[#2D231F]/40">
                       {music.duration || "0:00"}
                     </span>
                     {music.status === "PROCESSING" && (
@@ -1547,11 +1415,11 @@ export default function CreatorPage() {
         </div>
       </Modal>
 
-      <div className="md:hidden p-4 border-t border-[#d4af37]/20 bg-[#0a0508] flex gap-3 z-30 shrink-0">
+      <div className="md:hidden p-4 border-t border-[#2D231F]/20 bg-[#F3EDE3] flex gap-3 z-30 shrink-0">
         <Button
           variant="outline"
           onClick={() => router.push("/templates")}
-          className="flex-1 py-3 text-xs bg-white/2! border-[#d4af37]/15! hover:bg-white/5 rounded-xl cursor-pointer"
+          className="flex-1 py-3 text-xs bg-[#2D231F]/8! border-[#2D231F]/15! hover:bg-[#2D231F]/10 rounded-xl cursor-pointer"
         >
           Quay Lại
         </Button>
@@ -1559,7 +1427,7 @@ export default function CreatorPage() {
           variant="default"
           onClick={handlePublish}
           disabled={isPublishing}
-          className="flex-1 py-3 text-xs bg-linear-to-r from-[#d4af37] to-[#f5c842] text-[#0a0508] font-bold rounded-xl flex items-center justify-center gap-1.5 transition-transform cursor-pointer"
+          className="flex-1 py-3 text-xs bg-[#2D231F] text-[#F3EDE3] font-bold rounded-xl flex items-center justify-center gap-1.5 transition-transform cursor-pointer"
         >
           {isPublishing ? <Spinner /> : <Share2 size={14} />} Lưu & Xuất Bản
         </Button>

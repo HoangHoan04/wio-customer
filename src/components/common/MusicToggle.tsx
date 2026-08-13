@@ -146,7 +146,7 @@ const MusicToggle = ({
     >
       {showVolumeSlider && isLoaded && (
         <div
-          className="absolute left-14 top-1/2 -translate-y-1/2 bg-linear-to-r from-[#d4af37] to-[#f5c842] px-4 py-3 rounded-3xl shadow-lg flex items-center min-w-40 gap-3"
+          className="absolute left-14 top-1/2 -translate-y-1/2 bg-linear-to-r from-[#2D231F] to-[#C4B09A] px-4 py-3 rounded-3xl shadow-lg flex items-center min-w-40 gap-3"
           style={{ animation: "slideLeft 0.2s ease-out" }}
         >
           <Slider
@@ -163,7 +163,7 @@ const MusicToggle = ({
             }}
             className="w-full h-4 flex items-center cursor-pointer"
           />
-          <span className="text-[#1a0a0f] text-xs font-bold whitespace-nowrap">
+          <span className="text-[#1a1a1a] text-xs font-bold whitespace-nowrap">
             {Math.round(currentVolume * 100)}%
           </span>
         </div>
@@ -175,15 +175,15 @@ const MusicToggle = ({
         disabled={!isLoaded}
         className="relative w-12 h-12 rounded-full border-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed transition-transform hover:scale-110"
         style={{
-          background: "linear-gradient(135deg, #d4af37 0%, #f5c842 100%)",
-          boxShadow: "0 4px 20px rgba(212,175,55,0.45)",
+          background: "linear-gradient(135deg, #2D231F 0%, #C4B09A 100%)",
+          boxShadow: "0 4px 20px rgba(45, 35, 31,0.45)",
         }}
       >
         {isPlaying && (
-          <span className="absolute -inset-1 rounded-full border-2 border-[#d4af37]/60 animate-pulse" />
+          <span className="absolute -inset-1 rounded-full border-2 border-[#2D231F]/60 animate-pulse" />
         )}
         <span
-          className={`flex items-center justify-center text-[#1a0a0f] ${isPlaying ? "animate-spin" : ""}`}
+          className={`flex items-center justify-center text-[#1a1a1a] ${isPlaying ? "animate-spin" : ""}`}
         >
           {getVolumeIcon()}
         </span>

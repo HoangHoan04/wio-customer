@@ -9,9 +9,9 @@ import { Rocket } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
-const GOLD_START = "#d4af37";
-const GOLD_END = "#f5c842";
-const DARK = "#1a0a0f";
+const GOLD_START = "#2D231F";
+const GOLD_END = "#C4B09A";
+const DARK = "#2D231F";
 
 export default function BackToTop({ threshold = 200 }: { threshold?: number }) {
   const pathname = usePathname();
@@ -72,7 +72,7 @@ export default function BackToTop({ threshold = 200 }: { threshold?: number }) {
               className="group relative flex items-center justify-center size-13 rounded-full border-none shadow-xl transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer"
               style={{
                 background: `linear-gradient(135deg, ${GOLD_START} 0%, ${GOLD_END} 100%)`,
-                boxShadow: "0 4px 20px rgba(212,175,55,0.45)",
+                boxShadow: "0 4px 20px rgba(45, 35, 31,0.45)",
               }}
             >
               <svg className="absolute inset-0 size-full -rotate-90">
@@ -80,7 +80,7 @@ export default function BackToTop({ threshold = 200 }: { threshold?: number }) {
                   cx="26"
                   cy="26"
                   r={radius}
-                  stroke="rgba(26,10,15,0.2)"
+                  stroke="rgba(45, 35, 31,0.2)"
                   strokeWidth="3"
                   fill="transparent"
                 />
@@ -88,7 +88,7 @@ export default function BackToTop({ threshold = 200 }: { threshold?: number }) {
                   cx="26"
                   cy="26"
                   r={radius}
-                  stroke={DARK}
+                  stroke="#F3EDE3"
                   strokeWidth="3.5"
                   fill="transparent"
                   strokeDasharray={circumference}
@@ -101,7 +101,7 @@ export default function BackToTop({ threshold = 200 }: { threshold?: number }) {
               <Rocket
                 className="size-5 transition-transform duration-300 ease-out"
                 style={{
-                  color: DARK,
+                  color: "#F3EDE3",
                   transform: `rotate(-45deg) ${isHovered ? "scale(1.18)" : "scale(1)"}`,
                   transformOrigin: "center",
                 }}

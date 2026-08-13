@@ -15,8 +15,18 @@ import {
 } from "react-konva";
 import { useAudioPlayer } from "../../hooks/useAudioPlayer";
 import { useImageCache } from "./hooks/useImageCache";
-import type { EditorElement } from "./types";
+import type { EditorElement, InvitationEffects } from "./types";
+import InvitationEffectsLayer from "./components/InvitationEffectsLayer";
+import { DEFAULT_INVITATION_EFFECTS } from "./utils/invitation-effects";
 import { getImageCoverCrop } from "./utils/image-fit";
+import {
+  displayTextContent,
+  konvaFontStyle,
+  measureTextBox,
+  MAX_TEXT_FONT_SIZE,
+  MIN_TEXT_FONT_SIZE,
+  MIN_TEXT_WIDTH,
+} from "./utils/text-fit";
 import {
   CalendarWidget,
   CallWidget,
@@ -27,6 +37,28 @@ import {
   RSVPWidget,
   YouTubeWidget,
 } from "./widgets";
+import { buildStackBands } from "./utils/layers";
+
+const TEXT_CORNER_ANCHORS = new Set([
+  "top-left",
+  "top-right",
+  "bottom-left",
+  "bottom-right",
+]);
+const TEXT_WRAP_ANCHORS = new Set(["middle-left", "middle-right"]);
+const TEXT_TRANSFORM_ANCHORS = [
+  "top-left",
+  "top-right",
+  "bottom-left",
+  "bottom-right",
+  "middle-left",
+  "middle-right",
+] as const;
+const DEFAULT_TRANSFORM_ANCHORS = [
+  ...TEXT_TRANSFORM_ANCHORS,
+  "top-center",
+  "bottom-center",
+] as const;
 
 interface Props {
   elements: EditorElement[];
@@ -48,13 +80,18 @@ interface Props {
       width: number;
       height: number;
       rotation: number;
+      fontSize?: number;
     },
   ) => void;
+  autoEditTextId?: string | null;
+  onAutoEditConsumed?: () => void;
   readOnly?: boolean;
   onHeightChange?: (height: number) => void;
   showGrid?: boolean;
   gridType?: "lines" | "dots";
   gridSize?: number;
+  effects?: InvitationEffects;
+  introReplayKey?: number;
 }
 
 export default function Canvas({
@@ -70,25 +107,29 @@ export default function Canvas({
   onDragEnd,
   onDragMove,
   onTransformEnd,
+  autoEditTextId = null,
+  onAutoEditConsumed,
   readOnly = false,
   onHeightChange,
   showGrid = false,
   gridType = "lines",
   gridSize = 40,
+  effects = DEFAULT_INVITATION_EFFECTS,
+  introReplayKey = 0,
 }: Props) {
   const scale = zoom / 100;
-  const stageRef = useRef<Konva.Stage>(null);
+  const stagesMapRef = useRef(new Map<string, { stage: Konva.Stage; z: number }>());
   const transformerRef = useRef<Konva.Transformer>(null);
-  const elementsLayerRef = useRef<Konva.Layer>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [editingTextId, setEditingTextId] = useState<string | null>(null);
   const [editValue, setEditValue] = useState("");
   const editInputRef = useRef<HTMLTextAreaElement>(null);
+  const skipEditCommitRef = useRef(false);
+  const textAnchorRef = useRef("");
 
   const visibleElements = useMemo(
-    () =>
-      elements.filter((el) => el.visible !== false && el.id !== editingTextId),
-    [elements, editingTextId],
+    () => elements.filter((el) => el.visible !== false),
+    [elements],
   );
 
   const musicWidgetEl = useMemo(
@@ -104,15 +145,37 @@ export default function Canvas({
   const audioSrc = musicWidgetEl?.widgetConfig?.audioUrl || "";
   const { isPlaying, playMusic, toggleMusic } = useAudioPlayer(audioSrc);
 
-  const konvaElements = useMemo(
-    () => visibleElements.filter((el) => el.type !== "widget"),
+  const stackBands = useMemo(
+    () => buildStackBands(visibleElements),
     [visibleElements],
   );
+
+  useEffect(() => {
+    stackBands.forEach((band, index) => {
+      const item = stagesMapRef.current.get(band.id);
+      if (item) item.z = 10 + index;
+    });
+  }, [stackBands]);
 
   const selectedElement = useMemo(
     () => elements.find((el) => el.id === selectedElementId) ?? null,
     [elements, selectedElementId],
   );
+
+  const bindStage = useCallback((id: string, z: number) => {
+    return (node: Konva.Stage | null) => {
+      if (node) stagesMapRef.current.set(id, { stage: node, z });
+      else stagesMapRef.current.delete(id);
+    };
+  }, []);
+
+  const findCanvasNode = useCallback((id: string) => {
+    for (const { stage } of stagesMapRef.current.values()) {
+      const node = stage.findOne(`#el-${id}`);
+      if (node) return node;
+    }
+    return null;
+  }, []);
 
   const musicIconMap: Record<
     string,
@@ -147,11 +210,11 @@ export default function Canvas({
   );
 
   useEffect(() => {
-    const layer = elementsLayerRef.current;
-    if (!layer) return;
+    const stages = [...stagesMapRef.current.values()].map((item) => item.stage);
+    if (stages.length === 0) return;
     let frameId: number;
     const draw = () => {
-      layer.batchDraw();
+      stages.forEach((stage) => stage.batchDraw());
       frameId = requestAnimationFrame(draw);
     };
     if (hasAnimatedImages) {
@@ -160,21 +223,34 @@ export default function Canvas({
     return () => {
       if (frameId) cancelAnimationFrame(frameId);
     };
-  }, [hasAnimatedImages]);
+  }, [hasAnimatedImages, stackBands]);
 
   useEffect(() => {
-    if (!transformerRef.current || !selectedElementId) {
+    if (
+      !transformerRef.current ||
+      !selectedElementId ||
+      editingTextId ||
+      selectedElement?.locked ||
+      selectedElement?.type === "widget"
+    ) {
       transformerRef.current?.nodes([]);
       return;
     }
-    const stage = stageRef.current;
-    if (!stage) return;
-    const node = stage.findOne(`#el-${selectedElementId}`);
+    const node = findCanvasNode(selectedElementId);
     if (node) {
       transformerRef.current.nodes([node]);
       transformerRef.current.getLayer()?.batchDraw();
     }
-  }, [selectedElementId, elements]);
+  }, [selectedElementId, elements, editingTextId, selectedElement, findCanvasNode]);
+
+  useEffect(() => {
+    if (!autoEditTextId) return;
+    const el = elements.find((item) => item.id === autoEditTextId);
+    if (el?.type !== "text") return;
+    setEditValue(el.content);
+    setEditingTextId(el.id);
+    onAutoEditConsumed?.();
+  }, [autoEditTextId, elements, onAutoEditConsumed]);
 
   useEffect(() => {
     if (editingTextId && editInputRef.current) {
@@ -186,9 +262,14 @@ export default function Canvas({
   const animTweensRef = useRef<Konva.Tween[]>([]);
 
   useEffect(() => {
-    const stage = stageRef.current;
+    if (introReplayKey > 0) {
+      containerRef.current?.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  }, [introReplayKey]);
+
+  useEffect(() => {
     const container = containerRef.current;
-    if (!stage || !container) return;
+    if (!container) return;
 
     animTweensRef.current.forEach((t) => t.destroy());
     animTweensRef.current = [];
@@ -197,7 +278,7 @@ export default function Canvas({
     const playedIds = new Set<string>();
 
     visibleElements.forEach((el) => {
-      const node = stage.findOne(`#el-${el.id}`);
+      const node = findCanvasNode(el.id);
       if (!node) return;
 
       if (el.motionEnabled) {
@@ -292,7 +373,7 @@ export default function Canvas({
       animTweensRef.current.forEach((t) => t.destroy());
       animTweensRef.current = [];
     };
-  }, [visibleElements, scale]);
+  }, [visibleElements, scale, findCanvasNode]);
 
   function startContinuousMotion(node: Konva.Node, el: EditorElement) {
     const duration = el.continuousMotionDuration;
@@ -327,87 +408,108 @@ export default function Canvas({
     animTweensRef.current.push(anim);
   }
 
-  const forwardEventToUnderlying = (
+  const handleEmptyStagePointer = useCallback((
     e: Konva.KonvaEventObject<MouseEvent | TouchEvent>,
     eventType: "click" | "mousedown" | "touchstart",
   ) => {
-    const evt = e.evt as any;
-    const clientX = evt.clientX || (evt.touches && evt.touches[0]?.clientX);
-    const clientY = evt.clientY || (evt.touches && evt.touches[0]?.clientY);
-    if (clientX === undefined || clientY === undefined) return;
-
-    const targets = document.elementsFromPoint(clientX, clientY);
-    const underlyingTarget = targets.find(
-      (el) => !stageRef.current?.container().contains(el),
-    ) as HTMLElement | undefined;
-
-    if (underlyingTarget) {
-      let forwardedEvent;
-      if (eventType === "touchstart") {
-        forwardedEvent = new TouchEvent("touchstart", {
-          bubbles: true,
-          cancelable: true,
-          touches: evt.touches ? (Array.from(evt.touches) as any) : [],
-          targetTouches: evt.targetTouches
-            ? (Array.from(evt.targetTouches) as any)
-            : [],
-          changedTouches: evt.changedTouches
-            ? (Array.from(evt.changedTouches) as any)
-            : [],
-        });
-      } else {
-        forwardedEvent = new MouseEvent(eventType, {
-          clientX,
-          clientY,
-          bubbles: true,
-          cancelable: true,
-          button: evt.button ?? 0,
-          buttons: evt.buttons ?? 1,
-        });
-      }
-      underlyingTarget.dispatchEvent(forwardedEvent);
-      underlyingTarget.focus();
+    const currentStage = e.target.getStage();
+    const currentZ =
+      [...stagesMapRef.current.values()].find((item) => item.stage === currentStage)
+        ?.z ?? 0;
+    const evt = e.evt as MouseEvent & TouchEvent;
+    const clientX = evt.clientX || evt.touches?.[0]?.clientX;
+    const clientY = evt.clientY || evt.touches?.[0]?.clientY;
+    if (clientX === undefined || clientY === undefined) {
+      onSelect(null);
+      return;
     }
-  };
+
+    const seenStages = new Set<Konva.Stage>();
+    for (const node of document.elementsFromPoint(clientX, clientY)) {
+      if (!(node instanceof Element)) continue;
+      if (currentStage?.container().contains(node)) continue;
+
+      const widget =
+        node instanceof HTMLElement
+          ? (node.closest("[data-canvas-widget]") as HTMLElement | null)
+          : null;
+      if (widget) {
+        widget.dispatchEvent(
+          new MouseEvent(eventType === "touchstart" ? "mousedown" : eventType, {
+            clientX,
+            clientY,
+            bubbles: true,
+            cancelable: true,
+            button: evt.button ?? 0,
+            buttons: evt.buttons ?? 1,
+          }),
+        );
+        return;
+      }
+
+      const stageItem = [...stagesMapRef.current.values()].find((item) =>
+        item.stage.container().contains(node),
+      );
+      if (!stageItem || seenStages.has(stageItem.stage)) continue;
+      seenStages.add(stageItem.stage);
+      if (stageItem.z >= currentZ) continue;
+
+      stageItem.stage.setPointersPositions(evt);
+      const pos = stageItem.stage.getPointerPosition();
+      if (!pos) continue;
+      const hit = stageItem.stage.getIntersection(pos);
+      if (!hit || hit.getClassName() === "Stage") continue;
+      if (
+        hit.getClassName() === "Transformer" ||
+        hit.getParent()?.getClassName() === "Transformer"
+      ) {
+        continue;
+      }
+      const nodeId = hit.id() || hit.getParent()?.id() || "";
+      const id = nodeId.replace("el-", "");
+      if (id) {
+        onSelect(id);
+        return;
+      }
+    }
+
+    onSelect(null);
+  }, [onSelect]);
 
   const handleStageMouseDown = useCallback(
     (e: Konva.KonvaEventObject<MouseEvent>) => {
       if (e.target === e.target.getStage()) {
-        onSelect(null);
-        forwardEventToUnderlying(e, "mousedown");
+        handleEmptyStagePointer(e, "mousedown");
       }
     },
-    [onSelect],
+    [handleEmptyStagePointer],
   );
 
   const handleStageTouchStart = useCallback(
     (e: Konva.KonvaEventObject<TouchEvent>) => {
       if (e.target === e.target.getStage()) {
-        onSelect(null);
-        forwardEventToUnderlying(e, "touchstart");
+        handleEmptyStagePointer(e, "touchstart");
       }
     },
-    [onSelect],
+    [handleEmptyStagePointer],
   );
 
   const handleStageClick = useCallback(
     (e: Konva.KonvaEventObject<MouseEvent>) => {
       if (e.target === e.target.getStage()) {
-        onSelect(null);
-        forwardEventToUnderlying(e, "click");
+        handleEmptyStagePointer(e, "click");
       }
     },
-    [onSelect],
+    [handleEmptyStagePointer],
   );
 
   const handleStageTap = useCallback(
     (e: Konva.KonvaEventObject<TouchEvent>) => {
       if (e.target === e.target.getStage()) {
-        onSelect(null);
-        forwardEventToUnderlying(e, "touchstart");
+        handleEmptyStagePointer(e, "touchstart");
       }
     },
-    [onSelect],
+    [handleEmptyStagePointer],
   );
 
   const handleContainerClick = useCallback(
@@ -452,11 +554,25 @@ export default function Canvas({
   );
 
   const handleEditCommit = useCallback(() => {
-    if (editingTextId && editValue.trim()) {
-      onUpdate(editingTextId, { content: editValue });
+    if (skipEditCommitRef.current) {
+      skipEditCommitRef.current = false;
+      setEditingTextId(null);
+      return;
+    }
+    if (editingTextId) {
+      const el = elements.find((item) => item.id === editingTextId);
+      if (el?.type === "text") {
+        const { height } = measureTextBox(
+          { ...el, content: editValue },
+          "wrap",
+        );
+        onUpdate(editingTextId, { content: editValue, height });
+      } else {
+        onUpdate(editingTextId, { content: editValue });
+      }
     }
     setEditingTextId(null);
-  }, [editingTextId, editValue, onUpdate]);
+  }, [editingTextId, editValue, elements, onUpdate]);
 
   const [dragHeight, setDragHeight] = useState<number | null>(null);
   const dragRef = useRef<{
@@ -515,6 +631,23 @@ export default function Canvas({
   const editingEl = editingTextId
     ? elements.find((el) => el.id === editingTextId)
     : null;
+  const editBox = useMemo(() => {
+    if (!editingEl || editingEl.type !== "text") return null;
+    const { height } = measureTextBox(
+      { ...editingEl, content: editValue || " " },
+      "wrap",
+    );
+    return {
+      width:
+        editingEl.width +
+        (editingEl.paddingLeft ?? 0) +
+        (editingEl.paddingRight ?? 0),
+      height:
+        height +
+        (editingEl.paddingTop ?? 0) +
+        (editingEl.paddingBottom ?? 0),
+    };
+  }, [editingEl, editValue]);
   const bgIsImage =
     canvasBackground.startsWith("http") ||
     canvasBackground.startsWith("blob:") ||
@@ -525,7 +658,13 @@ export default function Canvas({
       return { background: "transparent" };
     }
     if (bgIsImage) {
-      return { background: `url(${canvasBackground}) center/cover no-repeat` };
+      return {
+        backgroundColor: "#FDFBF7",
+        backgroundImage: `url(${canvasBackground})`,
+        backgroundPosition: "center",
+        backgroundSize: "contain",
+        backgroundRepeat: "no-repeat",
+      };
     }
     return { background: canvasBackground };
   }, [canvasBackground, bgIsImage]);
@@ -534,8 +673,8 @@ export default function Canvas({
     if (!showGrid) return null;
 
     const shapes = [];
-    const strokeColor = "rgba(212, 175, 55, 0.15)";
-    const dotColor = "rgba(212, 175, 55, 0.25)";
+    const strokeColor = "rgba(182, 204, 97, 0.15)";
+    const dotColor = "rgba(182, 204, 97, 0.25)";
 
     if (gridType === "lines") {
       for (let x = gridSize; x < canvasWidth; x += gridSize) {
@@ -579,10 +718,17 @@ export default function Canvas({
     return shapes;
   }, [showGrid, gridType, gridSize, canvasWidth, displayHeight]);
 
+  const showTransformer =
+    !readOnly &&
+    !editingTextId &&
+    !!selectedElement &&
+    selectedElement.type !== "widget" &&
+    !selectedElement.locked;
+
   return (
     <div
       ref={containerRef}
-      className="flex-1 bg-[#1a1a1a] flex items-start justify-center overflow-y-auto overflow-x-hidden pt-8"
+      className="flex-1 bg-[#EDE4D5] flex items-start justify-center overflow-y-auto overflow-x-hidden pt-8"
       onClick={handleContainerClick}
     >
       <div className="flex flex-col items-center gap-1 pb-8">
@@ -595,210 +741,134 @@ export default function Canvas({
             }}
           >
             <div
+              onMouseDown={() => {
+                if (!readOnly) onSelect(null);
+              }}
               style={{
                 position: "absolute",
                 inset: 0,
                 borderRadius: "4px",
-                boxShadow: "0 0 60px rgba(0,0,0,0.5)",
+                boxShadow: "0 16px 40px rgba(45,35,31,0.12)",
                 opacity: backgroundOpacity,
                 ...bgStyle,
               }}
             />
-            <Stage
-              ref={stageRef}
+            {showGrid && (
+              <Stage
+                width={canvasWidth * scale}
+                height={displayHeight * scale}
+                scaleX={scale}
+                scaleY={scale}
+                listening={false}
+                style={{
+                  borderRadius: "4px",
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  zIndex: 1,
+                  pointerEvents: "none",
+                }}
+              >
+                <Layer listening={false}>{gridShapes}</Layer>
+              </Stage>
+            )}
+
+            {stackBands.map((band, index) => {
+              const z = 10 + index;
+              if (band.kind === "widget") {
+                if (band.element.widgetType === "music") {
+                  return (
+                    <MusicWidgetOverlay
+                      key={band.id}
+                      element={band.element}
+                      scale={scale}
+                      stackZ={z}
+                      isPlaying={isPlaying}
+                      iconMap={musicIconMap}
+                      onSelect={onSelect}
+                      toggleMusic={toggleMusic}
+                    />
+                  );
+                }
+                return (
+                  <WidgetOverlay
+                    key={band.id}
+                    element={band.element}
+                    scale={scale}
+                    stackZ={z}
+                    isSelected={selectedElementId === band.element.id}
+                    onSelect={onSelect}
+                    onDragEnd={onDragEnd}
+                    canvasWidth={canvasWidth}
+                    canvasHeight={displayHeight}
+                    readOnly={readOnly}
+                  />
+                );
+              }
+
+              const selectedInBand = band.elements.some(
+                (el) => el.id === selectedElementId,
+              );
+              return (
+                <Stage
+                  key={band.id}
+                  ref={bindStage(band.id, z)}
+                  width={canvasWidth * scale}
+                  height={displayHeight * scale}
+                  scaleX={scale}
+                  scaleY={scale}
+                  onMouseDown={handleStageMouseDown}
+                  onTouchStart={handleStageTouchStart}
+                  onClick={handleStageClick}
+                  onTap={handleStageTap}
+                  onDblClick={handleDblClick}
+                  onDblTap={handleDblTap}
+                  style={{
+                    borderRadius: "4px",
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    zIndex: z,
+                    pointerEvents: readOnly ? "none" : "auto",
+                  }}
+                >
+                  <Layer>
+                    {band.elements.map((el) => (
+                      <CanvasElement
+                        key={el.id}
+                        element={el}
+                        onSelect={onSelect}
+                        onDragEnd={onDragEnd}
+                        onDragMove={onDragMove}
+                        readOnly={readOnly}
+                        isEditing={editingTextId === el.id}
+                      />
+                    ))}
+                  </Layer>
+                  {showTransformer && selectedInBand && (
+                    <Layer>
+                      <CanvasTransformer
+                        transformerRef={transformerRef}
+                        textAnchorRef={textAnchorRef}
+                        selectedElement={selectedElement}
+                        elements={elements}
+                        onTransformEnd={onTransformEnd}
+                      />
+                    </Layer>
+                  )}
+                </Stage>
+              );
+            })}
+
+            <InvitationEffectsLayer
+              effects={effects}
               width={canvasWidth * scale}
               height={displayHeight * scale}
-              scaleX={scale}
-              scaleY={scale}
-              onMouseDown={handleStageMouseDown}
-              onTouchStart={handleStageTouchStart}
-              onClick={handleStageClick}
-              onTap={handleStageTap}
-              onDblClick={handleDblClick}
-              onDblTap={handleDblTap}
-              style={{
-                borderRadius: "4px",
-                position: "absolute",
-                top: 0,
-                left: 0,
-                zIndex: 10,
-                pointerEvents: readOnly ? "none" : "auto",
-              }}
-            >
-              <Layer>{gridShapes}</Layer>
+              autoPlayIntro={readOnly}
+              replayKey={introReplayKey}
+            />
 
-              <Layer ref={elementsLayerRef}>
-                {konvaElements
-                  .sort((a, b) => a.zIndex - b.zIndex)
-                  .map((el) => (
-                    <CanvasElement
-                      key={el.id}
-                      element={el}
-                      onSelect={onSelect}
-                      onDragEnd={onDragEnd}
-                      onDragMove={onDragMove}
-                      readOnly={readOnly}
-                    />
-                  ))}
-              </Layer>
-
-              {!readOnly && (
-                <Layer>
-                  <Transformer
-                    ref={transformerRef}
-                    keepRatio={selectedElement?.type === "image"}
-                    boundBoxFunc={(oldBox, newBox) => {
-                      if (newBox.width < 10 || newBox.height < 10)
-                        return oldBox;
-                      return newBox;
-                    }}
-                    onTransformEnd={() => {
-                      const tr = transformerRef.current;
-                      if (!tr) return;
-                      const nodes = tr.nodes();
-                      if (!nodes || nodes.length === 0) return;
-                      const node = nodes[0];
-                      const id = node.id()?.replace("el-", "");
-                      if (!id) return;
-                      const el = elements.find((e) => e.id === id);
-                      if (!el) return;
-                      const isText = el.type === "text";
-                      const paddingL = isText ? (el.paddingLeft ?? 0) : 0;
-                      const paddingR = isText ? (el.paddingRight ?? 0) : 0;
-                      const paddingT = isText ? (el.paddingTop ?? 0) : 0;
-                      const paddingB = isText ? (el.paddingBottom ?? 0) : 0;
-                      const scaleX = node.scaleX();
-                      const scaleY = node.scaleY();
-                      node.scaleX(1);
-                      node.scaleY(1);
-                      onTransformEnd(id, {
-                        x: node.x() + paddingL,
-                        y: node.y() + paddingT,
-                        width:
-                          Math.max(10, node.width() * scaleX) -
-                          paddingL -
-                          paddingR,
-                        height:
-                          Math.max(10, node.height() * scaleY) -
-                          paddingT -
-                          paddingB,
-                        rotation: node.rotation(),
-                      });
-                    }}
-                    borderStroke="#d4af37"
-                    borderStrokeWidth={1.5}
-                    anchorStroke="#d4af37"
-                    anchorFill="white"
-                    anchorSize={8}
-                    rotateEnabled={true}
-                    rotateAnchorBorder={false}
-                    enabledAnchors={[
-                      "top-left",
-                      "top-right",
-                      "bottom-left",
-                      "bottom-right",
-                      "middle-left",
-                      "middle-right",
-                      "top-center",
-                      "bottom-center",
-                    ]}
-                  />
-                </Layer>
-              )}
-            </Stage>
-
-            {musicWidgetEl &&
-              (() => {
-                const color = musicWidgetEl.widgetConfig?.color || "#d4af37";
-                const iconId = musicWidgetEl.widgetConfig?.iconId || "music-1";
-                const IconComp = musicIconMap[iconId] || Music;
-                const iconSize = 20 * scale;
-                const circleSize = 40 * scale;
-                return (
-                  <div
-                    onClick={() => {
-                      onSelect(musicWidgetEl.id);
-                      toggleMusic();
-                    }}
-                    style={{
-                      position: "absolute",
-                      left: musicWidgetEl.x * scale,
-                      top: musicWidgetEl.y * scale,
-                      width: circleSize,
-                      height: circleSize,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      cursor: "pointer",
-                      zIndex: musicWidgetEl.zIndex,
-                      transition: "opacity 0.2s",
-                    }}
-                    title={musicWidgetEl.widgetConfig?.songTitle || "Music"}
-                  >
-                    <div
-                      style={{
-                        position: "absolute",
-                        inset: 0,
-                        borderRadius: "50%",
-                        backgroundColor: color,
-                        opacity: isPlaying ? 0.2 : 0.1,
-                        transition: "opacity 0.3s",
-                      }}
-                    />
-                    <div
-                      style={{
-                        position: "absolute",
-                        inset: 2,
-                        borderRadius: "50%",
-                        border: `2px solid ${color}`,
-                        pointerEvents: "none",
-                        opacity: isPlaying ? 1 : 0.5,
-                        transition: "opacity 0.3s",
-                        boxShadow: isPlaying ? `0 0 8px ${color}40` : "none",
-                      }}
-                    />
-                    <div
-                      style={{
-                        animation: isPlaying
-                          ? "spin 3s linear infinite"
-                          : "none",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                      }}
-                    >
-                      <IconComp
-                        size={iconSize}
-                        color={isPlaying ? color : `${color}99`}
-                      />
-                    </div>
-                  </div>
-                );
-              })()}
-
-            {visibleElements
-              .filter(
-                (el) =>
-                  el.type === "widget" &&
-                  el.widgetType !== "music" &&
-                  el.widgetConfig,
-              )
-              .sort((a, b) => a.zIndex - b.zIndex)
-              .map((el) => (
-                <WidgetOverlay
-                  key={el.id}
-                  element={el}
-                  scale={scale}
-                  isSelected={selectedElementId === el.id}
-                  onSelect={onSelect}
-                  onDragEnd={onDragEnd}
-                  canvasWidth={canvasWidth}
-                  canvasHeight={displayHeight}
-                  readOnly={readOnly}
-                />
-              ))}
-
-            {editingEl && editingTextId && (
+            {editingEl && editingTextId && editBox && (
               <textarea
                 ref={editInputRef}
                 value={editValue}
@@ -806,40 +876,42 @@ export default function Canvas({
                 onBlur={handleEditCommit}
                 onKeyDown={(e) => {
                   if (e.key === "Escape") {
+                    e.preventDefault();
+                    skipEditCommitRef.current = true;
                     setEditingTextId(null);
                   }
                 }}
-                className="absolute outline-none border-2 border-[#d4af37] resize-none z-50 overflow-hidden whitespace-pre-wrap wrap-break-word"
+                className="absolute resize-none overflow-hidden whitespace-pre-wrap wrap-break-word outline-none"
+                onMouseDown={(e) => e.stopPropagation()}
                 style={{
+                  zIndex: 10000,
                   left: (editingEl.x - (editingEl.paddingLeft ?? 0)) * scale,
                   top: (editingEl.y - (editingEl.paddingTop ?? 0)) * scale,
-                  width: Math.max(
-                    100,
-                    (editingEl.width +
-                      (editingEl.paddingLeft ?? 0) +
-                      (editingEl.paddingRight ?? 0)) *
-                      scale,
-                  ),
-                  height:
-                    (editingEl.height +
-                      (editingEl.paddingTop ?? 0) +
-                      (editingEl.paddingBottom ?? 0)) *
-                    scale,
-                  backgroundColor: editingEl.backgroundColor || "transparent",
-                  color: editingEl.color || "#1a1a1a",
-                  fontSize: Math.max(12, editingEl.fontSize * scale),
-                  fontFamily: editingEl.fontFamily,
+                  width: Math.max(MIN_TEXT_WIDTH, editBox.width) * scale,
+                  height: Math.max(editingEl.fontSize * (editingEl.lineHeight || 1.2), editBox.height) * scale,
+                  backgroundColor:
+                    editingEl.backgroundColor &&
+                    editingEl.backgroundColor !== "transparent"
+                      ? editingEl.backgroundColor
+                      : "transparent",
+                  color: editingEl.color || "#2D231F",
+                  caretColor: editingEl.color || "#2D231F",
+                  fontSize: editingEl.fontSize * scale,
+                  fontFamily: `"${editingEl.fontFamily}", sans-serif`,
                   fontWeight: editingEl.fontWeight || "normal",
                   fontStyle: editingEl.fontStyle || "normal",
                   textAlign: editingEl.textAlign || "left",
                   textTransform: editingEl.textTransform || "none",
                   letterSpacing: (editingEl.letterSpacing ?? 0) * scale,
-                  lineHeight: editingEl.lineHeight || 1.4,
+                  lineHeight: editingEl.lineHeight || 1.2,
                   padding: `${(editingEl.paddingTop ?? 0) * scale}px ${(editingEl.paddingRight ?? 0) * scale}px ${(editingEl.paddingBottom ?? 0) * scale}px ${(editingEl.paddingLeft ?? 0) * scale}px`,
-                  borderRadius: `${editingEl.borderRadiusTopLeft ?? 0}px ${editingEl.borderRadiusTopRight ?? 0}px ${editingEl.borderRadiusBottomRight ?? 0}px ${editingEl.borderRadiusBottomLeft ?? 0}px`,
+                  border: "1px solid #2D231F",
+                  borderRadius: 0,
+                  boxShadow: "none",
                   transform: editingEl.rotation
                     ? `rotate(${editingEl.rotation}deg)`
                     : undefined,
+                  transformOrigin: "top left",
                   boxSizing: "border-box",
                 }}
               />
@@ -851,7 +923,7 @@ export default function Canvas({
               onMouseDown={handleResizeStart}
               className="absolute -bottom-3 left-1/2 -translate-x-1/2 w-16 h-6 flex items-center justify-center cursor-s-resize z-10 group"
             >
-              <div className="w-12 h-1.5 rounded-full bg-[#3a3a3a] group-hover:bg-[#d4af37] transition-colors" />
+              <div className="w-12 h-1.5 rounded-full bg-[#D9CDBE] group-hover:bg-[#2D231F] transition-colors" />
             </div>
           )}
         </div>
@@ -860,23 +932,23 @@ export default function Canvas({
           <div className="flex items-center gap-3 mt-4 mb-4">
             <button
               onClick={() => onHeightChange?.(Math.max(100, canvasHeight - 50))}
-              className="w-8 h-8 flex items-center justify-center rounded-md bg-[#3a3a3a] text-white text-lg font-bold hover:bg-[#4a4a4a] transition-colors"
+              className="w-8 h-8 flex items-center justify-center rounded-md bg-[#F3EDE3] border border-[#D9CDBE] text-[#2D231F] text-lg font-bold hover:bg-[#EDE4D5] transition-colors"
             >
               −
             </button>
-            <div className="flex items-center gap-1 bg-[#202020] border border-[#333] rounded-md px-3 py-1.5">
+            <div className="flex items-center gap-1 bg-[#F3EDE3] border border-[#D9CDBE] rounded-md px-3 py-1.5">
               <input
                 type="number"
                 value={displayHeight}
                 onChange={handleHeightInputChange}
-                className="w-16 bg-transparent text-white text-sm text-center font-mono outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                className="w-16 bg-transparent text-[#2D231F] text-sm text-center font-mono outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                 min={100}
               />
-              <span className="text-gray-500 text-xs">px</span>
+              <span className="text-[#7A6A5C]/70 text-xs">px</span>
             </div>
             <button
               onClick={() => onHeightChange?.(canvasHeight + 50)}
-              className="w-8 h-8 flex items-center justify-center rounded-md bg-[#3a3a3a] text-white text-lg font-bold hover:bg-[#4a4a4a] transition-colors"
+              className="w-8 h-8 flex items-center justify-center rounded-md bg-[#F3EDE3] border border-[#D9CDBE] text-[#2D231F] text-lg font-bold hover:bg-[#EDE4D5] transition-colors"
             >
               +
             </button>
@@ -893,6 +965,7 @@ interface ElementProps {
   onDragEnd: (id: string, x: number, y: number) => void;
   onDragMove?: (id: string, x: number, y: number) => void;
   readOnly?: boolean;
+  isEditing?: boolean;
 }
 
 function CanvasElement({
@@ -901,6 +974,7 @@ function CanvasElement({
   onDragEnd,
   onDragMove,
   readOnly = false,
+  isEditing = false,
 }: ElementProps) {
   const image = useImageCache(element.type === "image" ? element.src : "");
 
@@ -960,18 +1034,10 @@ function CanvasElement({
   };
 
   if (element.type === "text") {
-    const displayText = (() => {
-      switch (element.textTransform) {
-        case "uppercase":
-          return element.content.toUpperCase();
-        case "lowercase":
-          return element.content.toLowerCase();
-        case "capitalize":
-          return element.content.replace(/\b\w/g, (c) => c.toUpperCase());
-        default:
-          return element.content;
-      }
-    })();
+    const displayText = displayTextContent(
+      element.content,
+      element.textTransform,
+    );
 
     const groupW = element.width + element.paddingLeft + element.paddingRight;
     const groupH = element.height + element.paddingTop + element.paddingBottom;
@@ -1136,8 +1202,9 @@ function CanvasElement({
         rotation={element.rotation}
         onClick={readOnly ? undefined : handleClick}
         onTap={readOnly ? undefined : handleClick}
-        draggable={readOnly ? false : !element.locked}
+        draggable={readOnly || isEditing ? false : !element.locked}
         onDragEnd={readOnly ? undefined : handleDragEnd}
+        onDragMove={readOnly || !onDragMove ? undefined : handleDragMove}
       >
         <Rect
           x={0}
@@ -1147,7 +1214,7 @@ function CanvasElement({
           fill={
             element.backgroundColor !== "transparent"
               ? element.backgroundColor
-              : undefined
+              : "rgba(0,0,0,0)"
           }
           cornerRadius={[
             element.borderRadiusTopLeft,
@@ -1182,17 +1249,13 @@ function CanvasElement({
           x={element.paddingLeft}
           y={element.paddingTop}
           width={element.width}
-          height={element.height}
           text={displayText}
           fontSize={element.fontSize}
           fontFamily={element.fontFamily}
-          fontStyle={
-            `${element.fontWeight === "bold" ? "bold " : ""}${element.fontStyle === "italic" ? "italic" : ""}`.trim() ||
-            undefined
-          }
+          fontStyle={konvaFontStyle(element)}
           fill={element.color}
           align={element.textAlign}
-          verticalAlign={element.verticalAlign || "middle"}
+          verticalAlign="top"
           letterSpacing={element.letterSpacing}
           lineHeight={element.lineHeight}
           wrap="word"
@@ -1201,16 +1264,17 @@ function CanvasElement({
           shadowOffsetX={element.shadowOffsetX}
           shadowOffsetY={element.shadowOffsetY}
           shadowOpacity={element.shadowBlur > 0 ? 0.4 : 0}
-          opacity={element.opacity}
+          opacity={isEditing ? 0 : element.opacity}
           perfectDrawEnabled={false}
-          listening={!readOnly}
+          listening={!readOnly && !isEditing}
         />
         {hasBorder &&
           (element.borderPosition !== "all" ||
             element.borderStyle === "double") &&
           renderBorder()}
-        {(element.textDecoration === "underline" ||
-          element.textDecoration === "underline line-through") && (
+        {!isEditing &&
+          (element.textDecoration === "underline" ||
+            element.textDecoration === "underline line-through") && (
           <Rect
             x={getDecorationX()}
             y={element.paddingTop + element.height - 2}
@@ -1219,8 +1283,9 @@ function CanvasElement({
             fill={element.color}
           />
         )}
-        {(element.textDecoration === "line-through" ||
-          element.textDecoration === "underline line-through") && (
+        {!isEditing &&
+          (element.textDecoration === "line-through" ||
+            element.textDecoration === "underline line-through") && (
           <Rect
             x={getDecorationX()}
             y={element.paddingTop + element.height / 2}
@@ -1320,7 +1385,7 @@ function CanvasElement({
           width={overrideWidth}
           height={overrideHeight}
           fill={conf.color || "#242526"}
-          stroke="#d4af37"
+          stroke="#2D231F"
           strokeWidth={1.5}
           dash={[5, 5]}
           cornerRadius={6}
@@ -1341,9 +1406,238 @@ function CanvasElement({
   return null;
 }
 
+function CanvasTransformer({
+  transformerRef,
+  textAnchorRef,
+  selectedElement,
+  elements,
+  onTransformEnd,
+}: {
+  transformerRef: React.RefObject<Konva.Transformer | null>;
+  textAnchorRef: React.MutableRefObject<string>;
+  selectedElement: EditorElement | null;
+  elements: EditorElement[];
+  onTransformEnd: Props["onTransformEnd"];
+}) {
+  return (
+    <Transformer
+      ref={transformerRef}
+      keepRatio={selectedElement?.type === "image"}
+      flipEnabled={false}
+      padding={0}
+      rotateAnchorOffset={18}
+      boundBoxFunc={(oldBox, newBox) => {
+        if (newBox.width < MIN_TEXT_WIDTH || newBox.height < 10) return oldBox;
+        return newBox;
+      }}
+      onTransformStart={() => {
+        textAnchorRef.current = transformerRef.current?.getActiveAnchor() ?? "";
+      }}
+      onTransform={() => {
+        const tr = transformerRef.current;
+        const node = tr?.nodes()[0];
+        const el = selectedElement;
+        if (!tr || !node || el?.type !== "text") return;
+        const anchor = textAnchorRef.current;
+        if (TEXT_CORNER_ANCHORS.has(anchor)) {
+          node.scaleY(node.scaleX());
+          return;
+        }
+        if (!TEXT_WRAP_ANCHORS.has(anchor)) return;
+        const nextWidth = Math.max(
+          MIN_TEXT_WIDTH,
+          node.width() * node.scaleX(),
+        );
+        node.scaleX(1);
+        node.scaleY(1);
+        node.width(nextWidth);
+        const group = node as Konva.Group;
+        const textNode = group.findOne("Text") as Konva.Text | undefined;
+        if (textNode) {
+          const padX = (el.paddingLeft ?? 0) + (el.paddingRight ?? 0);
+          const padY = (el.paddingTop ?? 0) + (el.paddingBottom ?? 0);
+          textNode.width(Math.max(MIN_TEXT_WIDTH, nextWidth - padX));
+          node.height(textNode.height() + padY);
+        }
+        tr.forceUpdate();
+      }}
+      onTransformEnd={() => {
+        const tr = transformerRef.current;
+        if (!tr) return;
+        const nodes = tr.nodes();
+        if (!nodes || nodes.length === 0) return;
+        const node = nodes[0];
+        const id = node.id()?.replace("el-", "");
+        if (!id) return;
+        const el = elements.find((item) => item.id === id);
+        if (!el) return;
+        const isText = el.type === "text";
+        const paddingL = isText ? (el.paddingLeft ?? 0) : 0;
+        const paddingR = isText ? (el.paddingRight ?? 0) : 0;
+        const paddingT = isText ? (el.paddingTop ?? 0) : 0;
+        const scaleX = node.scaleX();
+        const scaleY = node.scaleY();
+        node.scaleX(1);
+        node.scaleY(1);
+
+        if (!isText) {
+          onTransformEnd(id, {
+            x: node.x(),
+            y: node.y(),
+            width: Math.max(10, node.width() * scaleX),
+            height: Math.max(10, node.height() * scaleY),
+            rotation: node.rotation(),
+          });
+          return;
+        }
+
+        const anchor = textAnchorRef.current;
+        const groupW = Math.max(
+          MIN_TEXT_WIDTH,
+          node.width() * Math.abs(scaleX),
+        );
+        const width = Math.max(
+          MIN_TEXT_WIDTH,
+          groupW - paddingL - paddingR,
+        );
+
+        if (TEXT_CORNER_ANCHORS.has(anchor)) {
+          const scale = Math.abs(scaleX) || 1;
+          const fontSize = Math.min(
+            MAX_TEXT_FONT_SIZE,
+            Math.max(
+              MIN_TEXT_FONT_SIZE,
+              Math.round(el.fontSize * scale),
+            ),
+          );
+          const { height } = measureTextBox(
+            { ...el, fontSize, width },
+            "wrap",
+          );
+          onTransformEnd(id, {
+            x: node.x() + paddingL,
+            y: node.y() + paddingT,
+            width,
+            height,
+            rotation: node.rotation(),
+            fontSize,
+          });
+          return;
+        }
+
+        const { height } = measureTextBox({ ...el, width }, "wrap");
+        onTransformEnd(id, {
+          x: node.x() + paddingL,
+          y: node.y() + paddingT,
+          width,
+          height,
+          rotation: node.rotation(),
+        });
+      }}
+      borderStroke="#2D231F"
+      borderStrokeWidth={1}
+      anchorStroke="#2D231F"
+      anchorFill="#FDFBF7"
+      anchorSize={7}
+      anchorCornerRadius={1}
+      rotateEnabled={true}
+      rotateAnchorBorder={false}
+      enabledAnchors={
+        selectedElement?.type === "text"
+          ? [...TEXT_TRANSFORM_ANCHORS]
+          : [...DEFAULT_TRANSFORM_ANCHORS]
+      }
+    />
+  );
+}
+
+function MusicWidgetOverlay({
+  element,
+  scale,
+  stackZ,
+  isPlaying,
+  iconMap,
+  onSelect,
+  toggleMusic,
+}: {
+  element: EditorElement;
+  scale: number;
+  stackZ: number;
+  isPlaying: boolean;
+  iconMap: Record<
+    string,
+    React.ComponentType<{ size?: number; className?: string; color?: string }>
+  >;
+  onSelect: (id: string | null) => void;
+  toggleMusic: () => void;
+}) {
+  const color = element.widgetConfig?.color || "#b6cc61";
+  const iconId = element.widgetConfig?.iconId || "music-1";
+  const IconComp = iconMap[iconId] || Music;
+  const iconSize = 20 * scale;
+  const circleSize = 40 * scale;
+  return (
+    <div
+      data-canvas-widget={element.id}
+      onClick={() => {
+        onSelect(element.id);
+        toggleMusic();
+      }}
+      style={{
+        position: "absolute",
+        left: element.x * scale,
+        top: element.y * scale,
+        width: circleSize,
+        height: circleSize,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        cursor: "pointer",
+        zIndex: stackZ,
+        transition: "opacity 0.2s",
+      }}
+      title={element.widgetConfig?.songTitle || "Music"}
+    >
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          borderRadius: "50%",
+          backgroundColor: color,
+          opacity: isPlaying ? 0.2 : 0.1,
+          transition: "opacity 0.3s",
+        }}
+      />
+      <div
+        style={{
+          position: "absolute",
+          inset: 2,
+          borderRadius: "50%",
+          border: `2px solid ${color}`,
+          pointerEvents: "none",
+          opacity: isPlaying ? 1 : 0.5,
+          transition: "opacity 0.3s",
+          boxShadow: isPlaying ? `0 0 8px ${color}40` : "none",
+        }}
+      />
+      <div
+        style={{
+          animation: isPlaying ? "spin 3s linear infinite" : "none",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <IconComp size={iconSize} color={isPlaying ? color : `${color}99`} />
+      </div>
+    </div>
+  );
+}
+
 function WidgetOverlay({
   element,
   scale,
+  stackZ,
   isSelected,
   onSelect,
   onDragEnd,
@@ -1353,6 +1647,7 @@ function WidgetOverlay({
 }: {
   element: EditorElement;
   scale: number;
+  stackZ: number;
   isSelected: boolean;
   onSelect: (id: string | null) => void;
   onDragEnd: (id: string, x: number, y: number) => void;
@@ -1367,6 +1662,7 @@ function WidgetOverlay({
   depsRef.current = { elementId: element.id, onDragEnd, scale };
 
   const handleMouseDown = (e: React.MouseEvent) => {
+    if (readOnly) return;
     const target = e.target as HTMLElement;
     if (
       target.closest(
@@ -1377,6 +1673,7 @@ function WidgetOverlay({
     e.preventDefault();
     const { elementId, onDragEnd, scale } = depsRef.current;
     onSelect(elementId);
+    if (element.locked) return;
 
     const startX = e.clientX;
     const startY = e.clientY;
@@ -1449,8 +1746,9 @@ function WidgetOverlay({
     top: (element.y + offset.y) * scale,
     width: overrideWidth * scale,
     height: "auto",
-    zIndex: element.zIndex,
-    cursor: isSelected ? "move" : "pointer",
+    zIndex: stackZ,
+    cursor:
+      readOnly || element.locked ? "default" : isSelected ? "move" : "pointer",
     outlineOffset: -1,
     borderRadius: 6 * scale,
     touchAction: "none",
@@ -1466,7 +1764,11 @@ function WidgetOverlay({
   };
 
   return (
-    <div style={commonStyle} onMouseDown={handleMouseDown}>
+    <div
+      data-canvas-widget={element.id}
+      style={commonStyle}
+      onMouseDown={handleMouseDown}
+    >
       {element.widgetType === "calendar" && conf.calendarEnabled && (
         <CalendarWidget
           width={overrideWidth}
@@ -1523,6 +1825,9 @@ function WidgetOverlay({
         <QRWidget
           {...widgetProps}
           qrTarget={conf.qrTarget}
+          qrTitle={conf.qrTitle}
+          groomLabel={conf.groomLabel}
+          brideLabel={conf.brideLabel}
           groom={{
             accountName: conf.groomAccountName,
             accountNumber: conf.groomAccountNumber,

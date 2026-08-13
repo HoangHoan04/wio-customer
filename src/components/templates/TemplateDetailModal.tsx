@@ -123,12 +123,12 @@ export default function TemplateDetailModal({
       maxWidth="max-w-[750px]"
       closeOnBackdropClick={true}
     >
-      <div className="absolute top-0 left-0 w-full h-1 bg-linear-to-r from-transparent via-[#d4af37] to-transparent opacity-80" />
+      <div className="absolute top-0 left-0 w-full h-1 bg-linear-to-r from-transparent via-[#2D231F] to-transparent opacity-80" />
 
       <div className="flex flex-col md:flex-row gap-6 mt-2 text-left">
         <div className="w-full md:w-70 shrink-0">
           <div
-            className="relative rounded-xl overflow-hidden border border-[#d4af37]/20 shadow-lg cursor-pointer"
+            className="relative rounded-xl overflow-hidden border border-[#2D231F]/20 shadow-lg cursor-pointer"
             style={{ aspectRatio: "3/4" }}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
@@ -185,7 +185,7 @@ export default function TemplateDetailModal({
             </div>
 
             {template.isPremium && (
-              <span className="absolute top-3 left-3 z-10 bg-[#d4af37] text-[#0a0508] px-2.5 py-1 text-[11px] font-bold tracking-wider rounded-md flex items-center gap-1 shadow-md">
+              <span className="absolute top-3 left-3 z-10 bg-[#C4A574] text-[#2D231F] px-2.5 py-1 text-[11px] font-bold tracking-wider rounded-md flex items-center gap-1 shadow-md">
                 <Sparkles size={11} fill="currentColor" />
                 PREMIUM
               </span>
@@ -195,7 +195,7 @@ export default function TemplateDetailModal({
 
         <div className="flex flex-col flex-1 gap-4">
           <div>
-            <h2 className="text-3xl tracking-[2px] text-[#d4af37] uppercase font-bold">
+            <h2 className="text-3xl tracking-[2px] text-[#7A6A5C] uppercase font-bold">
               {template.name}
             </h2>
 
@@ -204,7 +204,7 @@ export default function TemplateDetailModal({
                 {template.tags.map((tag, idx) => (
                   <span
                     key={idx}
-                    className="bg-[#d4af37]/10 text-[#f5c842] border border-[#d4af37]/25 px-2 py-0.5 rounded text-[10px] font-semibold"
+                    className="bg-[#EDE4D5] text-[#7A6A5C] border border-[#D9CDBE] px-2 py-0.5 rounded text-[10px] font-semibold"
                   >
                     #{tag}
                   </span>
@@ -213,19 +213,19 @@ export default function TemplateDetailModal({
             )}
           </div>
 
-          <p className="text-[#f5e6d3]/80 text-[13.5px] leading-relaxed">
+          <p className="text-[#2D231F]/80 text-[13.5px] leading-relaxed">
             {template.description}
           </p>
 
-          <div className="grid grid-cols-2 gap-3 bg-white/3 border border-[#d4af37]/10 p-3 rounded-lg text-xs text-[#f5e6d3]/80">
+          <div className="grid grid-cols-2 gap-3 bg-[#EDE4D5] border border-[#D9CDBE] p-3 rounded-lg text-xs text-[#2D231F]/80">
             <div className="flex items-center gap-2">
-              <Info size={14} className="text-[#d4af37]" />
+              <Info size={14} className="text-[#2D231F]" />
               <span>
                 Dùng thử: <strong>{template.trialDays} ngày</strong>
               </span>
             </div>
             <div className="flex items-center gap-2">
-              <Sparkles size={14} className="text-[#d4af37]" />
+              <Sparkles size={14} className="text-[#2D231F]" />
               <span>
                 Gói tối thiểu:{" "}
                 <strong className="uppercase">{template.minPlan}</strong>
@@ -234,20 +234,20 @@ export default function TemplateDetailModal({
           </div>
 
           <div>
-            <h4 className="text-xs font-bold text-[#d4af37] uppercase tracking-wider mb-2">
+            <h4 className="text-xs font-bold text-[#2D231F] uppercase tracking-wider mb-2">
               Tính năng nổi bật
             </h4>
             {features.length > 0 ? (
-              <ul className="grid grid-cols-1 sm:grid-cols-1 gap-1.5 text-xs text-[#f5e6d3]/70 list-none pl-0">
+              <ul className="grid grid-cols-1 sm:grid-cols-1 gap-1.5 text-xs text-[#2D231F]/70 list-none pl-0">
                 {features.map((feat, idx) => (
                   <li key={idx} className="flex items-start gap-1.5">
-                    <span className="text-[#d4af37] text-[10px] mt-0.5">◆</span>
+                    <span className="text-[#2D231F] text-[10px] mt-0.5">◆</span>
                     <span>{feat}</span>
                   </li>
                 ))}
               </ul>
             ) : (
-              <p className="text-xs text-[#f5e6d3]/40 italic">
+              <p className="text-xs text-[#2D231F]/40 italic">
                 Chưa có thông tin tính năng.
               </p>
             )}
@@ -257,7 +257,7 @@ export default function TemplateDetailModal({
             <Button
               variant="outline"
               onClick={handlePreview}
-              className="flex-1 py-2.5 bg-white/3! border-[#d4af37]/20! hover:border-[#d4af37]/40! text-[#f5e6d3]! flex items-center justify-center gap-2 rounded-xl text-sm font-semibold transition-all hover:bg-white/5"
+              className="flex-1 py-2.5 bg-[#2D231F]/8! border-[#2D231F]/20! hover:border-[#2D231F]/40! text-[#2D231F]! flex items-center justify-center gap-2 rounded-xl text-sm font-semibold transition-all hover:bg-[#2D231F]/10"
             >
               <Eye size={16} />
               Xem trước
@@ -265,7 +265,7 @@ export default function TemplateDetailModal({
             <Button
               variant="default"
               onClick={handleCreate}
-              className="flex-1 py-2.5 bg-linear-to-r from-[#d4af37] to-[#f5c842] hover:opacity-95! text-[#0a0508] font-bold flex items-center justify-center rounded-xl text-sm transition-all transform active:scale-98"
+              className="flex-1 py-2.5 bg-[#2D231F] hover:opacity-95! text-[#F3EDE3] font-bold flex items-center justify-center rounded-xl text-sm transition-all transform active:scale-98"
             >
               <Heart size={16} fill="currentColor" />
               Tạo thiệp

@@ -155,19 +155,11 @@ export default function TopBar({
   };
 
   return (
-    <header className="h-14 bg-[#2a2a2a] border-b border-[#3a3a3a] flex items-center justify-between px-4 shrink-0 select-none gap-2 relative z-50">
+    <header className="h-14 bg-[#EDE4D5] border-b border-[#D9CDBE] flex items-center justify-between px-4 shrink-0 select-none gap-2 relative z-50">
       <style>{`
-        @keyframes logoShimmer {
-          0%   { text-shadow: 2px 4px 12px rgba(212,175,55,0.4); }
-          50%  { text-shadow: 2px 4px 24px rgba(245,200,66,0.7), 0 0 40px rgba(212,175,55,0.3); }
-          100% { text-shadow: 2px 4px 12px rgba(212,175,55,0.4); }
-        }
         @keyframes fadeSlideDown {
           from { opacity: 0; transform: translateY(-6px); }
           to   { opacity: 1; transform: translateY(0); }
-        }
-        .logo-shimmer {
-          animation: logoShimmer 4s ease-in-out infinite;
         }
       `}</style>
       <div className="flex items-center gap-3 flex-1 min-w-0">
@@ -177,14 +169,14 @@ export default function TopBar({
             onClick={() => router.push(PUBLIC_ROUTES.HOME)}
           >
             <div className="flex flex-col leading-none">
-              <span className="text-[clamp(1rem,3vw,1rem)] font-bold text-[#f5c842] whitespace-nowrap logo-shimmer">
-                Tiệm cưới tân thời
+              <span className="text-[clamp(1rem,3vw,1rem)] font-bold text-[#2D231F] whitespace-nowrap">
+                InviGo
               </span>
             </div>
           </div>
         </div>
 
-        <div className="h-5 w-px bg-[#3a3a3a] shrink-0" />
+        <div className="h-5 w-px bg-[#D9CDBE] shrink-0" />
 
         {editingName ? (
           <div className="flex items-center gap-1">
@@ -194,11 +186,11 @@ export default function TopBar({
               onChange={(e) => setNameInput(e.target.value)}
               onBlur={handleNameSubmit}
               onKeyDown={handleNameKeyDown}
-              className="bg-[#3a3a3a] text-white text-sm px-2 py-0.5 rounded border border-[#d4af37] outline-none w-44"
+              className="bg-[#D9CDBE] text-[#2D231F] text-sm px-2 py-0.5 rounded border border-[#2D231F] outline-none w-44"
             />
             <button
               onClick={handleNameSubmit}
-              className="p-1 text-gray-400 hover:text-white rounded"
+              className="p-1 text-[#7A6A5C] hover:text-[#2D231F] rounded"
             >
               <Check size={14} />
             </button>
@@ -209,22 +201,22 @@ export default function TopBar({
               setNameInput(projectName);
               setEditingName(true);
             }}
-            className="flex items-center gap-1.5 text-gray-300 hover:text-white text-sm transition-colors max-w-45 group"
+            className="flex items-center gap-1.5 text-[#7A6A5C] hover:text-[#2D231F] text-sm transition-colors max-w-45 group"
             title="Nhấp để đổi tên"
           >
             <span className="truncate">{projectName}</span>
             <Pencil
               size={12}
-              className="text-gray-500 group-hover:text-gray-300 shrink-0"
+              className="text-[#7A6A5C]/70 group-hover:text-[#7A6A5C] shrink-0"
             />
           </button>
         )}
 
-        <div className="h-5 w-px bg-[#3a3a3a] shrink-0" />
+        <div className="h-5 w-px bg-[#D9CDBE] shrink-0" />
 
         <a
           href={PUBLIC_ROUTES.HOME}
-          className="flex items-center gap-1 text-gray-500 hover:text-gray-300 text-xs transition-colors shrink-0"
+          className="flex items-center gap-1 text-[#7A6A5C]/70 hover:text-[#7A6A5C] text-xs transition-colors shrink-0"
           title="Về trang chủ"
         >
           <ArrowLeft size={14} />
@@ -234,7 +226,7 @@ export default function TopBar({
 
       <button
         onClick={() => onOpenPreview?.("phone", 440, 956)}
-        className="flex items-center gap-2 px-4 py-1.5 bg-[#d4af37] text-[#1a1a1a] text-sm font-semibold rounded-lg hover:bg-[#e5c04a] transition-colors"
+        className="flex items-center gap-2 px-4 py-1.5 bg-[#2D231F] text-[#F3EDE3] text-sm font-semibold rounded-lg hover:opacity-90 transition-colors"
       >
         <Eye size={16} />
         Xem trước
@@ -246,8 +238,8 @@ export default function TopBar({
             onClick={onToggleLeftBar}
             className={`p-1.5 rounded transition-colors ${
               showLeftBar
-                ? "text-gray-400 hover:text-white hover:bg-[#3a3a3a]"
-                : "text-gray-600 bg-[#1a1a1a]"
+                ? "text-[#7A6A5C] hover:text-[#2D231F] hover:bg-[#F3EDE3]"
+                : "text-[#7A6A5C]/60 bg-[#F3EDE3]"
             }`}
             title={showLeftBar ? "Ẩn thanh công cụ" : "Hiện thanh công cụ"}
           >
@@ -259,8 +251,8 @@ export default function TopBar({
             onClick={onToggleRightBar}
             className={`p-1.5 rounded transition-colors ${
               showRightBar
-                ? "text-gray-400 hover:text-white hover:bg-[#3a3a3a]"
-                : "text-gray-600 bg-[#1a1a1a]"
+                ? "text-[#7A6A5C] hover:text-[#2D231F] hover:bg-[#F3EDE3]"
+                : "text-[#7A6A5C]/60 bg-[#F3EDE3]"
             }`}
             title={showRightBar ? "Ẩn panel phải" : "Hiện panel phải"}
           >
@@ -272,8 +264,8 @@ export default function TopBar({
             onClick={onToggleBottomBar}
             className={`p-1.5 rounded transition-colors ${
               showBottomBar
-                ? "text-gray-400 hover:text-white hover:bg-[#3a3a3a]"
-                : "text-gray-600 bg-[#1a1a1a]"
+                ? "text-[#7A6A5C] hover:text-[#2D231F] hover:bg-[#F3EDE3]"
+                : "text-[#7A6A5C]/60 bg-[#F3EDE3]"
             }`}
             title={showBottomBar ? "Ẩn thanh dưới" : "Hiện thanh dưới"}
           >
@@ -281,7 +273,7 @@ export default function TopBar({
           </button>
         )}
 
-        <div className="h-5 w-px bg-[#3a3a3a] mx-0.5" />
+        <div className="h-5 w-px bg-[#D9CDBE] mx-0.5" />
 
         {onToggleGrid && (
           <>
@@ -289,24 +281,24 @@ export default function TopBar({
               <PopoverTrigger
                 className={`p-1.5 rounded transition-colors ${
                   showGrid
-                    ? "bg-[#d4af37] text-[#1a1a1a]"
-                    : "text-gray-400 hover:text-white hover:bg-[#3a3a3a]"
+                    ? "bg-[#2D231F] text-[#F3EDE3]"
+                    : "text-[#7A6A5C] hover:text-[#2D231F] hover:bg-[#F3EDE3]"
                 }`}
                 title="Cấu hình lưới"
               >
                 <Grid3x3 size={15} />
               </PopoverTrigger>
-              <PopoverContent align="end" className="w-50 bg-[#2a2a2a] border border-[#3a3a3a] rounded-lg shadow-xl p-3 flex flex-col gap-3">
-                <div className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">
+              <PopoverContent align="end" className="w-50 bg-[#EDE4D5] border border-[#D9CDBE] rounded-lg shadow-xl p-3 flex flex-col gap-3">
+                <div className="text-[10px] font-bold text-[#7A6A5C]/70 uppercase tracking-wider">
                   Cấu hình lưới
                 </div>
 
-                <div className="flex items-center justify-between py-1 border-b border-[#3a3a3a] pb-2">
-                  <span className="text-gray-300 text-xs font-medium">Bật lưới:</span>
+                <div className="flex items-center justify-between py-1 border-b border-[#D9CDBE] pb-2">
+                  <span className="text-[#7A6A5C] text-xs font-medium">Bật lưới:</span>
                   <button
                     onClick={onToggleGrid}
                     className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
-                      showGrid ? "bg-[#d4af37]" : "bg-[#3a3a3a]"
+                      showGrid ? "bg-[#2D231F]" : "bg-[#D9CDBE]"
                     }`}
                   >
                     <span
@@ -318,16 +310,16 @@ export default function TopBar({
                 </div>
 
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-gray-400 text-xs">Loại lưới:</label>
+                  <label className="text-[#7A6A5C] text-xs">Loại lưới:</label>
                   <Select
                     value={gridType}
                     onValueChange={(val) => onGridTypeChange?.(val as "lines" | "dots")}
                     disabled={!showGrid}
                   >
-                    <SelectTrigger className="h-8 text-xs bg-[#202020] border-[#333] text-white">
+                    <SelectTrigger className="h-8 text-xs bg-[#F3EDE3] border-[#D9CDBE] text-[#2D231F]">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="bg-[#2a2a2a] border-[#3a3a3a] text-white">
+                    <SelectContent className="bg-[#EDE4D5] border-[#D9CDBE] text-[#2D231F]">
                       <SelectItem value="lines">Đường kẻ</SelectItem>
                       <SelectItem value="dots">Điểm chấm</SelectItem>
                     </SelectContent>
@@ -335,16 +327,16 @@ export default function TopBar({
                 </div>
 
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-gray-400 text-xs">Kích thước ô:</label>
+                  <label className="text-[#7A6A5C] text-xs">Kích thước ô:</label>
                   <Select
                     value={String(gridSize)}
                     onValueChange={(val) => onGridSizeChange?.(Number(val))}
                     disabled={!showGrid}
                   >
-                    <SelectTrigger className="h-8 text-xs bg-[#202020] border-[#333] text-white">
+                    <SelectTrigger className="h-8 text-xs bg-[#F3EDE3] border-[#D9CDBE] text-[#2D231F]">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="bg-[#2a2a2a] border-[#3a3a3a] text-white">
+                    <SelectContent className="bg-[#EDE4D5] border-[#D9CDBE] text-[#2D231F]">
                       <SelectItem value="20">20px</SelectItem>
                       <SelectItem value="40">40px</SelectItem>
                       <SelectItem value="80">80px</SelectItem>
@@ -353,13 +345,13 @@ export default function TopBar({
                 </div>
               </PopoverContent>
             </Popover>
-            <div className="h-5 w-px bg-[#3a3a3a] mx-0.5" />
+            <div className="h-5 w-px bg-[#D9CDBE] mx-0.5" />
           </>
         )}
 
         <button
           onClick={() => onZoomChange(Math.max(25, zoom - 10))}
-          className="p-1.5 text-gray-400 hover:text-white hover:bg-[#3a3a3a] rounded transition-colors"
+          className="p-1.5 text-[#7A6A5C] hover:text-[#2D231F] hover:bg-[#F3EDE3] rounded transition-colors"
           title="Thu nhỏ"
         >
           <ZoomOut size={15} />
@@ -368,13 +360,13 @@ export default function TopBar({
         <div className="relative" ref={zoomMenuRef}>
           <button
             onClick={() => setShowZoomMenu(!showZoomMenu)}
-            className="text-white text-xs w-12 text-center font-mono py-1 rounded hover:bg-[#3a3a3a] transition-colors"
+            className="text-[#2D231F] text-xs w-12 text-center font-mono py-1 rounded hover:bg-[#F3EDE3] transition-colors"
             title="Chọn tỷ lệ zoom"
           >
             {zoom}%
           </button>
           {showZoomMenu && (
-            <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 bg-[#2a2a2a] border border-[#3a3a3a] rounded-lg shadow-xl py-1 min-w-20 z-50">
+            <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 bg-[#EDE4D5] border border-[#D9CDBE] rounded-lg shadow-xl py-1 min-w-20 z-50">
               {ZOOM_PRESETS.map((pct) => (
                 <button
                   key={pct}
@@ -384,8 +376,8 @@ export default function TopBar({
                   }}
                   className={`w-full text-xs px-3 py-1.5 text-center transition-colors ${
                     zoom === pct
-                      ? "text-[#d4af37] bg-[rgba(212,175,55,0.1)]"
-                      : "text-gray-300 hover:bg-[#3a3a3a]"
+                      ? "text-[#2D231F] bg-[rgba(45, 35, 31,0.08)]"
+                      : "text-[#7A6A5C] hover:bg-[#F3EDE3]"
                   }`}
                 >
                   {pct}%
@@ -397,18 +389,18 @@ export default function TopBar({
 
         <button
           onClick={() => onZoomChange(Math.min(200, zoom + 10))}
-          className="p-1.5 text-gray-400 hover:text-white hover:bg-[#3a3a3a] rounded transition-colors"
+          className="p-1.5 text-[#7A6A5C] hover:text-[#2D231F] hover:bg-[#F3EDE3] rounded transition-colors"
           title="Phóng to"
         >
           <ZoomIn size={15} />
         </button>
 
-        <div className="h-5 w-px bg-[#3a3a3a] mx-0.5" />
+        <div className="h-5 w-px bg-[#D9CDBE] mx-0.5" />
 
         <button
           onClick={onUndo}
           disabled={!canUndo}
-          className="p-1.5 text-gray-400 hover:text-white hover:bg-[#3a3a3a] rounded transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+          className="p-1.5 text-[#7A6A5C] hover:text-[#2D231F] hover:bg-[#F3EDE3] rounded transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
           title="Hoàn tác (Ctrl+Z)"
         >
           <Undo2 size={15} />
@@ -416,17 +408,17 @@ export default function TopBar({
         <button
           onClick={onRedo}
           disabled={!canRedo}
-          className="p-1.5 text-gray-400 hover:text-white hover:bg-[#3a3a3a] rounded transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+          className="p-1.5 text-[#7A6A5C] hover:text-[#2D231F] hover:bg-[#F3EDE3] rounded transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
           title="Làm lại (Ctrl+Shift+Z)"
         >
           <Redo2 size={15} />
         </button>
 
-        <div className="h-5 w-px bg-[#3a3a3a] mx-0.5" />
+        <div className="h-5 w-px bg-[#D9CDBE] mx-0.5" />
 
         <button
           onClick={onSave}
-          className="flex items-center gap-1.5 px-2.5 py-1.5 bg-[#3a3a3a] text-white text-xs rounded hover:bg-[#4a4a4a] transition-colors"
+          className="flex items-center gap-1.5 px-2.5 py-1.5 bg-[#D9CDBE] text-[#2D231F] text-xs rounded hover:bg-[#D9CDBE] transition-colors"
           title="Lưu (Ctrl+S)"
         >
           <Save size={13} />
@@ -435,7 +427,7 @@ export default function TopBar({
 
         <button
           onClick={onPublish}
-          className="flex items-center gap-1.5 px-2.5 py-1.5 bg-[#d4af37] text-[#1a1a1a] text-xs font-bold rounded hover:bg-[#e5c04a] transition-colors"
+          className="flex items-center gap-1.5 px-2.5 py-1.5 bg-[#2D231F] text-[#F3EDE3] text-xs font-bold rounded hover:opacity-90 transition-colors"
           title="Xuất bản"
         >
           <Upload size={13} />
@@ -449,10 +441,10 @@ export default function TopBar({
           onClick={() => setShowPreviewModal(false)}
         >
           <div
-            className="bg-[#2a2a2a] border border-[#3a3a3a] rounded-2xl shadow-2xl p-6 w-80"
+            className="bg-[#EDE4D5] border border-[#D9CDBE] rounded-2xl shadow-2xl p-6 w-80"
             onClick={(e) => e.stopPropagation()}
           >
-            <h3 className="text-white text-base font-semibold mb-4 text-center">
+            <h3 className="text-[#2D231F] text-base font-semibold mb-4 text-center">
               Bạn muốn xem bằng:
             </h3>
             <div className="flex flex-col gap-2">
@@ -462,9 +454,9 @@ export default function TopBar({
                   <button
                     key={device.id}
                     onClick={() => handlePreviewDevice(device)}
-                    className="flex items-center gap-3 px-4 py-3 bg-[#202020] hover:bg-[#3a3a3a] rounded-xl text-white text-sm transition-colors"
+                    className="flex items-center gap-3 px-4 py-3 bg-[#F3EDE3] hover:bg-[#F3EDE3] rounded-xl text-[#2D231F] text-sm transition-colors"
                   >
-                    <Icon size={20} className="text-[#d4af37]" />
+                    <Icon size={20} className="text-[#2D231F]" />
                     <span>{device.label}</span>
                   </button>
                 );
@@ -472,7 +464,7 @@ export default function TopBar({
             </div>
             <button
               onClick={() => setShowPreviewModal(false)}
-              className="mt-3 w-full py-2 text-gray-400 hover:text-white text-xs transition-colors"
+              className="mt-3 w-full py-2 text-[#7A6A5C] hover:text-[#2D231F] text-xs transition-colors"
             >
               Hủy
             </button>

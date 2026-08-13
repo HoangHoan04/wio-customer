@@ -15,35 +15,35 @@ export const BasicInfoSection = ({
   slugify,
 }: BasicInfoSectionProps) => {
   return (
-    <div className="bg-white/2 border border-white/5 p-5 rounded-xl shadow-lg flex flex-col gap-5">
-      <h3 className="text-md font-bold text-[#d4af37] border-b border-[#d4af37]/10 pb-2">
+    <div className="bg-[#2D231F]/8 border border-white/5 p-5 rounded-xl shadow-lg flex flex-col gap-5">
+      <h3 className="text-md font-bold text-[#2D231F] border-b border-[#2D231F]/10 pb-2">
         1. Thông tin cơ bản
       </h3>
       <div className="flex flex-col gap-1.5">
-        <Label className="text-xs font-semibold text-[#f5e6d3]/80">
+        <Label className="text-xs font-semibold text-[#2D231F]/80">
           Đường dẫn thiệp (/thiep/___)
         </Label>
         <Input
           value={formData.slug}
           onChange={(e) => handleChange("slug", slugify(e.target.value))}
-          className="bg-white/3! border-[#d4af37]/15!"
+          className="bg-[#2D231F]/8! border-[#2D231F]/15!"
         />
       </div>
 
-      <div className="flex flex-col sm:flex-row sm:items-center gap-3 bg-[#1a1012] p-3 sm:p-2 rounded-lg w-full sm:w-max">
-        <p className="text-sm font-bold text-[#d4af37] shrink-0">
+      <div className="flex flex-col sm:flex-row sm:items-center gap-3 bg-[#f4f8e8] p-3 sm:p-2 rounded-lg w-full sm:w-max">
+        <p className="text-sm font-bold text-[#2D231F] shrink-0">
           Hiển thị theo:{" "}
         </p>
         <div className="flex gap-2 w-full">
           <button
             onClick={() => handleChange("displayOrder", "groom_first")}
-            className={`flex-1 sm:flex-none px-3 py-2 rounded-md text-xs sm:text-sm transition-all cursor-pointer ${formData.displayOrder === "groom_first" ? "bg-[#d4af37] text-[#0a0508] font-bold" : "text-[#f5e6d3]/60 hover:text-[#f5e6d3]"}`}
+            className={`flex-1 sm:flex-none px-3 py-2 rounded-md text-xs sm:text-sm transition-all cursor-pointer ${formData.displayOrder === "groom_first" ? "bg-[#2D231F] text-[#F3EDE3] font-bold" : "text-[#2D231F]/60 hover:text-[#2D231F]"}`}
           >
             Nhà chú rể trước
           </button>
           <button
             onClick={() => handleChange("displayOrder", "bride_first")}
-            className={`flex-1 sm:flex-none px-3 py-2 rounded-md text-xs sm:text-sm transition-all cursor-pointer ${formData.displayOrder === "bride_first" ? "bg-[#d4af37] text-[#0a0508] font-bold" : "text-[#f5e6d3]/60 hover:text-[#f5e6d3]"}`}
+            className={`flex-1 sm:flex-none px-3 py-2 rounded-md text-xs sm:text-sm transition-all cursor-pointer ${formData.displayOrder === "bride_first" ? "bg-[#2D231F] text-[#F3EDE3] font-bold" : "text-[#2D231F]/60 hover:text-[#2D231F]"}`}
           >
             Nhà cô dâu trước
           </button>
@@ -54,12 +54,12 @@ export const BasicInfoSection = ({
         {(formData.displayOrder === "bride_first" ? ["bride", "groom"] : ["groom", "bride"]).map((type) => {
           if (type === "groom") {
             return (
-              <div key="groom" className="flex flex-col gap-3 p-3 bg-white/3 rounded-lg border border-white/5">
-                <span className="text-xs font-bold text-[#d4af37] uppercase">
+              <div key="groom" className="flex flex-col gap-3 p-3 bg-[#2D231F]/8 rounded-lg border border-white/5">
+                <span className="text-xs font-bold text-[#2D231F] uppercase">
                   Chú rể
                 </span>
                 <div className="flex flex-col gap-1.5">
-                  <Label className="text-xs font-semibold text-[#f5e6d3]/80">
+                  <Label className="text-xs font-semibold text-[#2D231F]/80">
                     Họ tên
                   </Label>
                   <Input
@@ -67,11 +67,11 @@ export const BasicInfoSection = ({
                     onChange={(e) =>
                       handleNestedChange("groom", "name", e.target.value)
                     }
-                    className="bg-white/5! border-[#d4af37]/10!"
+                    className="bg-[#2D231F]/10! border-[#2D231F]/10!"
                   />
                 </div>
                 <div className="flex flex-col gap-1.5">
-                  <Label className="text-xs font-semibold text-[#f5e6d3]/80">
+                  <Label className="text-xs font-semibold text-[#2D231F]/80">
                     Tên ngắn
                   </Label>
                   <Input
@@ -79,11 +79,11 @@ export const BasicInfoSection = ({
                     onChange={(e) =>
                       handleNestedChange("groom", "shortName", e.target.value)
                     }
-                    className="bg-white/5! border-[#d4af37]/10!"
+                    className="bg-[#2D231F]/10! border-[#2D231F]/10!"
                   />
                 </div>
                 <div className="flex flex-col gap-1.5">
-                  <Label className="text-xs font-semibold text-[#f5e6d3]/80">
+                  <Label className="text-xs font-semibold text-[#2D231F]/80">
                     Danh xưng
                   </Label>
                   <Input
@@ -91,19 +91,19 @@ export const BasicInfoSection = ({
                     onChange={(e) =>
                       handleNestedChange("groom", "title", e.target.value)
                     }
-                    className="bg-white/5! border-[#d4af37]/10!"
+                    className="bg-[#2D231F]/10! border-[#2D231F]/10!"
                   />
                 </div>
               </div>
             );
           } else {
             return (
-              <div key="bride" className="flex flex-col gap-3 p-3 bg-white/3 rounded-lg border border-white/5">
-                <span className="text-xs font-bold text-[#d4af37] uppercase">
+              <div key="bride" className="flex flex-col gap-3 p-3 bg-[#2D231F]/8 rounded-lg border border-white/5">
+                <span className="text-xs font-bold text-[#2D231F] uppercase">
                   Cô dâu
                 </span>
                 <div className="flex flex-col gap-1.5">
-                  <Label className="text-xs font-semibold text-[#f5e6d3]/80">
+                  <Label className="text-xs font-semibold text-[#2D231F]/80">
                     Họ tên
                   </Label>
                   <Input
@@ -111,11 +111,11 @@ export const BasicInfoSection = ({
                     onChange={(e) =>
                       handleNestedChange("bride", "name", e.target.value)
                     }
-                    className="bg-white/5! border-[#d4af37]/10!"
+                    className="bg-[#2D231F]/10! border-[#2D231F]/10!"
                   />
                 </div>
                 <div className="flex flex-col gap-1.5">
-                  <Label className="text-xs font-semibold text-[#f5e6d3]/80">
+                  <Label className="text-xs font-semibold text-[#2D231F]/80">
                     Tên ngắn
                   </Label>
                   <Input
@@ -123,11 +123,11 @@ export const BasicInfoSection = ({
                     onChange={(e) =>
                       handleNestedChange("bride", "shortName", e.target.value)
                     }
-                    className="bg-white/5! border-[#d4af37]/10!"
+                    className="bg-[#2D231F]/10! border-[#2D231F]/10!"
                   />
                 </div>
                 <div className="flex flex-col gap-1.5">
-                  <Label className="text-xs font-semibold text-[#f5e6d3]/80">
+                  <Label className="text-xs font-semibold text-[#2D231F]/80">
                     Danh xưng
                   </Label>
                   <Input
@@ -135,7 +135,7 @@ export const BasicInfoSection = ({
                     onChange={(e) =>
                       handleNestedChange("bride", "title", e.target.value)
                     }
-                    className="bg-white/5! border-[#d4af37]/10!"
+                    className="bg-[#2D231F]/10! border-[#2D231F]/10!"
                   />
                 </div>
               </div>

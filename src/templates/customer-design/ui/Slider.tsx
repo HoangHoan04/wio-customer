@@ -56,7 +56,7 @@ const Slider = forwardRef<HTMLInputElement, SliderProps>(
             style={{
               fontSize: "11px",
               fontWeight: "bold",
-              color: "#1a0a0f",
+              color: "#2D231F",
               minWidth: "40px",
               textAlign: "center",
             }}
@@ -79,7 +79,7 @@ const Slider = forwardRef<HTMLInputElement, SliderProps>(
             className="slider-track"
             style={{
               position: "absolute",
-              background: "rgba(26, 10, 15, 0.15)",
+              background: "rgba(45, 35, 31, 0.12)",
               borderRadius: "4px",
               ...(isVertical
                 ? {
@@ -99,7 +99,7 @@ const Slider = forwardRef<HTMLInputElement, SliderProps>(
             className="slider-progress"
             style={{
               position: "absolute",
-              background: "linear-gradient(135deg, #d4af37 0%, #f5c842 100%)",
+              background: "linear-gradient(135deg, #2D231F 0%, #C4B09A 100%)",
               borderRadius: "4px",
               transition: "all 0.15s ease",
               ...(isVertical
@@ -155,16 +155,16 @@ const Slider = forwardRef<HTMLInputElement, SliderProps>(
             width: 16px;
             height: 16px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #d4af37 0%, #f5c842 100%);
-            border: 2px solid #1a0a0f;
+            background: linear-gradient(135deg, #2D231F 0%, #C4B09A 100%);
+            border: 2px solid #F3EDE3;
             cursor: pointer;
             transition: all 0.2s ease;
-            box-shadow: 0 2px 8px rgba(212, 175, 55, 0.4);
+            box-shadow: 0 2px 8px rgba(45, 35, 31, 0.18);
           }
 
           .slider-input::-webkit-slider-thumb:hover {
             transform: scale(1.15);
-            box-shadow: 0 4px 12px rgba(212, 175, 55, 0.6);
+            box-shadow: 0 4px 12px rgba(45, 35, 31, 0.22);
           }
 
           .slider-input::-webkit-slider-thumb:active {
@@ -175,16 +175,16 @@ const Slider = forwardRef<HTMLInputElement, SliderProps>(
             width: 16px;
             height: 16px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #d4af37 0%, #f5c842 100%);
-            border: 2px solid #1a0a0f;
+            background: linear-gradient(135deg, #2D231F 0%, #C4B09A 100%);
+            border: 2px solid #F3EDE3;
             cursor: pointer;
             transition: all 0.2s ease;
-            box-shadow: 0 2px 8px rgba(212, 175, 55, 0.4);
+            box-shadow: 0 2px 8px rgba(45, 35, 31, 0.18);
           }
 
           .slider-input::-moz-range-thumb:hover {
             transform: scale(1.15);
-            box-shadow: 0 4px 12px rgba(212, 175, 55, 0.6);
+            box-shadow: 0 4px 12px rgba(45, 35, 31, 0.22);
           }
 
           .slider-input::-moz-range-thumb:active {
@@ -204,11 +204,11 @@ const Slider = forwardRef<HTMLInputElement, SliderProps>(
           }
 
           .slider-input:focus-visible::-webkit-slider-thumb {
-            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.3);
+            box-shadow: 0 0 0 3px rgba(45, 35, 31, 0.18);
           }
 
           .slider-input:focus-visible::-moz-range-thumb {
-            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.3);
+            box-shadow: 0 0 0 3px rgba(45, 35, 31, 0.18);
           }
 
           .slider-input:disabled {

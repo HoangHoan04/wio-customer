@@ -31,18 +31,18 @@ export default function Modal({
   return (
     <>
       <div
-        className="fixed inset-0 z-9999 flex items-center justify-center p-4 bg-[#0a0508]/70 backdrop-blur-md animate-modal-backdrop"
+        className="fixed inset-0 z-9999 flex items-center justify-center p-4 bg-[#F3EDE3]/70 backdrop-blur-md animate-modal-backdrop"
         onClick={handleBackdropClick}
       >
         <div
-          className={`relative w-full ${maxWidth} border border-[#d4af37]/30 bg-[#0a0508] animate-modal-content ${className}`}
+          className={`relative w-full ${maxWidth} border border-[#D9CDBE] bg-[#F3EDE3] animate-modal-content ${className}`}
           style={{ padding: "32px" }}
           onClick={(e) => e.stopPropagation()}
         >
           {!hideCloseButton && (
             <button
               onClick={onClose}
-              className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center rounded-full bg-white/5 text-[#f5e6d3]/60 hover:bg-[#d4af37]/15 hover:text-[#f5c842] transition-colors z-60 cursor-pointer"
+              className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center rounded-full bg-[#EDE4D5] text-[#7A6A5C] hover:bg-[#2D231F]/20 hover:text-[#7A6A5C] transition-colors z-60 cursor-pointer"
             >
               <X size={18} />
             </button>

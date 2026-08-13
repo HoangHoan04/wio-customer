@@ -23,7 +23,7 @@ export default function PublicLayout({
 
   return (
     <div
-      className="w-full min-h-screen relative"
+      className="w-full min-h-screen relative bg-[#F3EDE3] text-[#2D231F]"
       style={{ margin: 0, padding: 0, overflowX: "hidden" }}
     >
       <AppHeader isScrolled={isScrolled} />

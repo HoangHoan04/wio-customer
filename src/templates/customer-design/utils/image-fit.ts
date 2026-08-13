@@ -13,6 +13,16 @@ export function loadImageSize(
   });
 }
 
+export const STICKER_DEFAULT_SIZE = 112;
+
+export function fitStickerToCanvas(
+  width: number,
+  height: number,
+  maxSize = STICKER_DEFAULT_SIZE,
+) {
+  return fitImageToCanvas(width, height, maxSize, maxSize);
+}
+
 export function fitImageToCanvas(
   width: number,
   height: number,

@@ -26,7 +26,7 @@ function extractVideoId(url: string): string | null {
 
 export default function YouTubeWidget({
   youtubeUrl,
-  color = "#d4af37",
+  color = "#b6cc61",
   fontFamily = "Quicksand",
   width,
   height,

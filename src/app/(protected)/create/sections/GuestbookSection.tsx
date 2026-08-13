@@ -12,9 +12,9 @@ export const GuestbookSection = ({
   handleChange,
 }: GuestbookSectionProps) => {
   return (
-    <div className="bg-white/2 border border-white/5 p-5 rounded-xl shadow-lg flex flex-col gap-5">
-      <div className="flex justify-between items-center border-b border-[#d4af37]/10 pb-2">
-        <h3 className="text-md font-bold text-[#d4af37]">
+    <div className="bg-[#2D231F]/8 border border-white/5 p-5 rounded-xl shadow-lg flex flex-col gap-5">
+      <div className="flex justify-between items-center border-b border-[#2D231F]/10 pb-2">
+        <h3 className="text-md font-bold text-[#2D231F]">
           11. Sổ lưu bút (Lời chúc)
         </h3>
         <Switch
@@ -25,7 +25,7 @@ export const GuestbookSection = ({
       </div>
       {formData.showGuestbook && (
         <div className="flex flex-col gap-3 pl-2">
-          <Label className="flex items-center gap-3 cursor-pointer text-sm text-[#f5e6d3]">
+          <Label className="flex items-center gap-3 cursor-pointer text-sm text-[#2D231F]">
             <Checkbox
               checked={formData.guestbookStatic}
               onCheckedChange={(checked) =>
@@ -34,7 +34,7 @@ export const GuestbookSection = ({
             />
             Hiển thị dạng tĩnh (Cuộn danh sách)
           </Label>
-          <Label className="flex items-center gap-3 cursor-pointer text-sm text-[#f5e6d3]">
+          <Label className="flex items-center gap-3 cursor-pointer text-sm text-[#2D231F]">
             <Checkbox
               checked={formData.guestbookFloating}
               onCheckedChange={(checked) =>

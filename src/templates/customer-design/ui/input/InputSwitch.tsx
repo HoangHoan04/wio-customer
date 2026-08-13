@@ -66,7 +66,7 @@ const InputSwitch = forwardRef<HTMLInputElement, InputSwitchProps>(
           htmlFor={inputId}
           className={`
             relative inline-flex shrink-0 ${sizes.wrapper} cursor-pointer rounded-full transition-all duration-200
-            ${checked ? "bg-[#d4af37]" : "bg-gray-300 dark:bg-gray-600"}
+            ${checked ? "bg-[#2D231F]" : "bg-[#D9CDBE]"}
             ${disabled ? "opacity-50 cursor-not-allowed" : ""}
           `}
         >
@@ -94,7 +94,7 @@ const InputSwitch = forwardRef<HTMLInputElement, InputSwitchProps>(
             {label && (
               <label
                 htmlFor={inputId}
-                className={`font-medium text-gray-700 dark:text-gray-300 ${sizes.label} ${
+                className={`font-medium text-[#2D231F] ${sizes.label} ${
                   disabled ? "opacity-50" : "cursor-pointer"
                 }`}
               >
@@ -102,7 +102,7 @@ const InputSwitch = forwardRef<HTMLInputElement, InputSwitchProps>(
               </label>
             )}
             {description && (
-              <span className={`text-gray-500 ${sizes.desc} ${disabled ? "opacity-50" : ""}`}>
+              <span className={`text-[#7A6A5C] ${sizes.desc} ${disabled ? "opacity-50" : ""}`}>
                 {description}
               </span>
             )}

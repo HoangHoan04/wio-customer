@@ -18,12 +18,12 @@ interface Carousel3DItemProps {
 export default function Carousel3DItem({
   children,
   isActive = false,
-  accentColor = "#d4af37",
+  accentColor = "#2D231F",
   className = "",
   style = {},
   onItemClick,
   hoverEffect = true,
-  gradient = "linear-gradient(160deg, #2d1219 0%, #3d1a24 50%, #1a0a0f 100%)",
+  gradient = "linear-gradient(160deg, #2d1219 0%, #3d1a24 50%, #ffffff 100%)",
   clickIndicator,
 }: Carousel3DItemProps) {
   const [isHovered, setIsHovered] = useState(false);
@@ -51,11 +51,11 @@ export default function Carousel3DItem({
           width: "100%",
           height: "100%",
           background: gradient,
-          border: `2px solid ${isActive ? accentColor : "rgba(212,175,55,0.2)"}`,
+          border: `2px solid ${isActive ? accentColor : "rgba(45, 35, 31,0.2)"}`,
           borderRadius: "16px",
           overflow: "hidden",
           boxShadow: isActive
-            ? `0 25px 50px rgba(0,0,0,0.5), 0 0 80px rgba(212,175,55,0.3)`
+            ? `0 25px 50px rgba(0,0,0,0.5), 0 0 80px rgba(45, 35, 31,0.3)`
             : "0 15px 35px rgba(0,0,0,0.4)",
           transition: "all 0.4s ease",
           position: "relative",

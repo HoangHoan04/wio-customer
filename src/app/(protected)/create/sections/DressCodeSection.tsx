@@ -166,9 +166,9 @@ export const DressCodeSection = ({
   };
 
   return (
-    <div className="bg-white/2 border border-white/5 p-5 rounded-xl shadow-lg flex flex-col gap-5">
-      <div className="flex justify-between items-center border-b border-[#d4af37]/10 pb-2">
-        <h3 className="text-md font-bold text-[#d4af37]">
+    <div className="bg-[#2D231F]/8 border border-white/5 p-5 rounded-xl shadow-lg flex flex-col gap-5">
+      <div className="flex justify-between items-center border-b border-[#2D231F]/10 pb-2">
+        <h3 className="text-md font-bold text-[#2D231F]">
           8. Dress Code
         </h3>
         <Switch
@@ -179,7 +179,7 @@ export const DressCodeSection = ({
       </div>
       {formData.showDressCode && (
         <div className="flex flex-col gap-4">
-          <span className="text-xs text-[#f5e6d3]/60">
+          <span className="text-xs text-[#2D231F]/60">
             Chọn màu chủ đạo:
           </span>
           <div className="flex flex-wrap gap-2">
@@ -190,7 +190,7 @@ export const DressCodeSection = ({
                   key={color}
                   onClick={() => toggleDressCode(color)}
                   style={{ backgroundColor: color }}
-                  className={`w-8 h-8 rounded-full border-2 transition-transform cursor-pointer ${isSelected ? "border-[#d4af37] scale-110 shadow-[0_0_10px_#d4af37]" : "border-white/10 hover:scale-110"}`}
+                  className={`w-8 h-8 rounded-full border-2 transition-transform cursor-pointer ${isSelected ? "border-[#2D231F] scale-110 shadow-[0_0_10px_#2D231F]" : "border-white/10 hover:scale-110"}`}
                   title={color}
                 />
               );
@@ -200,14 +200,14 @@ export const DressCodeSection = ({
           <button
             type="button"
             onClick={() => setShowCustomPicker(!showCustomPicker)}
-            className="mt-2 text-xs text-[#d4af37] hover:text-[#f5c842] flex items-center gap-1.5 font-medium border border-[#d4af37]/30 hover:border-[#d4af37]/60 px-3 py-1.5 rounded-lg bg-[#d4af37]/5 transition-colors w-max"
+            className="mt-2 text-xs text-[#2D231F] hover:text-[#7A6A5C] flex items-center gap-1.5 font-medium border border-[#2D231F]/30 hover:border-[#2D231F]/60 px-3 py-1.5 rounded-lg bg-[#2D231F]/5 transition-colors w-max"
           >
             <Plus size={14} /> Tự chọn màu tự do
           </button>
 
           {showCustomPicker && (
-            <div className="flex flex-col gap-3 p-3 bg-white/5 border border-white/10 rounded-lg">
-              <span className="text-xs text-[#f5e6d3]/60 font-medium">
+            <div className="flex flex-col gap-3 p-3 bg-[#2D231F]/10 border border-white/10 rounded-lg">
+              <span className="text-xs text-[#2D231F]/60 font-medium">
                 Bảng màu tự do (nhấn và di để chọn):
               </span>
               <div
@@ -243,7 +243,7 @@ export const DressCodeSection = ({
                     <Input
                       value={customColor}
                       onChange={(e) => handleHexInput(e.target.value)}
-                      className="bg-white/5! border-[#d4af37]/20! text-xs font-mono uppercase"
+                      className="bg-[#2D231F]/10! border-[#2D231F]/20! text-xs font-mono uppercase"
                       placeholder="#HEXCODE"
                     />
                   </div>
@@ -283,7 +283,7 @@ export const DressCodeSection = ({
                         });
                       }
                     }}
-                    className="bg-[#d4af37] text-black hover:bg-[#b08d20] text-xs font-semibold px-4 rounded-lg shrink-0"
+                    className="bg-[#2D231F] text-[#F3EDE3] hover:bg-[#9db356] text-xs font-semibold px-4 rounded-lg shrink-0"
                   >
                     Thêm
                   </Button>
@@ -293,8 +293,8 @@ export const DressCodeSection = ({
           )}
 
           {formData.dressCodes.length > 0 && (
-            <div className="mt-2 p-3 bg-white/5 rounded-lg border border-white/10 flex items-center flex-wrap gap-3">
-              <span className="text-sm text-[#f5e6d3]/80">
+            <div className="mt-2 p-3 bg-[#2D231F]/10 rounded-lg border border-white/10 flex items-center flex-wrap gap-3">
+              <span className="text-sm text-[#2D231F]/80">
                 Màu đã chọn:
               </span>
               {formData.dressCodes.map((color: string) => (

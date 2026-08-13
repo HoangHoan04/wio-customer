@@ -41,12 +41,12 @@ export function DatePicker({
       <PopoverTrigger
         className={cn(
           buttonVariants({ variant: "outline" }),
-          "w-full justify-start text-left font-normal bg-white/5! border-[#d4af37]/10! text-[#f5e6d3] hover:bg-white/10 hover:text-white",
+          "w-full justify-start text-left font-normal bg-[#2D231F]/10! border-[#2D231F]/10! text-[#2D231F] hover:bg-[#2D231F]/15 hover:text-[#2D231F]",
           !value && "text-muted-foreground",
           className,
         )}
       >
-        <CalendarIcon className="mr-2 h-4 w-4 text-[#d4af37]" />
+        <CalendarIcon className="mr-2 h-4 w-4 text-[#7A6A5C]" />
         {dateValue ? (
           format(dateValue, "dd/MM/yyyy")
         ) : (
@@ -54,7 +54,7 @@ export function DatePicker({
         )}
       </PopoverTrigger>
       <PopoverContent
-        className="w-auto p-0 bg-[#0f0608] border border-[#d4af37]/20"
+        className="w-auto p-0 bg-[#ffffff] border border-[#2D231F]/20"
         align="start"
       >
         <Calendar

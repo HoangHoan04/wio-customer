@@ -30,14 +30,34 @@ export const API_ENDPOINTS = {
     INCREMENT_VIEW: "/api/user/template/increment-view",
     INCREMENT_PREVIEW: "/api/user/template/increment-preview",
   },
-  WEDDING: {
-    CREATE: "/api/user/wedding/create",
-    UPDATE: "/api/user/wedding/update",
-    PUBLISH: "/api/user/wedding/publish",
-    UNPUBLISH: "/api/user/wedding/unpublish",
-    FIND_BY_ID: "/api/user/wedding/find-by-id",
-    FIND_BY_SLUG: "/api/user/wedding/public/find-by-slug",
-    PAGINATION: "/api/user/wedding/pagination",
+  CARD_TYPE: {
+    PUBLIC_LIST: "/api/user/card-type/public/list",
+  },
+  ANALYTICS: {
+    PUBLIC_OVERVIEW: "/api/user/analytics/public/overview",
+  },
+  REVIEW: {
+    PUBLIC_LIST: "/api/user/review/public/list",
+    PUBLIC_CREATE: "/api/user/review/public/create",
+  },
+  STOCK_ASSET: {
+    PUBLIC_LIST: "/api/user/stock-asset/public/list",
+  },
+  INVITATION: {
+    PAGINATION: "/api/user/invitation/pagination",
+    FIND_BY_ID: "/api/user/invitation/find-by-id",
+    CREATE: "/api/user/invitation/create",
+    UPDATE: "/api/user/invitation/update",
+    DELETE: "/api/user/invitation/delete",
+    PUBLISH: "/api/user/invitation/publish",
+    UNPUBLISH: "/api/user/invitation/unpublish",
+    ARCHIVE: "/api/user/invitation/archive",
+    CHECK_SLUG: "/api/user/invitation/check-slug",
+    FIND_BY_SLUG: "/api/user/invitation/public/find-by-slug",
+  },
+  /** @deprecated dùng INVITATION */
+  get WEDDING() {
+    return this.INVITATION;
   },
   UPLOAD_FILE: {
     IMAGE: "/api/upload/upload-file/upload-image",
@@ -69,12 +89,18 @@ export const API_ENDPOINTS = {
 
   WISH: {
     PAGINATION: "/api/user/wish/pagination",
-    CREATE: "/api/user/wish/create",
+    FIND_BY_ID: "/api/user/wish/find-by-id",
+    PUBLIC_CREATE: "/api/user/wish/public/create",
     APPROVE: "/api/user/wish/approve",
     REJECT: "/api/user/wish/reject",
     PIN: "/api/user/wish/pin",
     UNPIN: "/api/user/wish/unpin",
     DELETE: "/api/user/wish/delete",
+  },
+  PHOTO_WALL: {
+    PAGINATION: "/api/user/photo-wall/pagination",
+    FIND_BY_ID: "/api/user/photo-wall/find-by-id",
+    PUBLIC_UPLOAD: "/api/user/photo-wall/public/upload",
   },
   TABLE: {
     PAGINATION: "/api/user/table/pagination",

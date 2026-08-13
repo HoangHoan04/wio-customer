@@ -31,14 +31,14 @@ const InputText = forwardRef<HTMLInputElement, InputTextProps>(
     return (
       <div className={`flex flex-col gap-1.5 ${wrapperClassName}`}>
         {label && (
-          <label htmlFor={inputId} className="text-sm font-medium text-gray-700 dark:text-gray-300">
+          <label htmlFor={inputId} className="text-sm font-medium text-[#2D231F]">
             {label}
           </label>
         )}
 
         <div className="relative flex items-center w-full">
           {leftIcon && (
-            <div className="absolute left-4 flex items-center justify-center pointer-events-none text-gray-400 dark:text-gray-500">
+            <div className="absolute left-4 flex items-center justify-center pointer-events-none text-[#7A6A5C]">
               {leftIcon}
             </div>
           )}
@@ -49,17 +49,16 @@ const InputText = forwardRef<HTMLInputElement, InputTextProps>(
             type={type}
             className={`
               w-full h-12 rounded-lg border transition-all duration-200
-              bg-white dark:bg-[#191919]
-              ${leftIcon ? "pl-11!" : "px-4!"} 
+              bg-[#F3EDE3] border-[#D9CDBE] text-[#2D231F]
+              ${leftIcon ? "pl-11!" : "px-4!"}
               ${rightIcon ? "pr-11!" : "px-4!"}
               ${
                 error
                   ? "border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-200"
-                  : "border-gray-300 dark:border-gray-600 focus:border-[#d4af37] focus:ring-2 focus:ring-[#d4af37]/20"
+                  : "focus:border-[#2D231F] focus:ring-2 focus:ring-[rgba(45,35,31,0.1)]"
               }
-              text-gray-900 dark:text-gray-100
-              placeholder:text-gray-400
-              disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed
+              placeholder:text-[#7A6A5C]/50
+              disabled:bg-[#EDE4D5] disabled:text-[#7A6A5C] disabled:cursor-not-allowed
               outline-none
               ${className}
             `}
@@ -67,7 +66,7 @@ const InputText = forwardRef<HTMLInputElement, InputTextProps>(
           />
 
           {rightIcon && (
-            <div className="absolute right-4 flex items-center justify-center text-gray-400 dark:text-gray-500">
+            <div className="absolute right-4 flex items-center justify-center text-[#7A6A5C]">
               {rightIcon}
             </div>
           )}

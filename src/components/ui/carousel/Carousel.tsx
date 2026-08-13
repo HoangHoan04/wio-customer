@@ -48,8 +48,8 @@ export default function Carousel({
   nextIcon,
   className = "",
 }: CarouselProps) {
-  const accent = colors.accent ?? "#d4af37";
-  const buttonBg = colors.buttonBg ?? "rgba(26, 10, 15, 0.9)";
+  const accent = colors.accent ?? "#2D231F";
+  const buttonBg = colors.buttonBg ?? "rgba(45, 35, 31, 0.9)";
   const buttonHoverBg = colors.buttonHoverBg ?? `${accent}22`;
   const dotInactive = colors.dotInactive ?? `${accent}40`;
 

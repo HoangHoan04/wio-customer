@@ -1,12 +1,11 @@
 export interface GuestDto {
   id: string;
-  weddingId: string;
+  invitationId: string;
   tableId?: string;
+  groupId?: string;
+  groupCode?: string;
   fullName: string;
-  phone?: string;
-  email?: string;
   salutation?: string;
-  side: string;
   isVip: boolean;
   invitationCode: string;
   qrCodeUrl?: string;
@@ -22,13 +21,12 @@ export interface GuestDto {
 }
 
 export interface FilterGuestDto {
-  weddingId?: string;
+  invitationId?: string;
   tableId?: string;
+  groupId?: string;
+  groupCode?: string;
   fullName?: string;
-  phone?: string;
-  email?: string;
   salutation?: string;
-  side?: string;
   isVip?: boolean;
   invitationCode?: string;
   rsvpStatus?: string;
@@ -38,13 +36,12 @@ export interface FilterGuestDto {
 }
 
 export interface CreateGuestReq {
-  weddingId: string;
+  invitationId: string;
   tableId?: string;
+  groupId?: string;
+  groupCode?: string;
   fullName: string;
-  phone?: string;
-  email?: string;
   salutation?: string;
-  side?: string;
   isVip?: boolean;
   invitationCode?: string;
   rsvpStatus?: string;

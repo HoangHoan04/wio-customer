@@ -60,24 +60,24 @@ export default function InputDateTime({
       className={`flex flex-col gap-1.5 relative w-full text-left ${className}`}
     >
       {label && (
-        <label className="text-xs font-semibold text-[#f5e6d3]/85">
+        <label className="text-xs font-semibold text-[#2D231F]/85">
           {label} {required && <span className="text-red-500">*</span>}
         </label>
       )}
 
       <div
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full h-12 bg-white/3 border border-[#d4af37]/20 hover:border-[#d4af37]/45 text-[#f5e6d3] px-3.5 flex items-center justify-between rounded-lg text-sm cursor-pointer select-none transition-colors"
+        className="w-full h-12 bg-[#F3EDE3] border border-[#D9CDBE] hover:border-[#2D231F]/45 text-[#2D231F] px-3.5 flex items-center justify-between rounded-lg text-sm cursor-pointer select-none transition-colors"
       >
-        <span className={value ? "text-[#f5e6d3]" : "text-[#f5e6d3]/40"}>
+        <span className={value ? "text-[#2D231F]" : "text-[#2D231F]/40"}>
           {formatDateTimeLabel(displayDate, displayTime)}
         </span>
-        <CalendarIcon size={16} className="text-[#d4af37]/65" />
+        <CalendarIcon size={16} className="text-[#2D231F]/65" />
       </div>
 
       {isOpen && (
-        <div className="absolute top-18.5 left-0 z-50 w-full bg-[#0f0608]/95 border border-[#d4af37]/35 rounded-xl p-4 shadow-2xl backdrop-blur-md flex flex-col gap-4">
-          <div className="text-xs font-bold text-[#d4af37] border-b border-[#d4af37]/15 pb-2 uppercase tracking-wide">
+        <div className="absolute top-18.5 left-0 z-50 w-full bg-[#F3EDE3]/95 border border-[#2D231F]/35 rounded-xl p-4 shadow-2xl backdrop-blur-md flex flex-col gap-4">
+          <div className="text-xs font-bold text-[#2D231F] border-b border-[#2D231F]/15 pb-2 uppercase tracking-wide">
             Cấu hình thời gian
           </div>
 
@@ -86,7 +86,7 @@ export default function InputDateTime({
           <button
             type="button"
             onClick={() => setIsOpen(false)}
-            className="w-full h-8 bg-[#d4af37] text-[#0a0508] font-bold text-xs rounded-lg border-none cursor-pointer hover:bg-[#f5c842] transition-colors mt-1"
+            className="w-full h-8 bg-[#2D231F] text-[#F3EDE3] font-bold text-xs rounded-lg border-none cursor-pointer hover:bg-[#C4B09A] transition-colors mt-1"
           >
             Xác nhận
           </button>

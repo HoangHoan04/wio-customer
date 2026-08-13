@@ -24,7 +24,7 @@ export interface RsvpStatusOption {
 
 export const enumData: {
   THEME_CODE: Record<string, ThemeCodeOption>;
-  WEDDING_STATUS: Record<string, WeddingStatusOption>;
+  INVITATION_STATUS: Record<string, WeddingStatusOption>;
   SIDE_OPTIONS: Record<string, SideOption>;
   RSVP_STATUS: Record<string, RsvpStatusOption>;
 } = {
@@ -66,7 +66,7 @@ export const enumData: {
     },
   },
 
-  WEDDING_STATUS: {
+  INVITATION_STATUS: {
     DRAFT: {
       code: "DRAFT",
       name: "Nháp",

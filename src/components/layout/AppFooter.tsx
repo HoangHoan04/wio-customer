@@ -36,10 +36,10 @@ const SOCIAL_LINKS = [
 ];
 
 const NAV_LINKS = [
-  { label: "Về Chúng Tôi", href: "/about" },
+  { label: "Về chúng tôi", href: "/about" },
   { label: "Mẫu thiệp", href: "/templates" },
-  { label: "Câu Hỏi Thường Gặp", href: "#" },
-  { label: "Hợp Tác", href: "#" },
+  { label: "Câu hỏi thường gặp", href: "/#faq" },
+  { label: "Hướng dẫn", href: "/user-manual" },
 ];
 
 const CONTACT_INFO = [
@@ -76,8 +76,8 @@ function SocialBtn({
       href={href}
       title={label}
       aria-label={label}
-      className={`w-10 h-10 rounded-full border border-[#d4af37]/45 flex items-center justify-center text-[#d4af37] no-underline transition-all duration-250 shrink-0
-        ${hovered ? "bg-linear-to-br from-[#d4af37] to-[#f5c842] text-[#1a0a0f] border-transparent -translate-y-0.5 shadow-lg" : "bg-[#d4af37]/6"}`}
+      className={`w-10 h-10 rounded-full border border-[#2D231F]/20 flex items-center justify-center text-[#2D231F] no-underline transition-all duration-250 shrink-0
+        ${hovered ? "bg-[#2D231F] text-[#F3EDE3] border-transparent -translate-y-0.5 shadow-lg" : "bg-transparent"}`}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
@@ -92,12 +92,12 @@ function FooterLink({ href, label }: { href: string; label: string }) {
     <li>
       <Link
         href={href}
-        className={`flex items-center gap-2 text-[13.5px] text-[#a87d5e] no-underline transition-all duration-200 ${hovered ? "text-[#f5c842] gap-3" : ""}`}
+        className={`flex items-center gap-2 text-[13.5px] text-[#7A6A5C] no-underline transition-all duration-200 ${hovered ? "text-[#2D231F] gap-3" : ""}`}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
       >
         <span
-          className={`text-[#d4af37] text-base leading-none transition-transform duration-200 ${hovered ? "translate-x-0.5" : ""}`}
+          className={`text-[#2D231F]/35 text-base leading-none transition-transform duration-200 ${hovered ? "translate-x-0.5 text-[#2D231F]" : ""}`}
         >
           ›
         </span>
@@ -136,16 +136,16 @@ function NewsletterForm() {
         placeholder="Nhập email của bạn..."
         required
         aria-label="Nhập email đăng ký nhận bản tin"
-        className={`w-full h-13 px-5 text-sm text-[#e8d5c0] bg-[#1a0a0f]/60 border-[1.5px] border-[#d4af37]/25 rounded-xl sm:rounded-r-none outline-none transition-all sm:border-r-0
-          ${focused ? "border-[#d4af37]/60 shadow-[0_0_0_3px_rgba(212,175,55,0.1),inset_0_0_20px_rgba(212,175,55,0.05)]" : ""}`}
+        className={`w-full h-13 px-5 text-sm text-[#7A6A5C] bg-[#F3EDE3]/60 border-[1.5px] border-[#2D231F]/25 rounded-xl sm:rounded-r-none outline-none transition-all sm:border-r-0
+          ${focused ? "border-[#2D231F]/60 shadow-[0_0_0_3px_rgba(45, 35, 31,0.1),inset_0_0_20px_rgba(45, 35, 31,0.05)]" : ""}`}
       />
       <Button
         type="submit"
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
-        className={`h-13 px-8 bg-linear-to-r from-[#d4af37] via-[#f5c842] to-[#d4af37] bg-size-[200%] border-none rounded-xl sm:rounded-l-none text-[#1a0a0f] text-xs font-bold tracking-wider uppercase cursor-pointer flex items-center justify-center gap-2 transition-all whitespace-nowrap shadow-lg ${hovered ? "bg-right shadow-xl scale-[1.02]" : ""}`}
+        className={`h-13 px-8 bg-[#2D231F] bg-size-[200%] border-none rounded-xl sm:rounded-l-none text-[#F3EDE3] text-xs font-bold tracking-wider uppercase cursor-pointer flex items-center justify-center gap-2 transition-all whitespace-nowrap shadow-lg ${hovered ? "bg-right shadow-xl scale-[1.02]" : ""}`}
       >
-        {submitted ? "Đã Gửi" : "Đăng Ký"}
+        {submitted ? "Đã gửi" : "Đăng ký"}
       </Button>
     </form>
   );
@@ -153,20 +153,18 @@ function NewsletterForm() {
 
 function NewsletterSection() {
   return (
-    <div className="border-y border-[#d4af37]/15 py-10 px-12 bg-[#d4af37]/3 max-sm:px-6">
+    <div className="border-y border-[#D9CDBE] py-10 px-12 bg-[#EDE4D5] max-sm:px-6">
       <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-8">
         <div className="flex items-center gap-4 flex-[1_1_300px]">
-          <div className="w-12 h-12 rounded-full bg-linear-to-br from-[#d4af37]/15 to-[#d4af37]/5 border-[1.5px] border-[#d4af37]/30 flex items-center justify-center text-[#f5c842] shrink-0 shadow-lg">
+            <div className="w-12 h-12 rounded-full bg-[#EDE4D5] border-[1.5px] border-[#D9CDBE] flex items-center justify-center text-[#2D231F] shrink-0">
             <Mail size={22} strokeWidth={1.5} />
           </div>
           <div>
-            <div className="text-xl font-bold text-[#f5c842] mb-1.5">
-              Đăng ký nhận ưu đãi độc quyền
+            <div className="text-xl font-bold text-[#2D231F] mb-1.5">
+              Đăng ký nhận tin
             </div>
-            <p className="text-[13.5px] text-[#a87d5e] m-0 leading-relaxed">
-              Nhận ngay voucher{" "}
-              <strong className="text-[#f5c842] font-bold">10%</strong> cho đơn
-              đặt hàng đầu tiên
+            <p className="text-[13.5px] text-[#7A6A5C] m-0 leading-relaxed">
+              Cập nhật mẫu thiệp mới và mẹo gửi thiệp cho khách mời
             </p>
           </div>
         </div>
@@ -180,41 +178,35 @@ export default function AppFooter() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="relative overflow-hidden flex flex-col bg-[linear-gradient(160deg,#120609_0%,#1f0b10_35%,#2a1018_65%,#120609_100%)] font-inherit">
+    <footer className="relative overflow-hidden flex flex-col bg-[linear-gradient(160deg,#F3EDE3_0%,#EDE4D5_35%,#EDE4D5_65%,#F3EDE3_100%)] font-inherit">
       <div
         className="absolute inset-0 pointer-events-none z-0"
         style={{
-          background: `radial-gradient(ellipse 60% 40% at 15% 20%, rgba(212,175,55,0.07) 0%, transparent 70%),
-                       radial-gradient(ellipse 50% 50% at 85% 75%, rgba(212,175,55,0.05) 0%, transparent 70%),
-                       radial-gradient(ellipse 30% 30% at 50% 50%, rgba(180,60,60,0.04) 0%, transparent 70%)`,
+          background: `radial-gradient(ellipse 60% 40% at 15% 20%, rgba(45, 35, 31,0.07) 0%, transparent 70%),
+                       radial-gradient(ellipse 50% 50% at 85% 75%, rgba(45, 35, 31,0.05) 0%, transparent 70%),
+                       radial-gradient(ellipse 30% 30% at 50% 50%, rgba(45, 35, 31,0.04) 0%, transparent 70%)`,
         }}
       />
 
-      <div className="relative z-1 w-full h-0.5 shrink-0 bg-[linear-gradient(90deg,transparent_0%,#8b6914_15%,#d4af37_40%,#f5c842_50%,#d4af37_60%,#8b6914_85%,transparent_100%)]" />
+      <div className="relative z-1 w-full h-0.5 shrink-0 bg-[linear-gradient(90deg,transparent_0%,#C4B09A_15%,#2D231F_40%,#C4B09A_50%,#2D231F_60%,#C4B09A_85%,transparent_100%)]" />
 
       <div className="relative z-1 flex items-center gap-4 px-12 pt-7 pb-5 max-sm:px-6">
-        <span className="flex-1 h-px bg-[linear-gradient(90deg,transparent,rgba(212,175,55,0.35),transparent)]" />
-        <span
-          className="text-lg text-[#d4af37] tracking-[6px] whitespace-nowrap"
-          style={{ textShadow: "0 0 20px rgba(212,175,55,0.6)" }}
-        >
+        <span className="flex-1 h-px bg-[linear-gradient(90deg,transparent,rgba(45, 35, 31,0.35),transparent)]" />
+        <span className="text-lg text-[#2D231F]/25 tracking-[6px] whitespace-nowrap">
           ❧ ✦ ❧
         </span>
-        <span className="flex-1 h-px bg-[linear-gradient(90deg,transparent,rgba(212,175,55,0.35),transparent)]" />
+        <span className="flex-1 h-px bg-[linear-gradient(90deg,transparent,rgba(45, 35, 31,0.35),transparent)]" />
       </div>
 
       <div className="relative z-1 grid grid-cols-[3fr_2fr_2fr] gap-12 max-w-342.5 mx-auto px-12 pb-12 w-full box-border max-lg:grid-cols-[1fr] max-lg:gap-8">
         <div>
-          <h2
-            className="text-[2rem] font-extrabold leading-tight text-[#f5c842] m-0 mb-4 tracking-wide"
-            style={{ textShadow: "0 2px 24px rgba(212,175,55,0.45)" }}
-          >
-            Tiệm cưới tân thời
+          <h2 className="text-[2rem] font-extrabold leading-tight text-[#2D231F] m-0 mb-4 tracking-wide" style={{ fontFamily: "var(--font-heading), 'Playfair Display', serif" }}>
+            InviGo
           </h2>
-          <p className="text-[13px] text-[#b89070] leading-relaxed m-0 mb-6 italic">
-            Nơi mỗi khoảnh khắc trở thành kỷ niệm đẹp. Chúng tôi mang đến những
-            bộ trang phục cưới tinh tế, sang trọng — xứng đáng với ngày trọng
-            đại nhất của cuộc đời bạn.
+          <p className="text-[13px] text-[#7A6A5C] leading-relaxed m-0 mb-6 italic">
+            Thiệp mời online cho cưới hỏi, sinh nhật, tốt nghiệp và sự kiện
+            riêng. Chọn mẫu, điền nội dung, gửi link — khách xác nhận tham dự
+            ngay trên thiệp.
           </p>
           <div className="flex gap-2.5 mb-5">
             {SOCIAL_LINKS.map((s) => (
@@ -226,18 +218,15 @@ export default function AppFooter() {
               />
             ))}
           </div>
-          <div className="inline-flex items-center gap-2 px-3.5 py-2 bg-[#d4af37]/8 border border-[#d4af37]/20 rounded-full max-w-fit">
-            <span className="text-[#f5c842] text-[11px] tracking-[1px]">
-              ★★★★★
-            </span>
-            <span className="text-[11px] text-[#c9a98a] whitespace-nowrap">
-              Được tin tưởng bởi 2,000+ cặp đôi
+          <div className="inline-flex items-center gap-2 px-3.5 py-2 bg-[#EDE4D5] border border-[#D9CDBE] rounded-full max-w-fit">
+            <span className="text-[11px] text-[#7A6A5C] whitespace-nowrap">
+              Cưới hỏi · sinh nhật · sự kiện
             </span>
           </div>
         </div>
 
         <div>
-          <h3 className="text-[10.5px] font-bold tracking-[3px] uppercase text-[#d4af37] m-0 mb-5 flex items-center gap-2">
+          <h3 className="text-[10.5px] font-bold tracking-[3px] uppercase text-[#2D231F] m-0 mb-5 flex items-center gap-2">
             Thông Tin
           </h3>
           <ul className="list-none m-0 p-0 flex flex-col gap-2.5">
@@ -252,20 +241,20 @@ export default function AppFooter() {
         </div>
 
         <div>
-          <h3 className="text-[10.5px] font-bold tracking-[3px] uppercase text-[#d4af37] m-0 mb-5 flex items-center gap-2">
+          <h3 className="text-[10.5px] font-bold tracking-[3px] uppercase text-[#2D231F] m-0 mb-5 flex items-center gap-2">
             Liên Hệ
           </h3>
           <div className="flex flex-col gap-3.5">
             {CONTACT_INFO.map((c) => (
               <div key={c.label} className="flex items-start gap-3">
-                <div className="w-8.5 h-8.5 rounded-full bg-[#d4af37]/10 border border-[#d4af37]/25 flex items-center justify-center text-[#d4af37] shrink-0">
+                <div className="w-8.5 h-8.5 rounded-full bg-[#EDE4D5] border border-[#D9CDBE] flex items-center justify-center text-[#2D231F] shrink-0">
                   {c.icon}
                 </div>
                 <div>
-                  <div className="text-[10px] font-semibold text-[#d4af37] tracking-[1.5px] uppercase mb-0.5">
+                  <div className="text-[10px] font-semibold text-[#7A6A5C] tracking-[1.5px] uppercase mb-0.5">
                     {c.label}
                   </div>
-                  <div className="text-[13px] text-[#e8d5c0] leading-relaxed whitespace-pre-line">
+                  <div className="text-[13px] text-[#7A6A5C] leading-relaxed whitespace-pre-line">
                     {c.value}
                   </div>
                 </div>
@@ -278,10 +267,13 @@ export default function AppFooter() {
       <NewsletterSection />
 
       <div className="relative z-1 max-w-342.5 mx-auto w-full box-border px-12 py-5 flex flex-wrap items-center justify-between gap-3 max-sm:px-6 max-sm:flex-col max-sm:text-center">
-        <p className="text-[12.5px] text-[#6b4f3a] m-0">
+        <p className="text-[12.5px] text-[#7A6A5C] m-0">
           Copyright © {currentYear}{" "}
-          <span className="text-[#d4af37] text-xs">Tiệm cưới tân thời</span>.
+          <span className="text-[#2D231F] text-xs font-semibold">InviGo</span>.
           Bảo lưu mọi quyền.
+          <span className="block sm:inline sm:before:content-['·'] sm:before:mx-1.5">
+            Emoji: Fluent UI Emoji (MIT), Twemoji (CC-BY)
+          </span>
         </p>
         <div className="flex gap-7">
           {["Điều khoản sử dụng", "Chính sách bảo mật", "Cookie"].map(
@@ -289,17 +281,17 @@ export default function AppFooter() {
               <a
                 key={item}
                 href="#"
-                className="text-xs text-[#6b4f3a] no-underline transition-colors hover:text-[#d4af37] relative"
+                className="text-xs text-[#7A6A5C] no-underline transition-colors hover:text-[#2D231F] relative"
               >
                 {item}
-                <span className="absolute -bottom-0.5 left-0 h-px bg-[#d4af37] transition-all duration-250 w-0 hover:w-full" />
+                <span className="absolute -bottom-0.5 left-0 h-px bg-[#2D231F] transition-all duration-250 w-0 hover:w-full" />
               </a>
             ),
           )}
         </div>
       </div>
 
-      <div className="relative z-1 w-full h-px shrink-0 bg-[linear-gradient(90deg,transparent_0%,#5a440e_20%,#d4af37_50%,#5a440e_80%,transparent_100%)]" />
+      <div className="relative z-1 w-full h-px shrink-0 bg-[linear-gradient(90deg,transparent_0%,#7A6A5C_20%,#2D231F_50%,#7A6A5C_80%,transparent_100%)]" />
     </footer>
   );
 }

@@ -8,13 +8,13 @@ import { Calendar, Lock, Mail, Phone, User } from "lucide-react";
 import { useEffect, useState } from "react";
 
 const C = {
-  bg: "#0b0507",
-  bgCard: "#140a0d",
-  gold: "#c5a059",
-  goldLight: "#e5c483",
-  cream: "#f9f6f0",
-  muted: "#a38a75",
-  border: "rgba(197, 160, 89, 0.15)",
+  bg: "#F3EDE3",
+  bgCard: "#EDE4D5",
+  gold: "#2D231F",
+  goldLight: "#7A6A5C",
+  cream: "#2D231F",
+  muted: "#7A6A5C",
+  border: "rgba(232, 226, 216, 1)",
 };
 
 export default function ProfilePage() {
@@ -140,7 +140,7 @@ export default function ProfilePage() {
         className="min-h-screen flex justify-center items-center"
         style={{ background: C.bg }}
       >
-        <div className="w-12 h-12 border-4 border-[#d4af37]/20 border-t-[#d4af37] rounded-full animate-spin" />
+        <div className="w-12 h-12 border-4 border-[#2D231F]/20 border-t-[#2D231F] rounded-full animate-spin" />
       </div>
     );
   }
@@ -161,12 +161,9 @@ export default function ProfilePage() {
 
       <div className="max-w-200 mx-auto w-full">
         <h1
-          className="text-3xl md:text-4xl font-bold uppercase tracking-wider text-center mb-12"
+          className="text-3xl md:text-4xl font-bold uppercase tracking-wider text-center mb-12 text-[#2D231F]"
           style={{
             fontFamily: "'Cinzel', serif",
-            background: `linear-gradient(135deg, ${C.goldLight} 0%, ${C.gold} 50%, ${C.goldLight} 100%)`,
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
           }}
         >
           Thông tin tài khoản
@@ -184,28 +181,28 @@ export default function ProfilePage() {
 
             <form onSubmit={handleUpdateProfile} className="space-y-5">
               <div>
-                <label className="text-xs uppercase tracking-wider block mb-2 text-[#f5e6d3]/60 font-medium">
+                <label className="text-xs uppercase tracking-wider block mb-2 text-[#2D231F]/60 font-medium">
                   Email (Đăng nhập)
                 </label>
                 <div className="relative">
-                  <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-[#f5e6d3]/40">
+                  <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-[#2D231F]/40">
                     <Mail size={16} />
                   </span>
                   <Input
                     type="email"
                     value={email}
                     disabled
-                    className="pl-10.5 bg-black/25! border-[#d4af37]/10! text-[#f5e6d3]/60! cursor-not-allowed rounded-lg text-sm w-full py-2.5"
+                    className="pl-10.5 bg-black/25! border-[#2D231F]/10! text-[#2D231F]/60! cursor-not-allowed rounded-lg text-sm w-full py-2.5"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="text-xs uppercase tracking-wider block mb-2 text-[#f5e6d3]/60 font-medium">
+                <label className="text-xs uppercase tracking-wider block mb-2 text-[#2D231F]/60 font-medium">
                   Họ và tên
                 </label>
                 <div className="relative">
-                  <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-[#f5e6d3]/40">
+                  <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-[#2D231F]/40">
                     <User size={16} />
                   </span>
                   <Input
@@ -214,18 +211,18 @@ export default function ProfilePage() {
                     onChange={(e) => setFullName(e.target.value)}
                     required
                     placeholder="Nhập họ và tên"
-                    className="pl-10.5 bg-black/20! border-[#d4af37]/20! hover:border-[#d4af37]/45! focus:border-[#d4af37]! text-[#f5e6d3]! rounded-lg text-sm w-full py-2.5"
+                    className="pl-10.5 bg-black/20! border-[#2D231F]/20! hover:border-[#2D231F]/45! focus:border-[#2D231F]! text-[#2D231F]! rounded-lg text-sm w-full py-2.5"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <div>
-                  <label className="text-xs uppercase tracking-wider block mb-2 text-[#f5e6d3]/60 font-medium">
+                  <label className="text-xs uppercase tracking-wider block mb-2 text-[#2D231F]/60 font-medium">
                     Số điện thoại
                   </label>
                   <div className="relative">
-                    <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-[#f5e6d3]/40">
+                    <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-[#2D231F]/40">
                       <Phone size={16} />
                     </span>
                     <Input
@@ -233,31 +230,31 @@ export default function ProfilePage() {
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
                       placeholder="Nhập số điện thoại"
-                      className="pl-10.5 bg-black/20! border-[#d4af37]/20! hover:border-[#d4af37]/45! focus:border-[#d4af37]! text-[#f5e6d3]! rounded-lg text-sm w-full py-2.5"
+                      className="pl-10.5 bg-black/20! border-[#2D231F]/20! hover:border-[#2D231F]/45! focus:border-[#2D231F]! text-[#2D231F]! rounded-lg text-sm w-full py-2.5"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="text-xs uppercase tracking-wider block mb-2 text-[#f5e6d3]/60 font-medium">
+                  <label className="text-xs uppercase tracking-wider block mb-2 text-[#2D231F]/60 font-medium">
                     Ngày sinh
                   </label>
                   <div className="relative">
-                    <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-[#f5e6d3]/40">
+                    <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-[#2D231F]/40">
                       <Calendar size={16} />
                     </span>
                     <Input
                       type="date"
                       value={dateOfBirth}
                       onChange={(e) => setDateOfBirth(e.target.value)}
-                      className="pl-10.5 bg-black/20! border-[#d4af37]/20! hover:border-[#d4af37]/45! focus:border-[#d4af37]! text-[#f5e6d3]! rounded-lg text-sm w-full py-2.5"
+                      className="pl-10.5 bg-black/20! border-[#2D231F]/20! hover:border-[#2D231F]/45! focus:border-[#2D231F]! text-[#2D231F]! rounded-lg text-sm w-full py-2.5"
                     />
                   </div>
                 </div>
               </div>
 
               <div>
-                <label className="text-xs uppercase tracking-wider block mb-2 text-[#f5e6d3]/60 font-medium">
+                <label className="text-xs uppercase tracking-wider block mb-2 text-[#2D231F]/60 font-medium">
                   Giới tính
                 </label>
                 <div className="flex gap-6 mt-1 text-sm">
@@ -272,9 +269,9 @@ export default function ProfilePage() {
                         value={g}
                         checked={gender === g}
                         onChange={(e) => setGender(e.target.value)}
-                        className="accent-[#c5a059]"
+                        className="accent-[#2D231F]"
                       />
-                      <span className="text-[#f5e6d3]/85">{g}</span>
+                      <span className="text-[#2D231F]/85">{g}</span>
                     </label>
                   ))}
                 </div>
@@ -287,8 +284,8 @@ export default function ProfilePage() {
                   className="w-full py-3.5 rounded-xl font-bold uppercase tracking-wider text-xs"
                   style={{
                     background: `linear-gradient(135deg, ${C.goldLight} 0%, ${C.gold} 100%)`,
-                    color: C.bg,
-                    boxShadow: "0 4px 15px rgba(197,160,89,0.3)",
+                    color: "#1a1a1a",
+                    boxShadow: "0 4px 15px rgba(45, 35, 31,0.3)",
                   }}
                 >
                   {savingInfo ? "Đang lưu..." : "Lưu thay đổi"}
@@ -308,11 +305,11 @@ export default function ProfilePage() {
 
             <form onSubmit={handleChangePassword} className="space-y-5">
               <div>
-                <label className="text-xs uppercase tracking-wider block mb-2 text-[#f5e6d3]/60 font-medium">
+                <label className="text-xs uppercase tracking-wider block mb-2 text-[#2D231F]/60 font-medium">
                   Mật khẩu hiện tại
                 </label>
                 <div className="relative">
-                  <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-[#f5e6d3]/40">
+                  <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-[#2D231F]/40">
                     <Lock size={16} />
                   </span>
                   <Input
@@ -321,18 +318,18 @@ export default function ProfilePage() {
                     onChange={(e) => setCurrentPassword(e.target.value)}
                     required
                     placeholder="Nhập mật khẩu hiện tại"
-                    className="pl-10.5 bg-black/20! border-[#d4af37]/20! hover:border-[#d4af37]/45! focus:border-[#d4af37]! text-[#f5e6d3]! rounded-lg text-sm w-full py-2.5"
+                    className="pl-10.5 bg-black/20! border-[#2D231F]/20! hover:border-[#2D231F]/45! focus:border-[#2D231F]! text-[#2D231F]! rounded-lg text-sm w-full py-2.5"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <div>
-                  <label className="text-xs uppercase tracking-wider block mb-2 text-[#f5e6d3]/60 font-medium">
+                  <label className="text-xs uppercase tracking-wider block mb-2 text-[#2D231F]/60 font-medium">
                     Mật khẩu mới
                   </label>
                   <div className="relative">
-                    <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-[#f5e6d3]/40">
+                    <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-[#2D231F]/40">
                       <Lock size={16} />
                     </span>
                     <Input
@@ -341,17 +338,17 @@ export default function ProfilePage() {
                       onChange={(e) => setNewPassword(e.target.value)}
                       required
                       placeholder="Tối thiểu 6 ký tự"
-                      className="pl-10.5 bg-black/20! border-[#d4af37]/20! hover:border-[#d4af37]/45! focus:border-[#d4af37]! text-[#f5e6d3]! rounded-lg text-sm w-full py-2.5"
+                      className="pl-10.5 bg-black/20! border-[#2D231F]/20! hover:border-[#2D231F]/45! focus:border-[#2D231F]! text-[#2D231F]! rounded-lg text-sm w-full py-2.5"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="text-xs uppercase tracking-wider block mb-2 text-[#f5e6d3]/60 font-medium">
+                  <label className="text-xs uppercase tracking-wider block mb-2 text-[#2D231F]/60 font-medium">
                     Xác nhận mật khẩu mới
                   </label>
                   <div className="relative">
-                    <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-[#f5e6d3]/40">
+                    <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-[#2D231F]/40">
                       <Lock size={16} />
                     </span>
                     <Input
@@ -360,7 +357,7 @@ export default function ProfilePage() {
                       onChange={(e) => setConfirmPassword(e.target.value)}
                       required
                       placeholder="Nhập lại mật khẩu mới"
-                      className="pl-10.5 bg-black/20! border-[#d4af37]/20! hover:border-[#d4af37]/45! focus:border-[#d4af37]! text-[#f5e6d3]! rounded-lg text-sm w-full py-2.5"
+                      className="pl-10.5 bg-black/20! border-[#2D231F]/20! hover:border-[#2D231F]/45! focus:border-[#2D231F]! text-[#2D231F]! rounded-lg text-sm w-full py-2.5"
                     />
                   </div>
                 </div>
@@ -373,8 +370,8 @@ export default function ProfilePage() {
                   className="w-full py-3.5 rounded-xl font-bold uppercase tracking-wider text-xs"
                   style={{
                     background: `linear-gradient(135deg, ${C.goldLight} 0%, ${C.gold} 100%)`,
-                    color: C.bg,
-                    boxShadow: "0 4px 15px rgba(197,160,89,0.3)",
+                    color: "#1a1a1a",
+                    boxShadow: "0 4px 15px rgba(45, 35, 31,0.3)",
                   }}
                 >
                   {savingPassword ? "Đang đổi..." : "Thay đổi mật khẩu"}

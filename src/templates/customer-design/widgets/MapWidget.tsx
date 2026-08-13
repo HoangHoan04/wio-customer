@@ -45,7 +45,7 @@ export default function MapWidget({
   locationAddress,
   mapEmbedUrl,
   mapType = "normal",
-  color = "#d4af37",
+  color = "#b6cc61",
   fontFamily = "Quicksand",
   width,
   height,

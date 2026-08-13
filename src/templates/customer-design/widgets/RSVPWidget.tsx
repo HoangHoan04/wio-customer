@@ -176,7 +176,7 @@ function FormFields({
 
 export default function RSVPWidget({
   rsvpType = "button",
-  color = "#d4af37",
+  color = "#b6cc61",
   fontFamily = "Quicksand",
   width,
   height,

@@ -11,20 +11,20 @@ export const FamilyInfoSection = ({
   handleNestedChange,
 }: FamilyInfoSectionProps) => {
   return (
-    <div className="bg-white/2 border border-white/5 p-5 rounded-xl shadow-lg flex flex-col gap-5">
-      <h3 className="text-md font-bold text-[#d4af37] border-b border-[#d4af37]/10 pb-2">
+    <div className="bg-[#2D231F]/8 border border-white/5 p-5 rounded-xl shadow-lg flex flex-col gap-5">
+      <h3 className="text-md font-bold text-[#2D231F] border-b border-[#2D231F]/10 pb-2">
         3. Thông tin gia đình
       </h3>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {(formData.displayOrder === "bride_first" ? ["bride", "groom"] : ["groom", "bride"]).map((type) => {
           if (type === "groom") {
             return (
-              <div key="groom" className="flex flex-col gap-3 p-3 bg-white/3 rounded-lg border border-white/5">
-                <span className="text-xs font-bold text-[#d4af37] uppercase">
+              <div key="groom" className="flex flex-col gap-3 p-3 bg-[#2D231F]/8 rounded-lg border border-white/5">
+                <span className="text-xs font-bold text-[#2D231F] uppercase">
                   Nhà Trai
                 </span>
                 <div className="flex flex-col gap-1.5">
-                  <Label className="text-xs font-semibold text-[#f5e6d3]/80">
+                  <Label className="text-xs font-semibold text-[#2D231F]/80">
                     Danh xưng
                   </Label>
                   <Input
@@ -32,11 +32,11 @@ export const FamilyInfoSection = ({
                     onChange={(e) =>
                       handleNestedChange("groom", "familyTitle", e.target.value)
                     }
-                    className="bg-white/5! border-[#d4af37]/10!"
+                    className="bg-[#2D231F]/10! border-[#2D231F]/10!"
                   />
                 </div>
                 <div className="flex flex-col gap-1.5">
-                  <Label className="text-xs font-semibold text-[#f5e6d3]/80">
+                  <Label className="text-xs font-semibold text-[#2D231F]/80">
                     Họ tên bố
                   </Label>
                   <Input
@@ -44,11 +44,11 @@ export const FamilyInfoSection = ({
                     onChange={(e) =>
                       handleNestedChange("groom", "father", e.target.value)
                     }
-                    className="bg-white/5! border-[#d4af37]/10!"
+                    className="bg-[#2D231F]/10! border-[#2D231F]/10!"
                   />
                 </div>
                 <div className="flex flex-col gap-1.5">
-                  <Label className="text-xs font-semibold text-[#f5e6d3]/80">
+                  <Label className="text-xs font-semibold text-[#2D231F]/80">
                     Họ tên mẹ
                   </Label>
                   <Input
@@ -56,11 +56,11 @@ export const FamilyInfoSection = ({
                     onChange={(e) =>
                       handleNestedChange("groom", "mother", e.target.value)
                     }
-                    className="bg-white/5! border-[#d4af37]/10!"
+                    className="bg-[#2D231F]/10! border-[#2D231F]/10!"
                   />
                 </div>
                 <div className="flex flex-col gap-1.5">
-                  <Label className="text-xs font-semibold text-[#f5e6d3]/80">
+                  <Label className="text-xs font-semibold text-[#2D231F]/80">
                     Địa chỉ nhà trai
                   </Label>
                   <Input
@@ -68,19 +68,19 @@ export const FamilyInfoSection = ({
                     onChange={(e) =>
                       handleNestedChange("groom", "address", e.target.value)
                     }
-                    className="bg-white/5! border-[#d4af37]/10!"
+                    className="bg-[#2D231F]/10! border-[#2D231F]/10!"
                   />
                 </div>
               </div>
             );
           } else {
             return (
-              <div key="bride" className="flex flex-col gap-3 p-3 bg-white/3 rounded-lg border border-white/5">
-                <span className="text-xs font-bold text-[#d4af37] uppercase">
+              <div key="bride" className="flex flex-col gap-3 p-3 bg-[#2D231F]/8 rounded-lg border border-white/5">
+                <span className="text-xs font-bold text-[#2D231F] uppercase">
                   Nhà Gái
                 </span>
                 <div className="flex flex-col gap-1.5">
-                  <Label className="text-xs font-semibold text-[#f5e6d3]/80">
+                  <Label className="text-xs font-semibold text-[#2D231F]/80">
                     Danh xưng
                   </Label>
                   <Input
@@ -88,11 +88,11 @@ export const FamilyInfoSection = ({
                     onChange={(e) =>
                       handleNestedChange("bride", "familyTitle", e.target.value)
                     }
-                    className="bg-white/5! border-[#d4af37]/10!"
+                    className="bg-[#2D231F]/10! border-[#2D231F]/10!"
                   />
                 </div>
                 <div className="flex flex-col gap-1.5">
-                  <Label className="text-xs font-semibold text-[#f5e6d3]/80">
+                  <Label className="text-xs font-semibold text-[#2D231F]/80">
                     Họ tên bố
                   </Label>
                   <Input
@@ -100,11 +100,11 @@ export const FamilyInfoSection = ({
                     onChange={(e) =>
                       handleNestedChange("bride", "father", e.target.value)
                     }
-                    className="bg-white/5! border-[#d4af37]/10!"
+                    className="bg-[#2D231F]/10! border-[#2D231F]/10!"
                   />
                 </div>
                 <div className="flex flex-col gap-1.5">
-                  <Label className="text-xs font-semibold text-[#f5e6d3]/80">
+                  <Label className="text-xs font-semibold text-[#2D231F]/80">
                     Họ tên mẹ
                   </Label>
                   <Input
@@ -112,11 +112,11 @@ export const FamilyInfoSection = ({
                     onChange={(e) =>
                       handleNestedChange("bride", "mother", e.target.value)
                     }
-                    className="bg-white/5! border-[#d4af37]/10!"
+                    className="bg-[#2D231F]/10! border-[#2D231F]/10!"
                   />
                 </div>
                 <div className="flex flex-col gap-1.5">
-                  <Label className="text-xs font-semibold text-[#f5e6d3]/80">
+                  <Label className="text-xs font-semibold text-[#2D231F]/80">
                     Địa chỉ nhà gái
                   </Label>
                   <Input
@@ -124,7 +124,7 @@ export const FamilyInfoSection = ({
                     onChange={(e) =>
                       handleNestedChange("bride", "address", e.target.value)
                     }
-                    className="bg-white/5! border-[#d4af37]/10!"
+                    className="bg-[#2D231F]/10! border-[#2D231F]/10!"
                   />
                 </div>
               </div>

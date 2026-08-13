@@ -100,7 +100,7 @@ export default function MusicPanelContent({
     (el) => el.type === "widget" && el.widgetType === "music" && el.widgetConfig?.audioEnabled
   );
   const [iconId, setIconId] = useState(existingWidget?.widgetConfig?.iconId || "music-1");
-  const [iconColor, setIconColor] = useState(existingWidget?.widgetConfig?.color || "#d4af37");
+  const [iconColor, setIconColor] = useState(existingWidget?.widgetConfig?.color || "#b6cc61");
   const [trimmingSong, setTrimmingSong] = useState<AudioItem | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -490,19 +490,19 @@ export default function MusicPanelContent({
   );
 
   return (
-    <div className="w-full font-sans text-zinc-100 space-y-4 pb-6">
+    <div className="w-full font-sans text-[#2D231F] space-y-4 pb-6">
       <style>{`
         @keyframes wio-marquee {
           0% { transform: translate3d(0, 0, 0); }
           100% { transform: translate3d(-100%, 0, 0); }
         }
       `}</style>
-      <div className="flex border-b border-zinc-800">
+      <div className="flex border-b border-[#D9CDBE]">
         <button
           onClick={() => setActiveTab("library")}
           className={`flex-1 text-center pb-2.5 text-sm font-medium transition-colors relative ${activeTab === "library"
             ? "text-amber-400 font-semibold"
-            : "text-zinc-400 hover:text-zinc-200"
+            : "text-[#7A6A5C] hover:text-[#2D231F]"
             }`}
         >
           Thư viện nhạc
@@ -514,7 +514,7 @@ export default function MusicPanelContent({
           onClick={() => setActiveTab("my-music")}
           className={`flex-1 text-center pb-2.5 text-sm font-medium transition-colors relative ${activeTab === "my-music"
             ? "text-amber-400 font-semibold"
-            : "text-zinc-400 hover:text-zinc-200"
+            : "text-[#7A6A5C] hover:text-[#2D231F]"
             }`}
         >
           Nhạc của tôi
@@ -524,8 +524,8 @@ export default function MusicPanelContent({
         </button>
       </div>
 
-      <div className="bg-zinc-900/40 border border-zinc-800 rounded-2xl p-4 text-center">
-        <p className="text-xs text-zinc-500 uppercase tracking-wider mb-1">Nhạc hiện tại</p>
+      <div className="bg-[#F3EDE3]/40 border border-[#D9CDBE] rounded-2xl p-4 text-center">
+        <p className="text-xs text-[#7A6A5C]/70 uppercase tracking-wider mb-1">Nhạc hiện tại</p>
         {selectedAudio ? (
           <div className="flex items-center justify-center gap-2 overflow-hidden w-full max-w-64 mx-auto">
             <Disc size={14} className="animate-spin text-amber-500 shrink-0" />
@@ -548,43 +548,43 @@ export default function MusicPanelContent({
             )}
             <button
               onClick={handleRemoveMusic}
-              className="text-zinc-600 hover:text-red-400 transition-colors shrink-0"
+              className="text-[#7A6A5C]/50 hover:text-red-400 transition-colors shrink-0"
               title="Bỏ chọn nhạc"
             >
               <Trash2 size={14} />
             </button>
           </div>
         ) : (
-          <p className="text-sm text-zinc-400 font-medium">Chưa chọn bài hát nào</p>
+          <p className="text-sm text-[#7A6A5C] font-medium">Chưa chọn bài hát nào</p>
         )}
       </div>
 
       {activeTab === "library" && (
         <>
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" size={16} />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#7A6A5C]/70" size={16} />
             <input
               type="text"
               placeholder="Tìm kiếm bài hát..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-zinc-900 border border-zinc-800 rounded-xl pl-9 pr-4 py-2 text-sm text-zinc-200 placeholder-zinc-500 outline-hidden focus:border-zinc-700 transition-all"
+              className="w-full bg-[#F3EDE3] border border-[#D9CDBE] rounded-xl pl-9 pr-4 py-2 text-sm text-[#2D231F] placeholder-[#7A6A5C]/50 outline-hidden focus:border-zinc-700 transition-all"
             />
           </div>
-          <div className="max-h-75 overflow-y-auto border border-zinc-900 bg-zinc-900/10 rounded-xl divide-y divide-zinc-800/60 custom-scrollbar">
+          <div className="max-h-75 overflow-y-auto border border-zinc-900 bg-[#F3EDE3]/10 rounded-xl divide-y divide-zinc-800/60 custom-scrollbar">
             {libLoading ? (
               <div className="flex items-center justify-center py-12">
                 <Loader2 size={24} className="text-amber-400 animate-spin" />
               </div>
             ) : filteredLibrary.length === 0 ? (
-              <div className="text-center py-8 text-xs text-zinc-600">
+              <div className="text-center py-8 text-xs text-[#7A6A5C]/50">
                 {searchQuery ? "Không tìm thấy bài hát" : "Thư viện nhạc trống"}
               </div>
             ) : (
               filteredLibrary.map((song) => (
                 <div
                   key={song.id}
-                  className="flex flex-col items-stretch gap-2 py-2.5 px-3 hover:bg-zinc-900/50 transition-colors group"
+                  className="flex flex-col items-stretch gap-2 py-2.5 px-3 hover:bg-[#F3EDE3]/50 transition-colors group"
                 >
                   <div className="flex items-center gap-3 min-w-0">
                     <button
@@ -592,7 +592,7 @@ export default function MusicPanelContent({
                         e.stopPropagation();
                         handlePreview(song);
                       }}
-                      className="w-7 h-7 rounded-full bg-zinc-900 flex items-center justify-center text-amber-400 group-hover:bg-amber-500 group-hover:text-white transition-all shrink-0"
+                      className="w-7 h-7 rounded-full bg-[#F3EDE3] flex items-center justify-center text-amber-400 group-hover:bg-amber-500 group-hover:text-white transition-all shrink-0"
                     >
                       {previewingId === song.id ? (
                         <Pause size={12} fill="currentColor" />
@@ -605,7 +605,7 @@ export default function MusicPanelContent({
                         {song.name.length > 22 ? (
                           <div className="w-36 overflow-hidden relative">
                             <div 
-                              className="inline-block whitespace-nowrap text-xs font-medium text-zinc-200"
+                              className="inline-block whitespace-nowrap text-xs font-medium text-[#2D231F]"
                               style={{
                                 animation: "wio-marquee 8s linear infinite",
                                 paddingLeft: "100%",
@@ -615,21 +615,21 @@ export default function MusicPanelContent({
                             </div>
                           </div>
                         ) : (
-                          <p className="text-xs font-medium text-zinc-200 truncate max-w-36">{song.name}</p>
+                          <p className="text-xs font-medium text-[#2D231F] truncate max-w-36">{song.name}</p>
                         )}
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
                             setTrimmingSong(song);
                           }}
-                          className="text-zinc-500 hover:text-amber-400 transition-colors p-1 shrink-0"
+                          className="text-[#7A6A5C]/70 hover:text-amber-400 transition-colors p-1 shrink-0"
                           title="Cắt nhạc"
                         >
                           <Scissors size={12} />
                         </button>
                       </div>
                       {song.duration && (
-                        <p className="text-[10px] text-zinc-500 mt-0.5">{song.duration}</p>
+                        <p className="text-[10px] text-[#7A6A5C]/70 mt-0.5">{song.duration}</p>
                       )}
                     </div>
                   </div>
@@ -661,7 +661,7 @@ export default function MusicPanelContent({
             ) : (
               <>
                 <UploadCloud size={24} className="text-amber-400/60" />
-                <span className="text-xs text-zinc-500 text-center">
+                <span className="text-xs text-[#7A6A5C]/70 text-center">
                   Kéo thả file audio hoặc click để chọn
                 </span>
                 <Button
@@ -685,13 +685,13 @@ export default function MusicPanelContent({
           <div className="space-y-3">
             <div className="flex items-center gap-2">
               <div className="relative flex-1">
-                <Link2 size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" />
+                <Link2 size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#7A6A5C]/70" />
                 <input
                   type="text"
                   value={youtubeUrl}
                   onChange={(e) => setYoutubeUrl(e.target.value)}
                   placeholder="Dán link YouTube..."
-                  className="w-full bg-zinc-900 border border-zinc-800 rounded-xl pl-9 pr-3 py-2 text-sm text-zinc-200 placeholder-zinc-500 outline-hidden focus:border-zinc-700"
+                  className="w-full bg-[#F3EDE3] border border-[#D9CDBE] rounded-xl pl-9 pr-3 py-2 text-sm text-[#2D231F] placeholder-[#7A6A5C]/50 outline-hidden focus:border-zinc-700"
                 />
               </div>
               <button
@@ -708,21 +708,21 @@ export default function MusicPanelContent({
             </div>
 
             {youtubePreview && (
-              <div className="bg-zinc-900/80 border border-zinc-800 rounded-xl p-3 space-y-3">
+              <div className="bg-[#F3EDE3]/80 border border-[#D9CDBE] rounded-xl p-3 space-y-3">
                 <div className="flex gap-3">
                   {youtubePreview.thumbnailUrl && (
                     <img
                       src={youtubePreview.thumbnailUrl}
                       alt={youtubePreview.title}
-                      className="w-20 aspect-video object-cover rounded-lg bg-zinc-950 shrink-0 border border-zinc-800"
+                      className="w-20 aspect-video object-cover rounded-lg bg-zinc-950 shrink-0 border border-[#D9CDBE]"
                     />
                   )}
                   <div className="min-w-0 flex-1 flex flex-col justify-between py-0.5">
                     <div>
-                      <p className="text-xs font-semibold text-zinc-200 line-clamp-1">
+                      <p className="text-xs font-semibold text-[#2D231F] line-clamp-1">
                         {youtubePreview.title}
                       </p>
-                      <p className="text-[10px] text-zinc-400 mt-1 truncate">
+                      <p className="text-[10px] text-[#7A6A5C] mt-1 truncate">
                         {youtubePreview.author}
                       </p>
                     </div>
@@ -757,17 +757,17 @@ export default function MusicPanelContent({
           </div>
 
           {youtubeImports.length > 0 && (
-            <div className="space-y-1.5 pt-2 border-t border-zinc-800/60">
-              <p className="text-[10px] text-zinc-500 uppercase tracking-wider">Đang xử lý từ YouTube</p>
+            <div className="space-y-1.5 pt-2 border-t border-[#D9CDBE]/60">
+              <p className="text-[10px] text-[#7A6A5C]/70 uppercase tracking-wider">Đang xử lý từ YouTube</p>
               <div className="space-y-1">
                 {youtubeImports.map((imp) => (
                   <div
                     key={imp.id}
-                    className="flex items-center justify-between py-2 px-3 rounded-lg bg-zinc-900/30 border border-zinc-800/40"
+                    className="flex items-center justify-between py-2 px-3 rounded-lg bg-[#F3EDE3]/30 border border-[#D9CDBE]/40"
                   >
                     <div className="min-w-0 flex-1 pr-3">
                       <p className="text-xs text-zinc-300 truncate">{imp.name}</p>
-                      <p className="text-[9px] text-zinc-500 mt-0.5 truncate">{imp.youtubeUrl}</p>
+                      <p className="text-[9px] text-[#7A6A5C]/70 mt-0.5 truncate">{imp.youtubeUrl}</p>
                     </div>
                     <div className="shrink-0 flex items-center gap-2">
                       {imp.status === "PROCESSING" ? (
@@ -778,7 +778,7 @@ export default function MusicPanelContent({
                           </div>
                           <button
                             onClick={() => handleCancelImport(imp.youtubeUrl, imp.id)}
-                            className="p-1 hover:bg-zinc-800 text-zinc-400 hover:text-red-400 rounded transition-colors"
+                            className="p-1 hover:bg-zinc-800 text-[#7A6A5C] hover:text-red-400 rounded transition-colors"
                             title="Hủy tải lên"
                           >
                             <X size={12} />
@@ -815,17 +815,17 @@ export default function MusicPanelContent({
               <Loader2 size={24} className="text-amber-400 animate-spin" />
             </div>
           ) : userLibrary.length === 0 ? (
-            <div className="text-center py-8 text-xs text-zinc-600">
+            <div className="text-center py-8 text-xs text-[#7A6A5C]/50">
               Chưa có nhạc cá nhân nào được tải lên
             </div>
           ) : (
             <div className="space-y-1">
-              <p className="text-[10px] text-zinc-500 uppercase tracking-wider">Nhạc cá nhân của bạn</p>
-              <div className="max-h-60 overflow-y-auto border border-zinc-900 bg-zinc-900/10 rounded-xl divide-y divide-zinc-800/60 custom-scrollbar">
+              <p className="text-[10px] text-[#7A6A5C]/70 uppercase tracking-wider">Nhạc cá nhân của bạn</p>
+              <div className="max-h-60 overflow-y-auto border border-zinc-900 bg-[#F3EDE3]/10 rounded-xl divide-y divide-zinc-800/60 custom-scrollbar">
                 {userLibrary.map((song) => (
                   <div
                     key={song.id}
-                    className="flex flex-col items-stretch gap-2 py-2.5 px-3 hover:bg-zinc-900/50 transition-colors group"
+                    className="flex flex-col items-stretch gap-2 py-2.5 px-3 hover:bg-[#F3EDE3]/50 transition-colors group"
                   >
                     <div className="flex items-center gap-3 min-w-0">
                       <button
@@ -833,7 +833,7 @@ export default function MusicPanelContent({
                           e.stopPropagation();
                           handlePreview(song);
                         }}
-                        className="w-7 h-7 rounded-full bg-zinc-900 flex items-center justify-center text-amber-400 group-hover:bg-amber-500 group-hover:text-white transition-all shrink-0"
+                        className="w-7 h-7 rounded-full bg-[#F3EDE3] flex items-center justify-center text-amber-400 group-hover:bg-amber-500 group-hover:text-white transition-all shrink-0"
                       >
                         {previewingId === song.id ? (
                           <Pause size={12} fill="currentColor" />
@@ -846,7 +846,7 @@ export default function MusicPanelContent({
                           {song.name.length > 22 ? (
                             <div className="w-36 overflow-hidden relative">
                               <div 
-                                className="inline-block whitespace-nowrap text-xs font-medium text-zinc-200"
+                                className="inline-block whitespace-nowrap text-xs font-medium text-[#2D231F]"
                                 style={{
                                   animation: "wio-marquee 8s linear infinite",
                                   paddingLeft: "100%",
@@ -856,21 +856,21 @@ export default function MusicPanelContent({
                               </div>
                             </div>
                           ) : (
-                            <p className="text-xs font-medium text-zinc-200 truncate max-w-36">{song.name}</p>
+                            <p className="text-xs font-medium text-[#2D231F] truncate max-w-36">{song.name}</p>
                           )}
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
                               setTrimmingSong(song);
                             }}
-                            className="text-zinc-500 hover:text-amber-400 transition-colors p-1 shrink-0"
+                            className="text-[#7A6A5C]/70 hover:text-amber-400 transition-colors p-1 shrink-0"
                             title="Cắt nhạc"
                           >
                             <Scissors size={12} />
                           </button>
                         </div>
                         {song.duration && (
-                          <p className="text-[10px] text-zinc-500 mt-0.5">{song.duration}</p>
+                          <p className="text-[10px] text-[#7A6A5C]/70 mt-0.5">{song.duration}</p>
                         )}
                       </div>
                     </div>
@@ -890,9 +890,9 @@ export default function MusicPanelContent({
         </>
       )}
 
-      <div className="space-y-3 pt-2 border-t border-zinc-800">
+      <div className="space-y-3 pt-2 border-t border-[#D9CDBE]">
         <div>
-          <label className="text-[10px] text-zinc-500 uppercase tracking-wider block mb-2">
+          <label className="text-[10px] text-[#7A6A5C]/70 uppercase tracking-wider block mb-2">
             Biểu tượng nhạc
           </label>
           <div className="grid grid-cols-6 gap-2">
@@ -904,7 +904,7 @@ export default function MusicPanelContent({
                   onClick={() => handleIconChange(ic.id)}
                   className={`aspect-square rounded-lg flex items-center justify-center border transition-all ${iconId === ic.id
                     ? "border-amber-400 bg-amber-500/10 text-amber-400 ring-1 ring-amber-400/30"
-                    : "border-zinc-800 bg-zinc-900 text-zinc-400 hover:border-zinc-700"
+                    : "border-[#D9CDBE] bg-[#F3EDE3] text-[#7A6A5C] hover:border-zinc-700"
                     }`}
                 >
                   <LucidIcon size={18} />
@@ -915,7 +915,7 @@ export default function MusicPanelContent({
         </div>
 
         <div>
-          <label className="text-[10px] text-zinc-500 uppercase tracking-wider block mb-2">
+          <label className="text-[10px] text-[#7A6A5C]/70 uppercase tracking-wider block mb-2">
             Màu biểu tượng
           </label>
           <ColorPickerRow value={iconColor} onChange={handleColorChange} />

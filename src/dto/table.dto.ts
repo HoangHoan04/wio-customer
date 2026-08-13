@@ -1,6 +1,6 @@
 export interface TableDto {
   id: string;
-  weddingId: string;
+  invitationId: string;
   name: string;
   maxSeats: number;
   currentSeats: number;
@@ -12,7 +12,7 @@ export interface TableDto {
 }
 
 export interface FilterTableDto {
-  weddingId?: string;
+  invitationId?: string;
   name?: string;
   maxSeats?: number;
   currentSeats?: number;
@@ -20,7 +20,7 @@ export interface FilterTableDto {
 }
 
 export interface CreateTableReq {
-  weddingId: string;
+  invitationId: string;
   name: string;
   maxSeats: number;
   currentSeats?: number;

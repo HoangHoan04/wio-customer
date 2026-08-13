@@ -419,7 +419,7 @@ export default function ImageUploadContent({
     const currentSrc = editingEl?.src ?? selectedItem.url;
 
     return (
-      <div className="w-full font-sans text-zinc-100 space-y-4 pb-6">
+      <div className="w-full font-sans text-[#2D231F] space-y-4 pb-6">
         <button
           onClick={handleBackToList}
           className="flex items-center gap-2 text-xs text-zinc-400 hover:text-amber-400 transition-colors cursor-pointer"
@@ -428,7 +428,7 @@ export default function ImageUploadContent({
           Quay lại danh sách
         </button>
 
-        <div className="relative rounded-xl overflow-hidden border border-zinc-800 bg-zinc-900 aspect-square max-h-44 w-full mx-auto">
+        <div className="relative rounded-xl overflow-hidden border border-[#D9CDBE] bg-[#F3EDE3] aspect-square max-h-44 w-full mx-auto">
           <img
             src={currentSrc}
             alt={selectedItem.name}
@@ -452,7 +452,7 @@ export default function ImageUploadContent({
           <button
             onClick={() => swapInputRef.current?.click()}
             disabled={swapLoading}
-            className="w-full flex items-center justify-center gap-2 text-xs font-semibold text-zinc-300 hover:text-amber-400 bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 hover:border-amber-500/50 rounded-lg py-2 transition-all disabled:opacity-50"
+            className="w-full flex items-center justify-center gap-2 text-xs font-semibold text-zinc-300 hover:text-amber-400 bg-[#F3EDE3] hover:bg-[#D9CDBE] border border-zinc-700 hover:border-amber-500/50 rounded-lg py-2 transition-all disabled:opacity-50"
           >
             <ImagePlus size={14} />
             Đổi ảnh
@@ -463,7 +463,7 @@ export default function ImageUploadContent({
           {selectedItem.name}
         </p>
 
-        <div className="h-px bg-zinc-800" />
+        <div className="h-px bg-[#D9CDBE]" />
 
         <div className="space-y-3">
           <div>
@@ -479,7 +479,7 @@ export default function ImageUploadContent({
                 setFitMode(mode);
                 applyFitMode(mode, naturalSize);
               }}
-              className="bg-[#333]! text-white! border-[#444]! text-xs!"
+              className="bg-[#EDE4D5]! text-[#2D231F]! border-[#444]! text-xs!"
               wrapperClassName="w-full"
             />
             {naturalSize && (
@@ -500,7 +500,7 @@ export default function ImageUploadContent({
                   max={4000}
                   value={editingEl?.width ?? 200}
                   onChange={(e) => update({ width: Number(e.target.value) })}
-                  className="text-[10px]! bg-[#333] text-white border border-[#444] rounded outline-none focus:border-[#d4af37] text-center p-1.5!"
+                  className="text-[10px]! bg-[#EDE4D5] text-white border border-[#444] rounded outline-none focus:border-[#2D231F] text-center p-1.5!"
                   wrapperClassName="w-full"
                   showButtons={false}
                 />
@@ -514,7 +514,7 @@ export default function ImageUploadContent({
                   max={4000}
                   value={editingEl?.height ?? 200}
                   onChange={(e) => update({ height: Number(e.target.value) })}
-                  className="text-[10px]! bg-[#333] text-white border border-[#444] rounded outline-none focus:border-[#d4af37] text-center p-1.5!"
+                  className="text-[10px]! bg-[#EDE4D5] text-white border border-[#444] rounded outline-none focus:border-[#2D231F] text-center p-1.5!"
                   wrapperClassName="w-full"
                   showButtons={false}
                 />
@@ -529,7 +529,7 @@ export default function ImageUploadContent({
           )}
         </div>
 
-        <div className="h-px bg-zinc-800" />
+        <div className="h-px bg-[#D9CDBE]" />
 
         <div className="space-y-1">
           <label className="text-[10px] text-gray-500 uppercase block">
@@ -549,7 +549,7 @@ export default function ImageUploadContent({
           </div>
         </div>
 
-        <div className="h-px bg-zinc-800" />
+        <div className="h-px bg-[#D9CDBE]" />
 
         <SectionHeader icon={<Square size={14} />} title="Bo góc" />
         <div className="space-y-3">
@@ -565,7 +565,7 @@ export default function ImageUploadContent({
                 value: m.value,
               }))}
               onValueChange={(val) => setBorderRadiusMode(String(val))}
-              className="bg-[#333]! text-white! border-[#444]! text-center! text-xs!"
+              className="bg-[#EDE4D5]! text-[#2D231F]! border-[#444]! text-center! text-xs!"
               wrapperClassName="w-full"
             />
           </div>
@@ -591,7 +591,7 @@ export default function ImageUploadContent({
                     onChange={(e) =>
                       handleBorderRadiusChange(key, Number(e.target.value))
                     }
-                    className="text-[10px]! bg-[#333] text-white border border-[#444] rounded outline-none focus:border-[#d4af37] text-center p-1.5!"
+                    className="text-[10px]! bg-[#EDE4D5] text-white border border-[#444] rounded outline-none focus:border-[#2D231F] text-center p-1.5!"
                     wrapperClassName="w-full"
                     showButtons={false}
                   />
@@ -601,7 +601,7 @@ export default function ImageUploadContent({
           </div>
         </div>
 
-        <div className="h-px bg-zinc-800" />
+        <div className="h-px bg-[#D9CDBE]" />
 
         <SectionHeader icon={<Sun size={14} />} title="Đổ bóng" />
         <div className="space-y-3">
@@ -623,7 +623,7 @@ export default function ImageUploadContent({
               max={80}
               value={editingEl?.shadowBlur ?? 0}
               onChange={(e) => update({ shadowBlur: Number(e.target.value) })}
-              className="w-20! text-[10px]! bg-[#333] text-white border border-[#444] rounded outline-none focus:border-[#d4af37] text-center"
+              className="w-20! text-[10px]! bg-[#EDE4D5] text-white border border-[#444] rounded outline-none focus:border-[#2D231F] text-center"
             />
           </div>
           <div className="flex items-center justify-between">
@@ -637,7 +637,7 @@ export default function ImageUploadContent({
               onChange={(e) =>
                 update({ shadowOffsetX: Number(e.target.value) })
               }
-              className="w-20! text-[10px]! bg-[#333] text-white border border-[#444] rounded outline-none focus:border-[#d4af37] text-center"
+              className="w-20! text-[10px]! bg-[#EDE4D5] text-white border border-[#444] rounded outline-none focus:border-[#2D231F] text-center"
             />
           </div>
           <div className="flex items-center justify-between">
@@ -651,12 +651,12 @@ export default function ImageUploadContent({
               onChange={(e) =>
                 update({ shadowOffsetY: Number(e.target.value) })
               }
-              className="w-20! text-[10px]! bg-[#333] text-white border border-[#444] rounded outline-none focus:border-[#d4af37] text-center"
+              className="w-20! text-[10px]! bg-[#EDE4D5] text-white border border-[#444] rounded outline-none focus:border-[#2D231F] text-center"
             />
           </div>
         </div>
 
-        <div className="h-px bg-zinc-800" />
+        <div className="h-px bg-[#D9CDBE]" />
 
         <SectionHeader icon={<CloudUpload size={14} />} title="Hiệu ứng" />
         <div className="space-y-3">
@@ -676,7 +676,7 @@ export default function ImageUploadContent({
           </div>
         </div>
 
-        <div className="h-px bg-zinc-800" />
+        <div className="h-px bg-[#D9CDBE]" />
 
         <button
           onClick={() => handleRemoveFile(selectedItem.id)}
@@ -690,7 +690,7 @@ export default function ImageUploadContent({
   }
 
   return (
-    <div className="w-full font-sans text-zinc-100">
+    <div className="w-full font-sans text-[#2D231F]">
       <div
         onClick={handleDropZoneClick}
         onDragOver={handleDragOver}
@@ -698,7 +698,7 @@ export default function ImageUploadContent({
         onDrop={handleDrop}
         className={`relative group border-2 border-dashed rounded-2xl text-center transition-all duration-300 cursor-pointer
           ${isStorageFull ? "opacity-50 cursor-not-allowed" : ""}
-          ${isDragging ? "border-amber-400 bg-amber-500/8 scale-[1.01]" : "border-zinc-800 hover:border-amber-500 hover:bg-amber-500/3"}`}
+          ${isDragging ? "border-amber-400 bg-amber-500/8 scale-[1.01]" : "border-[#D9CDBE] hover:border-amber-500 hover:bg-amber-500/3"}`}
       >
         <input
           ref={fileInputRef}
@@ -747,7 +747,7 @@ export default function ImageUploadContent({
           )}
         </div>
 
-        <div className="w-full flex items-center justify-between text-xs py-2 px-4 bg-zinc-900/40 border-t border-zinc-800/80 rounded-b-2xl">
+        <div className="w-full flex items-center justify-between text-xs py-2 px-4 bg-[#F3EDE3]/40 border-t border-[#D9CDBE]/80 rounded-b-2xl">
           <div className="flex items-center gap-1 flex-1 justify-center">
             <span className="text-zinc-500 font-medium">Đã tải:</span>
             <span className="text-amber-400 font-bold">
@@ -785,7 +785,7 @@ export default function ImageUploadContent({
               {uploadedFiles.length} ảnh
             </p>
           </div>
-          <div className="flex items-center gap-1.5 text-xs font-medium text-zinc-400 bg-zinc-900 border border-zinc-800 px-2.5 py-1 rounded-lg">
+          <div className="flex items-center gap-1.5 text-xs font-medium text-zinc-400 bg-[#F3EDE3] border border-[#D9CDBE] px-2.5 py-1 rounded-lg">
             <HardDrive size={13} className="text-amber-500" />
             <span>
               {totalSizeGB < 0.01
@@ -796,10 +796,10 @@ export default function ImageUploadContent({
           </div>
         </div>
 
-        <div className="min-h-40 bg-zinc-900/20 border border-zinc-900 rounded-2xl p-3 mt-1 backdrop-blur-sm">
+        <div className="min-h-40 bg-[#F3EDE3]/20 border border-zinc-900 rounded-2xl p-3 mt-1 backdrop-blur-sm">
           {uploadedFiles.length === 0 ? (
             <div className="w-full h-36 flex flex-col items-center justify-center text-zinc-600 text-sm gap-2">
-              <div className="p-3 bg-zinc-900 rounded-full border border-zinc-800">
+              <div className="p-3 bg-[#F3EDE3] rounded-full border border-[#D9CDBE]">
                 <ImageIcon size={22} className="text-zinc-700" />
               </div>
               <span className="text-xs">Chưa có ảnh nào được tải lên</span>
@@ -841,10 +841,10 @@ function ImageCard({
   return (
     <div
       className={`relative group rounded-lg overflow-hidden border transition-all duration-200 cursor-pointer
-        ${isSelected ? "border-amber-500 ring-1 ring-amber-500/50" : "border-zinc-800 hover:border-zinc-600"}`}
+        ${isSelected ? "border-amber-500 ring-1 ring-amber-500/50" : "border-[#D9CDBE] hover:border-zinc-600"}`}
       onClick={() => onAddToCanvas(item)}
     >
-      <div className="aspect-square bg-zinc-900">
+      <div className="aspect-square bg-[#F3EDE3]">
         <img
           src={item.url}
           alt={item.name}
@@ -858,7 +858,7 @@ function ImageCard({
           e.stopPropagation();
           onRemove(item.id);
         }}
-        className="absolute top-1 right-1 p-1 rounded-md bg-zinc-900/70 text-zinc-500 hover:bg-red-900/80 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all duration-200"
+        className="absolute top-1 right-1 p-1 rounded-md bg-[#F3EDE3]/70 text-zinc-500 hover:bg-red-900/80 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all duration-200"
       >
         <Trash2 size={12} />
       </button>

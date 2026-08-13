@@ -21,9 +21,9 @@ export const TimelineSection = ({
   updateTimeline,
 }: TimelineSectionProps) => {
   return (
-    <div className="bg-white/2 border border-white/5 p-5 rounded-xl shadow-lg flex flex-col gap-5">
-      <div className="flex justify-between items-center border-b border-[#d4af37]/10 pb-2">
-        <h3 className="text-md font-bold text-[#d4af37]">
+    <div className="bg-[#2D231F]/8 border border-white/5 p-5 rounded-xl shadow-lg flex flex-col gap-5">
+      <div className="flex justify-between items-center border-b border-[#2D231F]/10 pb-2">
+        <h3 className="text-md font-bold text-[#2D231F]">
           9. Lịch trình ngày cưới
         </h3>
         <Switch
@@ -35,7 +35,7 @@ export const TimelineSection = ({
       {formData.showTimeline && (
         <div className="flex flex-col gap-4">
           <div className="flex flex-col gap-1.5">
-            <Label className="text-xs font-semibold text-[#f5e6d3]/80">
+            <Label className="text-xs font-semibold text-[#2D231F]/80">
               Tiêu đề lịch trình
             </Label>
             <Input
@@ -43,14 +43,14 @@ export const TimelineSection = ({
               onChange={(e) =>
                 handleChange("timelineTitle", e.target.value)
               }
-              className="bg-white/5! border-[#d4af37]/10!"
+              className="bg-[#2D231F]/10! border-[#2D231F]/10!"
             />
           </div>
           <div className="flex flex-col gap-3">
             {formData.timeline.map((item: any) => (
               <div
                 key={item.id}
-                className="flex items-center gap-3 bg-white/5 p-2 border border-white/10 rounded-lg"
+                className="flex items-center gap-3 bg-[#2D231F]/10 p-2 border border-white/10 rounded-lg"
               >
                 <div className="w-28 sm:w-40 shrink-0">
                   <TimePicker
@@ -70,7 +70,7 @@ export const TimelineSection = ({
                 </div>
                 <button
                   onClick={() => removeTimeline(item.id)}
-                  className="p-2 text-red-400 hover:text-red-500 rounded-md bg-white/5 cursor-pointer"
+                  className="p-2 text-red-400 hover:text-red-500 rounded-md bg-[#2D231F]/10 cursor-pointer"
                 >
                   <Trash2 size={16} />
                 </button>
@@ -79,7 +79,7 @@ export const TimelineSection = ({
             <Button
               variant="outline"
               onClick={addTimeline}
-              className="w-full border-dashed border-[#d4af37]/30 text-[#d4af37] hover:bg-[#d4af37]/10 py-3 rounded-lg flex items-center justify-center gap-2 text-sm"
+              className="w-full border-dashed border-[#2D231F]/30 text-[#2D231F] hover:bg-[#2D231F]/10 py-3 rounded-lg flex items-center justify-center gap-2 text-sm"
             >
               <Plus size={16} /> Thêm hoạt động
             </Button>

@@ -21,7 +21,7 @@ interface Carousel3DProps {
 
 export default function Carousel3D({
   children,
-  accentColor = "#d4af37",
+  accentColor = "#2D231F",
   initialIndex = 0,
   minHeight = "600px",
   height = "500px",
@@ -144,7 +144,7 @@ export default function Carousel3D({
               height: "40px",
               borderRadius: "50%",
               border: `2px solid ${accentColor}`,
-              background: "rgba(26, 10, 15, 0.9)",
+              background: "rgba(45, 35, 31, 0.9)",
               backdropFilter: "blur(10px)",
               display: "flex",
               alignItems: "center",
@@ -159,7 +159,7 @@ export default function Carousel3D({
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.transform = "translateY(-50%) scale(1)";
-              e.currentTarget.style.background = "rgba(26, 10, 15, 0.9)";
+              e.currentTarget.style.background = "rgba(45, 35, 31, 0.9)";
             }}
           >
             <ChevronLeft
@@ -179,7 +179,7 @@ export default function Carousel3D({
               height: "40px",
               borderRadius: "50%",
               border: `2px solid ${accentColor}`,
-              background: "rgba(26, 10, 15, 0.9)",
+              background: "rgba(45, 35, 31, 0.9)",
               backdropFilter: "blur(10px)",
               display: "flex",
               alignItems: "center",
@@ -194,7 +194,7 @@ export default function Carousel3D({
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.transform = "translateY(-50%) scale(1)";
-              e.currentTarget.style.background = "rgba(26, 10, 15, 0.9)";
+              e.currentTarget.style.background = "rgba(45, 35, 31, 0.9)";
             }}
           >
             <ChevronRight

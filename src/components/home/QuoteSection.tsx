@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import ScrollReveal from "./ScrollReveal";
 
 const QUOTE_TEXT =
-  "Một tấm thiệp cưới đẹp không chỉ là lời mời, mà còn là dấu ấn đầu tiên khắc sâu trong ký ức của tất cả những ai được chứng kiến ngày trọng đại ấy.";
+  "Một tấm thiệp đẹp không chỉ là lời mời, mà là dấu ấn đầu tiên khắc sâu trong ký ức của mọi khoảnh khắc đáng nhớ.";
 
 export default function QuoteSection() {
   const [displayedText, setDisplayedText] = useState<string>("");
@@ -60,45 +60,45 @@ export default function QuoteSection() {
   return (
     <div
       ref={sectionRef}
-      className="border-y border-[#d4af37]/20 py-24 px-6 text-center relative overflow-hidden"
+      className="border-y border-[#2D231F]/20 py-24 px-6 text-center relative overflow-hidden"
       style={{
-        background: `radial-gradient(circle at center, #2a101f 0%, #0f0608 100%)`,
+        background: `radial-gradient(circle at center, #EDE4D5 0%, #F3EDE3 100%)`,
       }}
     >
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
           background:
-            "radial-gradient(circle at center, rgba(212,175,55,0.04) 0%, transparent 60%)",
+            "radial-gradient(circle at center, rgba(45, 35, 31,0.04) 0%, transparent 60%)",
         }}
       />
 
       <ScrollReveal>
         <div className="relative max-w-3xl mx-auto flex flex-col items-center justify-center">
           <span
-            className="text-[#d4af37]/20 text-6xl   block mb-2 select-none"
+            className="text-[#2D231F]/12 text-6xl   block mb-2 select-none"
             style={{ fontFamily: "'Playfair Display', serif" }}
           >
             “
           </span>
 
           <p
-            className="italic text-[clamp(1.2rem,2.8vw,2rem)] text-[#f5e6d3] leading-relaxed min-h-30 md:min-h-40 font-medium "
+            className="italic text-[clamp(1.2rem,2.8vw,2rem)] text-[#2D231F] leading-relaxed min-h-30 md:min-h-40 font-medium "
             style={{ fontFamily: "'Playfair Display', serif" }}
           >
             {displayedText}
-            <span className="inline-block w-1.5 h-[1.1em] bg-[#d4af37] ml-1 animate-[pulse_1s_infinite] align-middle" />
+            <span className="inline-block w-1.5 h-[1.1em] bg-[#2D231F] ml-1 animate-[pulse_1s_infinite] align-middle" />
           </p>
 
           <span
-            className="text-[#d4af37]/20 text-6xl   block mt-2 select-none"
+            className="text-[#2D231F]/12 text-6xl   block mt-2 select-none"
             style={{ fontFamily: "'Playfair Display', serif" }}
           >
             ”
           </span>
 
-          <p className="text-[10px] tracking-[6px] text-[#d4af37] uppercase font-semibold mt-6 transition-all duration-700">
-            — Tiệm cưới tân thời —
+          <p className="text-[10px] tracking-[6px] text-[#7A6A5C] uppercase font-semibold mt-6 transition-all duration-700">
+            — InviGo —
           </p>
         </div>
       </ScrollReveal>

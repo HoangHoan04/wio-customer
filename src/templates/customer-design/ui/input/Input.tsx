@@ -20,15 +20,16 @@ export interface InputProps {
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   placeholder?: string;
   style?: React.CSSProperties;
+  onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
 }
 
 const variantBase: Record<InputVariant, string> = {
   default:
-    "bg-transparent border border-[rgba(212,175,55,0.35)] focus:border-[#d4af37] focus:ring-2 focus:ring-[rgba(212,175,55,0.2)]",
+    "bg-[#F3EDE3] border border-[#D9CDBE] focus:border-[#2D231F] focus:ring-2 focus:ring-[rgba(45,35,31,0.1)]",
   filled:
-    "bg-[rgba(212,175,55,0.06)] border border-[rgba(212,175,55,0.2)] focus:border-[#d4af37] focus:ring-2 focus:ring-[rgba(212,175,55,0.15)]",
+    "bg-[#EDE4D5] border border-[#D9CDBE] focus:border-[#2D231F] focus:ring-2 focus:ring-[rgba(45,35,31,0.1)]",
   ghost:
-    "bg-transparent border-0 border-b border-[rgba(212,175,55,0.4)] rounded-none focus:border-b-[#d4af37] focus:ring-0",
+    "bg-transparent border-0 border-b border-[#D9CDBE] rounded-none focus:border-b-[#2D231F] focus:ring-0",
 };
 
 const sizeMap: Record<InputSize, { input: string; icon: string; text: string }> = {
@@ -56,6 +57,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
       onChange,
       placeholder,
       style,
+      onKeyDown,
       ...rest
     },
     ref
@@ -65,7 +67,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
 
     const baseInput = [
       "w-full rounded-md outline-none transition-all duration-200",
-      "text-[#f5e6d3] placeholder:text-[#6b5743]",
+      "text-[#2D231F] placeholder:text-[#7A6A5C]/50",
       "disabled:opacity-50 disabled:cursor-not-allowed",
       variantBase[variant],
       sizes.input,
@@ -82,7 +84,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
         {label && (
           <label
             htmlFor={inputId}
-            className="text-[11px] font-semibold tracking-[2px] uppercase text-[#d4af37] select-none"
+            className="text-[11px] font-semibold tracking-[2px] uppercase text-[#7A6A5C] select-none"
           >
             {label}
           </label>
@@ -91,7 +93,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
         <div className="relative flex items-center">
           {leftIcon && (
             <span
-              className={`absolute left-0 flex items-center justify-center text-[#d4af37] pointer-events-none h-full ${sizes.icon}`}
+              className={`absolute left-0 flex items-center justify-center text-[#7A6A5C] pointer-events-none h-full ${sizes.icon}`}
             >
               {leftIcon}
             </span>
@@ -104,13 +106,14 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
             type={type}
             value={value}
             onChange={onChange}
+            onKeyDown={onKeyDown}
             placeholder={placeholder}
             style={style}
             {...rest}
           />
           {rightIcon && (
             <span
-              className={`absolute right-0 flex items-center justify-center text-[#d4af37] h-full ${sizes.icon}`}
+              className={`absolute right-0 flex items-center justify-center text-[#7A6A5C] h-full ${sizes.icon}`}
             >
               {rightIcon}
             </span>
@@ -123,7 +126,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
           </p>
         )}
 
-        {!error && hint && <p className={`${sizes.text} text-[#6b5743]`}>{hint}</p>}
+        {!error && hint && <p className={`${sizes.text} text-[#7A6A5C]`}>{hint}</p>}
       </div>
     );
   }

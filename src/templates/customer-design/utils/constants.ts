@@ -1,7 +1,9 @@
-import type { EditorElement, EditorTool } from "../types";
+import type { EditorElement, EditorTool, TextPreset, WidgetType } from "../types";
 import { SYSTEM_WALLPAPERS } from "../assets/images";
+import { measureTextBox } from "./text-fit";
 
 export { SYSTEM_WALLPAPERS };
+export { FONTS, FONT_CATALOG, FONT_SELECT_OPTIONS } from "./font-catalog";
 
 export const CANVAS_WIDTH = 800;
 export const CANVAS_HEIGHT = 1200;
@@ -26,41 +28,6 @@ export const TOOLS: ToolDef[] = [
   { id: "preset", label: "Preset", icon: "LayoutDashboard" },
   { id: "template", label: "Mẫu", icon: "Layers" },
   { id: "effect", label: "Hiệu ứng", icon: "Film" },
-];
-
-export const FONTS = [
-  "Arial",
-  "Arial Black",
-  "Baskerville",
-  "Brush Script MT",
-  "Calibri",
-  "Cambria",
-  "Candara",
-  "Century Gothic",
-  "Comic Sans MS",
-  "Consolas",
-  "Copperplate Gothic",
-  "Courier New",
-  "EB Garamond",
-  "Franklin Gothic Medium",
-  "Garamond",
-  "Georgia",
-  "Great Vibes",
-  "Helvetica",
-  "Impact",
-  "Inter",
-  "Lucida Console",
-  "Lucida Handwriting",
-  "Palatino Linotype",
-  "Playfair Display",
-  "Segoe Print",
-  "Segoe Script",
-  "Segoe UI",
-  "Tahoma",
-  "Tangerine",
-  "Times New Roman",
-  "Trebuchet MS",
-  "Verdana",
 ];
 
 export const FONT_SIZES = [
@@ -143,32 +110,368 @@ export const SHAPE_LABELS: Record<string, string> = {
   hexagon: "⬡",
 };
 
-export function createDefaultText(id: string): EditorElement {
-  return {
+export const WIDGET_DEFAULT_SIZE: Record<WidgetType, { width: number; height: number }> = {
+  calendar: { width: 380, height: 280 },
+  countdown: { width: 380, height: 110 },
+  map: { width: 380, height: 240 },
+  call: { width: 80, height: 200 },
+  rsvp: { width: 280, height: 96 },
+  qr: { width: 180, height: 140 },
+  gallery: { width: 380, height: 280 },
+  album: { width: 380, height: 280 },
+  carousel: { width: 380, height: 260 },
+  youtube: { width: 380, height: 214 },
+  music: { width: 280, height: 60 },
+};
+
+export const UTILITY_FONTS = [
+  "Playfair Display",
+  "Cormorant Garamond",
+  "Great Vibes",
+  "Inter",
+  "Montserrat",
+  "Quicksand",
+];
+
+export const TEXT_INSERT_STYLES: {
+  id: string;
+  label: string;
+  panelFontSize: number;
+  preset: TextPreset;
+}[] = [
+  {
+    id: "heading",
+    label: "Thêm tiêu đề",
+    panelFontSize: 28,
+    preset: {
+      content: "Thêm tiêu đề",
+      fontFamily: "Playfair Display",
+      fontSize: 48,
+      fontWeight: "bold",
+      letterSpacing: 0,
+      lineHeight: 1.15,
+      textAlign: "center",
+      verticalAlign: "top",
+      color: "#2D231F",
+      fill: "#2D231F",
+    },
+  },
+  {
+    id: "subheading",
+    label: "Thêm tiêu đề phụ",
+    panelFontSize: 18,
+    preset: {
+      content: "Thêm tiêu đề phụ",
+      fontFamily: "Playfair Display",
+      fontSize: 28,
+      fontWeight: "normal",
+      letterSpacing: 0,
+      lineHeight: 1.2,
+      textAlign: "center",
+      verticalAlign: "top",
+      color: "#2D231F",
+      fill: "#2D231F",
+    },
+  },
+  {
+    id: "body",
+    label: "Thêm một đoạn văn",
+    panelFontSize: 14,
+    preset: {
+      content: "Thêm một đoạn văn",
+      fontFamily: "Inter",
+      fontSize: 16,
+      fontWeight: "normal",
+      letterSpacing: 0,
+      lineHeight: 1.4,
+      textAlign: "left",
+      verticalAlign: "top",
+      color: "#2D231F",
+      fill: "#2D231F",
+    },
+  },
+];
+
+export const TEXT_STYLE_PRESETS: {
+  id: string;
+  name: string;
+  preset: TextPreset;
+}[] = [
+  {
+    id: "elegant",
+    name: "Thanh lịch",
+    preset: {
+      content: "Thanh lịch",
+      fontFamily: "Playfair Display",
+      fontSize: 36,
+      fontWeight: "bold",
+      lineHeight: 1.15,
+      textAlign: "center",
+      verticalAlign: "top",
+      color: "#2D231F",
+      fill: "#2D231F",
+    },
+  },
+  {
+    id: "script",
+    name: "Thư pháp",
+    preset: {
+      content: "Thư pháp",
+      fontFamily: "Great Vibes",
+      fontSize: 48,
+      fontWeight: "normal",
+      lineHeight: 1.35,
+      textAlign: "center",
+      verticalAlign: "top",
+      color: "#2D231F",
+      fill: "#2D231F",
+    },
+  },
+  {
+    id: "classic",
+    name: "Cổ điển",
+    preset: {
+      content: "CỔ ĐIỂN",
+      fontFamily: "Cormorant Garamond",
+      fontSize: 28,
+      fontWeight: "normal",
+      letterSpacing: 4,
+      textTransform: "uppercase",
+      lineHeight: 1.2,
+      textAlign: "center",
+      verticalAlign: "top",
+      color: "#2D231F",
+      fill: "#2D231F",
+    },
+  },
+  {
+    id: "modern",
+    name: "Hiện đại",
+    preset: {
+      content: "Hiện đại",
+      fontFamily: "Inter",
+      fontSize: 32,
+      fontWeight: "bold",
+      lineHeight: 1.15,
+      textAlign: "center",
+      verticalAlign: "top",
+      color: "#2D231F",
+      fill: "#2D231F",
+    },
+  },
+  {
+    id: "romantic",
+    name: "Lãng mạn",
+    preset: {
+      content: "Lãng mạn",
+      fontFamily: "Dancing Script",
+      fontSize: 42,
+      fontWeight: "normal",
+      lineHeight: 1.3,
+      textAlign: "center",
+      verticalAlign: "top",
+      color: "#2D231F",
+      fill: "#2D231F",
+    },
+  },
+  {
+    id: "luxury",
+    name: "Sang trọng",
+    preset: {
+      content: "Sang trọng",
+      fontFamily: "Cinzel",
+      fontSize: 28,
+      fontWeight: "bold",
+      letterSpacing: 3,
+      textTransform: "uppercase",
+      lineHeight: 1.2,
+      textAlign: "center",
+      verticalAlign: "top",
+      color: "#2D231F",
+      fill: "#2D231F",
+    },
+  },
+  {
+    id: "minimal",
+    name: "Tối giản",
+    preset: {
+      content: "Tối giản",
+      fontFamily: "Montserrat",
+      fontSize: 28,
+      fontWeight: "normal",
+      letterSpacing: 2,
+      lineHeight: 1.2,
+      textAlign: "center",
+      verticalAlign: "top",
+      color: "#2D231F",
+      fill: "#2D231F",
+    },
+  },
+  {
+    id: "handwriting",
+    name: "Viết tay",
+    preset: {
+      content: "Viết tay",
+      fontFamily: "Allura",
+      fontSize: 48,
+      fontWeight: "normal",
+      lineHeight: 1.35,
+      textAlign: "center",
+      verticalAlign: "top",
+      color: "#2D231F",
+      fill: "#2D231F",
+    },
+  },
+  {
+    id: "editorial",
+    name: "Báo chí",
+    preset: {
+      content: "Báo chí",
+      fontFamily: "Libre Baskerville",
+      fontSize: 30,
+      fontWeight: "bold",
+      lineHeight: 1.2,
+      textAlign: "center",
+      verticalAlign: "top",
+      color: "#2D231F",
+      fill: "#2D231F",
+    },
+  },
+  {
+    id: "soft",
+    name: "Mềm mại",
+    preset: {
+      content: "Mềm mại",
+      fontFamily: "Quicksand",
+      fontSize: 32,
+      fontWeight: "bold",
+      lineHeight: 1.2,
+      textAlign: "center",
+      verticalAlign: "top",
+      color: "#2D231F",
+      fill: "#2D231F",
+    },
+  },
+  {
+    id: "garamond",
+    name: "Garamond",
+    preset: {
+      content: "Garamond",
+      fontFamily: "EB Garamond",
+      fontSize: 36,
+      fontWeight: "normal",
+      lineHeight: 1.2,
+      textAlign: "center",
+      verticalAlign: "top",
+      color: "#2D231F",
+      fill: "#2D231F",
+    },
+  },
+  {
+    id: "tangerine",
+    name: "Tangerine",
+    preset: {
+      content: "Tangerine",
+      fontFamily: "Tangerine",
+      fontSize: 52,
+      fontWeight: "normal",
+      lineHeight: 1.3,
+      textAlign: "center",
+      verticalAlign: "top",
+      color: "#2D231F",
+      fill: "#2D231F",
+    },
+  },
+  {
+    id: "serif-soft",
+    name: "Serif nhẹ",
+    preset: {
+      content: "Serif nhẹ",
+      fontFamily: "Lora",
+      fontSize: 32,
+      fontWeight: "normal",
+      lineHeight: 1.2,
+      textAlign: "center",
+      verticalAlign: "top",
+      color: "#2D231F",
+      fill: "#2D231F",
+    },
+  },
+  {
+    id: "calligraphy",
+    name: "Calligraphy",
+    preset: {
+      content: "Calligraphy",
+      fontFamily: "Pinyon Script",
+      fontSize: 42,
+      fontWeight: "normal",
+      lineHeight: 1.35,
+      textAlign: "center",
+      verticalAlign: "top",
+      color: "#2D231F",
+      fill: "#2D231F",
+    },
+  },
+  {
+    id: "vietnam",
+    name: "Việt Nam",
+    preset: {
+      content: "Việt Nam",
+      fontFamily: "Be Vietnam Pro",
+      fontSize: 30,
+      fontWeight: "bold",
+      lineHeight: 1.2,
+      textAlign: "center",
+      verticalAlign: "top",
+      color: "#2D231F",
+      fill: "#2D231F",
+    },
+  },
+  {
+    id: "display",
+    name: "Trang trí",
+    preset: {
+      content: "Trang trí",
+      fontFamily: "Cinzel Decorative",
+      fontSize: 26,
+      fontWeight: "bold",
+      letterSpacing: 1,
+      lineHeight: 1.2,
+      textAlign: "center",
+      verticalAlign: "top",
+      color: "#2D231F",
+      fill: "#2D231F",
+    },
+  },
+];
+
+export function createDefaultText(id: string, preset?: TextPreset): EditorElement {
+  const color = preset?.color ?? "#2D231F";
+  const el: EditorElement = {
     id,
     type: "text",
     x: 100,
     y: 100,
-    width: 120,
-    height: 30,
+    width: 280,
+    height: 40,
     rotation: 0,
     opacity: 1,
     visible: true,
     locked: false,
     zIndex: Date.now(),
-    content: "Nhập văn bản",
-    fontSize: 14,
-    fontFamily: "Playfair Display",
+    content: "Thêm một đoạn văn",
+    fontSize: 16,
+    fontFamily: "Inter",
     fontStyle: "normal",
     fontWeight: "normal",
-    textAlign: "center",
-    verticalAlign: "middle",
-    color: "#8B4513",
-    fill: "#8B4513",
+    textAlign: "left",
+    verticalAlign: "top",
+    color,
+    fill: preset?.fill ?? color,
     stroke: "",
     strokeWidth: 0,
     letterSpacing: 0,
-    lineHeight: 1.5,
+    lineHeight: 1.2,
     textDecoration: "none",
     textTransform: "none",
     backgroundColor: "transparent",
@@ -200,7 +503,22 @@ export function createDefaultText(id: string): EditorElement {
     continuousMotionDelay: 0,
     src: "",
     shapeType: "rect",
+    ...preset,
   };
+
+  el.id = id;
+  el.type = "text";
+  el.fill = preset?.fill ?? preset?.color ?? color;
+  el.verticalAlign = preset?.verticalAlign ?? "top";
+
+  const hasAuthoredBox = preset?.width != null && preset?.height != null;
+  if (!hasAuthoredBox) {
+    const fitted = measureTextBox(el, preset?.width != null ? "wrap" : "hug");
+    el.width = preset?.width ?? fitted.width;
+    el.height = fitted.height;
+  }
+
+  return el;
 }
 
 export function createDefaultShape(
@@ -244,8 +562,8 @@ export function createDefaultShape(
     fontStyle: "normal",
     fontWeight: "normal",
     textAlign: "center",
-    color: "#D4AF37",
-    fill: "#D4AF37",
+    color: "#b6cc61",
+    fill: "#b6cc61",
     stroke: "#333",
     strokeWidth: 2,
     letterSpacing: 0,
@@ -466,8 +784,8 @@ export const PRESET_COLORS = [
   "#A0522D",
   "#CD853F",
   "#DEB887",
-  "#D4AF37",
+  "#b6cc61",
   "#FFD700",
-  "#F5C842",
+  "#c8dc7a",
   "#F5E6D3",
 ];

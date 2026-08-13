@@ -13,34 +13,33 @@ interface FAQItem {
 const FAQS: FAQItem[] = [
   {
     id: 1,
-    question: "Thiệp cưới online của tôi sẽ hoạt động trong bao lâu?",
+    question: "Thiệp online hoạt động trong bao lâu?",
     answer:
-      "Đối với gói Premium, liên kết thiệp cưới của hai bạn sẽ tồn tại vĩnh viễn cùng hệ thống. Các bạn hoàn toàn có thể mở lại xem bất cứ lúc nào như một trang nhật ký kỷ niệm ngày cưới ngọt ngào.",
+      "Link thiệp mở được trong thời hạn gói bạn đang dùng. Trong khoảng đó bạn xem lại, chỉnh sửa hoặc gửi tiếp cho khách bất cứ lúc nào — cho cưới hỏi, sinh nhật hay sự kiện khác.",
   },
   {
     id: 2,
-    question: "Tôi có thể tự tải lên nhạc nền của riêng mình không?",
+    question: "Tôi có thể dùng nhạc nền của riêng mình không?",
     answer:
-      "Hoàn toàn có thể. Bên cạnh danh sách các bản nhạc tình ca lãng mạn có sẵn trên hệ thống, gói Premium hỗ trợ bạn tải lên trực tiếp tệp âm thanh (định dạng MP3) hoặc chèn đường dẫn video YouTube yêu thích của hai bạn.",
+      "Được. Chọn bài có sẵn trên hệ thống, tải tệp âm thanh, hoặc gắn đường dẫn YouTube. Nhạc tự phát khi khách mở thiệp, đúng không khí buổi tiệc của bạn.",
   },
   {
     id: 3,
-    question:
-      "Lỡ thông tin tiệc cưới thay đổi sau khi gửi thiệp thì làm thế nào?",
+    question: "Thông tin sự kiện đổi sau khi đã gửi thiệp thì sao?",
     answer:
-      "Đây chính là ưu điểm tuyệt vời nhất của thiệp số! Bạn có thể truy cập trang quản lý và sửa lại mọi thông tin (ngày giờ, địa điểm, hình ảnh) bất kỳ lúc nào. Đường link thiệp đã gửi đi sẽ tự động cập nhật dữ liệu mới nhất ngay lập tức mà không cần tạo lại thiệp mới.",
+      "Sửa ngày giờ, địa điểm hay ảnh ngay trên trang quản lý. Link đã gửi tự cập nhật, không cần tạo thiệp mới hay nhắn lại từng người.",
   },
   {
     id: 4,
-    question: "Tính năng RSVP (Xác nhận tham dự) thống kê dữ liệu ra sao?",
+    question: "RSVP thống kê danh sách khách thế nào?",
     answer:
-      "Mỗi khi có khách mời nhấn nút xác nhận tham gia và gửi thông tin đi, dữ liệu (Tên khách, số người đi cùng, lời chúc...) sẽ ngay lập tức được điền vào bảng điều khiển quản lý của hai bạn. Bạn cũng có thể xuất toàn bộ dữ liệu này ra file Excel chỉ với một chạm để bàn giao dễ dàng cho đơn vị chuẩn bị bàn tiệc.",
+      "Khi khách xác nhận tham dự, tên, số người đi cùng và lời chúc hiện ngay trên bảng quản lý. Bạn theo dõi danh sách, xếp bàn nếu cần, rồi xuất file khi chuẩn bị tiệc.",
   },
   {
     id: 5,
-    question: "Khách mời lớn tuổi có gặp khó khăn khi bóc thiệp số không?",
+    question: "Người lớn tuổi mở thiệp số có khó không?",
     answer:
-      "Chúng tôi hiểu nỗi băn khoăn này nên đã tối ưu hóa luồng tương tác cực kỳ tối giản. Giao diện thiệp tương thích tuyệt đối với mọi dòng điện thoại thông minh, chữ viết rõ ràng, nút chạm to mượt và không yêu cầu đăng nhập hay cài đặt ứng dụng phức tạp.",
+      "Thiệp mở trên điện thoại, không cần tải app hay đăng nhập. Chữ rõ, nút bấm lớn, thao tác chỉ vài chạm — khách chỉ việc mở link và đọc thiệp.",
   },
 ];
 
@@ -52,21 +51,24 @@ export default function FaqSection() {
   };
 
   return (
-    <section className="py-28 px-6 relative overflow-hidden border-b border-[#d4af37]/10">
-      <div className="absolute top-0 right-1/4 w-125 h-125 bg-[radial-gradient(circle,rgba(212,175,55,0.02)_0%,transparent_70%)] pointer-events-none" />
+    <section
+      id="faq"
+      className="py-28 px-6 relative overflow-hidden border-b border-[#2D231F]/10"
+    >
+      <div className="absolute top-0 right-1/4 w-125 h-125 bg-[radial-gradient(circle,rgba(45, 35, 31,0.02)_0%,transparent_70%)] pointer-events-none" />
 
       <div className="max-w-212.5 mx-auto relative z-10">
         <ScrollReveal>
           <div className="text-center mb-20">
-            <p className="text-xs tracking-[6px] uppercase text-[#d4af37] mb-4 font-semibold font-cormorant">
-              Góc giải đáp băn khoăn
+            <p className="text-xs tracking-[6px] uppercase text-[#7A6A5C] mb-4 font-semibold font-cormorant">
+              Câu hỏi thường gặp
             </p>
             <h2 className="text-[clamp(1.8rem,4vw,2.6rem)] font-light font-cormorant ">
               <span className="tct-shimmer-text italic block">
-                Để hành trình hạnh phúc vẹn tròn
+                Trước khi gửi thiệp
               </span>
             </h2>
-            <div className="w-12 h-px bg-[#d4af37]/40 mx-auto mt-6" />
+            <div className="w-12 h-px bg-[#2D231F]/40 mx-auto mt-6" />
           </div>
         </ScrollReveal>
 
@@ -78,8 +80,8 @@ export default function FaqSection() {
                 <div
                   className={`group rounded-xl border transition-all duration-300 ${
                     isOpen
-                      ? "bg-[#221019]/40 border-[#d4af37] shadow-[0_8px_25px_rgba(34,16,25,0.3)]"
-                      : "bg-transparent border-[#d4af37]/12 hover:border-[#d4af37]/25"
+                      ? "bg-[#EDE4D5]/70 border-[#2D231F] shadow-[0_8px_25px_rgba(45,35,31,0.08)]"
+                      : "bg-transparent border-[#2D231F]/12 hover:border-[#2D231F]/25"
                   }`}
                 >
                   <button
@@ -87,15 +89,15 @@ export default function FaqSection() {
                     className="w-full flex items-center justify-between p-6 text-left cursor-pointer transition-colors"
                   >
                     <span
-                      className={`text-base font-medium pr-6 tracking-wide transition-colors duration-300 ${isOpen ? "text-[#f5c842]" : "text-[#f5e6d3]/95 group-hover:text-[#d4af37]"}`}
+                      className={`text-base font-medium pr-6 tracking-wide transition-colors duration-300 ${isOpen ? "text-[#7A6A5C]" : "text-[#2D231F]/95 group-hover:text-[#2D231F]"}`}
                       style={{ fontFamily: "'Playfair Display', serif" }}
                     >
                       {faq.question}
                     </span>
                     <ChevronDown
                       size={18}
-                      className={`text-[#d4af37]/60 shrink-0 transition-transform duration-500 ${
-                        isOpen ? "rotate-180 text-[#f5c842]" : ""
+                      className={`text-[#2D231F]/60 shrink-0 transition-transform duration-500 ${
+                        isOpen ? "rotate-180 text-[#7A6A5C]" : ""
                       }`}
                     />
                   </button>
@@ -103,11 +105,11 @@ export default function FaqSection() {
                   <div
                     className={`overflow-hidden transition-all duration-500 ease-in-out ${
                       isOpen
-                        ? "max-h-75 opacity-100 border-t border-[#d4af37]/10"
+                        ? "max-h-75 opacity-100 border-t border-[#2D231F]/10"
                         : "max-h-0 opacity-0"
                     }`}
                   >
-                    <div className="p-6 text-xs sm:text-[13px] text-[#c9a98a]/85 leading-relaxed font-light">
+                    <div className="p-6 text-xs sm:text-[13px] text-[#7A6A5C]/85 leading-relaxed font-light">
                       {faq.answer}
                     </div>
                   </div>

@@ -9,7 +9,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/useToast";
-import { weddingService } from "@/services/wedding.service";
+import { invitationService } from "@/services/invitation.service";
+import { invitationLabel } from "@/utils/invitation-mapper";
 import { wishService, type Wish } from "@/services/wish.service";
 import {
   CheckCircle,
@@ -22,37 +23,36 @@ import {
 import { useEffect, useState } from "react";
 
 const C = {
-  bg: "#0b0507",
-  bgCard: "#140a0d",
-  gold: "#c5a059",
-  goldLight: "#e5c483",
-  cream: "#f9f6f0",
-  muted: "#a38a75",
-  border: "rgba(197, 160, 89, 0.15)",
+  bg: "#F3EDE3",
+  bgCard: "#EDE4D5",
+  gold: "#2D231F",
+  goldLight: "#7A6A5C",
+  cream: "#2D231F",
+  muted: "#7A6A5C",
+  border: "rgba(232, 226, 216, 1)",
 };
 
-interface WeddingOption {
+interface InvitationOption {
   id: string;
-  groomShortName: string;
-  brideShortName: string;
+  title?: string;
   slug: string;
 }
 
 export default function MyWishesPage() {
   const { showToast } = useToast();
 
-  const [weddings, setWeddings] = useState<WeddingOption[]>([]);
-  const [selectedWeddingId, setSelectedWeddingId] = useState<string>("");
+  const [invitations, setInvitations] = useState<InvitationOption[]>([]);
+  const [selectedInvitationId, setSelectedInvitationId] = useState<string>("");
   const [wishes, setWishes] = useState<Wish[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    weddingService
-      .getWeddings({ skip: 0, take: 50, where: {} })
+    invitationService
+      .pagination({ skip: 0, take: 50, where: {} })
       .then((res) => {
         const list = res.data ?? [];
-        setWeddings(list);
-        if (list[0]) setSelectedWeddingId(list[0].id);
+        setInvitations(list);
+        if (list[0]) setSelectedInvitationId(list[0].id);
       })
       .catch((err) => {
         console.error(err);
@@ -64,23 +64,23 @@ export default function MyWishesPage() {
   }, []);
 
   useEffect(() => {
-    if (!selectedWeddingId) return;
+    if (!selectedInvitationId) return;
     setIsLoading(true);
     wishService
-      .getByWedding(selectedWeddingId, { isApproved: undefined })
+      .getByInvitation(selectedInvitationId, { isApproved: undefined })
       .then((res) => setWishes(res.data ?? []))
       .catch((err) => {
         console.error(err);
         showToast({ message: "Không thể tải lời chúc", type: "error" });
       })
       .finally(() => setIsLoading(false));
-  }, [selectedWeddingId]);
+  }, [selectedInvitationId]);
 
   const refreshWishes = () => {
-    if (!selectedWeddingId) return;
+    if (!selectedInvitationId) return;
     setIsLoading(true);
     wishService
-      .getByWedding(selectedWeddingId, { isApproved: undefined })
+      .getByInvitation(selectedInvitationId, { isApproved: undefined })
       .then((res) => setWishes(res.data ?? []))
       .finally(() => setIsLoading(false));
   };
@@ -164,12 +164,9 @@ export default function MyWishesPage() {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
           <div>
             <h1
-              className="text-3xl md:text-4xl font-bold uppercase tracking-wider mb-3"
+              className="text-3xl md:text-4xl font-bold uppercase tracking-wider mb-3 text-[#2D231F]"
               style={{
                 fontFamily: "'Cinzel', serif",
-                background: `linear-gradient(135deg, ${C.goldLight} 0%, ${C.gold} 50%, ${C.goldLight} 100%)`,
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
               }}
             >
               Quản lý lời chúc
@@ -184,27 +181,27 @@ export default function MyWishesPage() {
               variant="outline"
               onClick={refreshWishes}
               disabled={isLoading}
-              className="border-[#d4af37]/30 text-[#f5e6d3] hover:bg-[#d4af37]/10"
+              className="border-[#2D231F]/30 text-[#2D231F] hover:bg-[#2D231F]/10"
             >
               <RefreshCw size={16} className={`mr-2 ${isLoading ? "animate-spin" : ""}`} />
               Làm mới
             </Button>
-            {weddings.length > 0 && (
+            {invitations.length > 0 && (
               <Select
-                value={selectedWeddingId}
-                onValueChange={(v) => setSelectedWeddingId(v ?? "")}
-                items={weddings.map((w) => ({
+                value={selectedInvitationId}
+                onValueChange={(v) => setSelectedInvitationId(v ?? "")}
+                items={invitations.map((w) => ({
                   value: w.id,
-                  label: `${w.groomShortName} & ${w.brideShortName}`,
+                  label: invitationLabel(w),
                 }))}
               >
-                <SelectTrigger className="min-w-80 bg-transparent border-[#d4af37]/30 text-[#f5e6d3] placeholder:text-[#a38a75]/50">
+                <SelectTrigger className="min-w-80 bg-transparent border-[#2D231F]/30 text-[#2D231F] placeholder:text-[#7A6A5C]/50">
                   <SelectValue placeholder="Chọn đám cưới" />
                 </SelectTrigger>
-                <SelectContent className="bg-[#13070b] border-[#d4af37]/30 text-[#f5e6d3]">
-                  {weddings.map((w) => (
+                <SelectContent className="bg-[#ffffff] border-[#2D231F]/30 text-[#2D231F]">
+                  {invitations.map((w) => (
                     <SelectItem key={w.id} value={w.id}>
-                      {w.groomShortName} & {w.brideShortName}
+                      {invitationLabel(w)}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -215,14 +212,14 @@ export default function MyWishesPage() {
 
         {isLoading ? (
           <div className="flex justify-center py-24">
-            <div className="w-12 h-12 border-4 border-[#d4af37]/20 border-t-[#d4af37] rounded-full animate-spin" />
+            <div className="w-12 h-12 border-4 border-[#2D231F]/20 border-t-[#2D231F] rounded-full animate-spin" />
           </div>
         ) : wishes.length === 0 ? (
           <div
             className="text-center py-20 px-6 rounded-2xl border border-dashed flex flex-col items-center justify-center gap-6"
-            style={{ borderColor: C.border, background: "rgba(20,10,13,0.3)" }}
+            style={{ borderColor: C.border, background: "#EDE4D5" }}
           >
-            <div className="p-4 bg-[#d4af37]/5 rounded-full text-[#d4af37]">
+            <div className="p-4 bg-[#2D231F]/5 rounded-full text-[#2D231F]">
               <CheckCircle size={40} strokeWidth={1.5} />
             </div>
             <div className="max-w-md">
@@ -248,7 +245,7 @@ export default function MyWishesPage() {
           >
             <div className="overflow-x-auto">
               <table className="w-full text-left text-sm">
-                <thead className="bg-[#1a0a0f] text-[#d4af37]">
+                <thead className="bg-[#ffffff] text-[#2D231F]">
                   <tr>
                     <th className="px-4 py-3 font-semibold">Tên khách mời</th>
                     <th className="px-4 py-3 font-semibold">Nội dung</th>
@@ -265,13 +262,13 @@ export default function MyWishesPage() {
                   {wishes.map((wish) => (
                     <tr
                       key={wish.id}
-                      className="border-t border-[#d4af37]/10 hover:bg-[#d4af37]/5 transition-colors"
+                      className="border-t border-[#2D231F]/10 hover:bg-[#2D231F]/5 transition-colors"
                     >
                       <td className="px-4 py-3">
                         <div className="font-medium">{wish.guestName}</div>
                       </td>
                       <td className="px-4 py-3 max-w-100">
-                        <div className="truncate text-[#f5e6d3]/80">
+                        <div className="truncate text-[#2D231F]/80">
                           {wish.content}
                         </div>
                       </td>
@@ -290,7 +287,7 @@ export default function MyWishesPage() {
                         {wish.isPinned ? (
                           <Pin size={16} className="text-blue-400 mx-auto" />
                         ) : (
-                          <span className="text-[#a38a75]">—</span>
+                          <span className="text-[#7A6A5C]">—</span>
                         )}
                       </td>
                       <td className="px-4 py-3 text-right">
