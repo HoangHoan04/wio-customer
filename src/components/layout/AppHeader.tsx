@@ -32,8 +32,9 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { Suspense, useEffect, useRef, useState } from "react";
+import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import AuthModal from "../auth/AuthModal";
+import InviGoLogo from "../common/Logo";
 
 type AppHeaderProps = { isScrolled?: boolean };
 
@@ -52,57 +53,70 @@ const NAV_LINKS = [
   { label: "Liên hệ", path: PUBLIC_ROUTES.CONTACT },
 ];
 
-function AutoOpenAuthModal({ onShouldOpen }: { onShouldOpen: () => void }) {
+function AutoOpenAuthModal() {
   const searchParams = useSearchParams();
+  const openModal = useModalStore((s) => s.openModal);
+  const activeModal = useModalStore((s) => s.activeModal);
+  const hasTriggeredRef = useRef(false);
+
   useEffect(() => {
     if (searchParams.get("login") === "true") {
-      onShouldOpen();
+      if (!hasTriggeredRef.current && activeModal !== "login") {
+        hasTriggeredRef.current = true;
+        openModal("login");
+      }
+    } else {
+      hasTriggeredRef.current = false;
     }
-  }, [searchParams, onShouldOpen]);
-  return null;
-}
+  }, [searchParams, openModal, activeModal]);
 
-function InviGoLogo() {
-  return (
-    <span
-      className="invigo-logo flex items-baseline leading-none select-none"
-      style={{ fontFamily: "var(--font-heading), 'Playfair Display', serif" }}
-    >
-      <span className="text-[1.65rem] sm:text-[1.9rem] md:text-[2.15rem] font-bold tracking-[-0.03em] text-[#2D231F]">
-        Invi
-      </span>
-      <span className="invigo-go relative text-[1.65rem] sm:text-[1.9rem] md:text-[2.15rem] font-bold italic tracking-[-0.04em] text-[#2D231F]">
-        Go
-        <span
-          aria-hidden
-          className="absolute -right-1.5 top-1 w-1.5 h-1.5 rounded-full bg-[#C4B09A] shadow-[0_0_0_2px_#F3EDE3]"
-        />
-      </span>
-    </span>
-  );
+  return null;
 }
 
 function cardTypeHref(type: ICardType) {
   return `${PUBLIC_ROUTES.TEMPLATES}?type=${type.slug}`;
 }
 
-export default function AppHeader({ isScrolled = false }: AppHeaderProps) {
+export default function AppHeader({
+  isScrolled: isScrolledProp,
+}: AppHeaderProps) {
+  const [isScrolledLocal, setIsScrolledLocal] = useState(false);
+  const isScrolled =
+    isScrolledProp !== undefined ? isScrolledProp : isScrolledLocal;
+
+  useEffect(() => {
+    if (isScrolledProp !== undefined) return;
+    const handleScroll = () => {
+      setIsScrolledLocal(window.scrollY > 20);
+    };
+    window.addEventListener("scroll", handleScroll);
+    handleScroll();
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [isScrolledProp]);
+
   const router = useRouter();
   const pathname = usePathname();
   const { user, isAuthenticated, clearAuth } = useAuthStore();
 
-  const { activeModal, openModal, closeModal } = useModalStore();
+  const activeModal = useModalStore((s) => s.activeModal);
+  const openModal = useModalStore((s) => s.openModal);
+  const closeModal = useModalStore((s) => s.closeModal);
+
   const showAuthModal =
     activeModal === "login" ||
     activeModal === "register" ||
     activeModal === "forgotPassword";
-  const setShowAuthModal = (show: boolean) => {
-    if (show) {
-      openModal("login");
-    } else {
-      closeModal();
-    }
-  };
+
+  const setShowAuthModal = useCallback(
+    (show: boolean) => {
+      if (show) {
+        if (activeModal !== "login") openModal("login");
+      } else {
+        closeModal();
+      }
+    },
+    [activeModal, openModal, closeModal],
+  );
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isMobileTypesOpen, setIsMobileTypesOpen] = useState(false);
@@ -114,7 +128,7 @@ export default function AppHeader({ isScrolled = false }: AppHeaderProps) {
   const avatarLabel = displayName?.[0] ? (
     displayName[0].toUpperCase()
   ) : (
-    <UserIcon className="w-3.5 h-3.5" />
+    <UserIcon className="w-3.5 h-3.5 text-[#2D231F]" />
   );
 
   useEffect(() => {
@@ -150,7 +164,7 @@ export default function AppHeader({ isScrolled = false }: AppHeaderProps) {
   return (
     <>
       <Suspense fallback={null}>
-        <AutoOpenAuthModal onShouldOpen={() => setShowAuthModal(true)} />
+        <AutoOpenAuthModal />
       </Suspense>
 
       <style>{`
@@ -166,9 +180,13 @@ export default function AppHeader({ isScrolled = false }: AppHeaderProps) {
 
       <header
         className={`
-          fixed z-50 overflow-visible transition-all duration-500 ease-in-out
-          left-3 right-3 sm:left-6 sm:right-6 xl:left-24 xl:right-24
-          ${isScrolled ? "top-0 rounded-b-2xl shadow-[0_12px_32px_rgba(26,23,20,0.08)]" : "top-3 sm:top-6 rounded-2xl shadow-[0_8px_24px_rgba(0,0,0,0.08)]"}
+          fixed z-50 overflow-visible transition-all duration-800 ease-[cubic-bezier(0.16,1,0.3,1)] text-[#2D231F]
+          mx-auto left-0 right-0 w-[calc(100%-24px)] sm:w-[calc(100%-48px)] xl:w-[calc(100%-192px)]
+          ${
+            isScrolled
+              ? "top-0 rounded-b-2xl shadow-[0_12px_32px_rgba(26,23,20,0.08)] max-w-7xl"
+              : "top-3 sm:top-6 rounded-2xl shadow-[0_8px_24px_rgba(0,0,0,0.08)] max-w-full"
+          }
         `}
       >
         <div
@@ -177,7 +195,7 @@ export default function AppHeader({ isScrolled = false }: AppHeaderProps) {
 
         <div
           className={`
-            border-l border-r border-b border-[#D9CDBE] transition-all duration-500
+            border-l border-r border-b border-[#D9CDBE] transition-all duration-800 ease-[cubic-bezier(0.16,1,0.3,1)]
             ${isScrolled ? "backdrop-blur-xl bg-[#F3EDE3]/92 rounded-b-2xl" : "backdrop-blur-lg bg-[#F3EDE3]/80 rounded-2xl"}
           `}
         >
@@ -198,17 +216,17 @@ export default function AppHeader({ isScrolled = false }: AppHeaderProps) {
                     type="button"
                     onClick={() => goToCardType()}
                     className={`relative flex items-center gap-1 px-3.5 py-2 bg-transparent border-none cursor-pointer text-[15px] whitespace-nowrap transition-colors duration-200
-                      ${isTemplatesActive ? "font-bold text-[#2D231F]" : "font-semibold text-[#2D231F]/75 group-hover:text-[#2D231F]"}
+                      ${isTemplatesActive ? "font-bold text-[#2D231F]" : "font-semibold text-[#2D231F]/80 group-hover:text-[#2D231F]"}
                     `}
                   >
                     Mẫu thiệp
                     <ChevronDown
                       size={15}
                       strokeWidth={2.4}
-                      className="transition-transform duration-200 group-hover:rotate-180"
+                      className="text-[#2D231F] transition-transform duration-200 group-hover:rotate-180"
                     />
                     <span
-                      className={`absolute bottom-0.5 left-3.5 right-3.5 h-[2px] rounded-full bg-[#2D231F] transition-transform duration-300 origin-center ${
+                      className={`absolute bottom-0.5 left-3.5 right-3.5 h-0.5 rounded-full bg-[#2D231F] transition-transform duration-300 origin-center ${
                         isTemplatesActive
                           ? "scale-x-100"
                           : "scale-x-0 group-hover:scale-x-100"
@@ -221,7 +239,7 @@ export default function AppHeader({ isScrolled = false }: AppHeaderProps) {
                       <button
                         type="button"
                         onClick={() => goToCardType()}
-                        className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl bg-transparent border-none cursor-pointer text-left hover:bg-[#EDE4D5] transition-colors"
+                        className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl bg-transparent border-none cursor-pointer text-left hover:bg-[#EDE4D5] text-[#2D231F] transition-colors"
                       >
                         <span className="w-8 h-8 rounded-lg bg-[#EDE4D5] flex items-center justify-center text-[#2D231F] shrink-0">
                           <LayoutGrid size={16} />
@@ -238,7 +256,7 @@ export default function AppHeader({ isScrolled = false }: AppHeaderProps) {
                             key={type.code}
                             type="button"
                             onClick={() => goToCardType(type)}
-                            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl bg-transparent border-none cursor-pointer text-left hover:bg-[#EDE4D5] transition-colors"
+                            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl bg-transparent border-none cursor-pointer text-left hover:bg-[#EDE4D5] text-[#2D231F] transition-colors"
                           >
                             <span
                               className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
@@ -267,12 +285,12 @@ export default function AppHeader({ isScrolled = false }: AppHeaderProps) {
                       type="button"
                       onClick={() => router.push(item.path)}
                       className={`relative px-3.5 py-2 bg-transparent border-none cursor-pointer text-[15px] whitespace-nowrap transition-colors duration-200
-                        ${isActive ? "font-bold text-[#2D231F]" : "font-semibold text-[#2D231F]/75 hover:text-[#2D231F]"}
+                        ${isActive ? "font-bold text-[#2D231F]" : "font-semibold text-[#2D231F]/80 hover:text-[#2D231F]"}
                       `}
                     >
                       {item.label}
                       <span
-                        className={`absolute bottom-0.5 left-3.5 right-3.5 h-[2px] rounded-full bg-[#2D231F] transition-transform duration-300 origin-center ${
+                        className={`absolute bottom-0.5 left-3.5 right-3.5 h-0.5 rounded-full bg-[#2D231F] transition-transform duration-300 origin-center ${
                           isActive ? "scale-x-100" : "scale-x-0"
                         }`}
                       />
@@ -289,14 +307,14 @@ export default function AppHeader({ isScrolled = false }: AppHeaderProps) {
                   {isAuthenticated ? (
                     <DropdownMenu>
                       <DropdownMenuTrigger
-                        className="flex items-center gap-2.5 cursor-pointer py-1 px-3.5 rounded-full border border-[#D9CDBE] transition-all duration-300 bg-[#F3EDE3] hover:border-[#2D231F]/25"
+                        className="flex items-center gap-2.5 cursor-pointer py-1 px-3.5 rounded-full border border-[#D9CDBE] transition-all duration-300 bg-[#F3EDE3] text-[#2D231F] hover:border-[#2D231F]/25"
                         aria-label="Menu người dùng"
                       >
                         <span
                           className="flex items-center gap-2.5"
                           onClick={handleUserClick}
                         >
-                          <Avatar className="w-7 h-7 border border-[#D9CDBE] rounded-full flex items-center justify-center shrink-0 overflow-hidden">
+                          <Avatar className="w-7 h-7 border border-[#D9CDBE] rounded-full flex items-center justify-center shrink-0 overflow-hidden bg-[#EDE4D5]">
                             <AvatarImage
                               src={userAvatarUrl}
                               alt={displayName}
@@ -313,7 +331,7 @@ export default function AppHeader({ isScrolled = false }: AppHeaderProps) {
                       </DropdownMenuTrigger>
                       <DropdownMenuContent
                         align="end"
-                        className="border border-[#D9CDBE] rounded-xl min-w-56 overflow-hidden shadow-[0_12px_40px_rgba(26,23,20,0.1)] bg-[#F3EDE3]/98 text-[#2D231F] backdrop-blur-xl mt-2 p-1.5"
+                        className="border border-[#D9CDBE] rounded-xl min-w-56 overflow-hidden shadow-[0_12px_40px_rgba(26,23,20,0.1)] bg-[#F3EDE3] text-[#2D231F] backdrop-blur-xl mt-2 p-1.5"
                       >
                         <div className="px-4 py-3">
                           <p className="font-semibold text-[11px] text-[#7A6A5C] tracking-widest uppercase mb-0.5">
@@ -380,8 +398,8 @@ export default function AppHeader({ isScrolled = false }: AppHeaderProps) {
                       type="button"
                       aria-label="Đăng nhập"
                     >
-                      <UserIcon className="w-3.5 h-3.5" />
-                      <span className="text-[12px] tracking-wide font-bold">
+                      <UserIcon className="w-3.5 h-3.5 text-[#F3EDE3]" />
+                      <span className="text-[12px] tracking-wide font-bold text-[#F3EDE3]">
                         Đăng nhập
                       </span>
                     </button>
@@ -394,7 +412,11 @@ export default function AppHeader({ isScrolled = false }: AppHeaderProps) {
                   type="button"
                   aria-label="Toggle menu"
                 >
-                  {isMobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
+                  {isMobileMenuOpen ? (
+                    <X size={22} className="text-[#2D231F]" />
+                  ) : (
+                    <Menu size={22} className="text-[#2D231F]" />
+                  )}
                 </button>
               </div>
             </div>
@@ -402,7 +424,7 @@ export default function AppHeader({ isScrolled = false }: AppHeaderProps) {
 
           <div
             className={`
-              lg:hidden overflow-hidden transition-all duration-500 ease-in-out border-t border-[#D9CDBE] bg-[#F3EDE3]/98 backdrop-blur-xl rounded-b-2xl
+              lg:hidden overflow-hidden transition-all duration-500 ease-in-out border-t border-[#D9CDBE] bg-[#F3EDE3] backdrop-blur-xl rounded-b-2xl
               ${isMobileMenuOpen ? "max-h-150 opacity-100 py-4 px-6" : "max-h-0 opacity-0 pointer-events-none"}
             `}
           >
@@ -411,13 +433,13 @@ export default function AppHeader({ isScrolled = false }: AppHeaderProps) {
                 type="button"
                 onClick={() => setIsMobileTypesOpen((open) => !open)}
                 className={`w-full flex items-center justify-between py-2.5 px-2 bg-transparent border-none cursor-pointer text-[16px]
-                  ${isTemplatesActive ? "font-bold text-[#2D231F]" : "font-semibold text-[#2D231F]/75"}
+                  ${isTemplatesActive ? "font-bold text-[#2D231F]" : "font-semibold text-[#2D231F]/80"}
                 `}
               >
                 Mẫu thiệp
                 <ChevronDown
                   size={16}
-                  className={`transition-transform ${isMobileTypesOpen ? "rotate-180" : ""}`}
+                  className={`text-[#2D231F] transition-transform ${isMobileTypesOpen ? "rotate-180" : ""}`}
                 />
               </button>
               {isMobileTypesOpen && (
@@ -425,7 +447,7 @@ export default function AppHeader({ isScrolled = false }: AppHeaderProps) {
                   <button
                     type="button"
                     onClick={() => goToCardType()}
-                    className="w-full text-left py-2 px-2 bg-transparent border-none cursor-pointer text-[14px] font-semibold text-[#2D231F]/80"
+                    className="w-full text-left py-2 px-2 bg-transparent border-none cursor-pointer text-[14px] font-semibold text-[#2D231F]"
                   >
                     Tất cả mẫu thiệp
                   </button>
@@ -434,7 +456,7 @@ export default function AppHeader({ isScrolled = false }: AppHeaderProps) {
                       key={type.code}
                       type="button"
                       onClick={() => goToCardType(type)}
-                      className="w-full text-left py-2 px-2 bg-transparent border-none cursor-pointer text-[14px] font-semibold text-[#2D231F]/80"
+                      className="w-full text-left py-2 px-2 bg-transparent border-none cursor-pointer text-[14px] font-semibold text-[#2D231F]"
                     >
                       {type.nameVi}
                     </button>
@@ -452,7 +474,7 @@ export default function AppHeader({ isScrolled = false }: AppHeaderProps) {
                       setIsMobileMenuOpen(false);
                     }}
                     className={`w-full text-left py-2.5 px-2 bg-transparent border-none cursor-pointer text-[16px]
-                      ${isActive ? "font-bold text-[#2D231F]" : "font-semibold text-[#2D231F]/75"}
+                      ${isActive ? "font-bold text-[#2D231F]" : "font-semibold text-[#2D231F]/80"}
                     `}
                   >
                     {item.label}

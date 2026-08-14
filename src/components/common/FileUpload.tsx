@@ -72,7 +72,9 @@ export default function FileUpload({
 
     setLoading(true);
     try {
-      const uploadPromises = validFiles.map((file) => uploadService.uploadImage(file));
+      const uploadPromises = validFiles.map((file) =>
+        uploadService.uploadImage(file),
+      );
       const responses = await Promise.all(uploadPromises);
       const uploadedUrls = responses
         .map((res: any) => res?.fileUrl)

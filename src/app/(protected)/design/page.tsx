@@ -759,7 +759,7 @@ function DesignEditorContent() {
       }
       setProjectName(title);
       setShowInitModal(false);
-      localStorage.removeItem("wio_design_draft");
+      localStorage.removeItem("invigo_design_draft");
       router.replace(`/design?id=${newId}`);
     } catch (err: any) {
       console.error(err);
@@ -774,7 +774,7 @@ function DesignEditorContent() {
 
   const handleSave = useCallback(async () => {
     const snapshot = buildDesignSnapshot();
-    localStorage.setItem("wio_design_draft", JSON.stringify(snapshot));
+    localStorage.setItem("invigo_design_draft", JSON.stringify(snapshot));
 
     if (!invitationId) {
       openInitModal();
@@ -920,7 +920,7 @@ function DesignEditorContent() {
         });
     } else {
       try {
-        const saved = localStorage.getItem("wio_design_draft");
+        const saved = localStorage.getItem("invigo_design_draft");
         if (saved) {
           const parsed = JSON.parse(saved);
           if (parsed.elements) {
@@ -975,7 +975,7 @@ function DesignEditorContent() {
             projectName,
             effects,
           };
-          localStorage.setItem("wio_design_draft", JSON.stringify(data));
+          localStorage.setItem("invigo_design_draft", JSON.stringify(data));
           const titleParam = encodeURIComponent(projectName);
           window.open(`/preview/design?title=${titleParam}`, "_blank");
         }}

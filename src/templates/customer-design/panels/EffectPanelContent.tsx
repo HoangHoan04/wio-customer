@@ -1,10 +1,11 @@
 import Slider from "@/templates/customer-design/ui/Slider";
 import { Play } from "lucide-react";
-import type { InvitationEffects, IntroEffectType, ParticleEffectType } from "../types";
-import {
-  INTRO_EFFECTS,
-  PARTICLE_EFFECTS,
-} from "../utils/invitation-effects";
+import type {
+  IntroEffectType,
+  InvitationEffects,
+  ParticleEffectType,
+} from "../types";
+import { INTRO_EFFECTS, PARTICLE_EFFECTS } from "../utils/invitation-effects";
 
 function IntroThumb({ type }: { type: IntroEffectType }) {
   return (
@@ -14,7 +15,9 @@ function IntroThumb({ type }: { type: IntroEffectType }) {
           <div className="h-px w-10 rotate-[-20deg] bg-[#C4B09A]" />
         </div>
       )}
-      {type === "fade" && <div className="inv-thumb-fade absolute inset-0 bg-[#2D231F]/40" />}
+      {type === "fade" && (
+        <div className="inv-thumb-fade absolute inset-0 bg-[#2D231F]/40" />
+      )}
       {type === "zoom" && (
         <div className="inv-thumb-zoom absolute inset-2 rounded-sm bg-[#2D231F]/25" />
       )}
@@ -152,8 +155,12 @@ export default function EffectPanelContent({
               >
                 <IntroThumb type={item.type} />
                 <div className="px-2.5 py-2">
-                  <div className="text-[11px] font-semibold text-[#2D231F]">{item.title}</div>
-                  <div className="mt-0.5 text-[10px] text-[#7A6A5C]">{item.description}</div>
+                  <div className="text-[11px] font-semibold text-[#2D231F]">
+                    {item.title}
+                  </div>
+                  <div className="mt-0.5 text-[10px] text-[#7A6A5C]">
+                    {item.description}
+                  </div>
                 </div>
               </button>
             );
@@ -223,8 +230,12 @@ export default function EffectPanelContent({
               >
                 <ParticleThumb type={item.type} />
                 <div className="px-2.5 py-2">
-                  <div className="text-[11px] font-semibold text-[#2D231F]">{item.title}</div>
-                  <div className="mt-0.5 text-[10px] text-[#7A6A5C]">{item.description}</div>
+                  <div className="text-[11px] font-semibold text-[#2D231F]">
+                    {item.title}
+                  </div>
+                  <div className="mt-0.5 text-[10px] text-[#7A6A5C]">
+                    {item.description}
+                  </div>
                 </div>
               </button>
             );

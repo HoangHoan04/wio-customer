@@ -117,8 +117,7 @@ export default function ContactPage() {
             </span>
           </h1>
           <p className="text-xs text-[#7A6A5C]/70 max-w-137.5 mx-auto leading-relaxed uppercase tracking-widest">
-            InviGo luôn sẵn sàng lắng nghe câu chuyện tình yêu của
-            hai bạn
+            InviGo luôn sẵn sàng lắng nghe câu chuyện tình yêu của hai bạn
           </p>
           <div className="w-12 h-px bg-[#2D231F]/40 mx-auto mt-6" />
         </div>

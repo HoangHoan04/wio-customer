@@ -1,11 +1,13 @@
+import { MessengerIcon, PhoneIcon, ZaloIcon } from "@/assets/icons";
 import FileUpload from "@/components/common/FileUpload";
 import { invitationService } from "@/services/invitation.service";
 import InputDate from "@/templates/customer-design/ui/input/InputDate";
 import InputDateTime from "@/templates/customer-design/ui/input/InputDateTime";
 import InputSwitch from "@/templates/customer-design/ui/input/InputSwitch";
 import InputText from "@/templates/customer-design/ui/input/InputText";
-import Select, { type SelectOption } from "@/templates/customer-design/ui/Select";
-import { MessengerIcon, PhoneIcon, ZaloIcon } from "@/assets/icons";
+import Select, {
+  type SelectOption,
+} from "@/templates/customer-design/ui/Select";
 import { Check, Loader2, Trash2 } from "lucide-react";
 import { useState } from "react";
 import ColorPickerRow from "../components/ColorPickerRow";
@@ -139,7 +141,11 @@ const CATALOG: CatalogGroup[] = [
         type: "album",
         title: "Album ghép",
         description: "Collage nghệ thuật",
-        defaults: { galleryEnabled: true, galleryLayout: "collage", images: [] },
+        defaults: {
+          galleryEnabled: true,
+          galleryLayout: "collage",
+          images: [],
+        },
       },
       {
         type: "carousel",
@@ -158,7 +164,7 @@ const CATALOG: CatalogGroup[] = [
 ];
 
 const WIDGET_TITLE: Partial<Record<WidgetType, string>> = Object.fromEntries(
-  CATALOG.flatMap((g) => g.items.map((i) => [i.type, i.title]))
+  CATALOG.flatMap((g) => g.items.map((i) => [i.type, i.title])),
 );
 
 function WidgetPreview({ type }: { type: WidgetType }) {
@@ -172,7 +178,7 @@ function WidgetPreview({ type }: { type: WidgetType }) {
           {Array.from({ length: 14 }).map((_, i) => (
             <div
               key={i}
-              className={`rounded-[2px] ${i === 10 ? "bg-[#2D231F]" : "bg-[#F3EDE3]"}`}
+              className={`rounded-xs ${i === 10 ? "bg-[#2D231F]" : "bg-[#F3EDE3]"}`}
             />
           ))}
         </div>
@@ -208,7 +214,11 @@ function WidgetPreview({ type }: { type: WidgetType }) {
     return (
       <div className="flex h-full items-center justify-center gap-1.5">
         {["#2D231F", "#7A6A5C", "#C4B09A"].map((c) => (
-          <div key={c} className="h-6 w-6 rounded-full" style={{ backgroundColor: c }} />
+          <div
+            key={c}
+            className="h-6 w-6 rounded-full"
+            style={{ backgroundColor: c }}
+          />
         ))}
       </div>
     );
@@ -239,7 +249,11 @@ function WidgetPreview({ type }: { type: WidgetType }) {
     return (
       <div className="grid h-full grid-cols-2 grid-rows-2 gap-0.5">
         {["#EDE4D5", "#D9CDBE", "#C4B09A", "#EDE4D5"].map((c, i) => (
-          <div key={i} className="rounded-[3px]" style={{ backgroundColor: c }} />
+          <div
+            key={i}
+            className="rounded-[3px]"
+            style={{ backgroundColor: c }}
+          />
         ))}
       </div>
     );
@@ -248,7 +262,7 @@ function WidgetPreview({ type }: { type: WidgetType }) {
     return (
       <div className="relative h-full">
         <div className="absolute left-1 top-2 h-8 w-10 rotate-[-8deg] rounded-sm bg-[#D9CDBE]" />
-        <div className="absolute right-1 top-1 h-9 w-10 rotate-[6deg] rounded-sm bg-[#C4B09A]" />
+        <div className="absolute right-1 top-1 h-9 w-10 rotate-6 rounded-sm bg-[#C4B09A]" />
         <div className="absolute bottom-1 left-1/2 h-8 w-10 -translate-x-1/2 rounded-sm bg-[#EDE4D5]" />
       </div>
     );
@@ -265,7 +279,7 @@ function WidgetPreview({ type }: { type: WidgetType }) {
   return (
     <div className="flex h-full items-center justify-center rounded-md bg-[#2D231F]">
       <div className="flex h-6 w-6 items-center justify-center rounded-full border-2 border-[#F3EDE3]">
-        <div className="ml-0.5 h-0 w-0 border-y-[4px] border-l-[7px] border-y-transparent border-l-[#F3EDE3]" />
+        <div className="ml-0.5 h-0 w-0 border-y-4 border-l-[7px] border-y-transparent border-l-[#F3EDE3]" />
       </div>
     </div>
   );
@@ -284,7 +298,8 @@ const extractAddressFromMapUrl = (url: string): string => {
     const q = urlObj.searchParams.get("q");
     if (q) return decodeURIComponent(q).replace(/\+/g, " ");
     const placeMatch = urlObj.pathname.match(/\/place\/([^/]+)/);
-    if (placeMatch) return decodeURIComponent(placeMatch[1]).replace(/\+/g, " ");
+    if (placeMatch)
+      return decodeURIComponent(placeMatch[1]).replace(/\+/g, " ");
   } catch {
     //! ignore parse error
   }
@@ -308,23 +323,29 @@ export default function UtilityPanelContent({
   onUpdateWidgetConfig: (
     widgetType: WidgetType,
     enabled: boolean,
-    updates?: Partial<WidgetConfig>
+    updates?: Partial<WidgetConfig>,
   ) => void;
   onSelect?: (id: string | null) => void;
 }) {
   const [resolving, setResolving] = useState(false);
 
   const selectedWidget =
-    selectedElement?.type === "widget" && selectedElement.widgetType && selectedElement.widgetType !== "music"
+    selectedElement?.type === "widget" &&
+    selectedElement.widgetType &&
+    selectedElement.widgetType !== "music"
       ? selectedElement
       : null;
 
   const existingTypes = new Set(
-    elements.filter((el) => el.type === "widget" && el.widgetType).map((el) => el.widgetType as WidgetType)
+    elements
+      .filter((el) => el.type === "widget" && el.widgetType)
+      .map((el) => el.widgetType as WidgetType),
   );
 
   const handleInsert = (item: CatalogItem) => {
-    const existing = elements.find((el) => el.type === "widget" && el.widgetType === item.type);
+    const existing = elements.find(
+      (el) => el.type === "widget" && el.widgetType === item.type,
+    );
     if (existing) {
       onSelect?.(existing.id);
       return;
@@ -335,10 +356,14 @@ export default function UtilityPanelContent({
   if (selectedWidget?.widgetType) {
     const type = selectedWidget.widgetType;
     const config = selectedWidget.widgetConfig || {};
-    const update = (updates: Partial<WidgetConfig>) => onUpdateWidgetConfig(type, true, updates);
+    const update = (updates: Partial<WidgetConfig>) =>
+      onUpdateWidgetConfig(type, true, updates);
 
     return (
-      <div onKeyDown={(e) => e.stopPropagation()} className="space-y-4 pb-10 text-xs">
+      <div
+        onKeyDown={(e) => e.stopPropagation()}
+        className="space-y-4 pb-10 text-xs"
+      >
         <button
           type="button"
           onClick={() => onSelect?.(null)}
@@ -347,14 +372,27 @@ export default function UtilityPanelContent({
           ← Thêm tiện ích khác
         </button>
         <div>
-          <h3 className="text-sm font-semibold text-[#2D231F]">{WIDGET_TITLE[type] || "Tiện ích"}</h3>
-          <p className="mt-0.5 text-[11px] text-[#7A6A5C]">Chỉnh nội dung trên canvas</p>
+          <h3 className="text-sm font-semibold text-[#2D231F]">
+            {WIDGET_TITLE[type] || "Tiện ích"}
+          </h3>
+          <p className="mt-0.5 text-[11px] text-[#7A6A5C]">
+            Chỉnh nội dung trên canvas
+          </p>
         </div>
 
-        {type === "calendar" && <CalendarConfig config={config} update={update} />}
-        {type === "countdown" && <CountdownConfig config={config} update={update} />}
+        {type === "calendar" && (
+          <CalendarConfig config={config} update={update} />
+        )}
+        {type === "countdown" && (
+          <CountdownConfig config={config} update={update} />
+        )}
         {type === "map" && (
-          <MapConfig config={config} update={update} resolving={resolving} setResolving={setResolving} />
+          <MapConfig
+            config={config}
+            update={update}
+            resolving={resolving}
+            setResolving={setResolving}
+          />
         )}
         {type === "call" && <CallConfig config={config} update={update} />}
         {type === "rsvp" && <RsvpConfig config={config} update={update} />}
@@ -362,7 +400,9 @@ export default function UtilityPanelContent({
         {(type === "gallery" || type === "album" || type === "carousel") && (
           <GalleryConfig config={config} update={update} type={type} />
         )}
-        {type === "youtube" && <YoutubeConfig config={config} update={update} />}
+        {type === "youtube" && (
+          <YoutubeConfig config={config} update={update} />
+        )}
 
         <button
           type="button"
@@ -383,7 +423,9 @@ export default function UtilityPanelContent({
       </p>
       {CATALOG.map((group) => (
         <div key={group.label} className="space-y-2">
-          <p className="text-[10px] font-semibold uppercase tracking-wider text-[#7A6A5C]">{group.label}</p>
+          <p className="text-[10px] font-semibold uppercase tracking-wider text-[#7A6A5C]">
+            {group.label}
+          </p>
           <div className="grid grid-cols-2 gap-2">
             {group.items.map((item) => {
               const onCanvas = existingTypes.has(item.type);
@@ -407,7 +449,9 @@ export default function UtilityPanelContent({
                     )}
                   </div>
                   <div className="px-2.5 py-2">
-                    <div className="text-[11px] font-semibold text-[#2D231F]">{item.title}</div>
+                    <div className="text-[11px] font-semibold text-[#2D231F]">
+                      {item.title}
+                    </div>
                     <div className="mt-0.5 line-clamp-2 text-[10px] leading-snug text-[#7A6A5C]">
                       {item.description}
                     </div>
@@ -444,7 +488,11 @@ function CalendarConfig({
           { label: "Lịch tháng đầy đủ", value: "full" },
           { label: "Chỉ ngày (tối giản)", value: "date-only" },
         ]}
-        onValueChange={(val) => update({ calendarDisplayMode: val as WidgetConfig["calendarDisplayMode"] })}
+        onValueChange={(val) =>
+          update({
+            calendarDisplayMode: val as WidgetConfig["calendarDisplayMode"],
+          })
+        }
       />
       <div className="space-y-1.5">
         <label className="text-[10px] font-semibold uppercase tracking-wider text-[#7A6A5C]">
@@ -460,14 +508,20 @@ function CalendarConfig({
             <button
               key={item.value}
               type="button"
-              onClick={() => update({ calendarStyle: item.value as WidgetConfig["calendarStyle"] })}
+              onClick={() =>
+                update({
+                  calendarStyle: item.value as WidgetConfig["calendarStyle"],
+                })
+              }
               className={`flex flex-col items-start rounded-lg border p-2.5 text-left transition-all ${
                 (config.calendarStyle || "classic") === item.value
                   ? "border-[#2D231F] bg-[#2D231F]/10 text-[#2D231F]"
                   : "border-[#D9CDBE] bg-[#EDE4D5] text-[#7A6A5C] hover:border-[#2D231F]/30"
               }`}
             >
-              <span className="text-[11px] font-bold text-[#2D231F]">{item.label}</span>
+              <span className="text-[11px] font-bold text-[#2D231F]">
+                {item.label}
+              </span>
               <span className="mt-0.5 text-[9px] opacity-60">{item.desc}</span>
             </button>
           ))}
@@ -477,7 +531,10 @@ function CalendarConfig({
         <label className="text-[10px] font-semibold uppercase tracking-wider text-[#7A6A5C]">
           Màu chủ đạo
         </label>
-        <ColorPickerRow value={config.color || INK} onChange={(val) => update({ color: val })} />
+        <ColorPickerRow
+          value={config.color || INK}
+          onChange={(val) => update({ color: val })}
+        />
       </div>
       <Select
         label="Font chữ"
@@ -513,7 +570,9 @@ function CountdownConfig({
           { label: "Ngày · Giờ · Phút · Giây", value: "days-hours-min-sec" },
           { label: "Giờ · Phút · Giây", value: "hours-min-sec" },
         ]}
-        onValueChange={(val) => update({ countdownType: val as WidgetConfig["countdownType"] })}
+        onValueChange={(val) =>
+          update({ countdownType: val as WidgetConfig["countdownType"] })
+        }
       />
       <Select
         label="Bố cục"
@@ -524,7 +583,9 @@ function CountdownConfig({
           { label: "Hàng dọc", value: "vertical" },
         ]}
         onValueChange={(val) =>
-          update({ countdownOrientation: val as WidgetConfig["countdownOrientation"] })
+          update({
+            countdownOrientation: val as WidgetConfig["countdownOrientation"],
+          })
         }
       />
       <Select
@@ -537,13 +598,18 @@ function CountdownConfig({
           { label: "Lãng mạn", value: "romantic" },
           { label: "Sang trọng", value: "luxury-navy" },
         ]}
-        onValueChange={(val) => update({ countdownStyle: val as WidgetConfig["countdownStyle"] })}
+        onValueChange={(val) =>
+          update({ countdownStyle: val as WidgetConfig["countdownStyle"] })
+        }
       />
       <div className="space-y-1">
         <label className="text-[10px] font-semibold uppercase tracking-wider text-[#7A6A5C]">
           Màu chữ số
         </label>
-        <ColorPickerRow value={config.color || INK} onChange={(val) => update({ color: val })} />
+        <ColorPickerRow
+          value={config.color || INK}
+          onChange={(val) => update({ color: val })}
+        />
       </div>
       <Select
         label="Font chữ số"
@@ -597,7 +663,10 @@ function MapConfig({
             try {
               const res = await invitationService.resolveMapUrl(inputUrl);
               const resolvedUrl = res?.data?.url || inputUrl;
-              const address = extractAddressFromMapUrl(resolvedUrl) || config.locationAddress || "";
+              const address =
+                extractAddressFromMapUrl(resolvedUrl) ||
+                config.locationAddress ||
+                "";
               update({
                 mapEmbedUrl: resolvedUrl,
                 locationAddress: address || config.locationAddress,
@@ -623,7 +692,9 @@ function MapConfig({
           { label: "Địa hình", value: "terrain" },
           { label: "Kết hợp", value: "hybrid" },
         ]}
-        onValueChange={(val) => update({ mapType: val as WidgetConfig["mapType"] })}
+        onValueChange={(val) =>
+          update({ mapType: val as WidgetConfig["mapType"] })
+        }
       />
     </div>
   );
@@ -642,7 +713,10 @@ function CallConfig({
       <div className="flex gap-1.5 rounded-lg border border-[#D9CDBE]/60 bg-[#EDE4D5] p-1">
         {[
           { key: "phone" as const, icon: <PhoneIcon width={18} height={18} /> },
-          { key: "messenger" as const, icon: <MessengerIcon width={18} height={18} /> },
+          {
+            key: "messenger" as const,
+            icon: <MessengerIcon width={18} height={18} />,
+          },
           { key: "zalo" as const, icon: <ZaloIcon width={18} height={18} /> },
         ].map((item) => (
           <button
@@ -764,7 +838,9 @@ function RsvpConfig({
           { label: "Nút mở form", value: "button" },
           { label: "Form ngay trên thiệp", value: "full-form" },
         ]}
-        onValueChange={(val) => update({ rsvpType: val as WidgetConfig["rsvpType"] })}
+        onValueChange={(val) =>
+          update({ rsvpType: val as WidgetConfig["rsvpType"] })
+        }
       />
       <InputText
         type="email"
@@ -810,7 +886,9 @@ function QrConfig({
           { label: label2, value: "bride" },
           { label: "Cả hai tài khoản", value: "both" },
         ]}
-        onValueChange={(val) => update({ qrTarget: val as WidgetConfig["qrTarget"] })}
+        onValueChange={(val) =>
+          update({ qrTarget: val as WidgetConfig["qrTarget"] })
+        }
       />
       {(target === "groom" || target === "both") && (
         <div className="space-y-2 rounded-lg border border-[#D9CDBE] bg-[#EDE4D5] p-3">
@@ -874,7 +952,10 @@ function QrConfig({
         <label className="text-[10px] font-semibold uppercase tracking-wider text-[#7A6A5C]">
           Màu chủ đạo
         </label>
-        <ColorPickerRow value={config.color || INK} onChange={(val) => update({ color: val })} />
+        <ColorPickerRow
+          value={config.color || INK}
+          onChange={(val) => update({ color: val })}
+        />
       </div>
     </div>
   );
@@ -903,7 +984,9 @@ function GalleryConfig({
           { label: "Ghép ảnh (collage)", value: "collage" },
           { label: "Carousel 3D", value: "3d" },
         ]}
-        onValueChange={(val) => update({ galleryLayout: val as WidgetConfig["galleryLayout"] })}
+        onValueChange={(val) =>
+          update({ galleryLayout: val as WidgetConfig["galleryLayout"] })
+        }
       />
       <FileUpload
         label="Hình ảnh"

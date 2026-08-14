@@ -23,8 +23,8 @@ import {
 import type { GuestDto, TableDto } from "@/dto";
 import { useToast } from "@/hooks/useToast";
 import { guestService } from "@/services/guest.service";
-import { tableService } from "@/services/table.service";
 import { invitationService } from "@/services/invitation.service";
+import { tableService } from "@/services/table.service";
 import { invitationLabel } from "@/utils/invitation-mapper";
 import {
   Armchair,
@@ -52,6 +52,8 @@ interface InvitationOption {
   id: string;
   title?: string;
   slug: string;
+  cardType?: string;
+  enabledModules?: string[];
 }
 
 export default function MyTablesPage() {
@@ -74,7 +76,16 @@ export default function MyTablesPage() {
     invitationService
       .pagination({ skip: 0, take: 50, where: {} })
       .then((res) => {
-        const list = res.data ?? [];
+        const list = (res.data ?? []).filter(
+          (
+            inv: InvitationOption & {
+              cardType?: string;
+              enabledModules?: string[];
+            },
+          ) =>
+            inv.enabledModules?.includes("SEATING") ||
+            inv.cardType === "WEDDING",
+        );
         setInvitations(list);
         if (list[0]) setSelectedInvitationId(list[0].id);
       })
@@ -225,7 +236,9 @@ export default function MyTablesPage() {
     return unassignedGuests.filter(
       (g) =>
         g.fullName?.toLowerCase().includes(guestSearchQuery.toLowerCase()) ||
-        g.phone?.includes(guestSearchQuery),
+        g.invitationCode
+          ?.toLowerCase()
+          .includes(guestSearchQuery.toLowerCase()),
     );
   }, [unassignedGuests, guestSearchQuery]);
 
@@ -349,13 +362,9 @@ export default function MyTablesPage() {
           </h2>
           <Button
             onClick={handleOpenCreate}
-            style={{
-              background: `linear-gradient(135deg, ${C.goldLight} 0%, ${C.gold} 100%)`,
-              color: "#1a1a1a",
-            }}
-            className="font-bold uppercase tracking-wider text-xs"
+            className="font-bold uppercase tracking-wider text-xs bg-[#2D231F] text-[#F3EDE3] hover:bg-[#3A2E28] shadow-sm cursor-pointer"
           >
-            <Plus size={16} className="mr-2" />
+            <Plus size={16} className="mr-2 text-[#F3EDE3]" />
             Thêm bàn mới
           </Button>
         </div>
@@ -487,8 +496,9 @@ export default function MyTablesPage() {
                                     <p className="text-[10px] text-[#7A6A5C]">
                                       {g.salutation} • {g.attendingCount} người
                                       •{" "}
-                                      {enumData.SIDE_OPTIONS?.[g.side]?.name ||
-                                        g.side}
+                                      {enumData.SIDE_OPTIONS?.[
+                                        g.groupCode || ""
+                                      ]?.name || g.groupCode}
                                     </p>
                                   </div>
                                   <Button
@@ -574,7 +584,8 @@ export default function MyTablesPage() {
                           </h4>
                           <p className="text-[10px] text-[#7A6A5C] mt-0.5">
                             {g.salutation} • {g.attendingCount} người •{" "}
-                            {enumData.SIDE_OPTIONS?.[g.side]?.name || g.side}
+                            {enumData.SIDE_OPTIONS?.[g.groupCode || ""]?.name ||
+                              g.groupCode}
                           </p>
                         </div>
 
@@ -670,11 +681,7 @@ export default function MyTablesPage() {
             </Button>
             <Button
               onClick={handleSaveTable}
-              style={{
-                background: `linear-gradient(135deg, ${C.goldLight} 0%, ${C.gold} 100%)`,
-                color: "#1a1a1a",
-              }}
-              className="font-bold uppercase tracking-wider text-xs"
+              className="font-bold uppercase tracking-wider text-xs bg-[#2D231F] text-[#F3EDE3] hover:bg-[#3A2E28] cursor-pointer"
             >
               Lưu
             </Button>
@@ -742,7 +749,8 @@ export default function MyTablesPage() {
                       </h4>
                       <p className="text-[10px] text-[#7A6A5C] mt-0.5">
                         {g.salutation} • {g.attendingCount} người •{" "}
-                        {enumData.SIDE_OPTIONS?.[g.side]?.name || g.side}
+                        {enumData.SIDE_OPTIONS?.[g.groupCode || ""]?.name ||
+                          g.groupCode}
                       </p>
                     </div>
                     <Button
@@ -752,11 +760,7 @@ export default function MyTablesPage() {
                           setActiveTableForAssign(null);
                         }
                       }}
-                      style={{
-                        background: `linear-gradient(135deg, ${C.goldLight} 0%, ${C.gold} 100%)`,
-                        color: "#1a1a1a",
-                      }}
-                      className="text-[10px] px-3 py-1 h-7 font-bold uppercase tracking-wider"
+                      className="text-[10px] px-3 py-1 h-7 font-bold uppercase tracking-wider bg-[#2D231F] text-[#F3EDE3] hover:bg-[#3A2E28] cursor-pointer"
                     >
                       Xếp chỗ
                     </Button>

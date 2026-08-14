@@ -156,7 +156,7 @@ function NewsletterSection() {
     <div className="border-y border-[#D9CDBE] py-10 px-12 bg-[#EDE4D5] max-sm:px-6">
       <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-8">
         <div className="flex items-center gap-4 flex-[1_1_300px]">
-            <div className="w-12 h-12 rounded-full bg-[#EDE4D5] border-[1.5px] border-[#D9CDBE] flex items-center justify-center text-[#2D231F] shrink-0">
+          <div className="w-12 h-12 rounded-full bg-[#EDE4D5] border-[1.5px] border-[#D9CDBE] flex items-center justify-center text-[#2D231F] shrink-0">
             <Mail size={22} strokeWidth={1.5} />
           </div>
           <div>
@@ -200,7 +200,12 @@ export default function AppFooter() {
 
       <div className="relative z-1 grid grid-cols-[3fr_2fr_2fr] gap-12 max-w-342.5 mx-auto px-12 pb-12 w-full box-border max-lg:grid-cols-[1fr] max-lg:gap-8">
         <div>
-          <h2 className="text-[2rem] font-extrabold leading-tight text-[#2D231F] m-0 mb-4 tracking-wide" style={{ fontFamily: "var(--font-heading), 'Playfair Display', serif" }}>
+          <h2
+            className="text-[2rem] font-extrabold leading-tight text-[#2D231F] m-0 mb-4 tracking-wide"
+            style={{
+              fontFamily: "var(--font-heading), 'Playfair Display', serif",
+            }}
+          >
             InviGo
           </h2>
           <p className="text-[13px] text-[#7A6A5C] leading-relaxed m-0 mb-6 italic">

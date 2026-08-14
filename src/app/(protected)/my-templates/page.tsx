@@ -2,9 +2,14 @@
 
 import { enumData, formatDateTime } from "@/common";
 import { Button } from "@/components/ui/button";
+import type { InvitationDto } from "@/dto/invitation.dto";
 import { useToast } from "@/hooks/useToast";
+import { cardTypeLabel } from "@/services/card-type.service";
 import { invitationService } from "@/services/invitation.service";
-import { invitationLabel, publicInvitationPath } from "@/utils/invitation-mapper";
+import {
+  invitationLabel,
+  publicInvitationPath,
+} from "@/utils/invitation-mapper";
 import {
   Calendar,
   Copy,
@@ -30,26 +35,12 @@ const C = {
   border: "rgba(232, 226, 216, 1)",
 };
 
-interface IInvitation {
-  id: string;
-  slug: string;
-  title?: string;
-  status: string;
-  primaryEventAt?: string;
-  templateId?: string;
-  template?: {
-    name: string;
-    themeCode: string;
-    slug: string;
-  };
-}
-
 type TabType = "all" | "draft" | "published";
 
 export default function MyTemplatesPage() {
   const router = useRouter();
   const { showToast } = useToast();
-  const [invitations, setInvitations] = useState<IInvitation[]>([]);
+  const [invitations, setInvitations] = useState<InvitationDto[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<TabType>("all");
 
@@ -92,8 +83,7 @@ export default function MyTemplatesPage() {
       console.error(err);
       showToast({
         message:
-          err.response?.data?.message ||
-          "Không thể mở khóa chỉnh sửa thiệp",
+          err.response?.data?.message || "Không thể mở khóa chỉnh sửa thiệp",
         type: "error",
       });
     }
@@ -137,23 +127,15 @@ export default function MyTemplatesPage() {
                 fontFamily: "'Cinzel', serif",
               }}
             >
-              Thiệp cưới của tôi
+              Thiệp của tôi
             </h1>
-            <p className="text-sm font-light" style={{ color: C.muted }}>
-              Quản lý và chỉnh sửa danh sách thiệp cưới sang trọng của riêng
-              bạn.
+            <p className="text-sm font-medium text-[#7A6A5C]">
+              Quản lý và chỉnh sửa danh sách thiệp của bạn.
             </p>
           </div>
           <Link href="/templates">
-            <Button
-              className="px-6 py-5.5 rounded-xl font-bold uppercase tracking-wider text-xs flex items-center gap-2 animate-pulse"
-              style={{
-                background: `linear-gradient(135deg, ${C.goldLight} 0%, ${C.gold} 100%)`,
-                color: "#1a1a1a",
-                boxShadow: "0 4px 15px rgba(45, 35, 31,0.3)",
-              }}
-            >
-              <Plus size={16} strokeWidth={2.5} />
+            <Button className="px-6 py-5.5 rounded-xl font-bold uppercase tracking-wider text-xs flex items-center gap-2 bg-[#2D231F] text-[#F3EDE3] hover:bg-[#3A2E28] shadow-[0_4px_15px_rgba(45,35,31,0.25)] transition-all cursor-pointer">
+              <Plus size={16} strokeWidth={2.5} className="text-[#F3EDE3]" />
               Tạo thiệp mới
             </Button>
           </Link>
@@ -172,17 +154,9 @@ export default function MyTemplatesPage() {
               onClick={() => setActiveTab(tab.id)}
               className={`px-6 py-2.5 text-xs font-semibold uppercase tracking-wider rounded-lg transition-all duration-300 cursor-pointer ${
                 activeTab === tab.id
-                  ? "text-[#1a1a1a]"
-                  : "text-[#7A6A5C] border border-[rgba(45, 35, 31,0.15)] hover:border-[#2D231F] bg-transparent"
+                  ? "bg-[#2D231F] text-[#F3EDE3] shadow-[0_4px_12px_rgba(45,35,31,0.25)]"
+                  : "text-[#2D231F]/70 border border-[#2D231F]/15 hover:border-[#2D231F]/40 hover:text-[#2D231F] bg-transparent"
               }`}
-              style={
-                activeTab === tab.id
-                  ? {
-                      background: `linear-gradient(135deg, ${C.goldLight}, ${C.gold})`,
-                      boxShadow: "0 4px 12px rgba(45, 35, 31,0.25)",
-                    }
-                  : {}
-              }
             >
               {tab.label}
             </button>
@@ -196,27 +170,24 @@ export default function MyTemplatesPage() {
         ) : filteredInvitations.length === 0 ? (
           <div
             className="text-center py-20 px-6 rounded-2xl border border-dashed flex flex-col items-center justify-center gap-6"
-            style={{ borderColor: C.border, background: "#EDE4D5" }}
+            style={{ borderColor: "#D9CDBE", background: "#EDE4D5" }}
           >
             <div className="p-4 bg-[#2D231F]/5 rounded-full text-[#2D231F]">
               <Heart size={40} strokeWidth={1.5} />
             </div>
             <div className="max-w-md">
               <h3
-                className="text-lg font-semibold mb-2"
+                className="text-lg font-semibold mb-2 text-[#2D231F]"
                 style={{ fontFamily: "'Cinzel', serif" }}
               >
-                Chưa có thiệp cưới nào
+                Chưa có thiệp nào
               </h3>
-              <p
-                className="text-xs font-light leading-relaxed mb-6"
-                style={{ color: C.muted }}
-              >
-                Không tìm thấy thiệp cưới nào trong danh mục này. Hãy bắt đầu
-                chọn mẫu và thiết kế thiệp của bạn.
+              <p className="text-xs font-medium leading-relaxed mb-6 text-[#7A6A5C]">
+                Không tìm thấy thiệp nào trong danh mục này. Hãy bắt đầu chọn
+                mẫu và thiết kế thiệp của bạn.
               </p>
               <Link href="/templates">
-                <Button className="px-6 py-5 bg-transparent border text-[#7A6A5C] border-[#2D231F] hover:bg-[#2D231F]/10">
+                <Button className="px-6 py-5 bg-[#2D231F] text-[#F3EDE3] hover:bg-[#3A2E28] font-semibold cursor-pointer">
                   Khám phá mẫu thiệp
                 </Button>
               </Link>
@@ -231,23 +202,32 @@ export default function MyTemplatesPage() {
               return (
                 <div
                   key={w.id}
-                  className="wedding-card p-6 flex flex-col justify-between"
+                  className="wedding-card p-6 flex flex-col justify-between bg-[#EDE4D5] border border-[#D9CDBE] rounded-2xl shadow-sm"
                 >
                   <div>
                     <div className="flex justify-between items-start gap-4 mb-4">
-                      <span
-                        className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
-                          w.status === enumData.INVITATION_STATUS.PUBLISHED.code
-                            ? "bg-green-500/10 text-green-400 border border-green-500/25"
-                            : "bg-[#2D231F]/10 text-[#7A6A5C] border border-[#2D231F]/25"
-                        }`}
-                      >
-                        {w.status === enumData.INVITATION_STATUS.PUBLISHED.code
-                          ? "Đã xuất bản"
-                          : "Bản nháp"}
-                      </span>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span
+                          className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                            w.status ===
+                            enumData.INVITATION_STATUS.PUBLISHED.code
+                              ? "bg-emerald-600/15 text-emerald-800 border border-emerald-600/30"
+                              : "bg-[#2D231F]/10 text-[#7A6A5C] border border-[#2D231F]/20"
+                          }`}
+                        >
+                          {w.status ===
+                          enumData.INVITATION_STATUS.PUBLISHED.code
+                            ? "Đã xuất bản"
+                            : "Bản nháp"}
+                        </span>
+                        {w.cardType && (
+                          <span className="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#2D231F]/10 text-[#2D231F] border border-[#2D231F]/20">
+                            {cardTypeLabel(w.cardType)}
+                          </span>
+                        )}
+                      </div>
                       {w.template && (
-                        <span className="text-[10px] flex items-center gap-1 text-[#2D231F]/60">
+                        <span className="text-[10px] flex items-center gap-1 text-[#2D231F]/70 font-medium">
                           <Sparkles size={11} className="text-[#2D231F]" />
                           {w.template.name}
                         </span>
@@ -255,13 +235,13 @@ export default function MyTemplatesPage() {
                     </div>
 
                     <h3
-                      className="text-xl font-bold mb-3 tracking-wide truncate"
-                      style={{ fontFamily: "'Cinzel', serif", color: C.cream }}
+                      className="text-xl font-bold mb-3 tracking-wide truncate text-[#2D231F]"
+                      style={{ fontFamily: "'Cinzel', serif" }}
                     >
                       {invitationLabel(w)}
                     </h3>
 
-                    <div className="space-y-2 mb-6 text-xs text-[#2D231F]/70 font-light">
+                    <div className="space-y-2 mb-6 text-xs text-[#2D231F]/80 font-medium">
                       <div className="flex items-center gap-2">
                         <Calendar size={13} className="text-[#2D231F]" />
                         <span>Ngày sự kiện: {formattedDate}</span>
@@ -275,29 +255,30 @@ export default function MyTemplatesPage() {
                     </div>
                   </div>
 
-                  <div className="flex gap-2 pt-4 border-t border-white/5">
+                  <div className="flex gap-2 pt-4 border-t border-[#2D231F]/10">
                     {w.status !== enumData.INVITATION_STATUS.PUBLISHED.code ? (
                       <Button
-                        variant="outline"
                         onClick={() => {
-                          if (!w.templateId || w.template?.themeCode === "CUSTOM_DESIGN") {
+                          if (
+                            !w.templateId ||
+                            w.template?.themeCode === "CUSTOM_DESIGN"
+                          ) {
                             router.push(`/design?id=${w.id}`);
                           } else {
                             router.push(`/edit/${w.id}`);
                           }
                         }}
-                        className="flex-1 py-4 bg-[#2D231F]/8! border-[#2D231F]/20! hover:border-[#2D231F]/40! text-[#2D231F]! flex items-center justify-center gap-1.5 rounded-lg text-xs font-semibold"
+                        className="flex-1 py-2.5 bg-[#2D231F] hover:bg-[#3A2E28] text-[#F3EDE3] flex items-center justify-center gap-1.5 rounded-xl text-xs font-semibold shadow-sm transition-all cursor-pointer"
                       >
-                        <Edit2 size={13} />
+                        <Edit2 size={13} className="text-[#F3EDE3]" />
                         Chỉnh sửa
                       </Button>
                     ) : (
                       <Button
-                        variant="outline"
                         onClick={() => handleUnpublish(w.id)}
-                        className="flex-1 py-4 bg-red-500/10! border-red-500/20! hover:border-red-500/40! text-red-400! flex items-center justify-center gap-1.5 rounded-lg text-xs font-semibold"
+                        className="flex-1 py-2.5 bg-rose-700 hover:bg-rose-800 text-white flex items-center justify-center gap-1.5 rounded-xl text-xs font-semibold shadow-sm transition-all cursor-pointer"
                       >
-                        <Lock size={13} />
+                        <Lock size={13} className="text-white" />
                         Mở khóa chỉnh sửa
                       </Button>
                     )}
@@ -310,19 +291,19 @@ export default function MyTemplatesPage() {
                         >
                           <Button
                             variant="outline"
-                            className="w-full py-4 bg-[#2D231F]/8! border-[#2D231F]/20! hover:border-[#2D231F]/40! text-[#2D231F]! flex items-center justify-center gap-1.5 rounded-lg text-xs font-semibold"
+                            className="w-full py-2.5 bg-[#F3EDE3] border-[#2D231F]/25 hover:bg-[#EDE4D5] text-[#2D231F] flex items-center justify-center gap-1.5 rounded-xl text-xs font-semibold shadow-xs transition-all cursor-pointer"
                           >
-                            <Eye size={13} />
+                            <Eye size={13} className="text-[#2D231F]" />
                             Xem
                           </Button>
                         </Link>
                         <Button
                           variant="outline"
                           onClick={() => handleCopyLink(w.slug)}
-                          className="px-3 py-4 bg-[#2D231F]/8! border-[#2D231F]/20! hover:border-[#2D231F]/40! text-[#2D231F]! flex items-center justify-center rounded-lg text-xs"
+                          className="px-3.5 py-2.5 bg-[#F3EDE3] border-[#2D231F]/25 hover:bg-[#EDE4D5] text-[#2D231F] flex items-center justify-center rounded-xl text-xs shadow-xs transition-all cursor-pointer"
                           title="Sao chép liên kết"
                         >
-                          <Copy size={13} />
+                          <Copy size={13} className="text-[#2D231F]" />
                         </Button>
                       </>
                     )}

@@ -1,6 +1,6 @@
-import { useState } from "react";
-import { ImageIcon, ChevronLeft, ChevronRight, X } from "lucide-react";
 import Carousel3D from "@/components/ui/Carousel3D";
+import { ChevronLeft, ChevronRight, ImageIcon, X } from "lucide-react";
+import { useState } from "react";
 
 const CarouselImage = ({ src, alt, scale, onImageClick, ...props }: any) => {
   const { isActive, index, currentIndex, totalItems, ...domProps } = props;

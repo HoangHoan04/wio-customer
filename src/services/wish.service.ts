@@ -30,14 +30,20 @@ export const wishService = {
     invitationId: string,
     options?: { take?: number; isApproved?: boolean },
   ): Promise<PaginationRes<Wish>> => {
-    const res = await apiService.post(API_ENDPOINTS.WISH.PAGINATION, {
-      where: {
-        invitationId,
-        isApproved: options?.isApproved ?? undefined,
+    const isPublicApproved = options?.isApproved === true;
+    const res = await apiService.post(
+      isPublicApproved
+        ? API_ENDPOINTS.WISH.PUBLIC_LIST
+        : API_ENDPOINTS.WISH.PAGINATION,
+      {
+        where: {
+          invitationId,
+          isApproved: options?.isApproved ?? undefined,
+        },
+        skip: 0,
+        take: options?.take ?? 1000,
       },
-      skip: 0,
-      take: options?.take ?? 1000,
-    });
+    );
     return res.data;
   },
 

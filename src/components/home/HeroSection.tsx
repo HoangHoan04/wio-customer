@@ -1,7 +1,7 @@
 "use client";
 
-import IPhoneMockup from "@/components/common/IphoneMockup";
 import { PUBLIC_ROUTES } from "@/common/routes";
+import IPhoneMockup from "@/components/common/IphoneMockup";
 import { Award, Heart, MailOpen, MapPin, Music, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { useEffect } from "react";
@@ -13,11 +13,7 @@ const TAN = "#C4B09A";
 const MUTED = "#7A6A5C";
 
 const QR_CELLS = [
-  1, 1, 1, 0, 1,
-  1, 0, 1, 1, 1,
-  1, 1, 0, 1, 0,
-  0, 1, 1, 0, 1,
-  1, 0, 1, 1, 1,
+  1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1,
 ];
 
 export default function HeroSection() {
@@ -83,7 +79,12 @@ export default function HeroSection() {
       </div>
       <div
         className="tct-float pointer-events-none absolute"
-        style={{ bottom: "15%", left: "8%", opacity: 0.1, animationDuration: "5s" }}
+        style={{
+          bottom: "15%",
+          left: "8%",
+          opacity: 0.1,
+          animationDuration: "5s",
+        }}
       >
         <Sparkles size={80} color={TAN} />
       </div>
@@ -171,7 +172,8 @@ export default function HeroSection() {
                 <div
                   className="flex h-full flex-1 flex-col px-4 pb-4 pt-8 text-[#F3EDE3]"
                   style={{
-                    background: "linear-gradient(170deg, #2a211c 0%, #1a1512 100%)",
+                    background:
+                      "linear-gradient(170deg, #2a211c 0%, #1a1512 100%)",
                     fontFamily: SERIF,
                   }}
                 >
@@ -236,7 +238,8 @@ export default function HeroSection() {
                 <div
                   className="flex h-full flex-1 flex-col px-4 pb-4 pt-8 text-[#F3EDE3]"
                   style={{
-                    background: "linear-gradient(170deg, #2a211c 0%, #1a1512 100%)",
+                    background:
+                      "linear-gradient(170deg, #2a211c 0%, #1a1512 100%)",
                     fontFamily: SERIF,
                   }}
                 >
@@ -252,14 +255,19 @@ export default function HeroSection() {
                   <div className="mt-4 flex-1 space-y-2.5">
                     <div className="border border-[#C4B09A]/15 bg-[#1a1512]/80 p-2.5">
                       <p className="text-[10px] leading-relaxed italic text-[#EDE4D5]">
-                        “Chúc hai bạn một đời bình yên, nắm tay nhau qua mọi mùa.”
+                        “Chúc hai bạn một đời bình yên, nắm tay nhau qua mọi
+                        mùa.”
                       </p>
                       <p className="mt-1.5 text-right text-[8px] tracking-[0.12em] uppercase text-[#C4B09A]/70">
                         — Mai, bạn thân
                       </p>
                     </div>
                     <div className="flex items-start gap-2 border border-[#C4B09A]/15 p-2">
-                      <MapPin size={12} className="mt-0.5 shrink-0" color={TAN} />
+                      <MapPin
+                        size={12}
+                        className="mt-0.5 shrink-0"
+                        color={TAN}
+                      />
                       <div>
                         <p className="text-[10px] font-semibold text-[#F3EDE3]">
                           The Grand Hall
@@ -269,7 +277,7 @@ export default function HeroSection() {
                         </p>
                       </div>
                     </div>
-                    <div className="mx-auto grid w-[72px] grid-cols-5 gap-px bg-[#F3EDE3] p-1.5">
+                    <div className="mx-auto grid w-18 grid-cols-5 gap-px bg-[#F3EDE3] p-1.5">
                       {QR_CELLS.map((on, i) => (
                         <span
                           key={i}

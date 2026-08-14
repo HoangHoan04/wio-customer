@@ -32,7 +32,10 @@ const variantBase: Record<InputVariant, string> = {
     "bg-transparent border-0 border-b border-[#D9CDBE] rounded-none focus:border-b-[#2D231F] focus:ring-0",
 };
 
-const sizeMap: Record<InputSize, { input: string; icon: string; text: string }> = {
+const sizeMap: Record<
+  InputSize,
+  { input: string; icon: string; text: string }
+> = {
   sm: { input: "h-9 px-3 text-sm", icon: "px-2.5", text: "text-xs" },
   md: { input: "h-11 px-4 text-sm", icon: "px-3", text: "text-sm" },
   lg: { input: "h-13 px-5 text-base", icon: "px-4", text: "text-sm" },
@@ -60,9 +63,10 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
       onKeyDown,
       ...rest
     },
-    ref
+    ref,
   ) => {
-    const inputId = id ?? (label ? label.toLowerCase().replace(/\s+/g, "-") : undefined);
+    const inputId =
+      id ?? (label ? label.toLowerCase().replace(/\s+/g, "-") : undefined);
     const sizes = sizeMap[inputSize];
 
     const baseInput = [
@@ -73,7 +77,9 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
       sizes.input,
       leftIcon ? "pl-10" : "",
       rightIcon ? "pr-10" : "",
-      error ? "!border-red-500/70 focus:!border-red-500 focus:!ring-red-500/20" : "",
+      error
+        ? "!border-red-500/70 focus:!border-red-500 focus:!ring-red-500/20"
+        : "",
       className,
     ]
       .filter(Boolean)
@@ -126,10 +132,12 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
           </p>
         )}
 
-        {!error && hint && <p className={`${sizes.text} text-[#7A6A5C]`}>{hint}</p>}
+        {!error && hint && (
+          <p className={`${sizes.text} text-[#7A6A5C]`}>{hint}</p>
+        )}
       </div>
     );
-  }
+  },
 );
 
 Input.displayName = "Input";

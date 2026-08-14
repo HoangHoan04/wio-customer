@@ -82,7 +82,8 @@ export default function MapWidget({
 
     if (url.startsWith("//")) url = "https:" + url;
 
-    if (url.includes("output=embed") || url.includes("/maps/embed?")) return url;
+    if (url.includes("output=embed") || url.includes("/maps/embed?"))
+      return url;
 
     if (url.startsWith("http")) {
       try {
@@ -92,7 +93,8 @@ export default function MapWidget({
           if (coords) return buildEmbed(coords);
           const extracted = extractAddressFromMapUrl(url);
           if (extracted) return buildEmbed(extracted);
-          if (locationAddress?.trim()) return buildEmbed(locationAddress.trim());
+          if (locationAddress?.trim())
+            return buildEmbed(locationAddress.trim());
           return "";
         }
       } catch {
@@ -141,7 +143,9 @@ export default function MapWidget({
         }}
       >
         <MapPin size={20 * scale} color={color} />
-        <span style={{ fontSize: 10 * scale, opacity: 0.6 }}>Chưa cấu hình bản đồ</span>
+        <span style={{ fontSize: 10 * scale, opacity: 0.6 }}>
+          Chưa cấu hình bản đồ
+        </span>
       </div>
     );
   }

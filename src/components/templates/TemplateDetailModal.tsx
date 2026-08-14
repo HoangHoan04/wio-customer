@@ -1,19 +1,21 @@
 "use client";
 
 import Modal from "@/components/ui/Modal";
+import { useToast } from "@/hooks/useToast";
+import { inferCardType } from "@/services/card-type.service";
 import { templateService, type ITemplate } from "@/services/template.service";
+import { useAuthStore } from "@/stores/useAuthStore";
+import { useModalStore } from "@/stores/useModalStore";
 import { Eye, Heart, Info, Sparkles } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "../ui/button";
-import { useAuthStore } from "@/stores/useAuthStore";
-import { useToast } from "@/hooks/useToast";
-import { useModalStore } from "@/stores/useModalStore";
 
 interface TemplateDetailModalProps {
   isOpen: boolean;
   onClose: () => void;
   template: ITemplate | null;
+  cardType?: string;
 }
 
 const PREVIEW_WIDTH = 390;
@@ -24,6 +26,7 @@ export default function TemplateDetailModal({
   isOpen,
   onClose,
   template,
+  cardType,
 }: TemplateDetailModalProps) {
   const router = useRouter();
   const [isHovered, setIsHovered] = useState(false);
@@ -98,7 +101,13 @@ export default function TemplateDetailModal({
     }
     onClose();
     templateService.incrementView(template.id);
-    router.push(`/create/${template.slug}?templateId=${template.id}`);
+    const resolvedCardType = inferCardType({ cardType, template });
+    const typeQuery = resolvedCardType
+      ? `&cardType=${encodeURIComponent(resolvedCardType)}`
+      : "";
+    router.push(
+      `/create/${template.slug}?templateId=${template.id}${typeQuery}`,
+    );
   };
 
   const handlePreview = () => {
@@ -228,7 +237,11 @@ export default function TemplateDetailModal({
               <Sparkles size={14} className="text-[#2D231F]" />
               <span>
                 Gói tối thiểu:{" "}
-                <strong className="uppercase">{template.minPlan}</strong>
+                <strong className="uppercase">
+                  {typeof template.minPlan === "object" && template.minPlan !== null
+                    ? (template.minPlan as any).name || "Free"
+                    : template.minPlan || "Free"}
+                </strong>
               </span>
             </div>
           </div>

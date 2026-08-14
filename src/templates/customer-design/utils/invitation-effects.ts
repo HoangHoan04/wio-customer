@@ -1,6 +1,6 @@
 import type {
-  InvitationEffects,
   IntroEffectType,
+  InvitationEffects,
   ParticleEffectType,
 } from "../types";
 
@@ -47,18 +47,29 @@ export function normalizeEffects(raw: unknown): InvitationEffects {
   const introType = INTRO_EFFECTS.some((i) => i.type === data.intro?.type)
     ? (data.intro!.type as IntroEffectType)
     : "none";
-  const particleType = PARTICLE_EFFECTS.some((i) => i.type === data.particles?.type)
+  const particleType = PARTICLE_EFFECTS.some(
+    (i) => i.type === data.particles?.type,
+  )
     ? (data.particles!.type as ParticleEffectType)
     : "none";
   return {
     intro: {
       type: introType,
-      duration: Math.min(6, Math.max(0.8, Number(data.intro?.duration) || fallback.intro.duration)),
+      duration: Math.min(
+        6,
+        Math.max(0.8, Number(data.intro?.duration) || fallback.intro.duration),
+      ),
       trigger: data.intro?.trigger === "tap" ? "tap" : "auto",
     },
     particles: {
       type: particleType,
-      density: Math.min(80, Math.max(10, Number(data.particles?.density) || fallback.particles.density)),
+      density: Math.min(
+        80,
+        Math.max(
+          10,
+          Number(data.particles?.density) || fallback.particles.density,
+        ),
+      ),
     },
   };
 }

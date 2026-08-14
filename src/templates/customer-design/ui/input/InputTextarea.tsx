@@ -25,7 +25,7 @@ const InputTextarea = forwardRef<HTMLTextAreaElement, InputTextareaProps>(
       onChange,
       ...rest
     },
-    ref
+    ref,
   ) => {
     const inputId = id ?? label?.toLowerCase().replace(/\s+/g, "-");
     const currentCount = value ? String(value).length : 0;
@@ -50,7 +50,10 @@ const InputTextarea = forwardRef<HTMLTextAreaElement, InputTextareaProps>(
     return (
       <div className={`flex flex-col gap-1.5 ${wrapperClassName}`}>
         {label && (
-          <label htmlFor={inputId} className="text-sm font-medium text-[#2D231F]">
+          <label
+            htmlFor={inputId}
+            className="text-sm font-medium text-[#2D231F]"
+          >
             {label}
           </label>
         )}
@@ -79,7 +82,9 @@ const InputTextarea = forwardRef<HTMLTextAreaElement, InputTextareaProps>(
         <div className="flex items-center justify-between">
           {error && <span className="text-xs text-red-500">{error}</span>}
           {showCount && (
-            <span className={`text-xs ${error ? "ml-auto" : ""} text-[#7A6A5C]`}>
+            <span
+              className={`text-xs ${error ? "ml-auto" : ""} text-[#7A6A5C]`}
+            >
               {currentCount}
               {maxCount && ` / ${maxCount}`}
             </span>
@@ -87,7 +92,7 @@ const InputTextarea = forwardRef<HTMLTextAreaElement, InputTextareaProps>(
         </div>
       </div>
     );
-  }
+  },
 );
 
 InputTextarea.displayName = "InputTextarea";

@@ -53,6 +53,13 @@ export interface InvitationPhoto {
   sortOrder?: number;
 }
 
+export interface InvitationGuestGroup {
+  id?: string;
+  code: string;
+  name: string;
+  sortOrder?: number;
+}
+
 export interface InvitationMusic {
   url?: string;
   type?: string;
@@ -84,6 +91,7 @@ export interface InvitationDto {
   gifts?: InvitationGift[];
   timelines?: InvitationTimeline[];
   photos?: InvitationPhoto[];
+  guestGroups?: InvitationGuestGroup[];
   template?: {
     id?: string;
     name?: string;

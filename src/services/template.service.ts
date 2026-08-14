@@ -11,10 +11,12 @@ export interface ITemplate {
   thumbnailUrl: string;
   isShow: boolean;
   isPremium: boolean;
-  minPlan: string;
+  minPlan?: any;
+  minPlanId?: string;
   trialDays: number;
   tags?: string[];
   features?: any;
+  cardType?: string;
   viewCount?: number;
   previewCount?: number;
 }

@@ -33,10 +33,11 @@ export const RSVP = ({
       <div className="w-full bg-white/95 p-5 sm:p-7 my-10 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.08)] text-left max-w-75 mx-auto border border-white/40 backdrop-blur-md">
         <div className="text-center mb-5">
           <h2 className="text-xl font-bold text-[#1a1a1a] mb-1.5">
-            Xác nhận tham dự
+            {data?.rsvpCta || "Xác nhận tham dự"}
           </h2>
           <p className="text-gray-400 text-xs leading-relaxed px-2">
-            Sự hiện diện của bạn là niềm vinh hạnh cho gia đình chúng tôi.{" "}
+            {data?.rsvpIntro ||
+              "Sự hiện diện của bạn là niềm vinh hạnh cho gia đình chúng tôi."}{" "}
             <br />
             Xin xác nhận để chúng tôi chuẩn bị chu đáo nhất cho bạn.
           </p>
@@ -58,7 +59,7 @@ export const RSVP = ({
               })
               .catch((err) => {
                 console.error(err);
-                alert("Gửi phản hồi thất bại, vui lòng thử lại sau.");
+                alert(err?.message || "Gửi phản hồi thất bại, vui lòng thử lại sau.");
               })
               .finally(() => {
                 setIsSubmitting(false);
@@ -193,7 +194,7 @@ export const RSVP = ({
             color: config.colors.buttonText,
           }}
         >
-          Xác Nhận Tham Dự
+          {data?.rsvpCta || "Xác Nhận Tham Dự"}
         </button>
       )}
 

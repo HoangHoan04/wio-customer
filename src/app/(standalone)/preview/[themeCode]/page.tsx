@@ -91,12 +91,161 @@ const mockWeddingData = {
   musicName: "",
 };
 
+const mockBirthdayData = {
+  title: "Tiệc Sinh Nhật Minh Anh",
+  cardType: "BIRTHDAY",
+  welcomeLine: "THIỆP MỜI SINH NHẬT",
+  introText: "Trân trọng kính mời bạn đến chung vui bữa tiệc sinh nhật tuổi 25 cùng mình nhé!",
+  groom: {
+    name: "Nguyễn Minh Anh",
+    fullName: "Nguyễn Minh Anh",
+    title: "Chủ nhân bữa tiệc",
+    bankAccount: {
+      bankName: "MB Bank",
+      accountName: "NGUYEN MINH ANH",
+      accountNumber: "8888999966",
+      qrUrl: "",
+    },
+  },
+  extraContent: {
+    age: 25,
+    partyTheme: "Neon Sunset & Tropical",
+  },
+  showHeroImage: true,
+  heroImageMain: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=800&auto=format&fit=crop&q=80",
+  showParty: true,
+  party: {
+    name: "BỮA TIỆC SINH NHẬT",
+    eventDate: "2026-06-20",
+    eventTime: "18:30",
+    venueName: "The Vintage Lounge & Restaurant",
+    address: "Tầng 5, Tòa nhà Landmark, 72 Lê Thánh Tôn, Q.1, TP.HCM",
+    mapUrl: "https://maps.app.goo.gl",
+  },
+  events: [
+    {
+      id: 1,
+      name: "Bữa tiệc sinh nhật",
+      eventDate: "2026-06-20",
+      eventTime: "18:30",
+      venueName: "The Vintage Lounge",
+      address: "72 Lê Thánh Tôn, Q.1, TP.HCM",
+    },
+  ],
+  showCountdown: true,
+  showGallery: true,
+  photos: [
+    { url: "https://images.unsplash.com/photo-1513151233558-d860c5398176?w=600&auto=format&fit=crop&q=80" },
+    { url: "https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?w=600&auto=format&fit=crop&q=80" },
+    { url: "https://images.unsplash.com/photo-1527529482837-4698179dc6ce?w=600&auto=format&fit=crop&q=80" },
+    { url: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=600&auto=format&fit=crop&q=80" },
+  ],
+  showRsvp: true,
+  rsvpType: "button",
+  rsvpCta: "Xác nhận tham dự",
+  rsvpIntro: "Hãy cho chúng mình biết bạn sẽ đến chung vui sinh nhật nhé!",
+  showGuestbook: true,
+  showDressCode: true,
+  dressCode: {
+    colors: ["#F97316", "#FDE047", "#FFFFFF", "#1E293B"],
+    note: "Trang phục màu cam san hô, vàng pastel hoặc trắng rạng rỡ",
+  },
+  showThankYou: true,
+  giftsTitle: "HỘP QUÀ SINH NHẬT",
+  giftsSubtitle: "Thông tin gửi quà mừng",
+};
+
+const mockGraduationData = {
+  title: "Lễ Tốt Nghiệp Cử Nhân",
+  cardType: "GRADUATION",
+  welcomeLine: "THƯ MỜI LỄ TỐT NGHIỆP",
+  introText: "Trân trọng kính mời bạn đến tham dự Lễ tốt nghiệp và chia vui cùng mình trong ngày đặc biệt này!",
+  groom: {
+    name: "Hoàng Gia Bảo",
+    fullName: "Hoàng Gia Bảo",
+    title: "Tân Khoa Cử Nhân",
+    bankAccount: {
+      bankName: "Vietcombank",
+      accountName: "HOANG GIA BAO",
+      accountNumber: "1012345678",
+      qrUrl: "",
+    },
+  },
+  extraContent: {
+    year: 2026,
+    major: "Khoa học Máy tính",
+    school: "Đại học Bách Khoa TP.HCM",
+  },
+  showHeroImage: true,
+  heroImageMain: "https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=800&auto=format&fit=crop&q=80",
+  ceremony: {
+    name: "LỄ TRAO BẰNG TỐT NGHIỆP",
+    eventDate: "2026-07-15",
+    eventTime: "08:00",
+    venueName: "Hội Trường A - Đại học Bách Khoa",
+    address: "268 Lý Thường Kiệt, P.14, Q.10, TP.HCM",
+    mapUrl: "https://maps.app.goo.gl",
+  },
+  party: {
+    name: "TIỆC MỪNG TỐT NGHIỆP",
+    eventDate: "2026-07-15",
+    eventTime: "18:00",
+    venueName: "Nhà Hàng Grand Palace",
+    address: "142/18 Cộng Hòa, P.4, Q.Tân Bình, TP.HCM",
+    mapUrl: "https://maps.app.goo.gl",
+  },
+  events: [
+    {
+      id: 1,
+      name: "Lễ Trao Bằng Cử Nhân",
+      eventDate: "2026-07-15",
+      eventTime: "08:00",
+      venueName: "Hội Trường A",
+      address: "268 Lý Thường Kiệt, Q.10, TP.HCM",
+    },
+  ],
+  showCountdown: true,
+  showGallery: true,
+  photos: [
+    { url: "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=600&auto=format&fit=crop&q=80" },
+    { url: "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=600&auto=format&fit=crop&q=80" },
+    { url: "https://images.unsplash.com/photo-1627556704290-2b1f5853ff78?w=600&auto=format&fit=crop&q=80" },
+    { url: "https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=600&auto=format&fit=crop&q=80" },
+  ],
+  showRsvp: true,
+  rsvpType: "button",
+  rsvpCta: "Xác nhận tham dự",
+  rsvpIntro: "Sự hiện diện của bạn làm ngày tốt nghiệp thêm trọn vẹn!",
+  showGuestbook: true,
+  showDressCode: true,
+  dressCode: {
+    colors: ["#0F172A", "#1E3A8A", "#D97706", "#FFFFFF"],
+    note: "Trang phục lịch sự: Áo sơ mi / Lễ phục / Váy trang nhã",
+  },
+  showThankYou: true,
+  giftsTitle: "HỘP QUÀ TỐT NGHIỆP",
+  giftsSubtitle: "Thông tin gửi quà mừng",
+};
+
+function getInitialMockData(themeCode: string) {
+  const norm = (themeCode || "").toLowerCase().replace(/[-_]/g, "");
+  if (norm.includes("birthday") || norm.includes("sinhnhat") || norm.includes("coral")) {
+    return mockBirthdayData;
+  }
+  if (norm.includes("grad") || norm.includes("totnghiep") || norm.includes("academic")) {
+    return mockGraduationData;
+  }
+  return mockWeddingData;
+}
+
 export default function PreviewPage() {
   const params = useParams();
   const searchParams = useSearchParams();
   const router = useRouter();
   const themeCode = params.themeCode as string;
-  const [weddingData, setWeddingData] = useState<any>(mockWeddingData);
+  const [weddingData, setWeddingData] = useState<any>(() =>
+    getInitialMockData(themeCode),
+  );
   const [isEmbedded, setIsEmbedded] = useState(false);
 
   useEffect(() => {

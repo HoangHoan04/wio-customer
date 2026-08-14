@@ -1,43 +1,46 @@
 import Konva from "konva";
 import { Disc, Headphones, Music, Music2, Music3, Music4 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import {
-  Circle,
-  Group,
-  Image as KonvaImage,
-  Layer,
-  Line,
-  Path,
-  Rect,
-  Stage,
-  Text,
-  Transformer,
-} from "react-konva";
+import
+    {
+        Circle,
+        Group,
+        Image as KonvaImage,
+        Layer,
+        Line,
+        Path,
+        Rect,
+        Stage,
+        Text,
+        Transformer,
+    } from "react-konva";
 import { useAudioPlayer } from "../../hooks/useAudioPlayer";
+import InvitationEffectsLayer from "./components/InvitationEffectsLayer";
 import { useImageCache } from "./hooks/useImageCache";
 import type { EditorElement, InvitationEffects } from "./types";
-import InvitationEffectsLayer from "./components/InvitationEffectsLayer";
-import { DEFAULT_INVITATION_EFFECTS } from "./utils/invitation-effects";
 import { getImageCoverCrop } from "./utils/image-fit";
-import {
-  displayTextContent,
-  konvaFontStyle,
-  measureTextBox,
-  MAX_TEXT_FONT_SIZE,
-  MIN_TEXT_FONT_SIZE,
-  MIN_TEXT_WIDTH,
-} from "./utils/text-fit";
-import {
-  CalendarWidget,
-  CallWidget,
-  CountdownWidget,
-  GalleryWidget,
-  MapWidget,
-  QRWidget,
-  RSVPWidget,
-  YouTubeWidget,
-} from "./widgets";
+import { DEFAULT_INVITATION_EFFECTS } from "./utils/invitation-effects";
 import { buildStackBands } from "./utils/layers";
+import
+    {
+        displayTextContent,
+        konvaFontStyle,
+        MAX_TEXT_FONT_SIZE,
+        measureTextBox,
+        MIN_TEXT_FONT_SIZE,
+        MIN_TEXT_WIDTH,
+    } from "./utils/text-fit";
+import
+    {
+        CalendarWidget,
+        CallWidget,
+        CountdownWidget,
+        GalleryWidget,
+        MapWidget,
+        QRWidget,
+        RSVPWidget,
+        YouTubeWidget,
+    } from "./widgets";
 
 const TEXT_CORNER_ANCHORS = new Set([
   "top-left",

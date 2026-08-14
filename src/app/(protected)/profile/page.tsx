@@ -281,12 +281,7 @@ export default function ProfilePage() {
                 <Button
                   type="submit"
                   disabled={savingInfo}
-                  className="w-full py-3.5 rounded-xl font-bold uppercase tracking-wider text-xs"
-                  style={{
-                    background: `linear-gradient(135deg, ${C.goldLight} 0%, ${C.gold} 100%)`,
-                    color: "#1a1a1a",
-                    boxShadow: "0 4px 15px rgba(45, 35, 31,0.3)",
-                  }}
+                  className="w-full py-3.5 rounded-xl font-bold uppercase tracking-wider text-xs bg-[#2D231F] text-[#F3EDE3] hover:bg-[#3A2E28] shadow-[0_4px_15px_rgba(45,35,31,0.25)] transition-all cursor-pointer"
                 >
                   {savingInfo ? "Đang lưu..." : "Lưu thay đổi"}
                 </Button>
@@ -367,12 +362,7 @@ export default function ProfilePage() {
                 <Button
                   type="submit"
                   disabled={savingPassword}
-                  className="w-full py-3.5 rounded-xl font-bold uppercase tracking-wider text-xs"
-                  style={{
-                    background: `linear-gradient(135deg, ${C.goldLight} 0%, ${C.gold} 100%)`,
-                    color: "#1a1a1a",
-                    boxShadow: "0 4px 15px rgba(45, 35, 31,0.3)",
-                  }}
+                  className="w-full py-3.5 rounded-xl font-bold uppercase tracking-wider text-xs bg-[#2D231F] text-[#F3EDE3] hover:bg-[#3A2E28] shadow-[0_4px_15px_rgba(45,35,31,0.25)] transition-all cursor-pointer"
                 >
                   {savingPassword ? "Đang đổi..." : "Thay đổi mật khẩu"}
                 </Button>

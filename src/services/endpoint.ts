@@ -55,10 +55,7 @@ export const API_ENDPOINTS = {
     CHECK_SLUG: "/api/user/invitation/check-slug",
     FIND_BY_SLUG: "/api/user/invitation/public/find-by-slug",
   },
-  /** @deprecated dùng INVITATION */
-  get WEDDING() {
-    return this.INVITATION;
-  },
+
   UPLOAD_FILE: {
     IMAGE: "/api/upload/upload-file/upload-image",
     BULK_IMAGES: "/api/upload/upload-file/upload-multi",
@@ -91,6 +88,7 @@ export const API_ENDPOINTS = {
     PAGINATION: "/api/user/wish/pagination",
     FIND_BY_ID: "/api/user/wish/find-by-id",
     PUBLIC_CREATE: "/api/user/wish/public/create",
+    PUBLIC_LIST: "/api/user/wish/public/list",
     APPROVE: "/api/user/wish/approve",
     REJECT: "/api/user/wish/reject",
     PIN: "/api/user/wish/pin",

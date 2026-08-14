@@ -2,14 +2,15 @@ import Input from "@/templates/customer-design/ui/input/Input";
 import { Search } from "lucide-react";
 import { useMemo, useState } from "react";
 import type { EditorElement } from "../types";
-import {
-  centerPresetOnCanvas,
-  DESIGN_PRESETS,
-  PRESET_CATEGORIES,
-  type DesignPreset,
-  type PresetCategory,
-  type PresetTemplateEl,
-} from "../utils/design-presets";
+import
+    {
+        centerPresetOnCanvas,
+        DESIGN_PRESETS,
+        PRESET_CATEGORIES,
+        type DesignPreset,
+        type PresetCategory,
+        type PresetTemplateEl,
+    } from "../utils/design-presets";
 
 function PresetPreview({ elements }: { elements: PresetTemplateEl[] }) {
   const minX = Math.min(...elements.map((e) => e.x));

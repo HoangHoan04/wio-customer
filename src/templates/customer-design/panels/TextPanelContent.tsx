@@ -21,9 +21,7 @@ import {
   Play,
   Plus,
   Repeat,
-  Square,
   Strikethrough,
-  Sun,
   Trash2,
   Underline,
 } from "lucide-react";
@@ -129,7 +127,7 @@ export default function TextPanelContent({
   onSelect?: (id: string | null) => void;
   onAlignElement?: (
     id: string,
-    align: { h?: "left" | "center" | "right"; v?: "top" | "middle" | "bottom" }
+    align: { h?: "left" | "center" | "right"; v?: "top" | "middle" | "bottom" },
   ) => void;
 }) {
   const el = selectedElement?.type === "text" ? selectedElement : null;
@@ -181,7 +179,10 @@ export default function TextPanelContent({
                     fontFamily: `"${style.preset.fontFamily}", serif`,
                     fontSize: Math.min(
                       34,
-                      Math.max(20, Math.round((style.preset.fontSize || 28) * 0.65)),
+                      Math.max(
+                        20,
+                        Math.round((style.preset.fontSize || 28) * 0.65),
+                      ),
                     ),
                     fontWeight: style.preset.fontWeight,
                     letterSpacing: style.preset.letterSpacing,
@@ -220,7 +221,10 @@ export default function TextPanelContent({
     );
   }
 
-  const handlePaddingChange = (side: "top" | "right" | "bottom" | "left", val: number) => {
+  const handlePaddingChange = (
+    side: "top" | "right" | "bottom" | "left",
+    val: number,
+  ) => {
     const updates: Record<string, number> = {};
     updates[`padding${side.charAt(0).toUpperCase() + side.slice(1)}`] = val;
     if (paddingMode === "all") {
@@ -242,7 +246,10 @@ export default function TextPanelContent({
     onUpdate(el.id, updates);
   };
 
-  const getBorderRadiusCorners = (mode: string, changedCorner: string): string[] => {
+  const getBorderRadiusCorners = (
+    mode: string,
+    changedCorner: string,
+  ): string[] => {
     switch (mode) {
       case "all":
         return [
@@ -290,10 +297,15 @@ export default function TextPanelContent({
     const idx = FONT_SIZES.indexOf(currentSize);
     if (idx === -1) {
       const nearest = FONT_SIZES.reduce((best, size) =>
-        Math.abs(size - currentSize) < Math.abs(best - currentSize) ? size : best
+        Math.abs(size - currentSize) < Math.abs(best - currentSize)
+          ? size
+          : best,
       );
       const nearestIdx = FONT_SIZES.indexOf(nearest);
-      const next = FONT_SIZES[Math.min(FONT_SIZES.length - 1, Math.max(0, nearestIdx + dir))];
+      const next =
+        FONT_SIZES[
+          Math.min(FONT_SIZES.length - 1, Math.max(0, nearestIdx + dir))
+        ];
       onUpdate(el.id, { fontSize: next });
       return;
     }
@@ -304,10 +316,7 @@ export default function TextPanelContent({
   };
 
   return (
-    <div
-      onKeyDown={(e) => e.stopPropagation()}
-      className="space-y-3"
-    >
+    <div onKeyDown={(e) => e.stopPropagation()} className="space-y-3">
       <button
         type="button"
         onClick={() => onSelect?.(null)}
@@ -361,7 +370,9 @@ export default function TextPanelContent({
         <FormatButton
           active={el.fontWeight === "bold"}
           onClick={() =>
-            onUpdate(el.id, { fontWeight: el.fontWeight === "bold" ? "normal" : "bold" })
+            onUpdate(el.id, {
+              fontWeight: el.fontWeight === "bold" ? "normal" : "bold",
+            })
           }
           title="Bôi đậm"
         >
@@ -370,7 +381,9 @@ export default function TextPanelContent({
         <FormatButton
           active={el.fontStyle === "italic"}
           onClick={() =>
-            onUpdate(el.id, { fontStyle: el.fontStyle === "italic" ? "normal" : "italic" })
+            onUpdate(el.id, {
+              fontStyle: el.fontStyle === "italic" ? "normal" : "italic",
+            })
           }
           title="Chữ nghiêng"
         >
@@ -419,7 +432,11 @@ export default function TextPanelContent({
           }}
           title="In hoa / In thường"
         >
-          {el.textTransform === "uppercase" ? <CaseUpper size={15} /> : <CaseLower size={15} />}
+          {el.textTransform === "uppercase" ? (
+            <CaseUpper size={15} />
+          ) : (
+            <CaseLower size={15} />
+          )}
         </FormatButton>
         <div className="mx-1 h-5 w-px bg-[#D9CDBE]" />
         {[
@@ -456,7 +473,9 @@ export default function TextPanelContent({
               min={-5}
               max={20}
               value={el.letterSpacing}
-              onChange={(e) => onUpdate(el.id, { letterSpacing: Number(e.target.value) })}
+              onChange={(e) =>
+                onUpdate(el.id, { letterSpacing: Number(e.target.value) })
+              }
               className="w-20! rounded border border-[#D9CDBE] bg-[#F3EDE3] text-center text-[10px]! text-[#2D231F] outline-none focus:border-[#2D231F]"
             />
           </div>
@@ -469,7 +488,9 @@ export default function TextPanelContent({
               max={5}
               step={0.1}
               value={el.lineHeight}
-              onChange={(e) => onUpdate(el.id, { lineHeight: Number(e.target.value) })}
+              onChange={(e) =>
+                onUpdate(el.id, { lineHeight: Number(e.target.value) })
+              }
               className="w-20! rounded border border-[#D9CDBE] bg-[#F3EDE3] text-center text-[10px]! text-[#2D231F] outline-none focus:border-[#2D231F]"
             />
           </div>
@@ -481,7 +502,11 @@ export default function TextPanelContent({
               {[
                 { value: "top" as const, icon: ArrowUpFromLine, label: "Trên" },
                 { value: "middle" as const, icon: AlignCenter, label: "Giữa" },
-                { value: "bottom" as const, icon: ArrowDownFromLine, label: "Dưới" },
+                {
+                  value: "bottom" as const,
+                  icon: ArrowDownFromLine,
+                  label: "Dưới",
+                },
               ].map(({ value, icon: Icon, label }) => (
                 <FormatButton
                   key={value}
@@ -495,14 +520,18 @@ export default function TextPanelContent({
             </div>
           </div>
           <div>
-            <label className="mb-1 block text-[10px] uppercase text-[#7A6A5C]">Màu nền chữ</label>
+            <label className="mb-1 block text-[10px] uppercase text-[#7A6A5C]">
+              Màu nền chữ
+            </label>
             <ColorPickerRow
               value={el.backgroundColor}
               onChange={(v) => onUpdate(el.id, { backgroundColor: v })}
             />
           </div>
           <div>
-            <label className="mb-1 block text-[10px] uppercase text-[#7A6A5C]">Độ trong suốt</label>
+            <label className="mb-1 block text-[10px] uppercase text-[#7A6A5C]">
+              Độ trong suốt
+            </label>
             <div className="flex items-center gap-2">
               <Slider
                 value={Math.round(el.opacity * 100)}
@@ -524,7 +553,10 @@ export default function TextPanelContent({
           <Select
             size="sm"
             value={paddingMode}
-            options={PADDING_MODES.map((m) => ({ label: m.label, value: m.value }))}
+            options={PADDING_MODES.map((m) => ({
+              label: m.label,
+              value: m.value,
+            }))}
             onValueChange={(val) => setPaddingMode(String(val))}
             className="border-[#D9CDBE]! bg-[#F3EDE3]! text-[#2D231F]!"
             wrapperClassName="w-full"
@@ -538,7 +570,9 @@ export default function TextPanelContent({
                   min={0}
                   max={200}
                   value={el.paddingTop}
-                  onChange={(e) => handlePaddingChange("top", Number(e.target.value))}
+                  onChange={(e) =>
+                    handlePaddingChange("top", Number(e.target.value))
+                  }
                   className="rounded border border-[#D9CDBE] bg-[#F3EDE3] text-center font-mono text-[11px] text-[#2D231F] outline-none transition-all focus:border-[#2D231F]"
                   tooltip="Padding Trên"
                 />
@@ -548,7 +582,9 @@ export default function TextPanelContent({
                   min={0}
                   max={200}
                   value={el.paddingBottom}
-                  onChange={(e) => handlePaddingChange("bottom", Number(e.target.value))}
+                  onChange={(e) =>
+                    handlePaddingChange("bottom", Number(e.target.value))
+                  }
                   className="rounded border border-[#D9CDBE] bg-[#F3EDE3] text-center font-mono text-[11px] text-[#2D231F] outline-none transition-all focus:border-[#2D231F]"
                   tooltip="Padding Dưới"
                 />
@@ -558,7 +594,9 @@ export default function TextPanelContent({
                   min={0}
                   max={200}
                   value={el.paddingLeft}
-                  onChange={(e) => handlePaddingChange("left", Number(e.target.value))}
+                  onChange={(e) =>
+                    handlePaddingChange("left", Number(e.target.value))
+                  }
                   className="rounded border border-[#D9CDBE] bg-[#F3EDE3] text-center font-mono text-[11px] text-[#2D231F] outline-none transition-all focus:border-[#2D231F]!"
                   tooltip="Padding Trái"
                 />
@@ -568,20 +606,26 @@ export default function TextPanelContent({
                   min={0}
                   max={200}
                   value={el.paddingRight}
-                  onChange={(e) => handlePaddingChange("right", Number(e.target.value))}
+                  onChange={(e) =>
+                    handlePaddingChange("right", Number(e.target.value))
+                  }
                   className="rounded border border-[#D9CDBE] bg-[#F3EDE3] text-center font-mono text-[11px] text-[#2D231F] outline-none transition-all focus:border-[#2D231F]!"
                   tooltip="Padding Phải"
                 />
               </div>
               <div className="pointer-events-none z-0 flex h-20 w-30 items-center justify-center rounded-md shadow-inner">
-                <span className="text-[11px] font-medium tracking-wide text-[#7A6A5C]">VĂN BẢN</span>
+                <span className="text-[11px] font-medium tracking-wide text-[#7A6A5C]">
+                  VĂN BẢN
+                </span>
               </div>
             </div>
           </div>
 
           {onAlignElement && (
             <div className="mt-2 flex flex-col gap-2">
-              <label className="text-[10px] uppercase text-[#7A6A5C]">Căn lề khung</label>
+              <label className="text-[10px] uppercase text-[#7A6A5C]">
+                Căn lề khung
+              </label>
               <div className="flex items-center justify-center gap-1">
                 <FormatButton
                   active={el.frameAlignH === "left"}
@@ -635,17 +679,23 @@ export default function TextPanelContent({
       <CollapsibleSection title="Đường viền">
         <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <label className="text-[10px] uppercase text-[#7A6A5C]">Kích thước</label>
+            <label className="text-[10px] uppercase text-[#7A6A5C]">
+              Kích thước
+            </label>
             <InputNumber
               min={0}
               max={50}
               value={el.borderWidth}
-              onChange={(e) => onUpdate(el.id, { borderWidth: Number(e.target.value) })}
+              onChange={(e) =>
+                onUpdate(el.id, { borderWidth: Number(e.target.value) })
+              }
               className="w-20! rounded border border-[#D9CDBE] bg-[#F3EDE3] text-center text-[10px]! text-[#2D231F] outline-none focus:border-[#2D231F]"
             />
           </div>
           <div>
-            <label className="mb-1 block text-[10px] uppercase text-[#7A6A5C]">Màu viền</label>
+            <label className="mb-1 block text-[10px] uppercase text-[#7A6A5C]">
+              Màu viền
+            </label>
             <ColorPickerRow
               value={el.borderColor}
               onChange={(v) => onUpdate(el.id, { borderColor: v })}
@@ -653,41 +703,66 @@ export default function TextPanelContent({
           </div>
           <div className="grid grid-cols-2 gap-2">
             <div>
-              <label className="mb-1 block text-[10px] uppercase text-[#7A6A5C]">Kiểu viền</label>
+              <label className="mb-1 block text-[10px] uppercase text-[#7A6A5C]">
+                Kiểu viền
+              </label>
               <Select
                 size="sm"
                 value={el.borderStyle}
-                options={BORDER_STYLES.map((s) => ({ label: s.label, value: s.value }))}
-                onValueChange={(val) => onUpdate(el.id, { borderStyle: val as EditorElement["borderStyle"] })}
+                options={BORDER_STYLES.map((s) => ({
+                  label: s.label,
+                  value: s.value,
+                }))}
+                onValueChange={(val) =>
+                  onUpdate(el.id, {
+                    borderStyle: val as EditorElement["borderStyle"],
+                  })
+                }
                 className="border-[#D9CDBE]! bg-[#F3EDE3]! text-center! text-xs! text-[#2D231F]!"
                 wrapperClassName="w-full [&_button]:text-xs! [&_div]:text-xs!"
               />
             </div>
             <div>
-              <label className="mb-1 block text-[10px] uppercase text-[#7A6A5C]">Vị trí</label>
+              <label className="mb-1 block text-[10px] uppercase text-[#7A6A5C]">
+                Vị trí
+              </label>
               <Select
                 size="sm"
                 value={el.borderPosition}
-                options={BORDER_POSITIONS.map((p) => ({ label: p.label, value: p.value }))}
-                onValueChange={(val) => onUpdate(el.id, { borderPosition: val as EditorElement["borderPosition"] })}
+                options={BORDER_POSITIONS.map((p) => ({
+                  label: p.label,
+                  value: p.value,
+                }))}
+                onValueChange={(val) =>
+                  onUpdate(el.id, {
+                    borderPosition: val as EditorElement["borderPosition"],
+                  })
+                }
                 className="border-[#D9CDBE]! bg-[#F3EDE3]! text-center text-xs! text-[#2D231F]!"
                 wrapperClassName="w-full [&_button]:text-xs! [&_div]:text-xs!"
               />
             </div>
           </div>
           <div>
-            <label className="mb-1 block text-[10px] uppercase text-[#7A6A5C]">Chọn góc bo</label>
+            <label className="mb-1 block text-[10px] uppercase text-[#7A6A5C]">
+              Chọn góc bo
+            </label>
             <Select
               size="sm"
               value={borderRadiusMode}
-              options={BORDER_RADIUS_MODES.map((m) => ({ label: m.label, value: m.value }))}
+              options={BORDER_RADIUS_MODES.map((m) => ({
+                label: m.label,
+                value: m.value,
+              }))}
               onValueChange={(val) => setBorderRadiusMode(String(val))}
               className="border-[#D9CDBE]! bg-[#F3EDE3]! text-center! text-xs! text-[#2D231F]!"
               wrapperClassName="w-full"
             />
           </div>
           <div>
-            <label className="mb-1 block text-[10px] uppercase text-[#7A6A5C]">Bán kính bo góc</label>
+            <label className="mb-1 block text-[10px] uppercase text-[#7A6A5C]">
+              Bán kính bo góc
+            </label>
             <div className="grid grid-cols-4 gap-1.5">
               {[
                 { key: "borderRadiusTopLeft", label: "TL" },
@@ -696,12 +771,16 @@ export default function TextPanelContent({
                 { key: "borderRadiusBottomRight", label: "BR" },
               ].map(({ key, label }) => (
                 <div key={key}>
-                  <label className="mb-0.5 block text-center text-[8px] text-[#7A6A5C]">{label}</label>
+                  <label className="mb-0.5 block text-center text-[8px] text-[#7A6A5C]">
+                    {label}
+                  </label>
                   <InputNumber
                     min={0}
                     max={100}
                     value={(el as unknown as Record<string, number>)[key]}
-                    onChange={(e) => handleBorderRadiusChange(key, Number(e.target.value))}
+                    onChange={(e) =>
+                      handleBorderRadiusChange(key, Number(e.target.value))
+                    }
                     className="rounded border border-[#D9CDBE] bg-[#F3EDE3] p-1.5! text-center text-[10px]! text-[#2D231F] outline-none focus:border-[#2D231F]"
                     wrapperClassName="w-full"
                     showButtons={false}
@@ -716,39 +795,53 @@ export default function TextPanelContent({
       <CollapsibleSection title="Đổ bóng">
         <div className="space-y-3">
           <div>
-            <label className="mb-1 block text-[10px] uppercase text-[#7A6A5C]">Màu bóng</label>
+            <label className="mb-1 block text-[10px] uppercase text-[#7A6A5C]">
+              Màu bóng
+            </label>
             <ColorPickerRow
               value={el.shadowColor}
               onChange={(v) => onUpdate(el.id, { shadowColor: v })}
             />
           </div>
           <div className="flex items-center justify-between">
-            <label className="w-28 text-left text-[10px] uppercase text-[#7A6A5C]">Độ mờ</label>
+            <label className="w-28 text-left text-[10px] uppercase text-[#7A6A5C]">
+              Độ mờ
+            </label>
             <InputNumber
               min={-5}
               max={20}
               value={el.shadowBlur}
-              onChange={(e) => onUpdate(el.id, { shadowBlur: Number(e.target.value) })}
+              onChange={(e) =>
+                onUpdate(el.id, { shadowBlur: Number(e.target.value) })
+              }
               className="w-20! rounded border border-[#D9CDBE] bg-[#F3EDE3] text-center text-[10px]! text-[#2D231F] outline-none focus:border-[#2D231F]"
             />
           </div>
           <div className="flex items-center justify-between">
-            <label className="w-28 text-left text-[10px] uppercase text-[#7A6A5C]">Lệch X</label>
+            <label className="w-28 text-left text-[10px] uppercase text-[#7A6A5C]">
+              Lệch X
+            </label>
             <InputNumber
               min={-50}
               max={50}
               value={el.shadowOffsetX}
-              onChange={(e) => onUpdate(el.id, { shadowOffsetX: Number(e.target.value) })}
+              onChange={(e) =>
+                onUpdate(el.id, { shadowOffsetX: Number(e.target.value) })
+              }
               className="w-20! rounded border border-[#D9CDBE] bg-[#F3EDE3] text-center text-[10px]! text-[#2D231F] outline-none focus:border-[#2D231F]"
             />
           </div>
           <div className="flex items-center justify-between">
-            <label className="w-28 text-left text-[10px] uppercase text-[#7A6A5C]">Lệch Y</label>
+            <label className="w-28 text-left text-[10px] uppercase text-[#7A6A5C]">
+              Lệch Y
+            </label>
             <InputNumber
               min={-50}
               max={50}
               value={el.shadowOffsetY}
-              onChange={(e) => onUpdate(el.id, { shadowOffsetY: Number(e.target.value) })}
+              onChange={(e) =>
+                onUpdate(el.id, { shadowOffsetY: Number(e.target.value) })
+              }
               className="w-20! rounded border border-[#D9CDBE] bg-[#F3EDE3] text-center text-[10px]! text-[#2D231F] outline-none focus:border-[#2D231F]"
             />
           </div>
@@ -802,8 +895,13 @@ export default function TextPanelContent({
                 <Select
                   size="sm"
                   value={el.motionType}
-                  options={MOTION_TYPES.map((m) => ({ label: m.label, value: m.value }))}
-                  onValueChange={(val) => onUpdate(el.id, { motionType: String(val) })}
+                  options={MOTION_TYPES.map((m) => ({
+                    label: m.label,
+                    value: m.value,
+                  }))}
+                  onValueChange={(val) =>
+                    onUpdate(el.id, { motionType: String(val) })
+                  }
                   className="border-[#D9CDBE]! bg-[#F3EDE3]! text-xs! text-[#2D231F]!"
                   wrapperClassName="w-full"
                 />
@@ -839,8 +937,13 @@ export default function TextPanelContent({
                 <Select
                   size="sm"
                   value={el.motionEasing}
-                  options={EASING_TYPES.map((e) => ({ label: e.label, value: e.value }))}
-                  onValueChange={(val) => onUpdate(el.id, { motionEasing: String(val) })}
+                  options={EASING_TYPES.map((e) => ({
+                    label: e.label,
+                    value: e.value,
+                  }))}
+                  onValueChange={(val) =>
+                    onUpdate(el.id, { motionEasing: String(val) })
+                  }
                   className="border-[#D9CDBE]! bg-[#F3EDE3]! text-xs! text-[#2D231F]!"
                   wrapperClassName="w-full"
                 />
@@ -871,8 +974,13 @@ export default function TextPanelContent({
                 <Select
                   size="sm"
                   value={el.continuousMotionType}
-                  options={CONTINUOUS_MOTION_TYPES.map((m) => ({ label: m.label, value: m.value }))}
-                  onValueChange={(val) => onUpdate(el.id, { continuousMotionType: String(val) })}
+                  options={CONTINUOUS_MOTION_TYPES.map((m) => ({
+                    label: m.label,
+                    value: m.value,
+                  }))}
+                  onValueChange={(val) =>
+                    onUpdate(el.id, { continuousMotionType: String(val) })
+                  }
                   className="border-[#D9CDBE]! bg-[#F3EDE3]! text-xs! text-[#2D231F]!"
                   wrapperClassName="w-full"
                 />
@@ -888,21 +996,27 @@ export default function TextPanelContent({
                     step={0.1}
                     value={el.continuousMotionDuration}
                     onChange={(e) =>
-                      onUpdate(el.id, { continuousMotionDuration: Number(e.target.value) })
+                      onUpdate(el.id, {
+                        continuousMotionDuration: Number(e.target.value),
+                      })
                     }
                     className="text-xs"
                     wrapperClassName="w-full"
                   />
                 </div>
                 <div>
-                  <label className="mb-1 block text-[10px] uppercase text-[#7A6A5C]">Độ trễ (s)</label>
+                  <label className="mb-1 block text-[10px] uppercase text-[#7A6A5C]">
+                    Độ trễ (s)
+                  </label>
                   <InputNumber
                     min={0}
                     max={10}
                     step={0.1}
                     value={el.continuousMotionDelay}
                     onChange={(e) =>
-                      onUpdate(el.id, { continuousMotionDelay: Number(e.target.value) })
+                      onUpdate(el.id, {
+                        continuousMotionDelay: Number(e.target.value),
+                      })
                     }
                     className="text-xs"
                     wrapperClassName="w-full"

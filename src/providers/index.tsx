@@ -7,7 +7,6 @@ import { normalizeAuthUser } from "@/utils/auth-user";
 import React, { useEffect } from "react";
 import { toast } from "sonner";
 import QueryProvider from "./QueryProvider";
-import ThemeProvider from "./ThemeProvider";
 
 function AuthInitializer({ children }: { children: React.ReactNode }) {
   useEffect(() => {
@@ -80,13 +79,11 @@ export default function AppProviders({
   children: React.ReactNode;
 }) {
   return (
-    <ThemeProvider>
-      <QueryProvider>
-        <TooltipProvider>
-          <AuthInitializer>{children}</AuthInitializer>
-          <ToastContainer />
-        </TooltipProvider>
-      </QueryProvider>
-    </ThemeProvider>
+    <QueryProvider>
+      <TooltipProvider>
+        <AuthInitializer>{children}</AuthInitializer>
+        <ToastContainer />
+      </TooltipProvider>
+    </QueryProvider>
   );
 }

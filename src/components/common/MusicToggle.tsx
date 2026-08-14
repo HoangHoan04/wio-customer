@@ -62,8 +62,8 @@ const MusicToggle = ({
       }
     };
 
-    window.addEventListener("wio-preview-audio-start", handlePreviewStart);
-    window.addEventListener("wio-preview-audio-stop", handlePreviewStop);
+    window.addEventListener("invigo-preview-audio-start", handlePreviewStart);
+    window.addEventListener("invigo-preview-audio-stop", handlePreviewStop);
 
     const handleExternalToggle = () => {
       if (audio) {
@@ -74,17 +74,23 @@ const MusicToggle = ({
         }
       }
     };
-    window.addEventListener("wio-toggle-canvas-audio", handleExternalToggle);
+    window.addEventListener("invigo-toggle-canvas-audio", handleExternalToggle);
 
     return () => {
       audio.pause();
       audio.removeEventListener("canplaythrough", handleCanPlay);
       audio.removeEventListener("play", handlePlay);
       audio.removeEventListener("pause", handlePause);
-      window.removeEventListener("wio-preview-audio-start", handlePreviewStart);
-      window.removeEventListener("wio-preview-audio-stop", handlePreviewStop);
       window.removeEventListener(
-        "wio-toggle-canvas-audio",
+        "invigo-preview-audio-start",
+        handlePreviewStart,
+      );
+      window.removeEventListener(
+        "invigo-preview-audio-stop",
+        handlePreviewStop,
+      );
+      window.removeEventListener(
+        "invigo-toggle-canvas-audio",
         handleExternalToggle,
       );
       audio.src = "";
@@ -93,7 +99,7 @@ const MusicToggle = ({
 
   useEffect(() => {
     window.dispatchEvent(
-      new CustomEvent("wio-canvas-audio-status", {
+      new CustomEvent("invigo-canvas-audio-status", {
         detail: { isPlaying },
       }),
     );

@@ -135,7 +135,7 @@ const STEPS: StepItem[] = [
 
 function PhonePreview({ children }: { children: React.ReactNode }) {
   return (
-    <div className="relative mx-auto h-[420px] w-[210px] shrink-0 sm:h-[480px] sm:w-[240px]">
+    <div className="relative mx-auto h-105 w-52.5 shrink-0 sm:h-120 sm:w-60">
       <div className="absolute inset-0 overflow-hidden rounded-[28px] border border-[#2D231F]/15 bg-[#F3EDE3] shadow-[0_20px_40px_rgba(45,35,31,0.14)]">
         <div className="h-full w-full overflow-hidden">{children}</div>
       </div>
@@ -191,7 +191,7 @@ export default function FeaturesSection() {
                   }`}
                 >
                   <span
-                    className={`absolute inset-y-0 left-0 w-[3px] bg-[#2D231F] transition-opacity duration-300 ${
+                    className={`absolute inset-y-0 left-0 w-0.75 bg-[#2D231F] transition-opacity duration-300 ${
                       isActive ? "opacity-100" : "opacity-0"
                     }`}
                   />

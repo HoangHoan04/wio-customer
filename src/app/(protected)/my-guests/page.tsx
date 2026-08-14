@@ -26,8 +26,12 @@ import { Textarea } from "@/components/ui/textarea";
 import type { CreateGuestReq } from "@/dto";
 import { useGuest } from "@/hooks/useGuest";
 import { useToast } from "@/hooks/useToast";
+import { cardTypeDefaults } from "@/services/card-type.service";
 import { invitationService } from "@/services/invitation.service";
-import { invitationLabel, publicInvitationPath } from "@/utils/invitation-mapper";
+import {
+  invitationLabel,
+  publicInvitationPath,
+} from "@/utils/invitation-mapper";
 import {
   Copy,
   Download,
@@ -55,6 +59,8 @@ interface InvitationOption {
   id: string;
   title?: string;
   slug: string;
+  cardType?: string;
+  guestGroups?: { code: string; name: string }[];
 }
 
 interface GuestForm {
@@ -106,6 +112,9 @@ export default function MyGuestsPage() {
   const [bulkPreview, setBulkPreview] = useState<CreateGuestReq[]>([]);
   const [bulkSalutation, setBulkSalutation] = useState("Kính mời");
   const [bulkSide, setBulkSide] = useState("BOTH");
+  const [guestGroups, setGuestGroups] = useState<
+    { code: string; name: string }[]
+  >(Object.values(enumData.SIDE_OPTIONS));
 
   useEffect(() => {
     invitationService
@@ -127,8 +136,30 @@ export default function MyGuestsPage() {
   useEffect(() => {
     if (!selectedInvitationId) return;
     setIsLoading(true);
-    getGuests(selectedInvitationId)
-      .then((res) => setGuests(res.data ?? []))
+    Promise.all([
+      getGuests(selectedInvitationId),
+      invitationService.findById(selectedInvitationId),
+    ])
+      .then(([guestRes, invitationRes]) => {
+        setGuests(guestRes.data ?? []);
+        const invitation = invitationRes.data;
+        const groups = invitation?.guestGroups?.length
+          ? invitation.guestGroups.map((g) => ({
+              code: g.code,
+              name: g.name,
+            }))
+          : cardTypeDefaults(invitation?.cardType || "WEDDING")
+              .defaultGuestGroups;
+        setGuestGroups(groups);
+        const defaultCode = groups[0]?.code || "BOTH";
+        setBulkSide(defaultCode);
+        setForm((prev) => ({
+          ...prev,
+          side: groups.some((g) => g.code === prev.side)
+            ? prev.side
+            : defaultCode,
+        }));
+      })
       .catch((err) => {
         console.error(err);
         showToast({ message: "Không thể tải khách mời", type: "error" });
@@ -147,9 +178,18 @@ export default function MyGuestsPage() {
     );
   }, [guests, search]);
 
+  const groupLabel = (code?: string) =>
+    guestGroups.find((g) => g.code === code)?.name ||
+    enumData.SIDE_OPTIONS[code || ""]?.name ||
+    code ||
+    "—";
+
   const handleOpenCreate = () => {
     setEditingGuest(null);
-    setForm(emptyForm);
+    setForm({
+      ...emptyForm,
+      side: guestGroups[0]?.code || "BOTH",
+    });
     setOpenDialog(true);
   };
 
@@ -531,39 +571,29 @@ export default function MyGuestsPage() {
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label>Khách mời của bên nào</Label>
+                      <Label>Nhóm khách</Label>
                       <RadioGroup
                         value={bulkSide}
                         onValueChange={handleBulkSideChange}
-                        className="flex flex-row gap-6 py-1"
+                        className="flex flex-row flex-wrap gap-6 py-1"
                       >
-                        <div className="flex items-center gap-2">
-                          <RadioGroupItem value="BOTH" id="bulk-side-both" />
-                          <Label
-                            htmlFor="bulk-side-both"
-                            className="cursor-pointer text-sm font-normal"
+                        {guestGroups.map((group) => (
+                          <div
+                            key={group.code}
+                            className="flex items-center gap-2"
                           >
-                            Cả hai bên
-                          </Label>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <RadioGroupItem value="GROOM" id="bulk-side-groom" />
-                          <Label
-                            htmlFor="bulk-side-groom"
-                            className="cursor-pointer text-sm font-normal"
-                          >
-                            Bên Chú rể
-                          </Label>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <RadioGroupItem value="BRIDE" id="bulk-side-bride" />
-                          <Label
-                            htmlFor="bulk-side-bride"
-                            className="cursor-pointer text-sm font-normal"
-                          >
-                            Bên Cô dâu
-                          </Label>
-                        </div>
+                            <RadioGroupItem
+                              value={group.code}
+                              id={`bulk-side-${group.code}`}
+                            />
+                            <Label
+                              htmlFor={`bulk-side-${group.code}`}
+                              className="cursor-pointer text-sm font-normal"
+                            >
+                              {group.name}
+                            </Label>
+                          </div>
+                        ))}
                       </RadioGroup>
                     </div>
                     <div className="space-y-2">
@@ -661,10 +691,7 @@ export default function MyGuestsPage() {
                               >
                                 <td className="px-3 py-2">{g.fullName}</td>
                                 <td className="px-3 py-2">
-                                  {g.groupCode
-                                    ? enumData.SIDE_OPTIONS[g.groupCode]?.name ||
-                                      g.groupCode
-                                    : "—"}
+                                  {groupLabel(g.groupCode)}
                                 </td>
                               </tr>
                             ))}
@@ -686,11 +713,7 @@ export default function MyGuestsPage() {
                   <Button
                     onClick={handleBulkSubmit}
                     disabled={loading}
-                    className="font-bold uppercase tracking-wider text-xs"
-                    style={{
-                      background: `linear-gradient(135deg, ${C.goldLight} 0%, ${C.gold} 100%)`,
-                      color: "#1a1a1a",
-                    }}
+                    className="font-bold uppercase tracking-wider text-xs bg-[#2D231F] text-[#F3EDE3] hover:bg-[#3A2E28] cursor-pointer"
                   >
                     {loading ? "Đang xử lý..." : "Xác nhận thêm"}
                   </Button>
@@ -703,12 +726,13 @@ export default function MyGuestsPage() {
                 render={
                   <Button
                     onClick={handleOpenCreate}
-                    style={{
-                      background: `linear-gradient(135deg, ${C.goldLight} 0%, ${C.gold} 100%)`,
-                      color: "#1a1a1a",
-                    }}
+                    className="font-bold uppercase tracking-wider text-xs bg-[#2D231F] text-[#F3EDE3] hover:bg-[#3A2E28] cursor-pointer"
                   >
-                    <Plus size={16} strokeWidth={2.5} />
+                    <Plus
+                      size={16}
+                      strokeWidth={2.5}
+                      className="text-[#F3EDE3]"
+                    />
                     Thêm khách mời
                   </Button>
                 }
@@ -755,33 +779,28 @@ export default function MyGuestsPage() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label>Khách của ai</Label>
+                    <Label>Nhóm khách</Label>
                     <Select
                       value={form.side}
                       onValueChange={(v) => setForm({ ...form, side: v ?? "" })}
-                      items={
-                        enumData.SIDE_OPTIONS
-                          ? Object.values(enumData.SIDE_OPTIONS).map((opt) => ({
-                              value: opt.code,
-                              label: opt.name,
-                            }))
-                          : []
-                      }
+                      items={guestGroups.map((opt) => ({
+                        value: opt.code,
+                        label: opt.name,
+                      }))}
                     >
                       <SelectTrigger className="bg-transparent border-[#2D231F]/30 text-[#2D231F]">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent className="bg-[#ffffff] border-[#2D231F]/30 text-[#2D231F]">
-                        {enumData.SIDE_OPTIONS &&
-                          Object.values(enumData.SIDE_OPTIONS).map((opt) => (
-                            <SelectItem
-                              className="w-full bg-[#ffffff] text-[#2D231F]"
-                              key={opt.code}
-                              value={opt.code}
-                            >
-                              {opt.name}
-                            </SelectItem>
-                          ))}
+                        {guestGroups.map((opt) => (
+                          <SelectItem
+                            className="w-full bg-[#ffffff] text-[#2D231F]"
+                            key={opt.code}
+                            value={opt.code}
+                          >
+                            {opt.name}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                   </div>
@@ -827,11 +846,7 @@ export default function MyGuestsPage() {
                   <Button
                     onClick={handleSave}
                     disabled={loading}
-                    className="font-bold uppercase tracking-wider text-xs"
-                    style={{
-                      background: `linear-gradient(135deg, ${C.goldLight} 0%, ${C.gold} 100%)`,
-                      color: "#1a1a1a",
-                    }}
+                    className="font-bold uppercase tracking-wider text-xs bg-[#2D231F] text-[#F3EDE3] hover:bg-[#3A2E28] cursor-pointer"
                   >
                     {loading ? "Đang lưu..." : "Lưu"}
                   </Button>
@@ -896,11 +911,7 @@ export default function MyGuestsPage() {
                       <td className="px-4 py-3">
                         <div className="font-medium">{guest.fullName}</div>
                         <div className="text-xs text-[#7A6A5C]">
-                          {guest.salutation} •{" "}
-                          {guest.groupCode
-                            ? enumData.SIDE_OPTIONS[guest.groupCode]?.name ||
-                              guest.groupCode
-                            : "—"}
+                          {guest.salutation} • {groupLabel(guest.groupCode)}
                         </div>
                       </td>
 

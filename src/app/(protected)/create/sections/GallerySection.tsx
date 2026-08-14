@@ -1,23 +1,26 @@
 import FileUpload from "@/components/common/FileUpload";
 import Switch from "@/components/ui/switch";
+import type { CardTypeFormConfig } from "@/utils/card-type-form-config";
 
 interface GallerySectionProps {
   formData: any;
   handleChange: (field: string, value: any) => void;
   onAuthRequired: () => void;
+  formConfig?: CardTypeFormConfig;
 }
 
 export const GallerySection = ({
   formData,
   handleChange,
   onAuthRequired,
+  formConfig,
 }: GallerySectionProps) => {
+  const sectionTitle = formConfig?.galleryTitle || "6. Thư viện ảnh";
+
   return (
-    <div className="bg-[#2D231F]/8 border border-white/5 p-5 rounded-xl shadow-lg flex flex-col gap-5">
-      <div className="flex justify-between items-center border-b border-[#2D231F]/10 pb-2">
-        <h3 className="text-md font-bold text-[#2D231F]">
-          6. Thư viện ảnh cưới
-        </h3>
+    <div className="bg-[#EDE4D5] border border-[#D9CDBE] p-5 sm:p-6 rounded-2xl shadow-xs flex flex-col gap-5">
+      <div className="flex justify-between items-center border-b border-[#2D231F]/10 pb-3">
+        <h3 className="text-base font-bold text-[#2D231F]">{sectionTitle}</h3>
         <Switch
           checked={formData.showGallery}
           onChange={(val) => handleChange("showGallery", val)}
@@ -26,22 +29,22 @@ export const GallerySection = ({
       </div>
       {formData.showGallery && (
         <div className="flex flex-col gap-4">
-          <div className="flex items-center gap-2 bg-[#f4f8e8] p-1.5 rounded-lg w-full">
+          <div className="flex items-center gap-2 bg-[#F3EDE3] border border-[#D9CDBE] p-1.5 rounded-xl w-full">
             <button
               onClick={() => handleChange("galleryLayout", "grid")}
-              className={`flex-1 py-2 text-xs rounded-md transition-all ${formData.galleryLayout === "grid" ? "bg-[#2D231F] text-[#F3EDE3] font-bold" : "text-[#2D231F]/60 hover:text-[#2D231F]"}`}
+              className={`flex-1 py-1.5 text-xs rounded-lg font-semibold transition-all cursor-pointer ${formData.galleryLayout === "grid" ? "bg-[#2D231F] text-[#F3EDE3] shadow-xs" : "text-[#2D231F]/60 hover:text-[#2D231F]"}`}
             >
               Lưới (Grid)
             </button>
             <button
               onClick={() => handleChange("galleryLayout", "collage")}
-              className={`flex-1 py-2 text-xs rounded-md transition-all ${formData.galleryLayout === "collage" ? "bg-[#2D231F] text-[#F3EDE3] font-bold" : "text-[#2D231F]/60 hover:text-[#2D231F]"}`}
+              className={`flex-1 py-1.5 text-xs rounded-lg font-semibold transition-all cursor-pointer ${formData.galleryLayout === "collage" ? "bg-[#2D231F] text-[#F3EDE3] shadow-xs" : "text-[#2D231F]/60 hover:text-[#2D231F]"}`}
             >
               Ghép ảnh
             </button>
             <button
               onClick={() => handleChange("galleryLayout", "3d")}
-              className={`flex-1 py-2 text-xs rounded-md transition-all ${formData.galleryLayout === "3d" ? "bg-[#2D231F] text-[#F3EDE3] font-bold" : "text-[#2D231F]/60 hover:text-[#2D231F]"}`}
+              className={`flex-1 py-1.5 text-xs rounded-lg font-semibold transition-all cursor-pointer ${formData.galleryLayout === "3d" ? "bg-[#2D231F] text-[#F3EDE3] shadow-xs" : "text-[#2D231F]/60 hover:text-[#2D231F]"}`}
             >
               3D Carousel
             </button>

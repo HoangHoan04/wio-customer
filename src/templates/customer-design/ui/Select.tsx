@@ -1,6 +1,13 @@
 import { Check, ChevronDown, X } from "lucide-react";
 import type { CSSProperties, ReactNode } from "react";
-import { forwardRef, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  forwardRef,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { createPortal } from "react-dom";
 
 export interface SelectOption {
@@ -60,7 +67,7 @@ const Select = forwardRef<HTMLDivElement, SelectProps>(
       popupClassName = "",
       size = "md",
     },
-    ref
+    ref,
   ) => {
     const [isOpen, setIsOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
@@ -68,14 +75,24 @@ const Select = forwardRef<HTMLDivElement, SelectProps>(
     const triggerRef = useRef<HTMLDivElement>(null);
     const popupRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
-    const [popupPos, setPopupPos] = useState<{ top: number; left: number; width: number } | null>(null);
+    const [popupPos, setPopupPos] = useState<{
+      top: number;
+      left: number;
+      width: number;
+    } | null>(null);
 
     const currentValue =
-      value !== undefined && value !== null && value !== "" ? value : defaultValue;
-    const selectedOption = options.find((opt) => String(opt.value) === String(currentValue));
+      value !== undefined && value !== null && value !== ""
+        ? value
+        : defaultValue;
+    const selectedOption = options.find(
+      (opt) => String(opt.value) === String(currentValue),
+    );
 
     const filteredOptions = searchable
-      ? options.filter((opt) => opt.label.toLowerCase().includes(searchQuery.toLowerCase()))
+      ? options.filter((opt) =>
+          opt.label.toLowerCase().includes(searchQuery.toLowerCase()),
+        )
       : options;
 
     const groupedOptions = useMemo(() => {
@@ -94,7 +111,11 @@ const Select = forwardRef<HTMLDivElement, SelectProps>(
     const updatePopupPos = useCallback(() => {
       if (triggerRef.current) {
         const rect = triggerRef.current.getBoundingClientRect();
-        setPopupPos({ top: rect.bottom + 4, left: rect.left, width: rect.width });
+        setPopupPos({
+          top: rect.bottom + 4,
+          left: rect.left,
+          width: rect.width,
+        });
       }
     }, []);
 
@@ -130,7 +151,8 @@ const Select = forwardRef<HTMLDivElement, SelectProps>(
       };
 
       document.addEventListener("mousedown", handleClickOutside);
-      return () => document.removeEventListener("mousedown", handleClickOutside);
+      return () =>
+        document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
     useEffect(() => {
@@ -174,11 +196,7 @@ const Select = forwardRef<HTMLDivElement, SelectProps>(
             flex items-center justify-between gap-2
             transition-colors duration-150
             ${menuTextSizeMap[size]}
-            ${
-              isSelected
-                ? "bg-[#2D231F]/8 text-[#2D231F]"
-                : "text-[#2D231F]"
-            }
+            ${isSelected ? "bg-[#2D231F]/8 text-[#2D231F]" : "text-[#2D231F]"}
             ${
               isDisabled
                 ? "opacity-50 cursor-not-allowed"
@@ -199,7 +217,9 @@ const Select = forwardRef<HTMLDivElement, SelectProps>(
               )}
             </div>
           </div>
-          {isSelected && <Check size={16} className="shrink-0 text-[#2D231F]" />}
+          {isSelected && (
+            <Check size={16} className="shrink-0 text-[#2D231F]" />
+          )}
         </button>
       );
     };
@@ -211,7 +231,8 @@ const Select = forwardRef<HTMLDivElement, SelectProps>(
         )}
 
         <div ref={containerRef} className="relative">
-          <div ref={triggerRef}
+          <div
+            ref={triggerRef}
             onClick={handleToggle}
             className={`
               ${sizeMap[size]} w-full px-4 rounded-lg border transition-all duration-200
@@ -233,7 +254,9 @@ const Select = forwardRef<HTMLDivElement, SelectProps>(
             `}
           >
             <div className="flex items-center gap-2 flex-1 min-w-0">
-              {selectedOption?.icon && <span className="shrink-0">{selectedOption.icon}</span>}
+              {selectedOption?.icon && (
+                <span className="shrink-0">{selectedOption.icon}</span>
+              )}
               <span
                 className={`truncate ${
                   selectedOption ? "text-[#2D231F]" : "text-[#7A6A5C]/50"
@@ -262,61 +285,65 @@ const Select = forwardRef<HTMLDivElement, SelectProps>(
               />
             </div>
           </div>
-          {isOpen && popupPos && createPortal(
-            <div
-              ref={popupRef}
-              style={{
-                position: "fixed",
-                top: popupPos.top,
-                left: popupPos.left,
-                width: popupPos.width,
-                zIndex: 9999,
-              }}
-              className={`py-1 bg-[#F3EDE3] border border-[#D9CDBE] rounded-lg shadow-lg max-h-80 overflow-auto animate-dropdown-in ${popupClassName}`}
-            >
-              {searchable && (
-                <div className="sticky top-0 z-20 bg-[#F3EDE3] px-2 pb-2 pt-1">
-                  <input
-                    ref={inputRef}
-                    type="text"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Tìm kiếm..."
-                    className={`
+          {isOpen &&
+            popupPos &&
+            createPortal(
+              <div
+                ref={popupRef}
+                style={{
+                  position: "fixed",
+                  top: popupPos.top,
+                  left: popupPos.left,
+                  width: popupPos.width,
+                  zIndex: 9999,
+                }}
+                className={`py-1 bg-[#F3EDE3] border border-[#D9CDBE] rounded-lg shadow-lg max-h-80 overflow-auto animate-dropdown-in ${popupClassName}`}
+              >
+                {searchable && (
+                  <div className="sticky top-0 z-20 bg-[#F3EDE3] px-2 pb-2 pt-1">
+                    <input
+                      ref={inputRef}
+                      type="text"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      placeholder="Tìm kiếm..."
+                      className={`
                       w-full px-3 py-2 ${menuTextSizeMap[size]}
                       border border-[#D9CDBE] rounded
                       bg-[#F3EDE3] text-[#2D231F]
                       placeholder:text-[#7A6A5C]/50
                       focus:outline-none focus:border-[#2D231F] focus:ring-1 focus:ring-[rgba(45,35,31,0.1)]
                     `}
-                    onClick={(e) => e.stopPropagation()}
-                  />
-                </div>
-              )}
-
-              <div>
-                {filteredOptions.length === 0 ? (
-                  <div className={`px-4 py-3 ${menuTextSizeMap[size]} text-[#7A6A5C] text-center`}>
-                    Không tìm thấy kết quả
+                      onClick={(e) => e.stopPropagation()}
+                    />
                   </div>
-                ) : groupedOptions ? (
-                  groupedOptions.map((group) => (
-                    <div key={group.name || "all"}>
-                      {group.name ? (
-                        <div className="sticky top-10 z-10 bg-[#EDE4D5] px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-[#7A6A5C]">
-                          {group.name}
-                        </div>
-                      ) : null}
-                      {group.options.map(renderOption)}
-                    </div>
-                  ))
-                ) : (
-                  filteredOptions.map(renderOption)
                 )}
-              </div>
-            </div>,
-            document.body
-          )}
+
+                <div>
+                  {filteredOptions.length === 0 ? (
+                    <div
+                      className={`px-4 py-3 ${menuTextSizeMap[size]} text-[#7A6A5C] text-center`}
+                    >
+                      Không tìm thấy kết quả
+                    </div>
+                  ) : groupedOptions ? (
+                    groupedOptions.map((group) => (
+                      <div key={group.name || "all"}>
+                        {group.name ? (
+                          <div className="sticky top-10 z-10 bg-[#EDE4D5] px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-[#7A6A5C]">
+                            {group.name}
+                          </div>
+                        ) : null}
+                        {group.options.map(renderOption)}
+                      </div>
+                    ))
+                  ) : (
+                    filteredOptions.map(renderOption)
+                  )}
+                </div>
+              </div>,
+              document.body,
+            )}
         </div>
 
         {error && <span className="text-xs text-red-500">{error}</span>}
@@ -338,7 +365,7 @@ const Select = forwardRef<HTMLDivElement, SelectProps>(
         `}</style>
       </div>
     );
-  }
+  },
 );
 
 Select.displayName = "Select";

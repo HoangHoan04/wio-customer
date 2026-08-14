@@ -1,13 +1,14 @@
-import {
-  ArrowDownToLine,
-  ArrowUpFromLine,
-  ChevronDown,
-  ChevronUp,
-  Copy,
-  Maximize2,
-  Trash2,
-  ZoomIn,
-} from "lucide-react";
+import
+    {
+        ArrowDownToLine,
+        ArrowUpFromLine,
+        ChevronDown,
+        ChevronUp,
+        Copy,
+        Maximize2,
+        Trash2,
+        ZoomIn,
+    } from "lucide-react";
 import type { EditorElement } from "./types";
 
 interface Props {

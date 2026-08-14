@@ -1,33 +1,46 @@
 "use client";
 
-import { Suspense, useEffect, useState } from "react";
 import Canvas from "@/templates/customer-design/Canvas";
-import type { EditorElement, InvitationEffects } from "@/templates/customer-design/types";
-import { DEFAULT_INVITATION_EFFECTS, normalizeEffects } from "@/templates/customer-design/utils/invitation-effects";
+import type {
+  EditorElement,
+  InvitationEffects,
+} from "@/templates/customer-design/types";
+import {
+  DEFAULT_INVITATION_EFFECTS,
+  normalizeEffects,
+} from "@/templates/customer-design/utils/invitation-effects";
 import { ArrowLeftIcon } from "lucide-react";
 import { useSearchParams } from "next/navigation";
+import { Suspense, useEffect, useState } from "react";
 
 function DesignPreviewContent() {
   const searchParams = useSearchParams();
   const title = searchParams.get("title") || "Xem trước thiết kế";
 
   const [elements, setElements] = useState<EditorElement[]>([]);
-  const [canvasBackground, setCanvasBackground] = useState<any>({ type: "color", value: "#ffffff" });
+  const [canvasBackground, setCanvasBackground] = useState<any>({
+    type: "color",
+    value: "#ffffff",
+  });
   const [backgroundOpacity, setBackgroundOpacity] = useState(1);
   const [canvasHeight, setCanvasHeight] = useState(956);
   const [scale, setScale] = useState(1);
   const [fontsLoaded, setFontsLoaded] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  const [effects, setEffects] = useState<InvitationEffects>(DEFAULT_INVITATION_EFFECTS);
+  const [effects, setEffects] = useState<InvitationEffects>(
+    DEFAULT_INVITATION_EFFECTS,
+  );
 
   useEffect(() => {
     try {
-      const saved = localStorage.getItem("wio_design_draft");
+      const saved = localStorage.getItem("invigo_design_draft");
       if (saved) {
         const parsed = JSON.parse(saved);
         if (parsed.elements) setElements(parsed.elements);
-        if (parsed.canvasBackground) setCanvasBackground(parsed.canvasBackground);
-        if (parsed.backgroundOpacity !== undefined) setBackgroundOpacity(parsed.backgroundOpacity);
+        if (parsed.canvasBackground)
+          setCanvasBackground(parsed.canvasBackground);
+        if (parsed.backgroundOpacity !== undefined)
+          setBackgroundOpacity(parsed.backgroundOpacity);
         if (parsed.canvasHeight) setCanvasHeight(parsed.canvasHeight);
         if (parsed.effects) setEffects(normalizeEffects(parsed.effects));
       }
@@ -38,12 +51,14 @@ function DesignPreviewContent() {
 
   useEffect(() => {
     if (typeof document !== "undefined") {
-      document.fonts.ready.then(() => {
-        setFontsLoaded(true);
-      }).catch((err) => {
-        console.error("Failed to load document fonts", err);
-        setFontsLoaded(true); 
-      });
+      document.fonts.ready
+        .then(() => {
+          setFontsLoaded(true);
+        })
+        .catch((err) => {
+          console.error("Failed to load document fonts", err);
+          setFontsLoaded(true);
+        });
     } else {
       setFontsLoaded(true);
     }
@@ -69,10 +84,10 @@ function DesignPreviewContent() {
   }, []);
 
   return (
-    <div 
+    <div
       className={
-        isMobile 
-          ? "h-screen bg-[#ffffff] flex flex-col select-none overflow-hidden p-0" 
+        isMobile
+          ? "h-screen bg-[#ffffff] flex flex-col select-none overflow-hidden p-0"
           : "h-screen bg-[#ffffff] flex flex-col items-center justify-center select-none overflow-hidden p-4"
       }
     >
@@ -89,14 +104,18 @@ function DesignPreviewContent() {
           -ms-overflow-style: none !important;
         }
       `}</style>
-      
-      <div 
+
+      <div
         className={
           isMobile
             ? "flex items-center justify-between w-full mb-3 px-4 pt-4 shrink-0"
             : "flex items-center justify-between w-full mb-3 px-2 shrink-0"
         }
-        style={isMobile ? undefined : { width: `${440 * scale + 16}px`, maxWidth: "100%" }}
+        style={
+          isMobile
+            ? undefined
+            : { width: `${440 * scale + 16}px`, maxWidth: "100%" }
+        }
       >
         <button
           onClick={() => window.close()}
@@ -105,16 +124,16 @@ function DesignPreviewContent() {
           <ArrowLeftIcon size={14} />
           Đóng
         </button>
-        <span className="text-gray-400 text-xs font-medium truncate max-w-[280px]">
+        <span className="text-gray-400 text-xs font-medium truncate max-w-70">
           {title}
         </span>
       </div>
-      
-      <div 
+
+      <div
         className={
           isMobile
             ? "preview-canvas-container relative bg-[#1a1a1a] flex-1 overflow-hidden flex flex-col"
-            : "preview-canvas-container relative bg-[#1a1a1a] rounded-[32px] border-[8px] border-[#222] shadow-2xl overflow-hidden flex flex-col"
+            : "preview-canvas-container relative bg-[#1a1a1a] rounded-[32px] border-8 border-[#222] shadow-2xl overflow-hidden flex flex-col"
         }
         style={
           isMobile
@@ -150,7 +169,13 @@ function DesignPreviewContent() {
 
 export default function DesignPreviewPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-[#ffffff] flex items-center justify-center text-[#2D231F] font-sans">Đang tải bản xem trước...</div>}>
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-[#ffffff] flex items-center justify-center text-[#2D231F] font-sans">
+          Đang tải bản xem trước...
+        </div>
+      }
+    >
       <DesignPreviewContent />
     </Suspense>
   );

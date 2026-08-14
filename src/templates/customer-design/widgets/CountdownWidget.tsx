@@ -24,7 +24,12 @@ export default function CountdownWidget({
   orientation = "horizontal",
 }: Props) {
   const s = scale;
-  const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+  const [timeLeft, setTimeLeft] = useState({
+    days: 0,
+    hours: 0,
+    minutes: 0,
+    seconds: 0,
+  });
 
   useEffect(() => {
     if (!targetDate) return;
@@ -69,12 +74,12 @@ export default function CountdownWidget({
     if (isCol) {
       return Math.min(
         (height * s - (boxes.length - 1) * 8 * s) / boxes.length,
-        width * s
+        width * s,
       );
     }
     return Math.min(
       (width * s - (boxes.length - 1) * 8 * s) / boxes.length,
-      height * s
+      height * s,
     );
   }, [width, height, s, boxes.length, isCol]);
 
@@ -91,18 +96,22 @@ export default function CountdownWidget({
 
   if (!targetDate) {
     return (
-      <div style={{
-        width: width * s,
-        height: height * s,
-        fontFamily: font,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        background: "rgba(0,0,0,0.05)",
-        borderRadius: 8 * s,
-        border: "1px dashed rgba(0,0,0,0.15)"
-      }}>
-        <span style={{ fontSize: 12 * s, color: "#999" }}>Chưa chọn thời gian</span>
+      <div
+        style={{
+          width: width * s,
+          height: height * s,
+          fontFamily: font,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          background: "rgba(0,0,0,0.05)",
+          borderRadius: 8 * s,
+          border: "1px dashed rgba(0,0,0,0.15)",
+        }}
+      >
+        <span style={{ fontSize: 12 * s, color: "#999" }}>
+          Chưa chọn thời gian
+        </span>
       </div>
     );
   }
@@ -183,7 +192,8 @@ export default function CountdownWidget({
               flexDirection: "column",
               alignItems: "center",
               justifyContent: "center",
-              background: "linear-gradient(135deg, rgba(255,255,255,0.92) 0%, rgba(248,249,250,0.85) 100%)",
+              background:
+                "linear-gradient(135deg, rgba(255,255,255,0.92) 0%, rgba(248,249,250,0.85) 100%)",
               backdropFilter: "blur(10px)",
               border: "1px solid rgba(255, 255, 255, 0.7)",
               borderRadius: 10 * s,
@@ -283,8 +293,19 @@ export default function CountdownWidget({
             position: "relative",
           }}
         >
-          <div style={{ position: "absolute", top: 3 * s, left: 3 * s, right: 3 * s, bottom: 3 * s, border: "1px solid rgba(197,168,106,0.15)", pointerEvents: "none", borderRadius: 4 * s }} />
-          
+          <div
+            style={{
+              position: "absolute",
+              top: 3 * s,
+              left: 3 * s,
+              right: 3 * s,
+              bottom: 3 * s,
+              border: "1px solid rgba(197,168,106,0.15)",
+              pointerEvents: "none",
+              borderRadius: 4 * s,
+            }}
+          />
+
           <span
             style={{
               fontSize: numFontSize,

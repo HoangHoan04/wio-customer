@@ -27,7 +27,7 @@ export const GiftBox = ({
             textShadow: `0.5px 0 0 ${config.colors.textPrimary}, -0.5px 0 0 ${config.colors.textPrimary}`,
           }}
         >
-          HỘP MỪNG CƯỚI
+          {data?.giftsTitle || "HỘP MỪNG CƯỚI"}
         </h2>
       </div>
 
@@ -151,7 +151,7 @@ export const GiftBox = ({
                 color: config.colors.textPrimary,
               }}
             >
-              Thông tin mừng cưới
+              {data?.giftsSubtitle || "Thông tin mừng cưới"}
             </h3>
 
             <div className="w-full space-y-4">
@@ -170,7 +170,7 @@ export const GiftBox = ({
                       color: config.colors.textSecondary,
                     }}
                   >
-                    Chú rể
+                    {data?.groomLabel || "Chú rể"}
                   </p>
                   <p
                     className="font-bold text-lg text-center"
@@ -214,7 +214,7 @@ export const GiftBox = ({
                       color: config.colors.textSecondary,
                     }}
                   >
-                    Cô dâu
+                    {data?.brideLabel || "Cô dâu"}
                   </p>
                   <p
                     className="font-bold text-lg text-center"

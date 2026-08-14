@@ -13,12 +13,12 @@ import BackgroundPanelContent from "./BackgroundPanelContent";
 import EffectPanelContent from "./EffectPanelContent";
 import ImageUploadContent from "./ImageUploadContent";
 import MusicPanelContent from "./MusicPanelContent";
+import PresetPanelContent from "./PresetPanelContent";
 import PropertyPanelContent from "./PropertyPanelContent";
 import ShapePanelContent from "./ShapePanelContent";
 import StockPanelContent from "./StockPanelContent";
 import TextPanelContent from "./TextPanelContent";
 import UtilityPanelContent from "./UtilityPanelContent";
-import PresetPanelContent from "./PresetPanelContent";
 
 export default function PanelContent({
   tool,
@@ -57,7 +57,7 @@ export default function PanelContent({
   onUpdateWidgetConfig: (
     widgetType: WidgetType,
     enabled: boolean,
-    updates?: Partial<WidgetConfig>
+    updates?: Partial<WidgetConfig>,
   ) => void;
   onDeleteElement: (id: string) => void;
   onDeleteElements?: (ids: string[]) => void;
@@ -68,7 +68,7 @@ export default function PanelContent({
   onAddShape: (type: string) => void;
   onAlignElement?: (
     id: string,
-    align: { h?: "left" | "center" | "right"; v?: "top" | "middle" | "bottom" }
+    align: { h?: "left" | "center" | "right"; v?: "top" | "middle" | "bottom" },
   ) => void;
   onAddImageToCanvas: (
     url: string,
@@ -79,13 +79,30 @@ export default function PanelContent({
       borderRadius?: number;
       shadowBlur?: number;
       shadowColor?: string;
-    }
+    },
   ) => void;
   selectedCanvasImageUrl?: string | null;
   onDeselectImage?: () => void;
-  selectedAudio?: { id: string; name: string; url?: string; duration: string; source?: "admin" | "user" } | null;
-  onSelectAudio?: (audio: { id: string; name: string; url?: string; duration: string; source?: "admin" | "user" } | null) => void;
-  onAddElements?: (els: Omit<EditorElement, "id" | "zIndex">[], grouped: boolean) => void;
+  selectedAudio?: {
+    id: string;
+    name: string;
+    url?: string;
+    duration: string;
+    source?: "admin" | "user";
+  } | null;
+  onSelectAudio?: (
+    audio: {
+      id: string;
+      name: string;
+      url?: string;
+      duration: string;
+      source?: "admin" | "user";
+    } | null,
+  ) => void;
+  onAddElements?: (
+    els: Omit<EditorElement, "id" | "zIndex">[],
+    grouped: boolean,
+  ) => void;
   onUngroupElements?: (groupId: string) => void;
   onUpdateElements?: (
     updater: EditorElement[] | ((prev: EditorElement[]) => EditorElement[]),
@@ -173,11 +190,7 @@ export default function PanelContent({
         />
       );
     case "preset":
-      return (
-        <PresetPanelContent
-          onAddElements={onAddElements ?? (() => {})}
-        />
-      );
+      return <PresetPanelContent onAddElements={onAddElements ?? (() => {})} />;
     case "template":
       return <ComingSoon icon={Sparkles} text="Hiệu ứng động cho thiệp" />;
     case "effect":

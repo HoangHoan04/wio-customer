@@ -28,7 +28,9 @@ export function useGuestbook(data?: UseGuestbookData) {
     if (!invitationId) return;
     setLoading(true);
     try {
-      const res = await wishService.getByInvitation(invitationId);
+      const res = await wishService.getByInvitation(invitationId, {
+        isApproved: true,
+      });
       setMessages(res?.data || []);
     } catch (err) {
       console.error("Failed to load wishes:", err);

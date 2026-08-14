@@ -10,8 +10,8 @@ import {
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/useToast";
 import { invitationService } from "@/services/invitation.service";
-import { invitationLabel } from "@/utils/invitation-mapper";
 import { wishService, type Wish } from "@/services/wish.service";
+import { invitationLabel } from "@/utils/invitation-mapper";
 import {
   CheckCircle,
   Pin,
@@ -183,7 +183,10 @@ export default function MyWishesPage() {
               disabled={isLoading}
               className="border-[#2D231F]/30 text-[#2D231F] hover:bg-[#2D231F]/10"
             >
-              <RefreshCw size={16} className={`mr-2 ${isLoading ? "animate-spin" : ""}`} />
+              <RefreshCw
+                size={16}
+                className={`mr-2 ${isLoading ? "animate-spin" : ""}`}
+              />
               Làm mới
             </Button>
             {invitations.length > 0 && (

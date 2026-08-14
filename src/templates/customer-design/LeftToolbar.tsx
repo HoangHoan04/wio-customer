@@ -1,18 +1,19 @@
 import { clsx } from "clsx";
-import {
-  ChevronLeft,
-  Grid,
-  Layers,
-  LayoutDashboard,
-  Music,
-  Presentation,
-  Sparkles,
-  Sticker,
-  Toolbox,
-  Type,
-  UploadCloud,
-  Wallpaper,
-} from "lucide-react";
+import
+    {
+        ChevronLeft,
+        Grid,
+        Layers,
+        LayoutDashboard,
+        Music,
+        Presentation,
+        Sparkles,
+        Sticker,
+        Toolbox,
+        Type,
+        UploadCloud,
+        Wallpaper,
+    } from "lucide-react";
 import { useCallback, useRef, useState } from "react";
 import PanelContent from "./panels/PanelContent";
 import type { EditorElement, EditorTool, InvitationEffects, TextPreset, WidgetConfig, WidgetType } from "./types";

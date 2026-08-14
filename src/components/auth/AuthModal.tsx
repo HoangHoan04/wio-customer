@@ -278,11 +278,9 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
 
         <div className="relative z-10 flex flex-col items-center text-center w-full gap-6 p-8 mt-2">
           <div className="flex flex-col gap-2 relative w-full">
-            <h2 className="text-3xl font-bold text-[#2D231F]">
-              InviGo
-            </h2>
+            <h2 className="text-3xl font-bold text-[#2D231F]">InviGo</h2>
             <p className="text-[#2D231F] text-[14px] opacity-80 font-medium">
-              Hệ thống quản lý thiệp cưới thông minh
+              Hệ thống quản lý thiệp mời online thông minh
             </p>
           </div>
 

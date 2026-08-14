@@ -7,8 +7,9 @@ export async function submitRsvpAction(
 ) {
   const code = new URLSearchParams(window.location.search).get("code");
   if (!code) {
-    console.warn("No invitation code found in URL");
-    return;
+    throw new Error(
+      "Liên kết RSVP không hợp lệ. Vui lòng mở thiệp từ link cá nhân có mã khách.",
+    );
   }
   await guestService.rsvp({
     invitationCode: code,

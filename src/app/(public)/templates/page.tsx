@@ -287,6 +287,7 @@ function TemplatesPageContent() {
         isOpen={isDetailModalOpen}
         onClose={() => setIsDetailModalOpen(false)}
         template={selectedTemplate}
+        cardType={selectedCardType?.code}
       />
     </div>
   );

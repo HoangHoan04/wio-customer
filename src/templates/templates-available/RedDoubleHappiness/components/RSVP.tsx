@@ -26,9 +26,9 @@ export const RSVP = ({ data, config }: { data?: any; config: ThemeTemplateConfig
     return (
       <div className="w-full bg-white/95 p-5 sm:p-7 my-10 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.08)] text-left max-w-75 mx-auto border border-white/40 backdrop-blur-md">
         <div className="text-center mb-5">
-          <h2 className="text-xl font-bold text-[#1a1a1a] mb-1.5">Xác nhận tham dự</h2>
+          <h2 className="text-xl font-bold text-[#1a1a1a] mb-1.5">{data?.rsvpCta || "Xác nhận tham dự"}</h2>
           <p className="text-gray-400 text-xs leading-relaxed px-2">
-            Sự hiện diện của bạn là niềm vinh hạnh cho gia đình chúng tôi. <br />
+            {data?.rsvpIntro || "Sự hiện diện của bạn là niềm vinh hạnh cho gia đình chúng tôi."} <br />
             Xin xác nhận để chúng tôi chuẩn bị chu đáo nhất cho bạn.
           </p>
         </div>
@@ -49,7 +49,7 @@ export const RSVP = ({ data, config }: { data?: any; config: ThemeTemplateConfig
               })
               .catch((err) => {
                 console.error(err);
-                alert("Gửi phản hồi thất bại, vui lòng thử lại sau.");
+                alert(err?.message || "Gửi phản hồi thất bại, vui lòng thử lại sau.");
               })
               .finally(() => {
                 setIsSubmitting(false);
@@ -165,7 +165,7 @@ export const RSVP = ({ data, config }: { data?: any; config: ThemeTemplateConfig
           className="px-10 py-4 rounded-full text-sm font-bold tracking-widest uppercase shadow-xl hover:scale-105 transition-transform"
           style={{ backgroundColor: config.colors.buttonBg, color: config.colors.buttonText }}
         >
-          Xác Nhận Tham Dự
+          {data?.rsvpCta || "Xác Nhận Tham Dự"}
         </button>
       )}
 

@@ -1,4 +1,4 @@
-interface ApiUser {
+type AuthUserInput = {
   id: string;
   email: string;
   phone?: string;
@@ -10,10 +10,9 @@ interface ApiUser {
     [key: string]: unknown;
   };
   activeSubscription?: unknown;
-  [key: string]: unknown;
-}
+};
 
-export function normalizeAuthUser(raw: ApiUser) {
+export function normalizeAuthUser(raw: AuthUserInput) {
   return {
     ...raw,
     fullName: raw.fullName || raw.customer?.fullName || raw.email,

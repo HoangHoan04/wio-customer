@@ -1,5 +1,3 @@
-import React from "react";
-
 interface SwitchProps {
   checked: boolean;
   onChange: (checked: boolean) => void;
@@ -9,7 +7,9 @@ interface SwitchProps {
 export default function Switch({ checked, onChange, label }: SwitchProps) {
   return (
     <div className="flex items-center gap-3">
-      {label && <span className="text-sm font-medium text-[#2D231F]/80">{label}</span>}
+      {label && (
+        <span className="text-sm font-medium text-[#2D231F]/80">{label}</span>
+      )}
       <button
         type="button"
         onClick={() => onChange(!checked)}

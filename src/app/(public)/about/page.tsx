@@ -102,9 +102,8 @@ export default function AboutPage() {
                 <p className="text-[13px] text-[#7A6A5C]/80 leading-relaxed font-light">
                   Chúng tôi sinh ra để định nghĩa lại khái niệm thiệp cưới trực
                   tuyến. Không còn là những đường liên kết khô khan, mỗi tác
-                  phẩm tại InviGo là một trải nghiệm chạm sâu sắc
-                  vào giác quan người nhận, giúp ngày vui của bạn lưu giữ dấu ấn
-                  hoàn mỹ nhất.
+                  phẩm tại InviGo là một trải nghiệm chạm sâu sắc vào giác quan
+                  người nhận, giúp ngày vui của bạn lưu giữ dấu ấn hoàn mỹ nhất.
                 </p>
               </div>
             </ScrollReveal>
@@ -189,9 +188,9 @@ export default function AboutPage() {
               </span>
             </h1>
             <p className="text-sm text-[#7A6A5C] max-w-150 mx-auto leading-relaxed mb-10 font-light">
-              Hãy để InviGo giúp bạn chuyển hóa câu chuyện tình yêu
-              ngọt ngào thành một tác phẩm nghệ thuật số đầy kiêu hãnh dành tặng
-              bạn bè và người thương.
+              Hãy để InviGo giúp bạn chuyển hóa câu chuyện tình yêu ngọt ngào
+              thành một tác phẩm nghệ thuật số đầy kiêu hãnh dành tặng bạn bè và
+              người thương.
             </p>
             <Link
               href="/templates"

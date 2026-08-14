@@ -225,7 +225,8 @@ export default function UserManualPage() {
                 <div
                   className="relative z-10 flex h-14 w-14 shrink-0 items-center justify-center rounded-full border border-[#2D231F]/25 bg-[#F3EDE3] text-lg font-light text-[#7A6A5C]"
                   style={{
-                    fontFamily: "'Cormorant Garamond', 'Playfair Display', serif",
+                    fontFamily:
+                      "'Cormorant Garamond', 'Playfair Display', serif",
                   }}
                 >
                   {item.step}

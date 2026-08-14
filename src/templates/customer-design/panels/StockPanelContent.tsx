@@ -1,44 +1,48 @@
+import stockAssetService, {
+    type PublicStockAsset,
+} from "@/services/stock-asset.service";
 import ColorPickerRow from "@/templates/customer-design/components/ColorPickerRow";
 import SectionHeader from "@/templates/customer-design/components/SectionHeader";
 import type { EditorElement } from "@/templates/customer-design/types";
+import Input from "@/templates/customer-design/ui/input/Input";
 import InputNumber from "@/templates/customer-design/ui/input/InputNumber";
 import Select from "@/templates/customer-design/ui/Select";
 import Slider from "@/templates/customer-design/ui/Slider";
 import Switch from "@/templates/customer-design/ui/Switch";
 import { BORDER_RADIUS_MODES } from "@/templates/customer-design/utils/constants";
-import {
-  fitStickerToCanvas,
-  loadImageSize,
-} from "@/templates/customer-design/utils/image-fit";
-import {
-  ArrowLeft,
-  CloudUpload,
-  PenLine,
-  Search,
-  Smile,
-  Square,
-  Sticker,
-  Sun,
-  Trash2,
-} from "lucide-react";
+import
+    {
+        fitStickerToCanvas,
+        loadImageSize,
+    } from "@/templates/customer-design/utils/image-fit";
+import
+    {
+        ArrowLeft,
+        CloudUpload,
+        PenLine,
+        Search,
+        Smile,
+        Square,
+        Sticker,
+        Sun,
+        Trash2,
+    } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import Input from "@/templates/customer-design/ui/input/Input";
-import {
-  EXTRA_EMOJI_CATEGORIES,
-  GRAPHIC_STICKERS,
-  ORNAMENT_STICKERS,
-  STICKER_CATEGORIES,
-  type StickerCategoryId,
-  type StockSticker,
-} from "../utils/stock-stickers";
-import {
-  readRecentStickers,
-  rememberRecentSticker,
-  type RecentSticker,
-} from "../utils/recent-stickers";
-import stockAssetService, {
-  type PublicStockAsset,
-} from "@/services/stock-asset.service";
+import
+    {
+        readRecentStickers,
+        rememberRecentSticker,
+        type RecentSticker,
+    } from "../utils/recent-stickers";
+import
+    {
+        EXTRA_EMOJI_CATEGORIES,
+        GRAPHIC_STICKERS,
+        ORNAMENT_STICKERS,
+        STICKER_CATEGORIES,
+        type StickerCategoryId,
+        type StockSticker,
+    } from "../utils/stock-stickers";
 
 interface StockPanelContentProps {
   onAddImageToCanvas: (

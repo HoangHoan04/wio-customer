@@ -1,11 +1,11 @@
 "use client";
 
-import { invitationService } from "@/services/invitation.service";
 import { guestService } from "@/services/guest.service";
+import { invitationService } from "@/services/invitation.service";
 import { getThemeComponent } from "@/templates/templates-available";
 import { invitationToThemeData } from "@/utils/invitation-mapper";
 import { useParams, useSearchParams } from "next/navigation";
-import { useEffect, useState, Suspense } from "react";
+import { Suspense, useEffect, useState } from "react";
 
 function InvitationPublicContent() {
   const params = useParams();

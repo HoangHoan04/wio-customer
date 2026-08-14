@@ -1,8 +1,8 @@
+import ColorPickerRow from "@/templates/customer-design/components/ColorPickerRow";
 import InputNumber from "@/templates/customer-design/ui/input/InputNumber";
 import Select from "@/templates/customer-design/ui/Select";
 import Slider from "@/templates/customer-design/ui/Slider";
 import Switch from "@/templates/customer-design/ui/Switch";
-import ColorPickerRow from "@/templates/customer-design/components/ColorPickerRow";
 import { ArrowLeft, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import Section from "../components/Section";

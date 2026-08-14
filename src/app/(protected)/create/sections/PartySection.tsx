@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import Switch from "@/components/ui/switch";
 import { TimePicker } from "@/components/ui/time-picker";
+import type { CardTypeFormConfig } from "@/utils/card-type-form-config";
 
 interface PartySectionProps {
   formData: any;
@@ -12,6 +13,7 @@ interface PartySectionProps {
   tempMapUrl: string;
   setTempMapUrl: (url: string) => void;
   onSaveMap: () => Promise<void>;
+  formConfig?: CardTypeFormConfig;
 }
 
 export const PartySection = ({
@@ -20,11 +22,18 @@ export const PartySection = ({
   tempMapUrl,
   setTempMapUrl,
   onSaveMap,
+  formConfig,
 }: PartySectionProps) => {
+  const sectionTitle = formConfig?.partyTitle || "7. Tiệc";
+  const partyTypes = formConfig?.partyTypes || [
+    { value: "wedding", label: "Tiệc Cưới" },
+    { value: "engagement", label: "Tiệc Báo Hỷ" },
+  ];
+
   return (
-    <div className="bg-[#2D231F]/8 border border-white/5 p-5 rounded-xl shadow-lg flex flex-col gap-5">
-      <div className="flex justify-between items-center border-b border-[#2D231F]/10 pb-2">
-        <h3 className="text-md font-bold text-[#2D231F]">7. Tiệc</h3>
+    <div className="bg-[#EDE4D5] border border-[#D9CDBE] p-5 sm:p-6 rounded-2xl shadow-xs flex flex-col gap-5">
+      <div className="flex justify-between items-center border-b border-[#2D231F]/10 pb-3">
+        <h3 className="text-base font-bold text-[#2D231F]">{sectionTitle}</h3>
         <Switch
           checked={formData.showParty}
           onChange={(val) => handleChange("showParty", val)}
@@ -33,30 +42,25 @@ export const PartySection = ({
       </div>
       {formData.showParty && (
         <div className="flex flex-col gap-4">
-          <RadioGroup
-            value={formData.partyType}
-            onValueChange={(val) => handleChange("partyType", val)}
-            className="flex gap-4"
-          >
-            <div className="flex items-center gap-2 cursor-pointer">
-              <RadioGroupItem value="wedding" id="party-wedding" />
-              <Label
-                htmlFor="party-wedding"
-                className="text-sm text-[#2D231F] cursor-pointer"
-              >
-                Tiệc Cưới
-              </Label>
-            </div>
-            <div className="flex items-center gap-2 cursor-pointer">
-              <RadioGroupItem value="engagement" id="party-engagement" />
-              <Label
-                htmlFor="party-engagement"
-                className="text-sm text-[#2D231F] cursor-pointer"
-              >
-                Tiệc Báo Hỷ
-              </Label>
-            </div>
-          </RadioGroup>
+          {partyTypes.length > 1 && (
+            <RadioGroup
+              value={formData.partyType}
+              onValueChange={(val) => handleChange("partyType", val)}
+              className="flex gap-6"
+            >
+              {partyTypes.map((pt) => (
+                <div key={pt.value} className="flex items-center gap-2 cursor-pointer">
+                  <RadioGroupItem value={pt.value} id={`party-${pt.value}`} />
+                  <Label
+                    htmlFor={`party-${pt.value}`}
+                    className="text-sm font-medium text-[#2D231F] cursor-pointer"
+                  >
+                    {pt.label}
+                  </Label>
+                </div>
+              ))}
+            </RadioGroup>
+          )}
           <div className="flex flex-col gap-1.5">
             <Label className="text-xs font-semibold text-[#2D231F]/80">
               Ngày tổ chức
@@ -86,8 +90,8 @@ export const PartySection = ({
               />
             </div>
           </div>
-          <div className="flex items-center justify-between bg-[#2D231F]/10 p-3 rounded-lg">
-            <span className="text-sm">Hiển thị đồng hồ đếm ngược</span>
+          <div className="flex items-center justify-between bg-[#F3EDE3] border border-[#D9CDBE] p-3 rounded-xl">
+            <span className="text-xs sm:text-sm font-medium text-[#2D231F]">Hiển thị đồng hồ đếm ngược</span>
             <Switch
               checked={formData.showCountdown}
               onChange={(val) => handleChange("showCountdown", val)}
@@ -102,13 +106,13 @@ export const PartySection = ({
               onChange={(e) =>
                 handleChange("partyAddress", e.target.value)
               }
-              className="bg-[#2D231F]/10! border-[#2D231F]/10!"
+              className="bg-white/80 border-[#D9CDBE] focus:bg-white text-[#2D231F]"
               placeholder="Nhập địa chỉ để tự động hiện bản đồ..."
             />
           </div>
           {formData.partyAddress && formData.showMap && (
-            <div className="rounded-lg overflow-hidden border border-[#2D231F]/20 shadow-inner">
-              <div className="text-[10px] text-[#2D231F]/40 px-2 py-1 bg-[#2D231F]/10">
+            <div className="rounded-xl overflow-hidden border border-[#D9CDBE] shadow-2xs">
+              <div className="text-[11px] text-[#2D231F]/60 font-medium px-3 py-1.5 bg-[#F3EDE3] border-b border-[#D9CDBE]">
                 Xem trước bản đồ theo địa chỉ
               </div>
               <iframe
@@ -120,9 +124,9 @@ export const PartySection = ({
               />
             </div>
           )}
-          <div className="flex flex-col gap-2 p-3 border border-[#2D231F]/20 rounded-lg bg-[#2D231F]/8">
+          <div className="flex flex-col gap-3 p-4 border border-[#D9CDBE] rounded-xl bg-[#F3EDE3]">
             <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-[#2D231F]">
+              <span className="text-xs sm:text-sm font-medium text-[#2D231F]">
                 Hiển thị Bản Đồ
               </span>
               <Switch
@@ -132,7 +136,7 @@ export const PartySection = ({
             </div>
             {formData.showMap && (
               <div className="mt-2 flex flex-col gap-2">
-                <Label className="text-xs font-medium text-[#2D231F]/60 mb-1">
+                <Label className="text-xs font-semibold text-[#2D231F]/80 mb-1">
                   URL Google Maps
                 </Label>
                 <div className="flex items-center gap-2">
@@ -140,18 +144,18 @@ export const PartySection = ({
                     <Input
                       value={tempMapUrl}
                       onChange={(e) => setTempMapUrl(e.target.value)}
-                      className="bg-[#2D231F]/10! border-[#2D231F]/10!"
+                      className="bg-white/80 border-[#D9CDBE] focus:bg-white text-[#2D231F]"
                       placeholder="Dán link hoặc iframe..."
                     />
                   </div>
                   <Button
                     onClick={onSaveMap}
-                    className="bg-[#2D231F] text-[#F3EDE3] hover:bg-[#9db356] px-4 py-2 rounded-md font-semibold shrink-0"
+                    className="bg-[#2D231F] text-[#F3EDE3] hover:bg-[#3A2E28] px-4 py-2 rounded-lg font-semibold shrink-0 cursor-pointer"
                   >
                     Lưu
                   </Button>
                 </div>
-                <div className="text-[10px] text-gray-400 leading-tight">
+                <div className="text-[10.5px] text-[#2D231F]/60 leading-tight">
                   Nhập URL chia sẻ (hiển thị nút Chỉ đường) hoặc dán mã
                   nhúng {"<iframe...>"}
                   để thay đổi khung Bản đồ. Khung bản đồ mặc định sẽ tự

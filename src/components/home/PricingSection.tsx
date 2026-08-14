@@ -11,13 +11,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import ScrollReveal from "./ScrollReveal";
 
-function PricingCard({
-  plan,
-  index,
-}: {
-  plan: IServicePlan;
-  index: number;
-}) {
+function PricingCard({ plan, index }: { plan: IServicePlan; index: number }) {
   const isPopular =
     index === 1 ||
     (plan.name &&
@@ -67,7 +61,10 @@ function PricingCard({
               : `${Number(plan.priceVnd).toLocaleString("vi-VN")}đ`}
           </span>
           <span className="text-[11px] lg:text-xs text-[#7A6A5C]/60 font-light">
-            / {plan.durationDays ? `${plan.durationDays} ngày` : "Thanh toán 1 lần"}
+            /{" "}
+            {plan.durationDays
+              ? `${plan.durationDays} ngày`
+              : "Thanh toán 1 lần"}
           </span>
         </div>
         <p className="text-[11px] lg:text-[12px] text-[#7A6A5C]/70 leading-relaxed font-light mt-3 lg:mt-4">
@@ -81,18 +78,24 @@ function PricingCard({
         <li className="flex items-start gap-2 text-[11px] lg:text-[12.5px] text-[#7A6A5C]/80 font-light">
           <Check size={13} className="text-[#2D231F] mt-0.5 shrink-0" />
           <span>
-            Tối đa {plan.maxGuests > 0 ? `${plan.maxGuests} khách mời` : "không giới hạn khách"}
+            Tối đa{" "}
+            {plan.maxGuests > 0
+              ? `${plan.maxGuests} khách mời`
+              : "không giới hạn khách"}
           </span>
         </li>
         <li className="flex items-start gap-2 text-[11px] lg:text-[12.5px] text-[#7A6A5C]/80 font-light">
           <Check size={13} className="text-[#2D231F] mt-0.5 shrink-0" />
           <span>
-            Tối đa {plan.maxPhotos > 0 ? `${plan.maxPhotos} hình ảnh` : "không giới hạn ảnh"}
+            Tối đa{" "}
+            {plan.maxPhotos > 0
+              ? `${plan.maxPhotos} hình ảnh`
+              : "không giới hạn ảnh"}
           </span>
         </li>
         <li className="flex items-start gap-2 text-[11px] lg:text-[12.5px] text-[#7A6A5C]/80 font-light">
           <Check size={13} className="text-[#2D231F] mt-0.5 shrink-0" />
-            <span>Tối đa {plan.maxTemplates} mẫu thiệp</span>
+          <span>Tối đa {plan.maxTemplates} mẫu thiệp</span>
         </li>
         {plan.hasAi && (
           <li className="flex items-start gap-2 text-[11px] lg:text-[12.5px] text-[#7A6A5C]/80 font-light">
@@ -123,7 +126,9 @@ function PricingCard({
               : "bg-transparent border border-[#2D231F]/30 text-[#2D231F] hover:bg-[#2D231F] hover:text-[#F3EDE3]"
           }`}
         >
-          {Number(plan.priceVnd) === 0 ? "Tạo thiệp miễn phí" : "Đăng ký gói ngay"}
+          {Number(plan.priceVnd) === 0
+            ? "Tạo thiệp miễn phí"
+            : "Đăng ký gói ngay"}
         </Link>
       </div>
     </div>

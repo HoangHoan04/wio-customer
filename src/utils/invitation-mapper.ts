@@ -12,6 +12,9 @@ import type {
   InvitationHost,
   InvitationMusic,
 } from "@/dto/invitation.dto";
+import type { HostRoleConfig } from "@/services/card-type.service";
+import { cardTypeDefaults, expandHostSlots } from "@/services/card-type.service";
+import { cardTypeCopy } from "@/utils/card-type-copy";
 
 const HOST_ROLE = {
   GROOM: "GROOM",
@@ -45,6 +48,12 @@ const SECTION = {
 
 function hostByRole(hosts: InvitationHost[] | undefined, role: string) {
   return (hosts || []).find((h) => h.role === role);
+}
+
+function hostsBySort(hosts: InvitationHost[] | undefined) {
+  return [...(hosts || [])].sort(
+    (a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0),
+  );
 }
 
 function giftAt(gifts: InvitationGift[] | undefined, index: number) {
@@ -196,6 +205,9 @@ export function invitationToThemeData(
   const extra = invitation.extraContent || {};
   const section = invitation.sectionConfig || {};
   const music = invitation.music || {};
+  const copy = cardTypeCopy(invitation.cardType);
+  const hostRoles = cardTypeDefaults(invitation.cardType || "WEDDING").hostRoles;
+  const hostSlots = expandHostSlots(hostRoles);
   const events = [...(invitation.events || [])].sort(
     (a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0),
   );
@@ -203,8 +215,16 @@ export function invitationToThemeData(
     events.find((e) => e.isPrimary) ||
     events.find((e) => e.eventKey === EVENT_KEY.CEREMONY) ||
     events[0];
-  const groom = hostByRole(invitation.hosts, HOST_ROLE.GROOM);
-  const bride = hostByRole(invitation.hosts, HOST_ROLE.BRIDE);
+  const sortedHosts = hostsBySort(invitation.hosts);
+  const primaryHost =
+    hostByRole(invitation.hosts, hostSlots[0]?.role.code) || sortedHosts[0];
+  const secondaryHost =
+    hostSlots[1] &&
+    (hostByRole(invitation.hosts, hostSlots[1].role.code) ||
+      sortedHosts.find((h) => h !== primaryHost) ||
+      sortedHosts[1]);
+  const groom = hostByRole(invitation.hosts, HOST_ROLE.GROOM) || primaryHost;
+  const bride = hostByRole(invitation.hosts, HOST_ROLE.BRIDE) || secondaryHost;
   const photos = [...(invitation.photos || [])].sort(
     (a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0),
   );
@@ -218,8 +238,23 @@ export function invitationToThemeData(
     cardType: invitation.cardType,
     title: invitation.title,
     displayOrder: extra.displayOrder || "groom_first",
-    groom: hostToPerson(groom, giftAt(invitation.gifts, 0), "Chú rể"),
-    bride: hostToPerson(bride, giftAt(invitation.gifts, 1), "Cô dâu"),
+    groom: hostToPerson(
+      groom,
+      giftAt(invitation.gifts, 0),
+      hostSlots[0]?.role.label || "Chú rể",
+    ),
+    bride: hostToPerson(
+      bride,
+      giftAt(invitation.gifts, 1),
+      hostSlots[1]?.role.label || "Cô dâu",
+    ),
+    groomLabel: hostSlots[0]?.role.label || "Chú rể",
+    brideLabel: hostSlots[1]?.role.label || "Cô dâu",
+    rsvpCta: copy.rsvpCta,
+    rsvpIntro: copy.rsvpIntro,
+    giftsTitle: copy.giftsTitle,
+    giftsSubtitle: copy.giftsSubtitle,
+    welcomeLine: copy.welcomeLine,
     showHeroImage: section[SECTION.showHero] ?? true,
     heroImageMain: invitation.heroImageUrl || "",
     showIntro: section[SECTION.showIntro] ?? true,
@@ -378,20 +413,38 @@ export function buildInvitationPayload(
     templateId?: string;
     cardType?: string;
     customDesign?: any;
+    hostRoles?: HostRoleConfig[];
   } = {},
 ): CreateInvitationReq {
   const keepIds = !!options.keepIds;
-  const groomName = formData.groom?.shortName || formData.groom?.name || "";
-  const brideName = formData.bride?.shortName || formData.bride?.name || "";
+  const cardType = options.cardType || "WEDDING";
+  const hostSlots = expandHostSlots(
+    options.hostRoles?.length
+      ? options.hostRoles
+      : cardTypeDefaults(cardType).hostRoles,
+  );
   const title =
-    [groomName, brideName].filter(Boolean).join(" & ") ||
+    hostSlots
+      .map((slot) => {
+        const person = formData[slot.key];
+        return person?.shortName || person?.name || slot.role.label;
+      })
+      .filter(Boolean)
+      .join(" & ") ||
     formData.slug ||
     "Thiệp mời";
 
-  const gifts = [
-    personToGift(formData.groom, groomName || "Chú rể", 0),
-    personToGift(formData.bride, brideName || "Cô dâu", 1),
-  ].filter(Boolean) as InvitationGift[];
+  const gifts = hostSlots
+    .map((slot, idx) =>
+      personToGift(
+        formData[slot.key],
+        formData[slot.key]?.shortName ||
+          formData[slot.key]?.name ||
+          slot.role.label,
+        idx,
+      ),
+    )
+    .filter(Boolean) as InvitationGift[];
 
   const partyStartsAt = parseFormDateTime(
     formData.partyDate,
@@ -472,10 +525,20 @@ export function buildInvitationPayload(
     formData.musicUrl ? "MUSIC" : null,
     formData.showDressCode ? "DRESS_CODE" : null,
     formData.showTimeline ? "TIMELINE" : null,
+    cardType === "WEDDING" ? "SEATING" : null,
   ].filter(Boolean) as string[];
 
+  const hosts = hostSlots
+    .map((slot, idx) => {
+      const person = formData[slot.key];
+      const hasName = person?.name?.trim() || person?.shortName?.trim();
+      if (!hasName && !slot.role.required) return null;
+      return personToHost(person, slot.role.code, idx, keepIds);
+    })
+    .filter(Boolean) as InvitationHost[];
+
   return {
-    cardType: options.cardType || "WEDDING",
+    cardType,
     title,
     slug: formData.slug,
     templateId: options.templateId,
@@ -499,10 +562,7 @@ export function buildInvitationPayload(
       dressCodes: formData.dressCodes,
     },
     customDesign: options.customDesign,
-    hosts: [
-      personToHost(formData.groom, HOST_ROLE.GROOM, 0, keepIds),
-      personToHost(formData.bride, HOST_ROLE.BRIDE, 1, keepIds),
-    ],
+    hosts,
     events: [partyEvent, ...extraEvents],
     gifts,
     timelines,

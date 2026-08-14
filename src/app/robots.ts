@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: "/",
       disallow: "/private/",
     },
-    sitemap: "https://tiemcuoitanthoi.vn/sitemap.xml",
+    sitemap: "https://invigo.vn/sitemap.xml",
   };
 }

@@ -3,6 +3,8 @@ import {
   ArrowDown,
   ArrowUp,
   Calendar,
+  ChevronDown,
+  ChevronRight,
   Circle,
   Clock,
   Eye,
@@ -22,8 +24,6 @@ import {
   Type,
   Unlink,
   Unlock,
-  ChevronDown,
-  ChevronRight,
 } from "lucide-react";
 import { useMemo, useState } from "react";
 import type { EditorElement } from "../types";
@@ -87,19 +87,53 @@ function getElementInfo(el: EditorElement): {
       return { icon, label, typeLabel: "Hình vẽ" };
     }
     case "widget": {
-      const widgets: Record<string, { label: string; icon: React.ReactNode }> = {
-        calendar: { label: "Lịch", icon: <Calendar size={14} className="text-[#2D231F]" /> },
-        countdown: { label: "Đếm ngược", icon: <Clock size={14} className="text-[#2D231F]" /> },
-        map: { label: "Bản đồ", icon: <MapPin size={14} className="text-[#2D231F]" /> },
-        call: { label: "Gọi điện", icon: <Phone size={14} className="text-[#2D231F]" /> },
-        rsvp: { label: "RSVP / Xác nhận", icon: <Mail size={14} className="text-[#2D231F]" /> },
-        qr: { label: "Mã QR", icon: <QrCode size={14} className="text-[#2D231F]" /> },
-        music: { label: "Âm nhạc", icon: <Music size={14} className="text-[#2D231F]" /> },
-        youtube: { label: "Video YouTube", icon: <Play size={14} className="text-[#2D231F]" /> },
-        gallery: { label: "Thư viện ảnh", icon: <Layers size={14} className="text-[#2D231F]" /> },
-        album: { label: "Album ghép", icon: <Layers size={14} className="text-[#2D231F]" /> },
-        carousel: { label: "Carousel 3D", icon: <Layers size={14} className="text-[#2D231F]" /> },
-      };
+      const widgets: Record<string, { label: string; icon: React.ReactNode }> =
+        {
+          calendar: {
+            label: "Lịch",
+            icon: <Calendar size={14} className="text-[#2D231F]" />,
+          },
+          countdown: {
+            label: "Đếm ngược",
+            icon: <Clock size={14} className="text-[#2D231F]" />,
+          },
+          map: {
+            label: "Bản đồ",
+            icon: <MapPin size={14} className="text-[#2D231F]" />,
+          },
+          call: {
+            label: "Gọi điện",
+            icon: <Phone size={14} className="text-[#2D231F]" />,
+          },
+          rsvp: {
+            label: "RSVP / Xác nhận",
+            icon: <Mail size={14} className="text-[#2D231F]" />,
+          },
+          qr: {
+            label: "Mã QR",
+            icon: <QrCode size={14} className="text-[#2D231F]" />,
+          },
+          music: {
+            label: "Âm nhạc",
+            icon: <Music size={14} className="text-[#2D231F]" />,
+          },
+          youtube: {
+            label: "Video YouTube",
+            icon: <Play size={14} className="text-[#2D231F]" />,
+          },
+          gallery: {
+            label: "Thư viện ảnh",
+            icon: <Layers size={14} className="text-[#2D231F]" />,
+          },
+          album: {
+            label: "Album ghép",
+            icon: <Layers size={14} className="text-[#2D231F]" />,
+          },
+          carousel: {
+            label: "Carousel 3D",
+            icon: <Layers size={14} className="text-[#2D231F]" />,
+          },
+        };
       const meta = el.widgetType ? widgets[el.widgetType] : undefined;
       return {
         icon: meta?.icon ?? <Layers size={14} className="text-[#2D231F]" />,
@@ -253,9 +287,12 @@ export default function LayersPanelContent({
     return (
       <div className="flex flex-col items-center justify-center py-12 text-center border border-dashed border-[#D9CDBE] rounded-xl bg-[#EDE4D5]/30">
         <Layers size={28} className="text-[#7A6A5C]/60 mb-2" />
-        <p className="text-[#7A6A5C] text-xs font-medium">Chưa có đối tượng nào</p>
+        <p className="text-[#7A6A5C] text-xs font-medium">
+          Chưa có đối tượng nào
+        </p>
         <p className="text-[#7A6A5C]/60 text-[10px] mt-1 px-4">
-          Thêm văn bản, hình ảnh, hình vẽ hoặc tiện ích từ thanh công cụ bên trái.
+          Thêm văn bản, hình ảnh, hình vẽ hoặc tiện ích từ thanh công cụ bên
+          trái.
         </p>
       </div>
     );
@@ -421,7 +458,9 @@ export default function LayersPanelContent({
                 onToggleVisible={() =>
                   applyItemPatch(item, { visible: el.visible === false })
                 }
-                onToggleLock={() => applyItemPatch(item, { locked: !el.locked })}
+                onToggleLock={() =>
+                  applyItemPatch(item, { locked: !el.locked })
+                }
                 onDelete={() => handleDelete(item)}
               />
             </div>

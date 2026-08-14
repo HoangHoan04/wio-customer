@@ -39,7 +39,7 @@ export const metadata: Metadata = {
     "thiệp cưới đẹp",
     "InviGo",
   ],
-  metadataBase: new URL("https://tiemcuoitanthoi.vn"),
+  metadataBase: new URL("https://invigo.vn"),
   alternates: {
     canonical: "/",
   },
@@ -49,7 +49,7 @@ export const metadata: Metadata = {
       "Tạo thiệp cưới online đẹp, chuyên nghiệp với nhiều mẫu mã đẹp.",
     type: "website",
     locale: "vi_VN",
-    url: "https://tiemcuoitanthoi.vn",
+    url: "https://invigo.vn",
     siteName: "InviGo",
   },
   robots: {

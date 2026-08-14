@@ -8,9 +8,9 @@ export const MAX_TEXT_FONT_SIZE = 400;
 export function ensureEditorFonts() {
   if (typeof document === "undefined") return;
 
-  if (!document.getElementById("wio-editor-fonts-preconnect")) {
+  if (!document.getElementById("invigo-editor-fonts-preconnect")) {
     const preconnect = document.createElement("link");
-    preconnect.id = "wio-editor-fonts-preconnect";
+    preconnect.id = "invigo-editor-fonts-preconnect";
     preconnect.rel = "preconnect";
     preconnect.href = "https://fonts.googleapis.com";
     document.head.appendChild(preconnect);
@@ -23,7 +23,7 @@ export function ensureEditorFonts() {
   }
 
   googleFontStylesheetUrls().forEach((href, index) => {
-    const id = `wio-editor-google-fonts-${index}`;
+    const id = `invigo-editor-google-fonts-${index}`;
     if (document.getElementById(id)) return;
     const link = document.createElement("link");
     link.id = id;
@@ -215,7 +215,9 @@ export function shouldRefitTextHeight(updates: Partial<EditorElement>) {
   return TEXT_FIT_KEYS.some((key) => key in updates);
 }
 
-export function withFittedTextHeight<T extends MeasurableText>(el: T): T & {
+export function withFittedTextHeight<T extends MeasurableText>(
+  el: T,
+): T & {
   height: number;
 } {
   const { height } = measureTextBox(el, "wrap");

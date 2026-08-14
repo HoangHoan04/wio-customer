@@ -30,6 +30,22 @@ const nextConfig: NextConfig = {
         source: "/thiep/:slug",
         destination: "/invitation/:slug",
       },
+      {
+        source: "/mau-thiep",
+        destination: "/templates",
+      },
+      {
+        source: "/thiep-cua-toi",
+        destination: "/my-templates",
+      },
+      {
+        source: "/sua/:id",
+        destination: "/edit/:id",
+      },
+      {
+        source: "/tao/:cardType/:themeCode",
+        destination: "/create/:themeCode?cardType=:cardType",
+      },
     ];
   },
   images: {

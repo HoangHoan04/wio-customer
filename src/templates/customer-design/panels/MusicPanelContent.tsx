@@ -1,29 +1,30 @@
-import Button from "@/templates/customer-design/ui/button/Button";
 import { useToast } from "@/hooks/useToast";
 import { musicBackgroundService } from "@/services/music-background.service";
 import { uploadService } from "@/services/upload.service";
+import Button from "@/templates/customer-design/ui/button/Button";
 import tokenCache from "@/utils/token-cache";
-import {
-  Disc,
-  Headphones,
-  ImagePlus,
-  Link2,
-  Loader2,
-  Music,
-  Music2,
-  Music3,
-  Music4,
-  Pause,
-  Play,
-  Search,
-  Trash2,
-  Scissors,
-  UploadCloud,
-  X,
-} from "lucide-react";
+import
+    {
+        Disc,
+        Headphones,
+        ImagePlus,
+        Link2,
+        Loader2,
+        Music,
+        Music2,
+        Music3,
+        Music4,
+        Pause,
+        Play,
+        Scissors,
+        Search,
+        Trash2,
+        UploadCloud,
+        X,
+    } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
-import ColorPickerRow from "../components/ColorPickerRow";
 import AudioTrimmerModal from "../components/AudioTrimmerModal";
+import ColorPickerRow from "../components/ColorPickerRow";
 import type { EditorElement, WidgetConfig } from "../types";
 
 interface AudioItem {
@@ -112,13 +113,13 @@ export default function MusicPanelContent({
       if (!song.url) return;
 
       if (selectedAudio?.id === song.id) {
-        window.dispatchEvent(new CustomEvent("wio-toggle-canvas-audio"));
+        window.dispatchEvent(new CustomEvent("invigo-toggle-canvas-audio"));
         return;
       }
 
       if (previewingId === song.id) {
         previewAudioRef.current?.pause();
-        window.dispatchEvent(new CustomEvent("wio-preview-audio-stop"));
+        window.dispatchEvent(new CustomEvent("invigo-preview-audio-stop"));
         setPreviewingId(null);
       } else {
         if (previewAudioRef.current) {
@@ -128,13 +129,13 @@ export default function MusicPanelContent({
         const audio = new Audio(song.url);
         audio.onended = () => {
           setPreviewingId(null);
-          window.dispatchEvent(new CustomEvent("wio-preview-audio-stop"));
+          window.dispatchEvent(new CustomEvent("invigo-preview-audio-stop"));
         };
 
-        window.dispatchEvent(new CustomEvent("wio-preview-audio-start"));
+        window.dispatchEvent(new CustomEvent("invigo-preview-audio-start"));
 
         audio.play().catch(() => {
-          window.dispatchEvent(new CustomEvent("wio-preview-audio-stop"));
+          window.dispatchEvent(new CustomEvent("invigo-preview-audio-stop"));
         });
 
         previewAudioRef.current = audio;
@@ -158,9 +159,9 @@ export default function MusicPanelContent({
       }
     };
 
-    window.addEventListener("wio-canvas-audio-status", handleCanvasAudioStatus);
+    window.addEventListener("invigo-canvas-audio-status", handleCanvasAudioStatus);
     return () => {
-      window.removeEventListener("wio-canvas-audio-status", handleCanvasAudioStatus);
+      window.removeEventListener("invigo-canvas-audio-status", handleCanvasAudioStatus);
     };
   }, [selectedAudio]);
 
@@ -168,7 +169,7 @@ export default function MusicPanelContent({
     return () => {
       if (previewAudioRef.current) {
         previewAudioRef.current.pause();
-        window.dispatchEvent(new CustomEvent("wio-preview-audio-stop"));
+        window.dispatchEvent(new CustomEvent("invigo-preview-audio-stop"));
       }
     };
   }, []);
@@ -233,7 +234,7 @@ export default function MusicPanelContent({
             return true;
           });
           if (changed) {
-            localStorage.setItem("wio_youtube_imports", JSON.stringify(updated));
+            localStorage.setItem("invigo_youtube_imports", JSON.stringify(updated));
             return [...updated];
           }
           return prev;
@@ -262,7 +263,7 @@ export default function MusicPanelContent({
 
   useEffect(() => {
     try {
-      const savedImports = localStorage.getItem("wio_youtube_imports");
+      const savedImports = localStorage.getItem("invigo_youtube_imports");
       if (savedImports) setYoutubeImports(JSON.parse(savedImports));
     } catch {
       //! ignore parse error
@@ -277,7 +278,7 @@ export default function MusicPanelContent({
   const handleUseSong = useCallback(
     (song: AudioItem) => {
       previewAudioRef.current?.pause();
-      window.dispatchEvent(new CustomEvent("wio-preview-audio-stop"));
+      window.dispatchEvent(new CustomEvent("invigo-preview-audio-stop"));
       setPreviewingId(null);
       if (selectedAudio?.id === song.id) {
         onSelectAudio(null);
@@ -428,7 +429,7 @@ export default function MusicPanelContent({
 
       const nextImports = [newImport, ...youtubeImports];
       setYoutubeImports(nextImports);
-      localStorage.setItem("wio_youtube_imports", JSON.stringify(nextImports));
+      localStorage.setItem("invigo_youtube_imports", JSON.stringify(nextImports));
 
       setYoutubeUrl("");
       setYoutubePreview(null);
@@ -451,7 +452,7 @@ export default function MusicPanelContent({
 
       const next = youtubeImports.filter((x) => x.id !== id);
       setYoutubeImports(next);
-      localStorage.setItem("wio_youtube_imports", JSON.stringify(next));
+      localStorage.setItem("invigo_youtube_imports", JSON.stringify(next));
 
       showToast({
         title: "Đã hủy",
@@ -492,7 +493,7 @@ export default function MusicPanelContent({
   return (
     <div className="w-full font-sans text-[#2D231F] space-y-4 pb-6">
       <style>{`
-        @keyframes wio-marquee {
+        @keyframes invigo-marquee {
           0% { transform: translate3d(0, 0, 0); }
           100% { transform: translate3d(-100%, 0, 0); }
         }
@@ -534,7 +535,7 @@ export default function MusicPanelContent({
                 <div
                   className="inline-block whitespace-nowrap text-sm text-amber-400 font-medium"
                   style={{
-                    animation: "wio-marquee 8s linear infinite",
+                    animation: "invigo-marquee 8s linear infinite",
                     paddingLeft: "100%",
                   }}
                 >
@@ -607,7 +608,7 @@ export default function MusicPanelContent({
                             <div 
                               className="inline-block whitespace-nowrap text-xs font-medium text-[#2D231F]"
                               style={{
-                                animation: "wio-marquee 8s linear infinite",
+                                animation: "invigo-marquee 8s linear infinite",
                                 paddingLeft: "100%",
                               }}
                             >
@@ -795,7 +796,7 @@ export default function MusicPanelContent({
                               }, 100);
                               const next = youtubeImports.filter((x) => x.id !== imp.id);
                               setYoutubeImports(next);
-                              localStorage.setItem("wio_youtube_imports", JSON.stringify(next));
+                              localStorage.setItem("invigo_youtube_imports", JSON.stringify(next));
                             }}
                             className="text-[10px] px-2 py-0.5 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 rounded text-zinc-300 transition-colors"
                           >
@@ -848,7 +849,7 @@ export default function MusicPanelContent({
                               <div 
                                 className="inline-block whitespace-nowrap text-xs font-medium text-[#2D231F]"
                                 style={{
-                                  animation: "wio-marquee 8s linear infinite",
+                                  animation: "invigo-marquee 8s linear infinite",
                                   paddingLeft: "100%",
                                 }}
                               >

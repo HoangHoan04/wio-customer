@@ -196,7 +196,7 @@ export default function BackgroundPanelContent({
   return (
     <div className="w-full font-sans text-[#2D231F] select-none">
       <div className="mb-3 overflow-hidden rounded-2xl border border-[#D9CDBE] bg-[#EDE4D5]">
-        <div className="relative mx-auto my-3 h-28 w-[72px] overflow-hidden rounded-md border border-[#D9CDBE] shadow-[0_8px_20px_rgba(45,35,31,0.12)]">
+        <div className="relative mx-auto my-3 h-28 w-18 overflow-hidden rounded-md border border-[#D9CDBE] shadow-[0_8px_20px_rgba(45,35,31,0.12)]">
           <PreviewFill value={canvasBackground} />
           <div
             className="absolute inset-0 bg-[#F3EDE3]"
@@ -290,7 +290,7 @@ export default function BackgroundPanelContent({
                     key={gradient}
                     type="button"
                     onClick={() => onSetBackground(gradient, "color")}
-                    className={`relative aspect-[3/4] overflow-hidden rounded-xl border transition-transform hover:scale-[1.03] ${
+                    className={`relative aspect-3/4 overflow-hidden rounded-xl border transition-transform hover:scale-[1.03] ${
                       selected
                         ? "border-[#2D231F] ring-2 ring-[#2D231F]/15"
                         : "border-[#D9CDBE] hover:border-[#2D231F]"
@@ -408,7 +408,7 @@ export default function BackgroundPanelContent({
                       key={imgUrl}
                       type="button"
                       onClick={() => onSetBackground(imgUrl, "image")}
-                      className={`relative flex aspect-[3/4] items-center justify-center overflow-hidden rounded-xl border bg-[#EDE4D5] p-1.5 ${
+                      className={`relative flex aspect-3/4 items-center justify-center overflow-hidden rounded-xl border bg-[#EDE4D5] p-1.5 ${
                         selected
                           ? "border-[#2D231F] ring-2 ring-[#2D231F]/15"
                           : "border-[#D9CDBE] hover:border-[#2D231F]"

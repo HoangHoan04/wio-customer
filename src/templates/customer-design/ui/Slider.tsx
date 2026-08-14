@@ -1,6 +1,9 @@
 import { forwardRef, type InputHTMLAttributes } from "react";
 
-export interface SliderProps extends Omit<InputHTMLAttributes<HTMLInputElement>, "type"> {
+export interface SliderProps extends Omit<
+  InputHTMLAttributes<HTMLInputElement>,
+  "type"
+> {
   value: number;
   onValueChange?: (value: number) => void;
   min?: number;
@@ -27,7 +30,7 @@ const Slider = forwardRef<HTMLInputElement, SliderProps>(
       onChange,
       ...rest
     },
-    ref
+    ref,
   ) => {
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const newValue = parseFloat(e.target.value);
@@ -36,7 +39,9 @@ const Slider = forwardRef<HTMLInputElement, SliderProps>(
     };
 
     const percentage = ((value - min) / (max - min)) * 100;
-    const displayValue = valueFormatter ? valueFormatter(value) : value.toString();
+    const displayValue = valueFormatter
+      ? valueFormatter(value)
+      : value.toString();
 
     const isVertical = orientation === "vertical";
 
@@ -226,7 +231,7 @@ const Slider = forwardRef<HTMLInputElement, SliderProps>(
         `}</style>
       </div>
     );
-  }
+  },
 );
 
 Slider.displayName = "Slider";

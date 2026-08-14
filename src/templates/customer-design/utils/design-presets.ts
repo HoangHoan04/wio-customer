@@ -93,7 +93,10 @@ function shape(
   });
 }
 
-export const PRESET_CATEGORIES: { id: PresetCategory | "all"; label: string }[] = [
+export const PRESET_CATEGORIES: {
+  id: PresetCategory | "all";
+  label: string;
+}[] = [
   { id: "all", label: "Tất cả" },
   { id: "text", label: "Chữ mẫu" },
   { id: "combo", label: "Cụm thiết kế" },

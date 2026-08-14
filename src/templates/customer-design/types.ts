@@ -113,7 +113,11 @@ export interface EditorElement {
   strokeWidth: number;
   letterSpacing: number;
   lineHeight: number;
-  textDecoration: "none" | "underline" | "line-through" | "underline line-through";
+  textDecoration:
+    | "none"
+    | "underline"
+    | "line-through"
+    | "underline line-through";
   textTransform: "none" | "uppercase" | "lowercase" | "capitalize";
   backgroundColor: string;
   frameAlignH?: "left" | "center" | "right";
@@ -128,15 +132,15 @@ export interface EditorElement {
   borderColor: string;
   borderStyle: "solid" | "dashed" | "dotted" | "double";
   borderPosition:
-  | "all"
-  | "top"
-  | "bottom"
-  | "left"
-  | "right"
-  | "top-left"
-  | "top-right"
-  | "bottom-left"
-  | "bottom-right";
+    | "all"
+    | "top"
+    | "bottom"
+    | "left"
+    | "right"
+    | "top-left"
+    | "top-right"
+    | "bottom-left"
+    | "bottom-right";
   borderRadiusTopLeft: number;
   borderRadiusTopRight: number;
   borderRadiusBottomLeft: number;
@@ -161,7 +165,15 @@ export interface EditorElement {
   continuousMotionDelay: number;
 
   src: string;
-  shapeType: "rect" | "circle" | "triangle" | "square" | "line" | "heart" | "star" | "hexagon";
+  shapeType:
+    | "rect"
+    | "circle"
+    | "triangle"
+    | "square"
+    | "line"
+    | "heart"
+    | "star"
+    | "hexagon";
 
   widgetType?: WidgetType;
   widgetConfig?: WidgetConfig;
@@ -203,7 +215,10 @@ export interface EditorState {
 export type EditorAction =
   | { type: "SET_ELEMENTS"; payload: EditorElement[] }
   | { type: "ADD_ELEMENT"; payload: EditorElement }
-  | { type: "UPDATE_ELEMENT"; payload: { id: string; updates: Partial<EditorElement> } }
+  | {
+      type: "UPDATE_ELEMENT";
+      payload: { id: string; updates: Partial<EditorElement> };
+    }
   | { type: "DELETE_ELEMENT"; payload: string }
   | { type: "REORDER_ELEMENTS"; payload: EditorElement[] }
   | { type: "UNDO" }

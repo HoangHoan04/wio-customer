@@ -59,6 +59,21 @@ export const enumData: {
       name: "Hoàng gia - Đỏ nhung",
       slug: "hoang-gia-do-nhung",
     },
+    BIRTHDAY_CORAL: {
+      code: "BIRTHDAY_CORAL",
+      name: "Sinh nhật - San hô rực rỡ",
+      slug: "sinh-nhat-coral",
+    },
+    GRADUATION_ACADEMIC: {
+      code: "GRADUATION_ACADEMIC",
+      name: "Tốt nghiệp - Học thuật Navy",
+      slug: "tot-nghiep-navy",
+    },
+    GRAD_NAVY: {
+      code: "GRAD_NAVY",
+      name: "Tốt nghiệp - Học thuật Navy",
+      slug: "tot-nghiep-navy",
+    },
     CUSTOM_DESIGN: {
       code: "CUSTOM_DESIGN",
       name: "Tự Thiết Kế",
