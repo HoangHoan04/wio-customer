@@ -3,6 +3,7 @@ import { musicBackgroundService } from "@/services/music-background.service";
 import { uploadService } from "@/services/upload.service";
 import Button from "@/templates/customer-design/ui/button/Button";
 import tokenCache from "@/utils/token-cache";
+import { isLikelyYoutubeUrl, normalizeYoutubeUrl } from "@/utils/youtube-url";
 import
     {
         Disc,
@@ -382,11 +383,24 @@ export default function MusicPanelContent({
   }, []);
 
   const handleFetchYoutubeInfo = useCallback(async () => {
-    if (!youtubeUrl.trim()) return;
+    const normalized = normalizeYoutubeUrl(youtubeUrl);
+    if (!normalized.trim()) return;
+
+    if (!isLikelyYoutubeUrl(normalized)) {
+      showToast({
+        title: "Link không hợp lệ",
+        message: "Vui lòng dán link YouTube dạng youtube.com/watch?v=... hoặc youtu.be/...",
+        type: "error",
+        timeout: 3000,
+      });
+      return;
+    }
+
+    setYoutubeUrl(normalized);
     setPreviewLoading(true);
     setYoutubePreview(null);
     try {
-      const info = await musicBackgroundService.getYoutubeInfo(youtubeUrl);
+      const info = await musicBackgroundService.getYoutubeInfo(normalized);
       if (info) {
         setYoutubePreview({
           title: info.title || "YouTube Video",
@@ -408,10 +422,36 @@ export default function MusicPanelContent({
   }, [youtubeUrl, showToast]);
 
   const handleImportYoutube = useCallback(async () => {
-    if (!youtubeUrl.trim() || !youtubePreview) return;
+    const normalized = normalizeYoutubeUrl(youtubeUrl);
+    if (!normalized.trim()) return;
+
+    if (!isLikelyYoutubeUrl(normalized)) {
+      showToast({
+        title: "Link không hợp lệ",
+        message: "Vui lòng dán link YouTube dạng youtube.com/watch?v=... hoặc youtu.be/...",
+        type: "error",
+        timeout: 3000,
+      });
+      return;
+    }
+
+    setYoutubeUrl(normalized);
     setYoutubeImportLoading(true);
+
     try {
-      await musicBackgroundService.importYoutube(youtubeUrl);
+      let preview = youtubePreview;
+      if (!preview) {
+        const info = await musicBackgroundService.getYoutubeInfo(normalized);
+        preview = {
+          title: info.title || "YouTube Video",
+          author: info.author || "Unknown Uploader",
+          duration: info.duration || info.durationText || "3:00",
+          thumbnailUrl: info.thumbnailUrl || info.thumbnail || "",
+        };
+        setYoutubePreview(preview);
+      }
+
+      await musicBackgroundService.importYoutube(normalized);
       showToast({
         title: "Đã gửi yêu cầu",
         message: "Hệ thống đang tải nhạc từ YouTube, vui lòng chờ...",
@@ -421,8 +461,8 @@ export default function MusicPanelContent({
 
       const newImport = {
         id: `yt-import-${Date.now()}`,
-        name: youtubePreview.title,
-        youtubeUrl: youtubeUrl.trim(),
+        name: preview.title,
+        youtubeUrl: normalized,
         status: "PROCESSING" as const,
         createdAt: Date.now(),
       };
@@ -691,10 +731,27 @@ export default function MusicPanelContent({
                   type="text"
                   value={youtubeUrl}
                   onChange={(e) => setYoutubeUrl(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      handleFetchYoutubeInfo();
+                    }
+                  }}
                   placeholder="Dán link YouTube..."
                   className="w-full bg-[#F3EDE3] border border-[#D9CDBE] rounded-xl pl-9 pr-3 py-2 text-sm text-[#2D231F] placeholder-[#7A6A5C]/50 outline-hidden focus:border-zinc-700"
                 />
               </div>
+              <button
+                onClick={handleImportYoutube}
+                disabled={previewLoading || youtubeImportLoading || !youtubeUrl.trim()}
+                className="px-3 py-2 bg-emerald-600/20 text-emerald-400 text-xs font-medium rounded-xl border border-emerald-800/40 hover:bg-emerald-600/30 transition-colors whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {youtubeImportLoading ? (
+                  <Loader2 size={14} className="animate-spin" />
+                ) : (
+                  "Nhập ngay"
+                )}
+              </button>
               <button
                 onClick={handleFetchYoutubeInfo}
                 disabled={previewLoading || !youtubeUrl.trim()}

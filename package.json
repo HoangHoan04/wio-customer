@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "concurrently \"next dev -p 2504\" \"wait-on http://localhost:2504 && node scripts/open-browser.js http://localhost:2504\"",
     "build": "next build",
+    "typecheck": "tsc --noEmit",
     "start": "concurrently \"next start -p 2504\" \"wait-on http://localhost:2504 && node scripts/open-browser.js http://localhost:2504\"",
     "lint": "eslint",
     "lint:fix": "eslint --fix",

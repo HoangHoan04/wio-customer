@@ -27,60 +27,54 @@ function Counter({ target, duration = 1500, suffix = "" }: CounterProps) {
 
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting && !hasAnimated.current) {
-          hasAnimated.current = true;
-          const start = 0;
-          const end = target;
-          const startTime = performance.now();
+        if (!entry.isIntersecting || hasAnimated.current) return;
 
-          const animate = (currentTime: number) => {
-            const elapsed = currentTime - startTime;
-            const progress = Math.min(elapsed / duration, 1);
-            const easeProgress = progress * (2 - progress);
-            const currentVal = start + easeProgress * (end - start);
-            setCount(Math.floor(currentVal));
+        hasAnimated.current = true;
+        const startTime = performance.now();
 
-            if (progress < 1) {
-              requestAnimationFrame(animate);
-            } else {
-              setCount(end);
-            }
-          };
+        const animate = (currentTime: number) => {
+          const progress = Math.min((currentTime - startTime) / duration, 1);
+          const eased = progress * (2 - progress);
+          setCount(Math.floor(eased * target));
 
-          requestAnimationFrame(animate);
-        }
+          if (progress < 1) {
+            requestAnimationFrame(animate);
+          } else {
+            setCount(target);
+          }
+        };
+
+        requestAnimationFrame(animate);
       },
       { threshold: 0.1 },
     );
 
-    const currentElement = elementRef.current;
-    if (currentElement) {
-      observer.observe(currentElement);
-    }
+    const node = elementRef.current;
+    if (node) observer.observe(node);
 
     return () => {
-      if (currentElement) {
-        observer.unobserve(currentElement);
-      }
+      if (node) observer.unobserve(node);
       observer.disconnect();
     };
   }, [target, duration]);
 
-  const formatNumber = (val: number): string => {
-    return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-  };
+  const formatted = count.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 
   return (
     <span ref={elementRef}>
-      {formatNumber(count)}
+      {formatted}
       {suffix ? (
-        <span className="text-[#2D231F] ml-0.5 font-normal select-none">
-          {suffix}
-        </span>
+        <span className="ml-0.5 font-normal text-[#2D231F] select-none">{suffix}</span>
       ) : null}
     </span>
   );
 }
+
+const PLACEHOLDER_STATS: StatItem[] = [
+  { number: 0, suffix: "", label: "Thiệp đã xuất bản" },
+  { number: 0, suffix: "", label: "Mẫu thiệp" },
+  { number: 0, suffix: "", label: "Đánh giá" },
+];
 
 export default function StatsSection() {
   const [stats, setStats] = useState<StatItem[]>([]);
@@ -88,6 +82,7 @@ export default function StatsSection() {
 
   useEffect(() => {
     let cancelled = false;
+
     statsService
       .getPublicOverview()
       .then((data) => {
@@ -104,15 +99,14 @@ export default function StatsSection() {
             label: "Mẫu thiệp",
           },
           {
-            number: data.guests,
+            number: data.reviews,
             suffix: "",
-            label: "Khách mời",
+            label: "Đánh giá",
           },
         ]);
       })
       .catch(() => {
-        if (cancelled) return;
-        setStats([]);
+        if (!cancelled) setStats([]);
       })
       .finally(() => {
         if (!cancelled) setLoading(false);
@@ -125,42 +119,37 @@ export default function StatsSection() {
 
   if (!loading && stats.length === 0) return null;
 
+  const items = loading ? PLACEHOLDER_STATS : stats;
+
   return (
     <div
-      className="relative overflow-hidden border-y border-[#2D231F]/15 py-12 px-6"
+      className="relative my-4 overflow-hidden border-y border-[#2D231F]/15 px-6 py-14 sm:my-8 sm:py-18"
       style={{
-        background: `radial-gradient(circle at center, #EDE4D5 0%, #F3EDE3 100%)`,
+        background: "radial-gradient(circle at center, #EDE4D5 0%, #F3EDE3 100%)",
       }}
     >
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(45, 35, 31,0.03)_0%,transparent_70%)] pointer-events-none" />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(45,35,31,0.03)_0%,transparent_70%)]" />
 
       <ScrollReveal>
-        <div className="max-w-275 mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-0 relative z-10">
-          {(loading
-            ? [
-                { number: 0, suffix: "", label: "Thiệp đã xuất bản" },
-                { number: 0, suffix: "", label: "Mẫu thiệp" },
-                { number: 0, suffix: "", label: "Khách mời" },
-              ]
-            : stats
-          ).map((s, i) => (
+        <div className="relative z-10 mx-auto grid max-w-275 grid-cols-1 gap-8 md:grid-cols-3 md:gap-0">
+          {items.map((item, index) => (
             <div
-              key={s.label}
-              className={`group text-center py-6 px-4 transition-all duration-500 hover:transform hover:-translate-y-1 ${
-                i < 2
-                  ? "md:border-r border-b md:border-b-0 border-[#2D231F]/10"
+              key={item.label}
+              className={`group px-4 py-6 text-center transition-all duration-500 hover:-translate-y-1 ${
+                index < 2
+                  ? "border-b border-[#2D231F]/10 md:border-r md:border-b-0"
                   : ""
               }`}
             >
-              <div className="tct-shimmer-text text-[clamp(2.5rem,5vw,3.5rem)] font-light block mb-2   tracking-tight leading-none">
+              <div className="tct-shimmer-text mb-2 block text-[clamp(2.5rem,5vw,3.5rem)] leading-none font-light tracking-tight">
                 {loading ? (
                   <span className="inline-block h-[0.9em] w-16 animate-pulse rounded bg-[#2D231F]/10" />
                 ) : (
-                  <Counter target={s.number} suffix={s.suffix} />
+                  <Counter target={item.number} suffix={item.suffix} />
                 )}
               </div>
-              <div className="text-[11px] text-[#7A6A5C]/80 tracking-[0.2em] uppercase font-medium transition-colors duration-300 group-hover:text-[#7A6A5C]">
-                {s.label}
+              <div className="text-[11px] font-medium tracking-[0.2em] text-[#7A6A5C]/80 uppercase transition-colors duration-300 group-hover:text-[#7A6A5C]">
+                {item.label}
               </div>
             </div>
           ))}

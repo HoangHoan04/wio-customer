@@ -10,6 +10,7 @@ export interface ITemplate {
   themeCode: string;
   thumbnailUrl: string;
   isShow: boolean;
+  isDeleted?: boolean;
   isPremium: boolean;
   minPlan?: any;
   minPlanId?: string;

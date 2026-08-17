@@ -2,8 +2,12 @@
 
 import { guestService } from "@/services/guest.service";
 import { invitationService } from "@/services/invitation.service";
+import CustomDesignPublicView from "@/templates/customer-design/CustomDesignPublicView";
 import { getThemeComponent } from "@/templates/templates-available";
-import { invitationToThemeData } from "@/utils/invitation-mapper";
+import {
+  hasCanvasDesign,
+  invitationToThemeData,
+} from "@/utils/invitation-mapper";
 import { useParams, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 
@@ -73,6 +77,10 @@ function InvitationPublicContent() {
         <p>{error}</p>
       </div>
     );
+  }
+
+  if (hasCanvasDesign(cardData.customDesign)) {
+    return <CustomDesignPublicView customDesign={cardData.customDesign} />;
   }
 
   const ThemeComponent = getThemeComponent(cardData.themeCode);

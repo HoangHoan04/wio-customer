@@ -15,8 +15,10 @@ interface IPhoneMockupProps {
     left?: string;
     right?: string;
     top?: string;
+    bottom?: string;
     marginLeft?: string;
   };
+  style?: React.CSSProperties;
   transform?: string;
   children?: ReactNode;
   size?: "small" | "medium" | "large";
@@ -25,6 +27,7 @@ interface IPhoneMockupProps {
 export default function IPhoneMockup({
   className = "",
   position = {},
+  style = {},
   transform = "rotateY(-5deg) rotateX(3deg) translateZ(40px)",
   children,
   size = "medium",
@@ -44,15 +47,15 @@ export default function IPhoneMockup({
   }, []);
 
   const dimensions = {
-    small: { width: "220px", height: "440px" },
-    medium: { width: "250px", height: "500px" },
-    large: { width: "280px", height: "560px" },
+    small: { width: "190px", height: "390px" },
+    medium: { width: "220px", height: "450px" },
+    large: { width: "250px", height: "500px" },
   };
 
   const buttonSizes = {
-    small: { gap: 1.5, height: "26px", power: "42px" },
-    medium: { gap: 1.5, height: "30px", power: "50px" },
-    large: { gap: 2, height: "35px", power: "60px" },
+    small: { gap: 1.5, height: "22px", power: "36px" },
+    medium: { gap: 1.5, height: "26px", power: "44px" },
+    large: { gap: 2, height: "30px", power: "50px" },
   };
 
   const sizeConfig = dimensions[size];
@@ -60,13 +63,14 @@ export default function IPhoneMockup({
 
   return (
     <div
-      className={`absolute ${className}`}
+      className={`absolute select-none ${className}`}
       style={{
         ...position,
         zIndex: size === "medium" ? 3 : 1,
         transformStyle: "preserve-3d",
         transition: "all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)",
         transform,
+        ...style,
       }}
     >
       <div

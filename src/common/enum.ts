@@ -74,6 +74,11 @@ export const enumData: {
       name: "Tốt nghiệp - Học thuật Navy",
       slug: "tot-nghiep-navy",
     },
+    BABY_BLUSH: {
+      code: "BABY_BLUSH",
+      name: "Thôi nôi - Blush",
+      slug: "thoi-noi-blush",
+    },
     CUSTOM_DESIGN: {
       code: "CUSTOM_DESIGN",
       name: "Tự Thiết Kế",

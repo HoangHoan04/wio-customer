@@ -1,3 +1,4 @@
+import { normalizeYoutubeUrl } from "@/utils/youtube-url";
 import apiService from "./api.service";
 import { API_ENDPOINTS } from "./endpoint";
 
@@ -13,7 +14,7 @@ export const musicBackgroundService = {
   importYoutube: async (youtubeUrl: string) => {
     const response = await apiService.post(
       API_ENDPOINTS.MUSIC_BACKGROUND.IMPORT_YOUTUBE,
-      { youtubeUrl },
+      { youtubeUrl: normalizeYoutubeUrl(youtubeUrl) },
     );
     return response.data;
   },
@@ -21,7 +22,7 @@ export const musicBackgroundService = {
   getYoutubeInfo: async (url: string, provider?: string) => {
     const response = await apiService.post(
       API_ENDPOINTS.MUSIC_BACKGROUND.GET_INFO,
-      { url, provider },
+      { url: normalizeYoutubeUrl(url), provider },
     );
     return response.data;
   },
@@ -37,12 +38,17 @@ export const musicBackgroundService = {
   cancelImport: async (url: string) => {
     const response = await apiService.post(
       API_ENDPOINTS.MUSIC_BACKGROUND.CANCEL_IMPORT,
-      { url },
+      { url: normalizeYoutubeUrl(url) },
     );
     return response.data;
   },
 
-  createUserMusic: async (data: { name: string; audioUrl: string; author?: string; duration?: string }) => {
+  createUserMusic: async (data: {
+    name: string;
+    audioUrl: string;
+    author?: string;
+    duration?: string;
+  }) => {
     const response = await apiService.post(
       API_ENDPOINTS.MUSIC_BACKGROUND.CREATE_USER_MUSIC,
       data,

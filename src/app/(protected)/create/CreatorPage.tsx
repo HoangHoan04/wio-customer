@@ -28,8 +28,11 @@ import {
 } from "@/services/card-type.service";
 import { invitationService } from "@/services/invitation.service";
 import { musicBackgroundService } from "@/services/music-background.service";
+import { isLikelyYoutubeUrl, normalizeYoutubeUrl } from "@/utils/youtube-url";
 import { templateService } from "@/services/template.service";
-import { resolveThemeKey } from "@/templates/templates-available";
+import { DEFAULT_SECTION_ORDER } from "@/templates/shared/constants/sections";
+import type { SectionId } from "@/templates/shared/types/preset-theme.types";
+import { getThemeConfigByCode, resolveThemeKey } from "@/templates/templates-available";
 import { cardTypeCopy } from "@/utils/card-type-copy";
 import { getCardTypeFormConfig } from "@/utils/card-type-form-config";
 import {
@@ -66,6 +69,7 @@ import { PartySection } from "./sections/PartySection";
 import { RsvpSection } from "./sections/RsvpSection";
 import { ThankYouSection } from "./sections/ThankYouSection";
 import { TimelineSection } from "./sections/TimelineSection";
+import { SectionLayoutPanel } from "./sections/SectionLayoutPanel";
 
 const DEVICES = [
   {
@@ -262,6 +266,26 @@ export default function CreatorPage() {
   const [showMusicModal, setShowMusicModal] = useState(false);
   const [previewMusicId, setPreviewMusicId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<"edit" | "preview">("edit");
+  const [layoutState, setLayoutState] = useState<{
+    sectionOrder: SectionId[];
+    sectionConfig: Record<
+      string,
+      boolean | { enabled: boolean; order?: number; variant?: string }
+    >;
+  }>({
+    sectionOrder: DEFAULT_SECTION_ORDER,
+    sectionConfig: {},
+  });
+
+  useEffect(() => {
+    const config = getThemeConfigByCode(activeThemeCode || "");
+    if (config?.layout?.sectionOrder) {
+      setLayoutState((prev) => ({
+        ...prev,
+        sectionOrder: config.layout.sectionOrder,
+      }));
+    }
+  }, [activeThemeCode]);
 
   const [musics, setMusics] = useState<any[]>([]);
   const [isAddingYoutube, setIsAddingYoutube] = useState(false);
@@ -272,8 +296,21 @@ export default function CreatorPage() {
     let elapsed = 0;
     const fetchMusics = async () => {
       try {
-        const res = (await musicBackgroundService.getMusics()) as any;
-        const list = res.data?.data || res.data || [];
+        const [adminRes, userRes] = await Promise.all([
+          musicBackgroundService.getMusics({ where: { type: "admin" } }),
+          musicBackgroundService.getMusics({ where: { type: "user" } }),
+        ]);
+        const adminList = Array.isArray(adminRes?.data)
+          ? adminRes.data
+          : Array.isArray(adminRes)
+            ? adminRes
+            : [];
+        const userList = Array.isArray(userRes?.data)
+          ? userRes.data
+          : Array.isArray(userRes)
+            ? userRes
+            : [];
+        const list = [...userList, ...adminList];
         setMusics(list);
         const hasProcessing = list.some(
           (m: any) => m.status === "PROCESSING" || m.status === "PENDING",
@@ -298,10 +335,21 @@ export default function CreatorPage() {
   }, [showMusicModal, youtubeImportPending]);
 
   const handleAddYoutube = async () => {
-    if (!youtubeUrl) return;
+    const normalized = normalizeYoutubeUrl(youtubeUrl);
+    if (!normalized) return;
+
+    if (!isLikelyYoutubeUrl(normalized)) {
+      showToast({
+        title: "Link không hợp lệ",
+        message: "Vui lòng nhập link YouTube hợp lệ (youtube.com hoặc youtu.be)",
+        type: "error",
+      });
+      return;
+    }
+
     setIsAddingYoutube(true);
     try {
-      await musicBackgroundService.importYoutube(youtubeUrl);
+      await musicBackgroundService.importYoutube(normalized);
       setYoutubeUrl("");
       setYoutubeImportPending(true);
       showToast({
@@ -309,13 +357,17 @@ export default function CreatorPage() {
         message: "Hệ thống đang tải nhạc từ YouTube...",
         type: "success",
       });
-      const res = (await musicBackgroundService.getMusics()) as any;
-      const list = res.data?.data || res.data || [];
-      setMusics(list);
-    } catch {
+      const [adminRes, userRes] = await Promise.all([
+        musicBackgroundService.getMusics({ where: { type: "admin" } }),
+        musicBackgroundService.getMusics({ where: { type: "user" } }),
+      ]);
+      const adminList = Array.isArray(adminRes?.data) ? adminRes.data : [];
+      const userList = Array.isArray(userRes?.data) ? userRes.data : [];
+      setMusics([...userList, ...adminList]);
+    } catch (err: any) {
       showToast({
         title: "Lỗi",
-        message: "Không thể tải nhạc từ YouTube",
+        message: err.response?.data?.message || "Không thể tải nhạc từ YouTube",
         type: "error",
       });
     } finally {
@@ -919,6 +971,8 @@ export default function CreatorPage() {
         templateId: templateId || undefined,
         cardType,
         hostRoles: cardDefaults.hostRoles,
+        sectionOrder: layoutState.sectionOrder,
+        extendedSectionConfig: layoutState.sectionConfig,
       });
       if (!payload.slug) {
         payload.slug = `${Date.now()}`;
@@ -1130,6 +1184,12 @@ export default function CreatorPage() {
               onPause={handleAudioPause}
             />
           )}
+
+          <SectionLayoutPanel
+            sectionOrder={layoutState.sectionOrder}
+            sectionConfig={layoutState.sectionConfig}
+            onChange={(next) => setLayoutState(next)}
+          />
         </div>
 
         <div className="md:flex p-4 border-t border-[#D9CDBE] bg-[#EDE4D5] flex gap-3 z-10 shrink-0">

@@ -67,6 +67,14 @@ export interface InvitationMusic {
   name?: string;
 }
 
+export interface SectionConfigEntry {
+  enabled: boolean;
+  order?: number;
+  variant?: string;
+}
+
+export type SectionConfigMap = Record<string, boolean | SectionConfigEntry>;
+
 export interface InvitationDto {
   id: string;
   userId?: string;
@@ -80,12 +88,13 @@ export interface InvitationDto {
   hashtag?: string;
   heroImageUrl?: string;
   primaryEventAt?: string;
-  sectionConfig?: Record<string, boolean>;
+  sectionConfig?: SectionConfigMap;
   enabledModules?: string[];
   music?: InvitationMusic;
   extraContent?: Record<string, any>;
   customDesign?: any;
   coverConfig?: Record<string, any>;
+  themeLayout?: any;
   hosts?: InvitationHost[];
   events?: InvitationEvent[];
   gifts?: InvitationGift[];
@@ -97,6 +106,8 @@ export interface InvitationDto {
     name?: string;
     themeCode?: string;
     slug?: string;
+    themeLayout?: any;
+    presetTokens?: any;
   };
 }
 
@@ -109,7 +120,7 @@ export interface CreateInvitationReq {
   thankYouText?: string;
   hashtag?: string;
   heroImageUrl?: string;
-  sectionConfig?: Record<string, boolean>;
+  sectionConfig?: SectionConfigMap;
   enabledModules?: string[];
   music?: InvitationMusic;
   extraContent?: Record<string, any>;

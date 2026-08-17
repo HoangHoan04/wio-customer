@@ -1,7 +1,9 @@
 "use client";
 
+import { PUBLIC_ROUTES } from "@/common/routes";
 import Modal from "@/components/ui/Modal";
 import { useToast } from "@/hooks/useToast";
+import { Monitor } from "lucide-react";
 import {
   cardTypeService,
   FALLBACK_CARD_TYPES,
@@ -172,12 +174,38 @@ function DesignEditorContent() {
   const [invitation, setInvitation] = useState<any>(null);
   const [showInitModal, setShowInitModal] = useState(false);
   const [showPublishConfirmModal, setShowPublishConfirmModal] = useState(false);
+  const [showMobileWarningModal, setShowMobileWarningModal] = useState(false);
   const [cardTypes, setCardTypes] = useState<ICardType[]>(FALLBACK_CARD_TYPES);
   const [initForm, setInitForm] = useState({
     title: "",
     slug: "",
     cardType: "CUSTOM",
   });
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const isMobile = window.innerWidth < 768;
+      if (isMobile) {
+        setShowLeftBar(false);
+        setShowRightBar(false);
+        const fitZoom = Math.min(
+          100,
+          Math.max(
+            30,
+            Math.round(((window.innerWidth - 32) / CANVAS_WIDTH) * 100),
+          ),
+        );
+        setZoom(fitZoom);
+
+        const dismissed = sessionStorage.getItem(
+          "invigo_design_mobile_warning_dismissed",
+        );
+        if (!dismissed) {
+          setShowMobileWarningModal(true);
+        }
+      }
+    }
+  }, []);
 
   const urlCardType = searchParams.get("cardType") || searchParams.get("type");
 
@@ -998,35 +1026,45 @@ function DesignEditorContent() {
         />
       )}
 
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex flex-1 overflow-hidden relative">
         {showLeftBar && (
-          <LeftToolbar
-            selectedTool={selectedTool}
-            onToolSelect={setSelectedTool}
-            selectedElement={selectedElement}
-            canvasBackground={canvasBackground}
-            backgroundOpacity={backgroundOpacity}
-            onUpdateElement={handleUpdateElement}
-            onDeleteElement={handleDeleteElement}
-            onDeleteElements={handleDeleteElements}
-            onSetBackground={(value) => setCanvasBackground(value)}
-            onSetBackgroundOpacity={setBackgroundOpacity}
-            onAddImageToCanvas={handleAddImageToCanvas}
-            selectedCanvasImageUrl={selectedCanvasImageUrl}
-            onDeselectImage={() => setSelectedCanvasImageUrl(null)}
-            onAddText={handleAddText}
-            onAddShape={handleAddShape}
-            elements={elements}
-            onUpdateWidgetConfig={handleUpdateWidgetConfig}
-            onSelectElement={setSelectedElementId}
-            onAlignElement={handleAlignElement}
-            selectedAudio={selectedAudio}
-            onSelectAudio={setSelectedAudio}
-            onAddElements={handleAddElements}
-            onUngroupElements={handleUngroupElements}
-            effects={effects}
-            onUpdateEffects={setEffects}
-            onReplayIntro={() => setIntroReplayKey((k) => k + 1)}
+          <div className="md:relative absolute z-40 inset-y-0 left-0 flex h-full shadow-2xl md:shadow-none bg-[#EDE4D5]">
+            <LeftToolbar
+              selectedTool={selectedTool}
+              onToolSelect={setSelectedTool}
+              selectedElement={selectedElement}
+              canvasBackground={canvasBackground}
+              backgroundOpacity={backgroundOpacity}
+              onUpdateElement={handleUpdateElement}
+              onDeleteElement={handleDeleteElement}
+              onDeleteElements={handleDeleteElements}
+              onSetBackground={(value) => setCanvasBackground(value)}
+              onSetBackgroundOpacity={setBackgroundOpacity}
+              onAddImageToCanvas={handleAddImageToCanvas}
+              selectedCanvasImageUrl={selectedCanvasImageUrl}
+              onDeselectImage={() => setSelectedCanvasImageUrl(null)}
+              onAddText={handleAddText}
+              onAddShape={handleAddShape}
+              elements={elements}
+              onUpdateWidgetConfig={handleUpdateWidgetConfig}
+              onSelectElement={setSelectedElementId}
+              onAlignElement={handleAlignElement}
+              selectedAudio={selectedAudio}
+              onSelectAudio={setSelectedAudio}
+              onAddElements={handleAddElements}
+              onUngroupElements={handleUngroupElements}
+              effects={effects}
+              onUpdateEffects={setEffects}
+              onReplayIntro={() => setIntroReplayKey((k) => k + 1)}
+            />
+          </div>
+        )}
+
+        {/* Mobile backdrop for LeftToolbar */}
+        {showLeftBar && (
+          <div
+            className="md:hidden fixed inset-0 z-30 bg-black/40 backdrop-blur-xs"
+            onClick={() => setShowLeftBar(false)}
           />
         )}
 
@@ -1054,14 +1092,25 @@ function DesignEditorContent() {
         />
 
         {showRightBar && (
-          <RightPanel
-            sharedToCommunity={sharedToCommunity}
-            onToggleShareToCommunity={() => setSharedToCommunity((v) => !v)}
-            elements={elements}
-            selectedElementId={selectedElementId}
-            onSelectElement={setSelectedElementId}
-            onUpdateElements={updateElements}
-            onUngroupElements={handleUngroupElements}
+          <div className="md:relative absolute z-40 inset-y-0 right-0 flex h-full shadow-2xl md:shadow-none bg-[#F3EDE3]">
+            <RightPanel
+              sharedToCommunity={sharedToCommunity}
+              onToggleShareToCommunity={() => setSharedToCommunity((v) => !v)}
+              elements={elements}
+              selectedElementId={selectedElementId}
+              onSelectElement={setSelectedElementId}
+              onUpdateElements={updateElements}
+              onUngroupElements={handleUngroupElements}
+              onClose={() => setShowRightBar(false)}
+            />
+          </div>
+        )}
+
+        {/* Mobile backdrop for RightPanel */}
+        {showRightBar && (
+          <div
+            className="md:hidden fixed inset-0 z-30 bg-black/40 backdrop-blur-xs"
+            onClick={() => setShowRightBar(false)}
           />
         )}
       </div>
@@ -1213,6 +1262,59 @@ function DesignEditorContent() {
               className="px-4 py-2 text-xs font-semibold"
             >
               Xuất bản ngay
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
+      <Modal
+        isOpen={showMobileWarningModal}
+        onClose={() => {
+          sessionStorage.setItem(
+            "invigo_design_mobile_warning_dismissed",
+            "true",
+          );
+          setShowMobileWarningModal(false);
+        }}
+        maxWidth="max-w-md"
+      >
+        <div className="flex flex-col items-center text-center gap-4 py-4 text-[#2D231F] font-sans">
+          <div className="w-14 h-14 rounded-full bg-[#2D231F]/10 flex items-center justify-center text-[#2D231F] border border-[#2D231F]/20">
+            <Monitor size={28} />
+          </div>
+
+          <div className="space-y-2">
+            <h2 className="text-lg font-bold text-[#2D231F]">
+              Khuyến nghị sử dụng máy tính
+            </h2>
+            <p className="text-xs sm:text-sm text-[#2D231F]/80 leading-relaxed">
+              Ở chế độ điện thoại, không gian thao tác bị hạn chế. Bạn nên thực hiện thiết kế trên máy tính để có trải nghiệm kéo thả, căn chỉnh và chỉnh sửa chi tiết tốt nhất.
+            </p>
+          </div>
+
+          <div className="flex items-center justify-center gap-3 mt-4 w-full">
+            <Button
+              variant="outline"
+              onClick={() => {
+                setShowMobileWarningModal(false);
+                router.push(PUBLIC_ROUTES.TEMPLATES);
+              }}
+              className="flex-1 py-2.5 text-xs font-medium border-[#2D231F]/30 text-[#2D231F]"
+            >
+              Hủy
+            </Button>
+            <Button
+              variant="primary"
+              onClick={() => {
+                sessionStorage.setItem(
+                  "invigo_design_mobile_warning_dismissed",
+                  "true",
+                );
+                setShowMobileWarningModal(false);
+              }}
+              className="flex-1 py-2.5 text-xs font-semibold"
+            >
+              Vẫn tiếp tục
             </Button>
           </div>
         </div>

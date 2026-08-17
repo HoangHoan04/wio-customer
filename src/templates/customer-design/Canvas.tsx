@@ -731,10 +731,10 @@ export default function Canvas({
   return (
     <div
       ref={containerRef}
-      className="flex-1 bg-[#EDE4D5] flex items-start justify-center overflow-y-auto overflow-x-hidden pt-8"
+      className="flex-1 w-full bg-[#EDE4D5] flex items-start justify-center overflow-y-auto overflow-x-auto p-4 sm:p-8 select-none"
       onClick={handleContainerClick}
     >
-      <div className="flex flex-col items-center gap-1 pb-8">
+      <div className="flex flex-col items-center gap-1 pb-8 shrink-0">
         <div className="relative inline-flex flex-col items-center">
           <div
             style={{

@@ -155,38 +155,36 @@ export default function TopBar({
   };
 
   return (
-    <header className="h-14 bg-[#EDE4D5] border-b border-[#D9CDBE] flex items-center justify-between px-4 shrink-0 select-none gap-2 relative z-50">
+    <header className="h-14 bg-[#EDE4D5] border-b border-[#D9CDBE] flex items-center justify-between px-2 sm:px-4 shrink-0 select-none gap-1 sm:gap-2 relative z-50">
       <style>{`
         @keyframes fadeSlideDown {
           from { opacity: 0; transform: translateY(-6px); }
           to   { opacity: 1; transform: translateY(0); }
         }
       `}</style>
-      <div className="flex items-center gap-3 flex-1 min-w-0">
-        <div className="flex items-center gap-2 shrink-0">
+      <div className="flex items-center gap-1.5 sm:gap-3 flex-1 min-w-0">
+        <div className="flex items-center gap-1.5 shrink-0">
           <div
-            className="flex items-center gap-2.5 cursor-pointer"
+            className="flex items-center gap-1 cursor-pointer"
             onClick={() => router.push(PUBLIC_ROUTES.HOME)}
           >
-            <div className="flex flex-col leading-none">
-              <span className="text-[clamp(1rem,3vw,1rem)] font-bold text-[#2D231F] whitespace-nowrap">
-                InviGo
-              </span>
-            </div>
+            <span className="text-sm sm:text-base font-bold text-[#2D231F] whitespace-nowrap">
+              InviGo
+            </span>
           </div>
         </div>
 
-        <div className="h-5 w-px bg-[#D9CDBE] shrink-0" />
+        <div className="h-4 sm:h-5 w-px bg-[#D9CDBE] shrink-0" />
 
         {editingName ? (
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1 min-w-0">
             <input
               ref={nameInputRef}
               value={nameInput}
               onChange={(e) => setNameInput(e.target.value)}
               onBlur={handleNameSubmit}
               onKeyDown={handleNameKeyDown}
-              className="bg-[#D9CDBE] text-[#2D231F] text-sm px-2 py-0.5 rounded border border-[#2D231F] outline-none w-44"
+              className="bg-[#D9CDBE] text-[#2D231F] text-xs sm:text-sm px-2 py-0.5 rounded border border-[#2D231F] outline-none w-24 sm:w-44"
             />
             <button
               onClick={handleNameSubmit}
@@ -201,18 +199,18 @@ export default function TopBar({
               setNameInput(projectName);
               setEditingName(true);
             }}
-            className="flex items-center gap-1.5 text-[#7A6A5C] hover:text-[#2D231F] text-sm transition-colors max-w-45 group"
+            className="flex items-center gap-1 text-[#7A6A5C] hover:text-[#2D231F] text-xs sm:text-sm transition-colors max-w-24 min-[400px]:max-w-36 sm:max-w-48 group truncate"
             title="Nhấp để đổi tên"
           >
             <span className="truncate">{projectName}</span>
             <Pencil
-              size={12}
-              className="text-[#7A6A5C]/70 group-hover:text-[#7A6A5C] shrink-0"
+              size={11}
+              className="text-[#7A6A5C]/70 group-hover:text-[#7A6A5C] shrink-0 hidden sm:inline"
             />
           </button>
         )}
 
-        <div className="h-5 w-px bg-[#D9CDBE] shrink-0" />
+        <div className="h-4 sm:h-5 w-px bg-[#D9CDBE] shrink-0" />
 
         <a
           href={PUBLIC_ROUTES.HOME}
@@ -220,26 +218,26 @@ export default function TopBar({
           title="Về trang chủ"
         >
           <ArrowLeft size={14} />
-          Back
+          <span className="hidden md:inline">Back</span>
         </a>
       </div>
 
       <button
         onClick={() => onOpenPreview?.("phone", 440, 956)}
-        className="flex items-center gap-2 px-4 py-1.5 bg-[#2D231F] text-[#F3EDE3] text-sm font-semibold rounded-lg hover:opacity-90 transition-colors"
+        className="flex items-center gap-1.5 px-2.5 sm:px-3.5 py-1.5 bg-[#2D231F] text-[#F3EDE3] text-xs sm:text-sm font-semibold rounded-lg hover:opacity-90 transition-colors shrink-0"
       >
-        <Eye size={16} />
-        Xem trước
+        <Eye size={15} />
+        <span className="hidden min-[480px]:inline">Xem trước</span>
       </button>
 
-      <div className="flex items-center gap-1 flex-1 justify-end">
+      <div className="flex items-center gap-0.5 sm:gap-1 flex-1 justify-end shrink-0">
         {onToggleLeftBar && (
           <button
             onClick={onToggleLeftBar}
-            className={`p-1.5 rounded transition-colors ${
+            className={`p-1 sm:p-1.5 rounded transition-colors ${
               showLeftBar
-                ? "text-[#7A6A5C] hover:text-[#2D231F] hover:bg-[#F3EDE3]"
-                : "text-[#7A6A5C]/60 bg-[#F3EDE3]"
+                ? "text-[#2D231F] bg-[#F3EDE3]"
+                : "text-[#7A6A5C]/60 hover:text-[#2D231F] hover:bg-[#F3EDE3]"
             }`}
             title={showLeftBar ? "Ẩn thanh công cụ" : "Hiện thanh công cụ"}
           >
@@ -249,10 +247,10 @@ export default function TopBar({
         {onToggleRightBar && (
           <button
             onClick={onToggleRightBar}
-            className={`p-1.5 rounded transition-colors ${
+            className={`p-1 sm:p-1.5 rounded transition-colors ${
               showRightBar
-                ? "text-[#7A6A5C] hover:text-[#2D231F] hover:bg-[#F3EDE3]"
-                : "text-[#7A6A5C]/60 bg-[#F3EDE3]"
+                ? "text-[#2D231F] bg-[#F3EDE3]"
+                : "text-[#7A6A5C]/60 hover:text-[#2D231F] hover:bg-[#F3EDE3]"
             }`}
             title={showRightBar ? "Ẩn panel phải" : "Hiện panel phải"}
           >
@@ -262,10 +260,10 @@ export default function TopBar({
         {onToggleBottomBar && (
           <button
             onClick={onToggleBottomBar}
-            className={`p-1.5 rounded transition-colors ${
+            className={`p-1 sm:p-1.5 rounded transition-colors hidden sm:inline-flex ${
               showBottomBar
-                ? "text-[#7A6A5C] hover:text-[#2D231F] hover:bg-[#F3EDE3]"
-                : "text-[#7A6A5C]/60 bg-[#F3EDE3]"
+                ? "text-[#2D231F] bg-[#F3EDE3]"
+                : "text-[#7A6A5C]/60 hover:text-[#2D231F] hover:bg-[#F3EDE3]"
             }`}
             title={showBottomBar ? "Ẩn thanh dưới" : "Hiện thanh dưới"}
           >
@@ -273,13 +271,13 @@ export default function TopBar({
           </button>
         )}
 
-        <div className="h-5 w-px bg-[#D9CDBE] mx-0.5" />
+        <div className="h-4 sm:h-5 w-px bg-[#D9CDBE] mx-0.5 hidden sm:block" />
 
         {onToggleGrid && (
-          <>
+          <div className="hidden min-[520px]:block">
             <Popover>
               <PopoverTrigger
-                className={`p-1.5 rounded transition-colors ${
+                className={`p-1 sm:p-1.5 rounded transition-colors ${
                   showGrid
                     ? "bg-[#2D231F] text-[#F3EDE3]"
                     : "text-[#7A6A5C] hover:text-[#2D231F] hover:bg-[#F3EDE3]"
@@ -345,62 +343,63 @@ export default function TopBar({
                 </div>
               </PopoverContent>
             </Popover>
-            <div className="h-5 w-px bg-[#D9CDBE] mx-0.5" />
-          </>
+          </div>
         )}
 
-        <button
-          onClick={() => onZoomChange(Math.max(25, zoom - 10))}
-          className="p-1.5 text-[#7A6A5C] hover:text-[#2D231F] hover:bg-[#F3EDE3] rounded transition-colors"
-          title="Thu nhỏ"
-        >
-          <ZoomOut size={15} />
-        </button>
-
-        <div className="relative" ref={zoomMenuRef}>
+        <div className="hidden lg:flex items-center">
           <button
-            onClick={() => setShowZoomMenu(!showZoomMenu)}
-            className="text-[#2D231F] text-xs w-12 text-center font-mono py-1 rounded hover:bg-[#F3EDE3] transition-colors"
-            title="Chọn tỷ lệ zoom"
+            onClick={() => onZoomChange(Math.max(25, zoom - 10))}
+            className="p-1.5 text-[#7A6A5C] hover:text-[#2D231F] hover:bg-[#F3EDE3] rounded transition-colors"
+            title="Thu nhỏ"
           >
-            {zoom}%
+            <ZoomOut size={15} />
           </button>
-          {showZoomMenu && (
-            <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 bg-[#EDE4D5] border border-[#D9CDBE] rounded-lg shadow-xl py-1 min-w-20 z-50">
-              {ZOOM_PRESETS.map((pct) => (
-                <button
-                  key={pct}
-                  onClick={() => {
-                    onZoomChange(pct);
-                    setShowZoomMenu(false);
-                  }}
-                  className={`w-full text-xs px-3 py-1.5 text-center transition-colors ${
-                    zoom === pct
-                      ? "text-[#2D231F] bg-[rgba(45, 35, 31,0.08)]"
-                      : "text-[#7A6A5C] hover:bg-[#F3EDE3]"
-                  }`}
-                >
-                  {pct}%
-                </button>
-              ))}
-            </div>
-          )}
+
+          <div className="relative" ref={zoomMenuRef}>
+            <button
+              onClick={() => setShowZoomMenu(!showZoomMenu)}
+              className="text-[#2D231F] text-xs w-11 text-center font-mono py-1 rounded hover:bg-[#F3EDE3] transition-colors"
+              title="Chọn tỷ lệ zoom"
+            >
+              {zoom}%
+            </button>
+            {showZoomMenu && (
+              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 bg-[#EDE4D5] border border-[#D9CDBE] rounded-lg shadow-xl py-1 min-w-20 z-50">
+                {ZOOM_PRESETS.map((pct) => (
+                  <button
+                    key={pct}
+                    onClick={() => {
+                      onZoomChange(pct);
+                      setShowZoomMenu(false);
+                    }}
+                    className={`w-full text-xs px-3 py-1.5 text-center transition-colors ${
+                      zoom === pct
+                        ? "text-[#2D231F] bg-[rgba(45, 35, 31,0.08)]"
+                        : "text-[#7A6A5C] hover:bg-[#F3EDE3]"
+                    }`}
+                  >
+                    {pct}%
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <button
+            onClick={() => onZoomChange(Math.min(200, zoom + 10))}
+            className="p-1.5 text-[#7A6A5C] hover:text-[#2D231F] hover:bg-[#F3EDE3] rounded transition-colors"
+            title="Phóng to"
+          >
+            <ZoomIn size={15} />
+          </button>
         </div>
 
-        <button
-          onClick={() => onZoomChange(Math.min(200, zoom + 10))}
-          className="p-1.5 text-[#7A6A5C] hover:text-[#2D231F] hover:bg-[#F3EDE3] rounded transition-colors"
-          title="Phóng to"
-        >
-          <ZoomIn size={15} />
-        </button>
-
-        <div className="h-5 w-px bg-[#D9CDBE] mx-0.5" />
+        <div className="h-4 sm:h-5 w-px bg-[#D9CDBE] mx-0.5" />
 
         <button
           onClick={onUndo}
           disabled={!canUndo}
-          className="p-1.5 text-[#7A6A5C] hover:text-[#2D231F] hover:bg-[#F3EDE3] rounded transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+          className="p-1 sm:p-1.5 text-[#7A6A5C] hover:text-[#2D231F] hover:bg-[#F3EDE3] rounded transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
           title="Hoàn tác (Ctrl+Z)"
         >
           <Undo2 size={15} />
@@ -408,26 +407,26 @@ export default function TopBar({
         <button
           onClick={onRedo}
           disabled={!canRedo}
-          className="p-1.5 text-[#7A6A5C] hover:text-[#2D231F] hover:bg-[#F3EDE3] rounded transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+          className="p-1 sm:p-1.5 text-[#7A6A5C] hover:text-[#2D231F] hover:bg-[#F3EDE3] rounded transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
           title="Làm lại (Ctrl+Shift+Z)"
         >
           <Redo2 size={15} />
         </button>
 
-        <div className="h-5 w-px bg-[#D9CDBE] mx-0.5" />
+        <div className="h-4 sm:h-5 w-px bg-[#D9CDBE] mx-0.5" />
 
         <button
           onClick={onSave}
-          className="flex items-center gap-1.5 px-2.5 py-1.5 bg-[#D9CDBE] text-[#2D231F] text-xs rounded hover:bg-[#D9CDBE] transition-colors"
+          className="flex items-center gap-1 px-2 sm:px-2.5 py-1.5 bg-[#D9CDBE] text-[#2D231F] text-xs rounded hover:bg-[#D9CDBE] transition-colors"
           title="Lưu (Ctrl+S)"
         >
           <Save size={13} />
-          <span className="hidden sm:inline">Lưu (Tự động lưu sau 5 giây)</span>
+          <span className="hidden xl:inline">Lưu</span>
         </button>
 
         <button
           onClick={onPublish}
-          className="flex items-center gap-1.5 px-2.5 py-1.5 bg-[#2D231F] text-[#F3EDE3] text-xs font-bold rounded hover:opacity-90 transition-colors"
+          className="flex items-center gap-1 px-2 sm:px-2.5 py-1.5 bg-[#2D231F] text-[#F3EDE3] text-xs font-bold rounded hover:opacity-90 transition-colors"
           title="Xuất bản"
         >
           <Upload size={13} />

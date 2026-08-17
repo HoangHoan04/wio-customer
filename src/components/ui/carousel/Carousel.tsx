@@ -15,6 +15,9 @@ export interface CarouselColors {
   accent?: string;
   buttonBg?: string;
   buttonHoverBg?: string;
+  buttonIconColor?: string;
+  buttonIconHoverColor?: string;
+  buttonBorder?: string;
   dotInactive?: string;
 }
 
@@ -49,9 +52,12 @@ export default function Carousel({
   className = "",
 }: CarouselProps) {
   const accent = colors.accent ?? "#2D231F";
-  const buttonBg = colors.buttonBg ?? "rgba(45, 35, 31, 0.9)";
-  const buttonHoverBg = colors.buttonHoverBg ?? `${accent}22`;
-  const dotInactive = colors.dotInactive ?? `${accent}40`;
+  const buttonBg = colors.buttonBg ?? "#2D231F";
+  const buttonHoverBg = colors.buttonHoverBg ?? "#43352F";
+  const buttonIconColor = colors.buttonIconColor ?? "#F3EDE3";
+  const buttonIconHoverColor = colors.buttonIconHoverColor ?? "#FFFFFF";
+  const buttonBorder = colors.buttonBorder ?? "rgba(45, 35, 31, 0.2)";
+  const dotInactive = colors.dotInactive ?? "rgba(45, 35, 31, 0.25)";
 
   const minHeight = sizes.minHeight ?? "600px";
   const trackHeight = sizes.trackHeight ?? "500px";
@@ -129,28 +135,32 @@ export default function Carousel({
       </div>
 
       {showControls &&
-        (["prev", "next"] as const).map((side) => (
-          <button
-            key={side}
-            onClick={side === "prev" ? handlePrev : handleNext}
-            aria-label={side === "prev" ? "Previous" : "Next"}
-            className={`absolute ${side === "prev" ? "left-2 sm:left-5" : "right-2 sm:right-5"} top-1/2 z-200 flex h-10 w-10 sm:h-14 sm:w-14 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border-2 backdrop-blur-[10px] transition-all duration-300 hover:scale-110`}
-            style={{
-              borderColor: accent,
-              background: hoveredBtn === side ? buttonHoverBg : buttonBg,
-            }}
-            onMouseEnter={() => setHoveredBtn(side)}
-            onMouseLeave={() => setHoveredBtn(null)}
-          >
-            {side === "prev"
-              ? (prevIcon ?? (
-                  <ChevronLeft size={20} style={{ color: accent }} />
-                ))
-              : (nextIcon ?? (
-                  <ChevronRight size={20} style={{ color: accent }} />
-                ))}
-          </button>
-        ))}
+        (["prev", "next"] as const).map((side) => {
+          const isHovered = hoveredBtn === side;
+          return (
+            <button
+              key={side}
+              onClick={side === "prev" ? handlePrev : handleNext}
+              aria-label={side === "prev" ? "Previous" : "Next"}
+              className={`absolute ${side === "prev" ? "left-2 sm:left-6" : "right-2 sm:right-6"} top-1/2 z-200 flex h-10 w-10 sm:h-12 sm:w-12 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border shadow-lg backdrop-blur-md transition-all duration-300 hover:scale-105 active:scale-95`}
+              style={{
+                borderColor: buttonBorder,
+                background: isHovered ? buttonHoverBg : buttonBg,
+                color: isHovered ? buttonIconHoverColor : buttonIconColor,
+              }}
+              onMouseEnter={() => setHoveredBtn(side)}
+              onMouseLeave={() => setHoveredBtn(null)}
+            >
+              {side === "prev"
+                ? (prevIcon ?? (
+                    <ChevronLeft size={22} color="currentColor" strokeWidth={2.2} />
+                  ))
+                : (nextIcon ?? (
+                    <ChevronRight size={22} color="currentColor" strokeWidth={2.2} />
+                  ))}
+            </button>
+          );
+        })}
 
       {showDots && (
         <div className="absolute bottom-0 justify-center items-center left-1/2 z-200 flex -translate-x-1/2 gap-2.5">
@@ -159,11 +169,12 @@ export default function Carousel({
               key={index}
               onClick={() => setCurrentIndex(index)}
               aria-label={`Slide ${index + 1}`}
-              className="h-3 w-3 cursor-pointer rounded-full border-none transition-all duration-300"
+              className="h-2.5 w-2.5 cursor-pointer rounded-full border-none transition-all duration-300"
               style={{
-                width: currentIndex === index ? "22px" : "12px",
-                height: currentIndex === index ? "22px" : "12px",
+                width: currentIndex === index ? "20px" : "10px",
+                height: "8px",
                 background: currentIndex === index ? accent : dotInactive,
+                borderRadius: "4px",
               }}
             />
           ))}

@@ -3,6 +3,7 @@
 import Carousel from "@/components/ui/carousel/Carousel";
 import CarouselItem from "@/components/ui/carousel/CarouselItem";
 import { templateService, type ITemplate } from "@/services/template.service";
+import { filterPublicTemplates, PUBLIC_TEMPLATE_WHERE } from "@/utils/template-filters";
 import { Crown, Eye, Sparkles } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -145,12 +146,15 @@ function TemplateCard({ template }: { template: ITemplate }) {
         )}
 
         <div
-          className={`absolute bottom-3 left-1/2 -translate-x-1/2 bg-black/70 backdrop-blur-xs border border-white/10 px-3 py-1 rounded-full flex items-center gap-1.5 transition-all duration-500 ${
+          className={`absolute bottom-3 left-1/2 -translate-x-1/2 bg-[#2D231F]/85 text-[#F3EDE3] backdrop-blur-xs border border-[#C4B09A]/30 px-3.5 py-1 rounded-full flex items-center gap-1.5 transition-all duration-500 text-[11px] font-medium shadow-md ${
             isHovered && iframeLoaded
               ? "opacity-100 translate-y-0"
-              : "opacity-0 translate-y-2"
+              : "opacity-0 translate-y-2 pointer-events-none"
           }`}
-        ></div>
+        >
+          <Sparkles size={12} className="text-[#C4B09A]" />
+          <span>Xem trực tiếp</span>
+        </div>
       </div>
 
       <div className="flex flex-1 flex-col gap-2.5 px-5 pb-5 pt-3 relative">
@@ -176,10 +180,10 @@ function TemplateCard({ template }: { template: ITemplate }) {
             {template.tags?.slice(0, 2).map((tag) => (
               <span
                 key={tag}
-                className="rounded-md px-2 py-0.5 text-[10px] font-semibold tracking-wider transition-all duration-300 group-hover/card:bg-[#2D231F]/20"
+                className="rounded-md px-2 py-0.5 text-[10px] font-semibold tracking-wider transition-all duration-300 group-hover/card:bg-[#2D231F]/15"
                 style={{
-                  background: "rgba(45, 35, 31,0.12)",
-                  color: "#C4B09A",
+                  background: "rgba(45, 35, 31, 0.08)",
+                  color: "#7A6A5C",
                 }}
               >
                 #{tag}
@@ -190,7 +194,7 @@ function TemplateCard({ template }: { template: ITemplate }) {
           {template.viewCount !== undefined && (
             <span
               className="flex items-center gap-1 text-[11px] font-medium"
-              style={{ color: "#8a7a6a" }}
+              style={{ color: "#7A6A5C" }}
             >
               <Eye size={12} />
               {template.viewCount} lượt xem
@@ -205,12 +209,17 @@ function TemplateCard({ template }: { template: ITemplate }) {
 export default function TemplateSection() {
   const router = useRouter();
   const [templates, setTemplates] = useState<ITemplate[]>([]);
+  const [totalCount, setTotalCount] = useState(0);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     templateService
-      .getTemplates({ page: 1, limit: 10 })
-      .then((res) => setTemplates(res.data))
+      .getTemplates({ skip: 0, take: 20, where: PUBLIC_TEMPLATE_WHERE })
+      .then((res) => {
+        const items = filterPublicTemplates(res.data);
+        setTemplates(items);
+        setTotalCount(res.total ?? items.length);
+      })
       .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
@@ -258,8 +267,11 @@ export default function TemplateSection() {
         <Carousel
           colors={{
             accent: "#2D231F",
-            buttonBg: "rgba(45, 35, 31, 0.95)",
-            buttonHoverBg: "rgba(45, 35, 31, 0.25)",
+            buttonBg: "#2D231F",
+            buttonIconColor: "#F3EDE3",
+            buttonHoverBg: "#43352F",
+            buttonIconHoverColor: "#FFFFFF",
+            buttonBorder: "rgba(45, 35, 31, 0.25)",
             dotInactive: "rgba(45, 35, 31, 0.2)",
           }}
           sizes={{ itemWidth: "330px", itemHeight: "500px" }}
@@ -271,9 +283,9 @@ export default function TemplateSection() {
               hoverEffect={false}
               colors={{
                 accent: "#2D231F",
-                borderInactive: "rgba(45, 35, 31,0.15)",
+                borderInactive: "rgba(45, 35, 31, 0.15)",
                 shadowActive:
-                  "0 20px 50px rgba(0,0,0,0.6), 0 0 30px rgba(45, 35, 31,0.15)",
+                  "0 20px 50px rgba(45, 35, 31, 0.25), 0 0 30px rgba(45, 35, 31, 0.1)",
               }}
               onItemClick={() => handleTemplateClick(template.slug)}
             >
@@ -289,7 +301,7 @@ export default function TemplateSection() {
               className="inline-flex items-center gap-3 px-10 py-4 border border-[#2D231F] text-[#2D231F] text-xs font-bold tracking-widest uppercase rounded-lg hover:bg-[#2D231F] hover:text-[#F3EDE3] transition-all duration-300 hover:scale-[1.02]"
             >
               <Sparkles size={14} />
-              Khám phá toàn bộ {templates.length}+ mẫu
+              Khám phá toàn bộ {totalCount || templates.length}+ mẫu
             </a>
           </div>
         </ScrollReveal>

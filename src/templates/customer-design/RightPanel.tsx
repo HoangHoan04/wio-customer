@@ -27,6 +27,7 @@ import {
   Unlink,
   ChevronDown,
   ChevronRight,
+  X,
 } from "lucide-react";
 import React, { useState, useMemo } from "react";
 import type { EditorElement } from "./types";
@@ -39,6 +40,7 @@ interface Props {
   onSelectElement: (id: string | null) => void;
   onUpdateElements: (updater: EditorElement[] | ((prev: EditorElement[]) => EditorElement[])) => void;
   onUngroupElements?: (groupId: string) => void;
+  onClose?: () => void;
 }
 
 type TabType = "layers" | "settings";
@@ -51,6 +53,7 @@ export default function RightPanel({
   onSelectElement,
   onUpdateElements,
   onUngroupElements,
+  onClose,
 }: Props) {
   const [activeTab, setActiveTab] = useState<TabType>("layers");
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({});
@@ -205,11 +208,11 @@ export default function RightPanel({
   };
 
   return (
-    <aside className="w-80 bg-[#F3EDE3] border-l border-[#D9CDBE] flex flex-col overflow-y-auto shrink-0 select-none">
-      <div className="flex border-b border-[#D9CDBE] shrink-0 bg-[#EDE4D5]">
+    <aside className="w-[calc(100vw-32px)] sm:w-80 max-w-[340px] bg-[#F3EDE3] border-l border-[#D9CDBE] flex flex-col overflow-y-auto shrink-0 select-none shadow-2xl md:shadow-none h-full">
+      <div className="flex items-center border-b border-[#D9CDBE] shrink-0 bg-[#EDE4D5]">
         <button
           onClick={() => setActiveTab("layers")}
-          className={`flex-1 py-3 px-4 text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 border-b-2 transition-all ${activeTab === "layers"
+          className={`flex-1 py-3 px-3 sm:px-4 text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-1.5 sm:gap-2 border-b-2 transition-all ${activeTab === "layers"
             ? "text-[#2D231F] border-[#2D231F] bg-[#F3EDE3]/50"
             : "text-[#7A6A5C] border-transparent hover:text-[#2D231F] hover:bg-[#F3EDE3]/20"
             }`}
@@ -219,7 +222,7 @@ export default function RightPanel({
         </button>
         <button
           onClick={() => setActiveTab("settings")}
-          className={`flex-1 py-3 px-4 text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 border-b-2 transition-all ${activeTab === "settings"
+          className={`flex-1 py-3 px-3 sm:px-4 text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-1.5 sm:gap-2 border-b-2 transition-all ${activeTab === "settings"
             ? "text-[#2D231F] border-[#2D231F] bg-[#F3EDE3]/50"
             : "text-[#7A6A5C] border-transparent hover:text-[#2D231F] hover:bg-[#F3EDE3]/20"
             }`}
@@ -227,6 +230,15 @@ export default function RightPanel({
           <Settings size={14} />
           Cài đặt
         </button>
+        {onClose && (
+          <button
+            onClick={onClose}
+            className="p-2 mr-1 text-[#7A6A5C] hover:text-[#2D231F] hover:bg-[#F3EDE3] rounded transition-colors"
+            title="Đóng panel"
+          >
+            <X size={16} />
+          </button>
+        )}
       </div>
 
       <div className="flex-1 overflow-y-auto p-4">

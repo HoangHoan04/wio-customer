@@ -46,16 +46,30 @@ export default function HeroSection() {
           transition: opacity 0.8s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
         .tct-phone-left.animate {
-          opacity: 1;
-          transform: rotateY(25deg) rotateX(5deg) rotateZ(-8deg) translateZ(-60px) !important;
+          opacity: 0.95;
+          transform: rotateY(22deg) rotateX(4deg) rotateZ(-7deg) translateZ(-50px) !important;
         }
         .tct-phone-right.animate {
-          opacity: 1;
-          transform: rotateY(-25deg) rotateX(5deg) rotateZ(8deg) translateZ(-60px) !important;
+          opacity: 0.95;
+          transform: rotateY(-22deg) rotateX(4deg) rotateZ(7deg) translateZ(-50px) !important;
         }
         .tct-phone-center.animate {
           opacity: 1;
-          transform: rotateY(-5deg) rotateX(3deg) translateZ(40px) !important;
+          transform: rotateY(-4deg) rotateX(2deg) translateZ(30px) !important;
+        }
+        @media (max-width: 639px) {
+          .tct-phone-left.animate {
+            opacity: 0.7;
+            transform: rotateY(18deg) rotateX(3deg) rotateZ(-5deg) translateX(-20px) translateZ(-50px) scale(0.8) !important;
+          }
+          .tct-phone-right.animate {
+            opacity: 0.7;
+            transform: rotateY(-18deg) rotateX(3deg) rotateZ(5deg) translateX(20px) translateZ(-50px) scale(0.8) !important;
+          }
+          .tct-phone-center.animate {
+            opacity: 1;
+            transform: rotateY(0deg) rotateX(0deg) translateZ(20px) scale(0.88) !important;
+          }
         }
       `}</style>
 
@@ -101,20 +115,20 @@ export default function HeroSection() {
         <Award size={60} color={TAN} />
       </div>
 
-      <div className="relative z-10 w-full px-4 py-12 pt-28 sm:px-8 lg:px-16">
-        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-12 lg:flex-row">
+      <div className="relative z-10 w-full px-4 pt-36 min-[480px]:pt-40 sm:pt-44 lg:pt-36 pb-16 sm:pb-24 lg:pb-28 sm:px-8 lg:px-16">
+        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-8 lg:gap-12 lg:flex-row">
           <div className="flex w-full flex-col items-center text-center lg:w-1/2 lg:items-start lg:text-left">
             <div
-              className="tct-hero-text mb-7 inline-flex items-center gap-3 text-[11px] tracking-[5px] uppercase"
+              className="tct-hero-text mb-5 sm:mb-7 inline-flex items-center gap-2 sm:gap-3 text-[10px] sm:text-[11px] tracking-[3px] sm:tracking-[5px] uppercase"
               style={{ color: MUTED, fontFamily: SERIF }}
             >
-              <Heart size={14} color={INK} fill={INK} />
+              <Heart size={13} color={INK} fill={INK} />
               <span>Nền tảng thiệp online thế hệ mới</span>
-              <Heart size={14} color={INK} fill={INK} />
+              <Heart size={13} color={INK} fill={INK} />
             </div>
 
             <h1
-              className="tct-hero-text-2 mb-4 text-[clamp(2.2rem,5vw,3.5rem)] font-semibold leading-tight"
+              className="tct-hero-text-2 mb-4 text-[clamp(2rem,5vw,3.5rem)] font-semibold leading-tight"
               style={{ fontFamily: SERIF, color: INK }}
             >
               Thiệp online
@@ -123,30 +137,30 @@ export default function HeroSection() {
             </h1>
 
             <p
-              className="tct-hero-text-3 mb-2 max-w-150 text-[clamp(1rem,1.5vw,1.25rem)] italic"
+              className="tct-hero-text-3 mb-2 max-w-150 text-[clamp(0.95rem,2vw,1.25rem)] italic leading-relaxed"
               style={{ fontFamily: SERIF, color: MUTED }}
             >
               Gửi lời mời tinh tế, tự động hóa danh sách khách (RSVP), tích hợp
               mừng cưới không tiền mặt.
             </p>
             <p
-              className="tct-hero-text-3 mb-8 max-w-150 text-[clamp(0.9rem,1.2vw,1.1rem)]"
+              className="tct-hero-text-3 mb-7 sm:mb-8 max-w-150 text-[clamp(0.85rem,1.5vw,1.1rem)]"
               style={{ fontFamily: SERIF, color: `${MUTED}B3` }}
             >
               Tạo thiệp độc bản chỉ trong vài phút — cưới hỏi và mọi dịp khác.
             </p>
 
-            <div className="tct-hero-text-3 flex flex-wrap justify-center gap-4 lg:justify-start">
+            <div className="tct-hero-text-3 flex w-full flex-col sm:flex-row sm:w-auto flex-wrap justify-center gap-3 sm:gap-4 lg:justify-start">
               <Link
                 href={PUBLIC_ROUTES.TEMPLATES}
-                className="px-9 py-4 text-sm font-bold tracking-widest uppercase shadow-lg transition-all hover:-translate-y-px hover:shadow-xl"
+                className="w-full sm:w-auto text-center px-8 sm:px-9 py-3.5 sm:py-4 text-xs sm:text-sm font-bold tracking-widest uppercase shadow-lg transition-all hover:-translate-y-px hover:shadow-xl"
                 style={{ background: INK, color: PAPER, fontFamily: SERIF }}
               >
                 Thiết kế ngay
               </Link>
               <Link
                 href={PUBLIC_ROUTES.USER_MANUAL}
-                className="border-[1.5px] px-9 py-4 text-sm font-semibold tracking-widest uppercase transition-colors hover:bg-[#2D231F]/6"
+                className="w-full sm:w-auto text-center border-[1.5px] px-8 sm:px-9 py-3.5 sm:py-4 text-xs sm:text-sm font-semibold tracking-widest uppercase transition-colors hover:bg-[#2D231F]/6"
                 style={{
                   borderColor: INK,
                   color: INK,
@@ -158,16 +172,16 @@ export default function HeroSection() {
             </div>
           </div>
 
-          <div className="flex min-h-150 w-full items-center justify-center lg:w-1/2">
+          <div className="flex min-h-[390px] sm:min-h-[440px] lg:min-h-120 w-full items-center justify-center lg:w-1/2 overflow-visible py-2 sm:py-4">
             <div
-              className="relative"
-              style={{ width: "580px", height: "540px", perspective: "1200px" }}
+              className="relative flex items-center justify-center w-full max-w-[300px] sm:max-w-[420px] lg:max-w-[480px] h-[390px] sm:h-[440px] lg:h-[480px]"
+              style={{ perspective: "1200px" }}
             >
               <IPhoneMockup
                 className="tct-phone-left"
                 size="small"
-                position={{ left: "60px", top: "100px" }}
-                transform="rotateY(25deg) rotateX(5deg) rotateZ(-8deg) translateZ(-60px)"
+                position={{ left: "50%", top: "50px", marginLeft: "-165px" }}
+                transform="rotateY(22deg) rotateX(4deg) rotateZ(-7deg) translateZ(-50px)"
               >
                 <div
                   className="flex h-full flex-1 flex-col px-4 pb-4 pt-8 text-[#F3EDE3]"
@@ -232,8 +246,8 @@ export default function HeroSection() {
               <IPhoneMockup
                 className="tct-phone-right"
                 size="small"
-                position={{ right: "10px", top: "100px" }}
-                transform="rotateY(-25deg) rotateX(5deg) rotateZ(8deg) translateZ(-60px)"
+                position={{ left: "50%", top: "50px", marginLeft: "-25px" }}
+                transform="rotateY(-22deg) rotateX(4deg) rotateZ(7deg) translateZ(-50px)"
               >
                 <div
                   className="flex h-full flex-1 flex-col px-4 pb-4 pt-8 text-[#F3EDE3]"
@@ -296,8 +310,8 @@ export default function HeroSection() {
               <IPhoneMockup
                 className="tct-phone-center"
                 size="medium"
-                position={{ left: "50%", top: "50px", marginLeft: "-80px" }}
-                transform="rotateY(-5deg) rotateX(3deg) translateZ(40px)"
+                position={{ left: "50%", top: "20px", marginLeft: "-110px" }}
+                transform="rotateY(-4deg) rotateX(2deg) translateZ(30px)"
               >
                 <div
                   className="relative flex h-full flex-1 flex-col text-[#F3EDE3]"

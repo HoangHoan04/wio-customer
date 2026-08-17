@@ -7,6 +7,7 @@ import {
   type ICardType,
 } from "@/services/card-type.service";
 import { templateService, type ITemplate } from "@/services/template.service";
+import { filterPublicTemplates, PUBLIC_TEMPLATE_WHERE } from "@/utils/template-filters";
 import { Plus } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -52,15 +53,16 @@ function TemplatesPageContent() {
         skip: 0,
         take: 50,
         where: {
-          isShow: true,
+          ...PUBLIC_TEMPLATE_WHERE,
           ...(selectedCardType?.code
             ? { cardType: selectedCardType.code }
             : {}),
         },
       })
       .then((res) => {
-        setTemplates(res.data ?? []);
-        setFiltered(res.data ?? []);
+        const items = filterPublicTemplates(res.data);
+        setTemplates(items);
+        setFiltered(items);
       })
       .catch(console.error)
       .finally(() => setLoading(false));

@@ -171,7 +171,7 @@ export default function LeftToolbar({
       className="flex h-full shrink-0 select-none"
       onMouseLeave={handleMouseLeave}
     >
-      <aside className="w-18 bg-[#EDE4D5] flex flex-col items-center py-2 h-full shrink-0 border-r border-[#D9CDBE]">
+      <aside className="w-14 sm:w-18 bg-[#EDE4D5] flex flex-col items-center py-2 h-full shrink-0 border-r border-[#D9CDBE] overflow-y-auto">
         {TOOLS.map((tool) => {
           const Icon = tool.icon;
           const isActive = selectedTool === tool.id;
@@ -182,7 +182,7 @@ export default function LeftToolbar({
               onMouseEnter={() => handleMouseEnter(tool.id)}
               onClick={() => handleClick(tool.id)}
               className={clsx(
-                "w-16 h-16 flex flex-col items-center justify-center rounded-lg transition-all duration-150 my-0.5 relative group",
+                "w-12 h-13 sm:w-16 sm:h-16 flex flex-col items-center justify-center rounded-lg transition-all duration-150 my-0.5 relative group",
                 isActive
                   ? "bg-[#F3EDE3] text-[#2D231F]"
                   : "text-[#7A6A5C] hover:text-[#2D231F] hover:bg-[#F3EDE3]/70"
@@ -193,10 +193,10 @@ export default function LeftToolbar({
               )}
 
               <div className="transition-transform duration-150 group-hover:scale-105">
-                <Icon size={22} strokeWidth={isActive ? 2.2 : 1.8} />
+                <Icon size={20} strokeWidth={isActive ? 2.2 : 1.8} />
               </div>
 
-              <span className="text-[10px] font-medium tracking-wide mt-1.5 text-center px-1 truncate w-full">
+              <span className="text-[9px] sm:text-[10px] font-medium tracking-wide mt-1 text-center px-0.5 truncate w-full">
                 {tool.label}
               </span>
             </button>
@@ -207,7 +207,7 @@ export default function LeftToolbar({
       {activePanel && (
         <div
           ref={panelRef}
-          className="w-[330px] bg-[#F3EDE3] border-r border-[#D9CDBE] flex flex-col overflow-hidden animate-panel-in"
+          className="w-[calc(100vw-56px)] sm:w-[330px] max-w-[330px] bg-[#F3EDE3] border-r border-[#D9CDBE] flex flex-col overflow-hidden animate-panel-in shadow-2xl md:shadow-none"
           onMouseEnter={() => {
             if (isPinned) setHoveredTool(activePanel);
           }}

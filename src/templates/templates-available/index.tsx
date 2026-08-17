@@ -1,29 +1,17 @@
 "use client";
 
 import { enumData } from "@/common/enum";
-import dynamic from "next/dynamic";
 import React, { Suspense } from "react";
-
-const BohoFloralBrown = dynamic(() => import("./BohoFloralBrown/index"));
-const BohoFloralGreen = dynamic(() => import("./BohoFloralGreen/index"));
-const BohoFloralPink = dynamic(() => import("./BohoFloralPink/index"));
-const DragonPhoenixRed = dynamic(() => import("./DragonPhoenixRed/index"));
-const RedDoubleHappiness = dynamic(() => import("./RedDoubleHappiness/index"));
-const RoyalRed = dynamic(() => import("./RoyalRed/index"));
-const BirthdayCoral = dynamic(() => import("./BirthdayCoral/index"));
-const GraduationAcademic = dynamic(() => import("./GraduationAcademic/index"));
-const CustomDesignTemplate = dynamic(() => import("./CustomDesignTemplate/index"));
+import {
+  getThemeConfig,
+  getThemeModule,
+  listThemeConfigs,
+} from "./themes/registry";
+import type { PresetThemeConfig } from "../shared/types/preset-theme.types";
+import type { ThemeModule } from "./themes/registry";
 
 const DefaultComponent: React.FC = () => (
-  <div
-    style={{
-      padding: "50px",
-      textAlign: "center",
-      minHeight: "100vh",
-      backgroundColor: "#f9f9f9",
-      color: "#333",
-    }}
-  >
+  <div className="flex min-h-screen items-center justify-center bg-[#f9f9f9] p-[50px] text-center text-[#333]">
     <h1>Bản xem trước của Theme này đang được phát triển</h1>
   </div>
 );
@@ -34,46 +22,36 @@ interface ThemeItem {
   name: string;
   slug?: string;
   aliases?: string[];
+  config?: PresetThemeConfig | null;
+  module?: ThemeModule | null;
 }
 
-const themeList: ThemeItem[] = [
-  { component: BohoFloralBrown, ...enumData.THEME_CODE.BOHO_FLORAL_BROWN },
-  { component: BohoFloralGreen, ...enumData.THEME_CODE.BOHO_FLORAL_GREEN },
-  { component: BohoFloralPink, ...enumData.THEME_CODE.BOHO_FLORAL_PINK },
-  { component: DragonPhoenixRed, ...enumData.THEME_CODE.DRAGON_PHOENIX_RED },
-  {
-    component: RedDoubleHappiness,
-    ...enumData.THEME_CODE.RED_DOUBLE_HAPPINESS,
-  },
-  { component: RoyalRed, ...enumData.THEME_CODE.ROYAL_RED },
-  {
-    component: BirthdayCoral,
-    ...enumData.THEME_CODE.BIRTHDAY_CORAL,
-    aliases: [
-      "sinh-nhat-coral",
-      "sinh-nhat-san-ho",
-      "birthday-coral",
-      "birthday_coral",
-      "sinh-nhat",
-      "birthday",
-    ],
-  },
-  {
-    component: GraduationAcademic,
-    ...enumData.THEME_CODE.GRADUATION_ACADEMIC,
-    aliases: [
-      "tot-nghiep-navy",
-      "tot-nghiep-academic",
-      "grad-navy",
-      "grad_navy",
-      "graduation-academic",
-      "graduation_academic",
-      "tot-nghiep",
-      "graduation",
-    ],
-  },
-  { component: CustomDesignTemplate, ...enumData.THEME_CODE.CUSTOM_DESIGN },
-];
+function buildThemeComponent(module: ThemeModule): React.ComponentType<any> {
+  const Render = module.Render;
+  return function ThemeEntry(props: any) {
+    return <Render {...props} />;
+  };
+}
+
+const themeList: ThemeItem[] = Object.values(enumData.THEME_CODE)
+  .filter((meta) => meta.code !== "CUSTOM_DESIGN")
+  .map((meta) => {
+    const module = getThemeModule(meta.code);
+    return {
+      component: module ? buildThemeComponent(module) : DefaultComponent,
+      code: meta.code,
+      name: meta.name,
+      slug: meta.slug,
+      config: module?.config ?? null,
+      module,
+      aliases:
+        meta.code === "GRADUATION_ACADEMIC"
+          ? ["GRAD_NAVY", "graduation-academic"]
+          : meta.code === "GRAD_NAVY"
+            ? ["GRADUATION_ACADEMIC"]
+            : module?.aliases,
+    };
+  });
 
 export const ThemeRegistry: Record<string, React.ComponentType<any>> = {};
 themeList.forEach(({ component, code, slug, aliases }) => {
@@ -107,18 +85,14 @@ export function resolveThemeKey(key: string): string {
   return key;
 }
 
+export function getThemeConfigByCode(themeCode: string) {
+  return getThemeConfig(resolveThemeKey(themeCode));
+}
+
+export { getThemeConfig, listThemeConfigs, getThemeModule };
+
 const ThemeFallback = () => (
-  <div
-    style={{
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-      minHeight: "100vh",
-      backgroundColor: "#fdfbf7",
-      color: "#666",
-      fontFamily: "sans-serif",
-    }}
-  >
+  <div className="flex min-h-screen items-center justify-center bg-[#fdfbf7] font-sans text-[#666]">
     <p>Đang tải giao diện...</p>
   </div>
 );

@@ -31,7 +31,7 @@ export default function CarouselItem({
   isActive = false,
   accentColor = "#2D231F",
   colors = {},
-  gradient = "linear-gradient(160deg, #2d1219 0%, #3d1a24 50%, #ffffff 100%)",
+  gradient = "transparent",
   borderRadius = "16px",
   hoverEffect = true,
   className = "",
@@ -39,10 +39,11 @@ export default function CarouselItem({
   onItemClick,
 }: CarouselItemProps) {
   const accent = colors.accent ?? accentColor;
-  const borderInactive = colors.borderInactive ?? "rgba(45, 35, 31,0.2)";
+  const borderInactive = colors.borderInactive ?? "rgba(45, 35, 31, 0.15)";
   const shadowActive =
-    colors.shadowActive ?? `0 25px 50px rgba(0,0,0,0.5), 0 0 80px ${accent}4d`;
-  const shadowInactive = colors.shadowInactive ?? "0 15px 35px rgba(0,0,0,0.4)";
+    colors.shadowActive ?? `0 20px 40px rgba(45, 35, 31, 0.16)`;
+  const shadowInactive =
+    colors.shadowInactive ?? "0 8px 24px rgba(45, 35, 31, 0.08)";
 
   const [isHovered, setIsHovered] = useState(false);
 

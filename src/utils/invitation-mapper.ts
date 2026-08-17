@@ -46,6 +46,19 @@ const SECTION = {
   guestbookFloating: "guestbookFloating",
 } as const;
 
+function sectionEnabled(
+  section: Record<string, unknown>,
+  key: string,
+  defaultValue = true,
+): boolean {
+  const value = section[key];
+  if (typeof value === "boolean") return value;
+  if (value && typeof value === "object" && "enabled" in (value as object)) {
+    return (value as { enabled?: boolean }).enabled !== false;
+  }
+  return defaultValue;
+}
+
 function hostByRole(hosts: InvitationHost[] | undefined, role: string) {
   return (hosts || []).find((h) => h.role === role);
 }
@@ -230,9 +243,7 @@ export function invitationToThemeData(
   );
 
   return {
-    themeCode: hasCanvasDesign(invitation.customDesign)
-      ? "CUSTOM_DESIGN"
-      : invitation.template?.themeCode || "CUSTOM_DESIGN",
+    themeCode: invitation.template?.themeCode || "BOHO_FLORAL_BROWN",
     customDesign: invitation.customDesign,
     slug: invitation.slug,
     cardType: invitation.cardType,
@@ -255,9 +266,9 @@ export function invitationToThemeData(
     giftsTitle: copy.giftsTitle,
     giftsSubtitle: copy.giftsSubtitle,
     welcomeLine: copy.welcomeLine,
-    showHeroImage: section[SECTION.showHero] ?? true,
+    showHeroImage: sectionEnabled(section, SECTION.showHero),
     heroImageMain: invitation.heroImageUrl || "",
-    showIntro: section[SECTION.showIntro] ?? true,
+    showIntro: sectionEnabled(section, SECTION.showIntro),
     introText: invitation.invitationText || "",
     events: events.map((e) => ({
       id: e.id || crypto.randomUUID(),
@@ -266,9 +277,10 @@ export function invitationToThemeData(
       title: e.title || "",
       address: e.address || e.venue || "",
     })),
-    showGallery: section[SECTION.showGallery] ?? true,
+    showGallery: sectionEnabled(section, SECTION.showGallery),
     galleryLayout: extra.galleryLayout || "grid",
     gallery: photos.map((p) => p.url),
+    photos: photos.map((p) => p.url),
     showParty: true,
     partyType: extra.partyType || "wedding",
     partyDate: formatDateISO(primary?.startsAt || invitation.primaryEventAt),
@@ -282,11 +294,11 @@ export function invitationToThemeData(
     ),
     partyAddress: primary?.address || primary?.venue || "",
     partyMapUrl: primary?.mapsUrl || "",
-    showCountdown: section[SECTION.showCountdown] ?? true,
-    showMap: section[SECTION.showMap] ?? true,
-    showDressCode: section[SECTION.showDressCode] ?? true,
+    showCountdown: sectionEnabled(section, SECTION.showCountdown),
+    showMap: sectionEnabled(section, SECTION.showMap),
+    showDressCode: sectionEnabled(section, SECTION.showDressCode, false),
     dressCodes: extra.dressCodes || [],
-    showTimeline: section[SECTION.showTimeline] ?? true,
+    showTimeline: sectionEnabled(section, SECTION.showTimeline, false),
     timelineTitle: extra.timelineTitle || "Lịch trình",
     timeline: [...(invitation.timelines || [])]
       .sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0))
@@ -295,16 +307,30 @@ export function invitationToThemeData(
         time: t.timeLabel || "",
         title: t.title || "",
       })),
-    showRsvp: section[SECTION.showRsvp] ?? true,
+    showRsvp: sectionEnabled(section, SECTION.showRsvp),
     rsvpType: extra.rsvpType || "form",
-    showGuestbook: section[SECTION.showGuestbook] ?? true,
-    guestbookStatic: section[SECTION.guestbookStatic] ?? true,
-    guestbookFloating: section[SECTION.guestbookFloating] ?? false,
-    showThankYou: section[SECTION.showThankYou] ?? true,
+    showGuestbook: sectionEnabled(section, SECTION.showGuestbook),
+    guestbookStatic: sectionEnabled(section, SECTION.guestbookStatic),
+    guestbookFloating: sectionEnabled(section, SECTION.guestbookFloating, false),
+    showGifts: sectionEnabled(section, SECTION.showGifts),
+    showThankYou: sectionEnabled(section, SECTION.showThankYou),
     thankYouText: invitation.thankYouText || "",
     showMusic: !!music.url,
     musicUrl: music.url || "",
     musicName: music.name || "",
+    mapUrl: primary?.mapsUrl || "",
+    eventDetails: {
+      date: primary?.startsAt || invitation.primaryEventAt,
+      time: primary?.startsAt ? formatTime(primary.startsAt) : "",
+      address: primary?.address || primary?.venue || "",
+      venue: primary?.venue || "",
+      mapUrl: primary?.mapsUrl || "",
+    },
+    themeLayout:
+      (invitation as any).themeLayout ||
+      (invitation.template as any)?.themeLayout,
+    presetTokens: (invitation.template as any)?.presetTokens,
+    sectionConfig: section,
     invitationId: invitation.id,
     guestId: guest?.id,
     guestName: guest?.fullName,
@@ -414,6 +440,11 @@ export function buildInvitationPayload(
     cardType?: string;
     customDesign?: any;
     hostRoles?: HostRoleConfig[];
+    sectionOrder?: string[];
+    extendedSectionConfig?: Record<
+      string,
+      boolean | { enabled: boolean; order?: number; variant?: string }
+    >;
   } = {},
 ): CreateInvitationReq {
   const keepIds = !!options.keepIds;
@@ -499,21 +530,23 @@ export function buildInvitationPayload(
     ),
   );
 
-  const sectionConfig = {
-    [SECTION.showHero]: !!formData.showHeroImage,
-    [SECTION.showIntro]: !!formData.showIntro,
-    [SECTION.showGallery]: !!formData.showGallery,
-    [SECTION.showCountdown]: !!formData.showCountdown,
-    [SECTION.showMap]: !!formData.showMap,
-    [SECTION.showDressCode]: !!formData.showDressCode,
-    [SECTION.showTimeline]: !!formData.showTimeline,
-    [SECTION.showRsvp]: !!formData.showRsvp,
-    [SECTION.showGuestbook]: !!formData.showGuestbook,
-    [SECTION.showGifts]: gifts.length > 0,
-    [SECTION.showThankYou]: !!formData.showThankYou,
-    [SECTION.guestbookStatic]: !!formData.guestbookStatic,
-    [SECTION.guestbookFloating]: !!formData.guestbookFloating,
-  };
+  const sectionConfig =
+    options.extendedSectionConfig ||
+    ({
+      [SECTION.showHero]: !!formData.showHeroImage,
+      [SECTION.showIntro]: !!formData.showIntro,
+      [SECTION.showGallery]: !!formData.showGallery,
+      [SECTION.showCountdown]: !!formData.showCountdown,
+      [SECTION.showMap]: !!formData.showMap,
+      [SECTION.showDressCode]: !!formData.showDressCode,
+      [SECTION.showTimeline]: !!formData.showTimeline,
+      [SECTION.showRsvp]: !!formData.showRsvp,
+      [SECTION.showGuestbook]: !!formData.showGuestbook,
+      [SECTION.showGifts]: gifts.length > 0,
+      [SECTION.showThankYou]: !!formData.showThankYou,
+      [SECTION.guestbookStatic]: !!formData.guestbookStatic,
+      [SECTION.guestbookFloating]: !!formData.guestbookFloating,
+    } as Record<string, boolean | { enabled: boolean; order?: number; variant?: string }>);
 
   const enabledModules = [
     formData.showRsvp ? "RSVP" : null,

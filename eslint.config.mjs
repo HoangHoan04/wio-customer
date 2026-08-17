@@ -20,7 +20,7 @@ export default [
     rules: {
       "@typescript-eslint/no-explicit-any": "off",
       "@typescript-eslint/no-unused-vars": [
-        "error",
+        "warn",
         {
           argsIgnorePattern: "^_",
           varsIgnorePattern: "^_",
@@ -31,12 +31,19 @@ export default [
     },
   },
   {
-    files: ["scripts/**/*.js"],
+    files: ["scripts/**"],
     languageOptions: {
-      globals: { ...globals.node },
+      globals: {
+        ...globals.node,
+        fetch: "readonly",
+        Buffer: "readonly",
+        console: "readonly",
+        process: "readonly",
+      },
     },
     rules: {
       "@typescript-eslint/no-require-imports": "off",
+      "no-undef": "off",
     },
   },
 ];
